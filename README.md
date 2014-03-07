@@ -22,6 +22,19 @@ An implementation of [JSON Web Tokens](http://self-issued.info/docs/draft-ietf-o
     }
 ```
 
+#### Maven coordinates?
+
+Yes, here you are:
+
+```xml
+<dependency>
+    <groupId>com.auth0</groupId>
+    <artifactId>java-jwt</artifactId>
+    <version>0.1</version>
+</dependency>
+```
+
+
 ### FAQ
 
 
