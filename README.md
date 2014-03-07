@@ -9,10 +9,16 @@ This was developed against `draft-ietf-oauth-json-web-token-08`.
 ```java
     public class Application {
         public static void main (String [] args) {
-            Map<String,String> decodedPayload = new JWTVerifier("secret", "audience").verify("my-token");
-
-            // Get custom fields from decoded Payload
-            System.out.println(decodedPayload.get("name"));
+            try {
+                Map<String,String> decodedPayload = new JWTVerifier("secret", "audience").verify("my-token");
+                
+                // Get custom fields from decoded Payload
+                System.out.println(decodedPayload.get("name"));
+            } catch (SignatureException signatureException) {
+                System.err.println("Invalid signature!");
+            } catch (IllegalStateException illegalStateException) {
+                System.err.println("Invalid Token! " + illegalStateException);
+            }
         }
     }
 ```
