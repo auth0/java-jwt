@@ -1,6 +1,7 @@
 package com.auth0.jwt;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.codec.binary.Base64;
 
@@ -79,12 +80,12 @@ public class JWTVerifier {
         }
 
         // get JWTHeader JSON object. Extract algorithm
-        Map<String, String> jwtHeader = decodeAndParse(pieces[0]);
+        JsonNode jwtHeader = decodeAndParse(pieces[0]);
 
         String algorithm = getAlgorithm(jwtHeader);
 
         // get JWTClaims JSON object
-        Map<String, String> jwtPayload = decodeAndParse(pieces[1]);
+        JsonNode jwtPayload = decodeAndParse(pieces[1]);
 
         // check signature
         verifySignature(pieces, algorithm);
@@ -94,7 +95,7 @@ public class JWTVerifier {
         verifyIssuer(jwtPayload);
         verifyAudience(jwtPayload);
 
-        return jwtPayload;
+        return mapper.treeToValue(jwtPayload, Map.class);
     }
 
     void verifySignature(String[] pieces, String algorithm) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
@@ -107,31 +108,32 @@ public class JWTVerifier {
         }
     }
 
-    void verifyExpiration(Map<String, String> jwtClaims) {
-        long expiration = Long.parseLong(jwtClaims.get("exp"));
+    void verifyExpiration(JsonNode jwtClaims) {
+        final long expiration = jwtClaims.has("exp") ? jwtClaims.get("exp").asLong(0) : 0;
+
         if (expiration != 0 && System.currentTimeMillis() / 1000L >= expiration) {
             throw new IllegalStateException("jwt expired");
         }
     }
 
-    void verifyIssuer(Map<String, String> jwtClaims) {
-        String issuerFromToken = jwtClaims.get("iss");
+    void verifyIssuer(JsonNode jwtClaims) {
+        final String issuerFromToken = jwtClaims.has("iss") ? jwtClaims.get("iss").asText() : null;
 
         if (issuerFromToken != null && issuer != null && !issuer.equals(issuerFromToken)) {
             throw new IllegalStateException("jwt issuer invalid");
         }
     }
 
-    void verifyAudience(Map<String, String> jwtClaims) {
-        String audienceFromToken = jwtClaims.get("aud");
+    void verifyAudience(JsonNode jwtClaims) {
+        final String audienceFromToken = jwtClaims.has("aud") ? jwtClaims.get("aud").asText() : null;
 
         if (audienceFromToken != null && !audience.equals(audienceFromToken)) {
             throw new IllegalStateException("jwt audience invalid");
         }
     }
 
-    String getAlgorithm(Map<String, String> jwtHeader) {
-        String algorithmName = jwtHeader.get("alg");
+    String getAlgorithm(JsonNode jwtHeader) {
+        final String algorithmName = jwtHeader.has("alg") ? jwtHeader.get("alg").asText() : null;
 
         if (jwtHeader.get("alg") == null) {
             throw new IllegalStateException("algorithm not set");
@@ -144,10 +146,9 @@ public class JWTVerifier {
         return algorithms.get(algorithmName);
     }
 
-    Map<String, String> decodeAndParse(String b64String) throws IOException {
+    JsonNode decodeAndParse(String b64String) throws IOException {
         String jsonString = new String(decoder.decodeBase64(b64String), "UTF-8");
-        TypeReference<HashMap<String,String>> typeRef = new TypeReference< HashMap<String,String> >() {};
-        Map<String, String> jwtHeader = mapper.readValue(jsonString, typeRef);
+        JsonNode jwtHeader = mapper.readValue(jsonString, JsonNode.class);
         return jwtHeader;
     }
 }

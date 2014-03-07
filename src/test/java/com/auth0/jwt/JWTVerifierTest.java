@@ -1,5 +1,8 @@
 package com.auth0.jwt;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.commons.codec.binary.Base64;
 import org.junit.Test;
 
@@ -48,17 +51,17 @@ public class JWTVerifierTest {
 
     @Test(expected = IllegalStateException.class)
     public void shouldFailIfAlgorithmIsNotSetOnToken() throws Exception {
-        new JWTVerifier("such secret").getAlgorithm(Collections.<String, String>emptyMap());
+        new JWTVerifier("such secret").getAlgorithm(JsonNodeFactory.instance.objectNode());
     }
 
     @Test(expected = IllegalStateException.class)
     public void shouldFailIfAlgorithmIsNotSupported() throws Exception {
-        new JWTVerifier("such secret").getAlgorithm(Collections.singletonMap("alg", "doge-crypt"));
+        new JWTVerifier("such secret").getAlgorithm(createSingletonJSONNode("alg", "doge-crypt"));
     }
 
     @Test
     public void shouldWorkIfAlgorithmIsSupported() throws Exception {
-       new JWTVerifier("such secret").getAlgorithm(Collections.singletonMap("alg", "HS256"));
+       new JWTVerifier("such secret").getAlgorithm(createSingletonJSONNode("alg", "HS256"));
     }
 
     @Test(expected = SignatureException.class)
@@ -89,49 +92,49 @@ public class JWTVerifierTest {
     @Test(expected = IllegalStateException.class)
     public void shouldFailWhenExpired1SecondAgo() throws Exception {
         new JWTVerifier("such secret").verifyExpiration(
-                Collections.singletonMap("exp", Long.toString(System.currentTimeMillis() / 1000L - 1L)));
+                createSingletonJSONNode("exp", Long.toString(System.currentTimeMillis() / 1000L - 1L)));
     }
 
     @Test
     public void shouldVerifyExpiration() throws Exception {
         new JWTVerifier("such secret").verifyExpiration(
-                Collections.singletonMap("exp", Long.toString(System.currentTimeMillis() / 1000L + 50L)));
+                createSingletonJSONNode("exp", Long.toString(System.currentTimeMillis() / 1000L + 50L)));
     }
 
     @Test
     public void shouldVerifyIssuer() throws Exception {
         new JWTVerifier("such secret", "amaze audience", "very issuer")
-                .verifyIssuer(Collections.singletonMap("iss", "very issuer"));
+                .verifyIssuer(createSingletonJSONNode("iss", "very issuer"));
     }
 
     @Test(expected = IllegalStateException.class)
     public void shouldFailIssuer() throws Exception {
         new JWTVerifier("such secret", "amaze audience", "very issuer")
-                .verifyIssuer(Collections.singletonMap("iss", "wow"));
+                .verifyIssuer(createSingletonJSONNode("iss", "wow"));
     }
 
     @Test
     public void shouldVerifyIssuerWhenNotFoundInClaimsSet() throws Exception {
         new JWTVerifier("such secret", "amaze audience", "very issuer")
-                .verifyIssuer(Collections.<String, String>emptyMap());
+                .verifyIssuer(JsonNodeFactory.instance.objectNode());
     }
 
     @Test
     public void shouldVerifyAudience() throws Exception {
         new JWTVerifier("such secret", "amaze audience")
-                .verifyAudience(Collections.singletonMap("aud", "amaze audience"));
+                .verifyAudience(createSingletonJSONNode("aud", "amaze audience"));
     }
 
     @Test(expected = IllegalStateException.class)
     public void shouldFailAudience() throws Exception {
         new JWTVerifier("such secret", "amaze audience")
-                .verifyAudience(Collections.singletonMap("aud", "wow"));
+                .verifyAudience(createSingletonJSONNode("aud", "wow"));
     }
 
     @Test
     public void shouldVerifyAudienceWhenNotFoundInClaimsSet() throws Exception {
         new JWTVerifier("such secret", "amaze audience")
-                .verifyAudience(Collections.<String, String>emptyMap());
+                .verifyAudience(JsonNodeFactory.instance.objectNode());
     }
 
     @Test
@@ -140,12 +143,17 @@ public class JWTVerifierTest {
         final String encodedJSON = new String(encoder.encode("{\"some\": \"json\", \"number\": 123}".getBytes()));
         final JWTVerifier jwtVerifier = new JWTVerifier("secret", "audience");
 
-        final Map<String,String> decodedJSON = jwtVerifier.decodeAndParse(encodedJSON);
+        final JsonNode decodedJSON = jwtVerifier.decodeAndParse(encodedJSON);
 
-        assertEquals("json", decodedJSON.get("some"));
+        assertEquals("json", decodedJSON.get("some").asText());
         assertEquals(null, decodedJSON.get("unexisting_property"));
-        assertEquals("123", decodedJSON.get("number"));
+        assertEquals("123", decodedJSON.get("number").asText());
     }
 
 
+    public static JsonNode createSingletonJSONNode(String key, String value) {
+        final ObjectNode jsonNodes = JsonNodeFactory.instance.objectNode();
+        jsonNodes.put(key, value);
+        return jsonNodes;
+    }
 }
