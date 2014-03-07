@@ -34,6 +34,9 @@ Yes, here you are:
 </dependency>
 ```
 
+### Credits
+
+Most of the code have been written by Luis Faja <https://bitbucket.org/lluisfaja/javajwt>. We just wrapped it on a nicer interface and published it to maven. We'll be adding support for signing and other algorithms in the future.
 
 ### FAQ
 
