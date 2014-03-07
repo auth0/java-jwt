@@ -4,9 +4,47 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>9</version>
+    </parent>
+
     <groupId>com.auth0</groupId>
     <artifactId>java-jwt</artifactId>
     <version>0.1-SNAPSHOT</version>
+
+    <name>Java JWT</name>
+    <description>Java implementation of JSON Web Token developed against draft-ietf-oauth-json-web-token-08.</description>
+    <url>http://www.jwt.io</url>
+
+    <properties>
+        <java.version>1.6</java.version>
+    </properties>
+
+    <licenses>
+        <license>
+            <name>The MIT License</name>
+            <url>http://www.opensource.org/licenses/mit-license.php</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>Alberto Pose</name>
+            <id>pose</id>
+            <roles>
+                <role>Developer</role>
+            </roles>
+        </developer>
+    </developers>
+
+    <scm>
+        <url>https://github.com/auth0/java-jwt</url>
+        <developerConnection>scm:git:git@github.com:auth0/java-jwt.git</developerConnection>
+        <connection>scm:git:git@github.com:auth0/java-jwt.git</connection>
+    </scm>
 
     <dependencies>
         <!-- For JWT parsing-->
@@ -29,5 +67,18 @@
         </dependency>
     </dependencies>
 
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.1</version>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>
