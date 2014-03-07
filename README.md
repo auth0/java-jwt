@@ -1,8 +1,6 @@
 # Java JWT
 
-An implementation of [JSON Web Tokens](http://self-issued.info/docs/draft-ietf-oauth-json-web-token.html).
-
-This was developed against `draft-ietf-oauth-json-web-token-08`.
+An implementation of [JSON Web Tokens](http://self-issued.info/docs/draft-ietf-oauth-json-web-token.html) developed against `draft-ietf-oauth-json-web-token-08`.
 
 ### Usage
 
