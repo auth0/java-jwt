@@ -10,7 +10,8 @@ This was developed against `draft-ietf-oauth-json-web-token-08`.
     public class Application {
         public static void main (String [] args) {
             try {
-                Map<String,String> decodedPayload = new JWTVerifier("secret", "audience").verify("my-token");
+                Map<String,String> decodedPayload = 
+                    new JWTVerifier("secret", "audience").verify("my-token");
                 
                 // Get custom fields from decoded Payload
                 System.out.println(decodedPayload.get("name"));
