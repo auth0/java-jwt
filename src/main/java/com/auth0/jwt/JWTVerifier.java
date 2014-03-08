@@ -65,7 +65,7 @@ public class JWTVerifier {
      * @throws SignatureException    when signature is invalid
      * @throws IllegalStateException when token's structure, expiration, issuer or audience are invalid
      */
-    public Map<String, String> verify(String token)
+    public Map<String, Object> verify(String token)
             throws NoSuchAlgorithmException, InvalidKeyException, IllegalStateException,
             IOException, SignatureException {
         if (token == null || "".equals(token)) {
