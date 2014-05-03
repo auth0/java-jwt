@@ -5,21 +5,21 @@ An implementation of [JSON Web Tokens](http://self-issued.info/docs/draft-ietf-o
 ### Usage
 
 ```java
-    public class Application {
-        public static void main (String [] args) {
-            try {
-                Map<String,Object> decodedPayload =
-                    new JWTVerifier("secret", "audience").verify("my-token");
+public class Application {
+    public static void main (String [] args) {
+        try {
+            Map<String,Object> decodedPayload =
+                new JWTVerifier("secret", "audience").verify("my-token");
                 
-                // Get custom fields from decoded Payload
-                System.out.println(decodedPayload.get("name"));
-            } catch (SignatureException signatureException) {
-                System.err.println("Invalid signature!");
-            } catch (IllegalStateException illegalStateException) {
-                System.err.println("Invalid Token! " + illegalStateException);
-            }
+            // Get custom fields from decoded Payload
+            System.out.println(decodedPayload.get("name"));
+        } catch (SignatureException signatureException) {
+            System.err.println("Invalid signature!");
+        } catch (IllegalStateException illegalStateException) {
+            System.err.println("Invalid Token! " + illegalStateException);
         }
     }
+}
 ```
 
 #### Maven coordinates?
