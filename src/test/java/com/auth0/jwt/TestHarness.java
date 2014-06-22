@@ -1,5 +1,6 @@
 package com.auth0.jwt;
 
+import static org.junit.Assert.*;
 import com.auth0.jwt.impl.BasicPayloadHandler;
 import com.auth0.jwt.impl.JwtProxyImpl;
 import org.junit.Test;
@@ -25,9 +26,8 @@ public class TestHarness {
 		ClaimSet claimSet = new ClaimSet();
 		claimSet.setExp(24 * 60 * 60); // expire in 24 hours
 		String token = proxy.encode(algorithm, user, secret, claimSet);
-		System.out.println(token);
 		
 		Object payload = proxy.decode(algorithm, token, secret);
-		System.out.println(payload);
+		assertEquals("{\"username\":\"jwt\",\"password\":\"mypassword\"}",payload);
 	}
 }
