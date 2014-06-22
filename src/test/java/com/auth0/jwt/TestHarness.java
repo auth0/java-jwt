@@ -2,13 +2,15 @@ package com.auth0.jwt;
 
 import com.auth0.jwt.impl.BasicPayloadHandler;
 import com.auth0.jwt.impl.JwtProxyImpl;
+import org.junit.Test;
 
 /**
  * Test harness for JwtProxy
  */
 public class TestHarness {
 
-	public static void main(String[] args) throws Exception {
+	@Test
+	public void testHarness() throws Exception {
 		
 		final String secret = "This is a secret";
 		final Algorithm algorithm = Algorithm.HS256;

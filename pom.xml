@@ -5,7 +5,7 @@
 	<artifactId>java-jwt-signer</artifactId>
 	<version>1.0</version>
 	<packaging>jar</packaging>
-	<name>JWT Signer - Project Object Model</name>
+	<name>Java JWT</name>
 	
 	<parent>
         <groupId>org.sonatype.oss</groupId>
@@ -21,7 +21,6 @@
         </license>
     </licenses>
         
-    <name>Java JWT</name>
     <description>Java implementation of JSON Web Token developed against draft-ietf-oauth-json-web-token-08.</description>
     <url>http://www.jwt.io</url>
 
