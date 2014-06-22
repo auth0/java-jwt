@@ -56,19 +56,19 @@ public class JwtSigner {
 	 */
 	private String encodedPayload(String payload, String payloadId, ClaimSet claimSet) throws Exception {
 		
-		ObjectNode _claimSet = JsonNodeFactory.instance.objectNode();
-		ObjectNode _payload = JsonNodeFactory.instance.objectNode();;
+		ObjectNode localClaimSet = JsonNodeFactory.instance.objectNode();
+		ObjectNode localPayload = JsonNodeFactory.instance.objectNode();
 		
-		_payload.put(payloadId, payload);
+		localPayload.put(payloadId, payload);
 		
 		if(claimSet != null) {
 			if(claimSet.getExp() > 0) {
-				_claimSet.put("exp", claimSet.getExp());
+				localClaimSet.put("exp", claimSet.getExp());
 			}
-			_payload.putAll(_claimSet);
+			localPayload.putAll(localClaimSet);
 		}
 		
-		return base64UrlEncode(_payload.toString().getBytes());
+		return base64UrlEncode(localPayload.toString().getBytes());
 	}
 
 	/**
