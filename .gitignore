@@ -1,5 +1,9 @@
 node_modules
 
+# Ignore Eclipse stuff
+.project
+.settings
+
 # Ignore Java and IntelliJ IDEA stuff
 .idea
 target
