@@ -6,13 +6,13 @@
   <version>1.0</version>
   <packaging>jar</packaging>
   <name>Java JWT</name>
-  
+
   <parent>
         <groupId>org.sonatype.oss</groupId>
         <artifactId>oss-parent</artifactId>
         <version>9</version>
     </parent>
-    
+
     <licenses>
         <license>
             <name>The MIT License</name>
@@ -20,7 +20,7 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
-        
+
     <description>Java implementation of JSON Web Token developed against draft-ietf-oauth-json-web-token-08.</description>
     <url>http://www.jwt.io</url>
 
