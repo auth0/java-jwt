@@ -9,7 +9,7 @@
 
   <groupId>com.auth0</groupId>
   <artifactId>java-jwt</artifactId>
-  <version>0.4</version>
+  <version>0.5-SNAPSHOT</version>
 
   <name>Java JWT</name>
   <description>Java implementation of JSON Web Token developed against draft-ietf-oauth-json-web-token-08.</description>
