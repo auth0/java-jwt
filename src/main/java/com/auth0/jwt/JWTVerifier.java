@@ -1,6 +1,5 @@
 package com.auth0.jwt;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.codec.binary.Base64;
@@ -125,11 +124,21 @@ public class JWTVerifier {
     }
 
     void verifyAudience(JsonNode jwtClaims) {
-        final String audienceFromToken = jwtClaims.has("aud") ? jwtClaims.get("aud").asText() : null;
-
-        if (audienceFromToken != null && !audience.equals(audienceFromToken)) {
-            throw new IllegalStateException("jwt audience invalid");
+        if (audience == null)
+            return;
+        JsonNode audNode = jwtClaims.get("aud");
+        if (audNode == null)
+            return;
+        if (audNode.isArray()) {
+            for (JsonNode jsonNode : audNode) {
+                if (audience.equals(jsonNode.textValue()))
+                    return;
+            }
+        } else if (audNode.isTextual()) {
+            if (audience.equals(audNode.textValue()))
+                return;
         }
+        throw new IllegalStateException("jwt audience invalid");
     }
 
     String getAlgorithm(JsonNode jwtHeader) {

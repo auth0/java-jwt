@@ -1,14 +1,15 @@
 package com.auth0.jwt;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import org.apache.commons.codec.binary.Base64;
 import org.junit.Test;
 
 import java.security.SignatureException;
-import java.util.Collections;
-import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
@@ -138,6 +139,26 @@ public class JWTVerifierTest {
     }
 
     @Test
+    public void shouldVerifyNullAudience() throws Exception {
+        new JWTVerifier("such secret")
+                .verifyAudience(createSingletonJSONNode("aud", "wow"));
+    }
+
+    @Test
+    public void shouldVerifyArrayAudience() throws Exception {
+        new JWTVerifier("such secret", "amaze audience")
+                .verifyAudience(createSingletonJSONNode("aud",
+                        new ObjectMapper().readValue("[ \"foo\", \"amaze audience\" ]", ArrayNode.class)));
+    }
+    
+    @Test(expected = IllegalStateException.class)
+    public void shouldFailArrayAudience() throws Exception {
+        new JWTVerifier("such secret", "amaze audience")
+                .verifyAudience(createSingletonJSONNode("aud",
+                        new ObjectMapper().readValue("[ \"foo\" ]", ArrayNode.class)));
+    }
+    
+    @Test
     public void decodeAndParse() throws Exception {
         final Base64 encoder = new Base64(true);
         final String encodedJSON = new String(encoder.encode("{\"some\": \"json\", \"number\": 123}".getBytes()));
@@ -152,6 +173,12 @@ public class JWTVerifierTest {
 
 
     public static JsonNode createSingletonJSONNode(String key, String value) {
+        final ObjectNode jsonNodes = JsonNodeFactory.instance.objectNode();
+        jsonNodes.put(key, value);
+        return jsonNodes;
+    }
+
+    public static JsonNode createSingletonJSONNode(String key, JsonNode value) {
         final ObjectNode jsonNodes = JsonNodeFactory.instance.objectNode();
         jsonNodes.put(key, value);
         return jsonNodes;
