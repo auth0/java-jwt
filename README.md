@@ -30,7 +30,7 @@ Yes, here you are:
 <dependency>
     <groupId>com.auth0</groupId>
     <artifactId>java-jwt</artifactId>
-    <version>0.3</version>
+    <version>0.4</version>
 </dependency>
 ```
 
