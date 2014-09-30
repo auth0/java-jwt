@@ -1,3 +1,6 @@
+# Maven Shaded Jar Artifact
+dependency-reduced-pom.xml
+
 node_modules
 
 # Ignore Eclipse stuff
