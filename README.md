@@ -36,13 +36,13 @@ Yes, here you are:
 
 ### Credits
 
-Most of the code have been written by Luis Faja <https://bitbucket.org/lluisfaja/javajwt>. We just wrapped it on a nicer interface and published it to maven. We'll be adding support for signing and other algorithms in the future.
+Most of the code have been written by Luis Faja <https://bitbucket.org/lluisfaja/javajwt>. We just wrapped it in a nicer interface and published it to Maven Central. We'll be adding support for signing and other algorithms in the future.
 
 ### FAQ
 
 
 #### Why another JSON Web Token implementation for Java?
-We think that current JWT implementations are either too complex or not enough tested. We want something simple with the right number of abstractions.
+We think that current JWT implementations are either too complex or not tested enough. We want something simple with the right number of abstractions.
 
 ## License
 
