@@ -7,6 +7,7 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import javax.naming.OperationNotSupportedException;
 
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.apache.commons.codec.binary.Base64;
 
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
@@ -56,15 +57,13 @@ public class JwtSigner {
 	 */
 	private String encodedPayload(String payload, String payloadId, ClaimSet claimSet) throws Exception {
 		
-		ObjectNode localClaimSet = JsonNodeFactory.instance.objectNode();
+		ObjectNode localClaimSet = claimSet.build();
 		ObjectNode localPayload = JsonNodeFactory.instance.objectNode();
+
 		
 		localPayload.put(payloadId, payload);
 		
-		if(claimSet != null) {
-			if(claimSet.getExp() > 0) {
-				localClaimSet.put("exp", claimSet.getExp());
-			}
+		if(localClaimSet != null) {
 			localPayload.putAll(localClaimSet);
 		}
 		
