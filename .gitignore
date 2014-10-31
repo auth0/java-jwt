@@ -6,6 +6,7 @@ node_modules
 # Ignore Eclipse stuff
 .project
 .settings
+.classpath
 
 # Ignore Java and IntelliJ IDEA stuff
 .idea
