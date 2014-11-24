@@ -44,6 +44,10 @@ Most of the code have been written by Luis Faja <https://bitbucket.org/lluisfaja
 #### Why another JSON Web Token implementation for Java?
 We think that current JWT implementations are either too complex or not tested enough. We want something simple with the right number of abstractions.
 
+## Issue Reporting
+
+If you have found a bug or if you have a feature request, please report them at this repository issues section. Please do not report security vulnerabilities on the public GitHub issue tracker. The [Responsible Disclosure Program](https://auth0.com/whitehat) details the procedure for disclosing security issues.
+
 ## License
 
 The MIT License (MIT)
