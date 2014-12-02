@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -62,11 +63,12 @@ public class JWTVerifier {
      *
      * @param token token to verify
      * @throws SignatureException    when signature is invalid
-     * @throws IllegalStateException when token's structure, expiration, issuer or audience are invalid
+     * @throws JWTVerifyException    when expiration, issuer or audience are invalid
+     * @throws IllegalStateException when token's structure is invalid
      */
     public Map<String, Object> verify(String token)
             throws NoSuchAlgorithmException, InvalidKeyException, IllegalStateException,
-            IOException, SignatureException {
+            IOException, SignatureException, JWTVerifyException {
         if (token == null || "".equals(token)) {
             throw new IllegalStateException("token not set");
         }
@@ -107,23 +109,23 @@ public class JWTVerifier {
         }
     }
 
-    void verifyExpiration(JsonNode jwtClaims) {
+    void verifyExpiration(JsonNode jwtClaims) throws JWTExpiredException {
         final long expiration = jwtClaims.has("exp") ? jwtClaims.get("exp").asLong(0) : 0;
 
         if (expiration != 0 && System.currentTimeMillis() / 1000L >= expiration) {
-            throw new IllegalStateException("jwt expired");
+            throw new JWTExpiredException("jwt expired", expiration);
         }
     }
 
-    void verifyIssuer(JsonNode jwtClaims) {
+    void verifyIssuer(JsonNode jwtClaims) throws JWTIssuerException {
         final String issuerFromToken = jwtClaims.has("iss") ? jwtClaims.get("iss").asText() : null;
 
         if (issuerFromToken != null && issuer != null && !issuer.equals(issuerFromToken)) {
-            throw new IllegalStateException("jwt issuer invalid");
+            throw new JWTIssuerException("jwt issuer invalid", issuerFromToken);
         }
     }
 
-    void verifyAudience(JsonNode jwtClaims) {
+    void verifyAudience(JsonNode jwtClaims) throws JWTAudienceException {
         if (audience == null)
             return;
         JsonNode audNode = jwtClaims.get("aud");
@@ -138,7 +140,7 @@ public class JWTVerifier {
             if (audience.equals(audNode.textValue()))
                 return;
         }
-        throw new IllegalStateException("jwt audience invalid");
+        throw new JWTAudienceException("jwt audience invalid", audNode);
     }
 
     String getAlgorithm(JsonNode jwtHeader) {
