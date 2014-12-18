@@ -91,7 +91,7 @@ public class JWTSigner {
 
         // create the header
         ObjectNode header = JsonNodeFactory.instance.objectNode();
-        header.put("type", "JWT");
+        header.put("typ", "JWT");
         header.put("alg", algorithm.name());
 
         return base64UrlEncode(header.toString().getBytes("UTF-8"));
@@ -214,14 +214,14 @@ public class JWTSigner {
     /**
      * Safe URL encode a byte array to a String
      */
-    private String base64UrlEncode(byte[] str) {
+    static String base64UrlEncode(byte[] str) {
         return new String(Base64.encodeBase64URLSafe(str));
     }
 
     /**
      * Switch the signing algorithm based on input, RSA not supported
      */
-    private static byte[] sign(Algorithm algorithm, String msg, String secret) throws Exception {
+    static byte[] sign(Algorithm algorithm, String msg, String secret) throws Exception {
         switch (algorithm) {
         case HS256:
         case HS384:
