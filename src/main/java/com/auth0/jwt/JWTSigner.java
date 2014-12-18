@@ -91,7 +91,7 @@ public class JWTSigner {
 
         // create the header
         ObjectNode header = JsonNodeFactory.instance.objectNode();
-        header.put("type", "JWT");
+        header.put("typ", "JWT");
         header.put("alg", algorithm.name());
 
         return base64UrlEncode(header.toString().getBytes("UTF-8"));
