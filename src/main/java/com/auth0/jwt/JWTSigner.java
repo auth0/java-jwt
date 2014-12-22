@@ -27,7 +27,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  */
 public class JWTSigner {
     private final String secret;
-    
+
     public JWTSigner(String secret) {
         this.secret = secret;
     }
@@ -36,7 +36,7 @@ public class JWTSigner {
      * Generate a JSON Web Token.
      *  using the default algorithm HMAC SHA-256 ("HS256")
      * and no claims automatically set.
-     * 
+     *
      * @param claims A map of the JWT claims that form the payload. Registered claims
      *               must be of appropriate Java datatype as following:
      *               <ul>
@@ -47,9 +47,8 @@ public class JWTSigner {
      *               All claims with a null value are left out the JWT.
      *               Any claims set automatically as specified in
      *               the "options" parameter override claims in this map.
-     *               
-     * @param secret Key to use in signing. Used as-is without Base64 encoding.
-     * 
+     *
+     *
      * @param options Allow choosing the signing algorithm, and automatic setting of some registered claims.
      */
     public String sign(Map<String, Object> claims, Options options) {
@@ -72,15 +71,11 @@ public class JWTSigner {
     /**
      * Generate a JSON Web Token using the default algorithm HMAC SHA-256 ("HS256")
      * and no claims automatically set.
-     *
-     * @param secret Key to use in signing. Used as-is without Base64 encoding.
-     * 
-     * For details, see the two parameter variant of this method.
      */
     public String sign(Map<String, Object> claims) {
         return sign(claims, null);
     }
-    
+
     /**
      * Generate the header part of a JSON web token.
      */
@@ -99,7 +94,7 @@ public class JWTSigner {
 
     /**
      * Generate the JSON web token payload string from the claims.
-     * @param options 
+     * @param options
      */
     private String encodedPayload(Map<String, Object> _claims, Options options) throws Exception {
         Map<String, Object> claims = new HashMap<String, Object>(_claims);
@@ -110,14 +105,14 @@ public class JWTSigner {
         enforceIntDate(claims, "nbf");
         enforceIntDate(claims, "iat");
         enforceString(claims, "jti");
-        
+
         if (options != null)
             processPayloadOptions(claims, options);
 
         String payload = new ObjectMapper().writeValueAsString(claims);
         return base64UrlEncode(payload.getBytes("UTF-8"));
     }
-    
+
     private void processPayloadOptions(Map<String, Object> claims, Options options) {
         long now = System.currentTimeMillis() / 1000l;
         if (options.expirySeconds != null)
@@ -202,7 +197,7 @@ public class JWTSigner {
         }
         return null;
     }
-    
+
     /**
      * Sign the header and payload
      */
@@ -269,7 +264,7 @@ public class JWTSigner {
         private Integer notValidBeforeLeeway;
         private boolean issuedAt;
         private boolean jwtId;
-        
+
         public Algorithm getAlgorithm() {
             return algorithm;
         }
@@ -280,8 +275,8 @@ public class JWTSigner {
             this.algorithm = algorithm;
             return this;
         }
-        
-        
+
+
         public Integer getExpirySeconds() {
             return expirySeconds;
         }
@@ -293,7 +288,7 @@ public class JWTSigner {
             this.expirySeconds = expirySeconds;
             return this;
         }
-        
+
         public Integer getNotValidBeforeLeeway() {
             return notValidBeforeLeeway;
         }
@@ -305,7 +300,7 @@ public class JWTSigner {
             this.notValidBeforeLeeway = notValidBeforeLeeway;
             return this;
         }
-        
+
         public boolean isIssuedAt() {
             return issuedAt;
         }
@@ -317,7 +312,7 @@ public class JWTSigner {
             this.issuedAt = issuedAt;
             return this;
         }
-        
+
         public boolean isJwtId() {
             return jwtId;
         }

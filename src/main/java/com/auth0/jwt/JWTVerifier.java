@@ -21,7 +21,6 @@ import java.util.Map;
 
 /**
  * JWT Java Implementation
- * <p/>
  * Adapted from https://bitbucket.org/lluisfaja/javajwt/wiki/Home
  * See <a href="https://bitbucket.org/lluisfaja/javajwt/src/3941d23e8e70f681d8a9a2584760e58e79e498f1/JavaJWT/src/com/unblau/javajwt/JWTVerifier.java">JWTVerifier.java</a>
  */
@@ -35,7 +34,7 @@ public class JWTVerifier {
     private final ObjectMapper mapper;
 
     private Map<String, String> algorithms;
-    
+
     public JWTVerifier(String secret, String audience, String issuer) {
         this(secret.getBytes(Charset.forName("UTF-8")), audience, issuer);
     }
@@ -47,12 +46,12 @@ public class JWTVerifier {
     public JWTVerifier(String secret) {
         this(secret, null, null);
     }
-    
+
     public JWTVerifier(byte[] secret, String audience, String issuer) {
         if (secret == null || secret.length == 0) {
             throw new IllegalArgumentException("Secret cannot be null or empty");
         }
-        
+
     	mapper = new ObjectMapper();
 
         algorithms = new HashMap<String, String>();
