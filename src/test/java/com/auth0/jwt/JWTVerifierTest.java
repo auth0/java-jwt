@@ -74,7 +74,8 @@ public class JWTVerifierTest {
                 "." +
                 "suchsignature_plzvalidate_zomgtokens";
         String secret = "AyM1SysPpbyDfgZld3umj1qzKObwVMkoqQ-EstJQLr_T-1qS0gZH75aKtMN3Yj0iPS4hcgUuTwjAzZr1Z9CAow";
-        new JWTVerifier(secret, "audience").verifySignature(jws.split("\\."), "HmacSHA256");
+        new JWTVerifier(Base64.decodeBase64(secret), "audience")
+                .verifySignature(jws.split("\\."), "HmacSHA256");
     }
 
     @Test
@@ -86,7 +87,7 @@ public class JWTVerifierTest {
                 "." +
                 "dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk";
         final String secret = "AyM1SysPpbyDfgZld3umj1qzKObwVMkoqQ-EstJQLr_T-1qS0gZH75aKtMN3Yj0iPS4hcgUuTwjAzZr1Z9CAow";
-        new JWTVerifier(secret, "audience")
+        new JWTVerifier(Base64.decodeBase64(secret), "audience")
                 .verifySignature(jws.split("\\."), "HmacSHA256");
     }
 

@@ -7,6 +7,7 @@ import org.apache.commons.codec.binary.Base64;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
@@ -23,7 +24,7 @@ import java.util.Map;
  */
 public class JWTVerifier {
 
-    private final String secret;
+    private final byte[] secret;
     private final String audience;
     private final String issuer;
     private final Base64 decoder;
@@ -32,8 +33,8 @@ public class JWTVerifier {
 
     private Map<String, String> algorithms;
 
-    public JWTVerifier(String secret, String audience, String issuer) {
-        if (secret == null || "".equals(secret)) {
+    public JWTVerifier(byte[] secret, String audience, String issuer) {
+        if (secret == null || secret.length == 0) {
             throw new IllegalArgumentException("Secret cannot be null or empty");
         }
 
@@ -45,9 +46,17 @@ public class JWTVerifier {
         algorithms.put("HS384", "HmacSHA384");
         algorithms.put("HS512", "HmacSHA512");
 
-        this.secret = secret;
+        this.secret = secret.clone();
         this.audience = audience;
         this.issuer = issuer;
+    }
+
+    public JWTVerifier(byte[] secret, String audience) {
+        this(secret, audience, null);
+    }
+
+    public JWTVerifier(String secret, String audience, String issuer) {
+        this((secret == null) ? null : secret.getBytes(Charset.forName("UTF-8")), audience, issuer);
     }
 
     public JWTVerifier(String secret, String audience) {
@@ -101,7 +110,7 @@ public class JWTVerifier {
 
     void verifySignature(String[] pieces, String algorithm) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
         Mac hmac = Mac.getInstance(algorithm);
-        hmac.init(new SecretKeySpec(decoder.decodeBase64(secret), algorithm));
+        hmac.init(new SecretKeySpec(secret, algorithm));
         byte[] sig = hmac.doFinal(new StringBuilder(pieces[0]).append(".").append(pieces[1]).toString().getBytes());
 
         if (!Arrays.equals(sig, decoder.decodeBase64(pieces[2]))) {
