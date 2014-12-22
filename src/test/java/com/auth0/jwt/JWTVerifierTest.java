@@ -90,7 +90,7 @@ public class JWTVerifierTest {
                 .verifySignature(jws.split("\\."), "HmacSHA256");
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test(expected = JWTExpiredException.class)
     public void shouldFailWhenExpired1SecondAgo() throws Exception {
         new JWTVerifier("such secret").verifyExpiration(
                 createSingletonJSONNode("exp", Long.toString(System.currentTimeMillis() / 1000L - 1L)));
@@ -108,7 +108,7 @@ public class JWTVerifierTest {
                 .verifyIssuer(createSingletonJSONNode("iss", "very issuer"));
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test(expected = JWTIssuerException.class)
     public void shouldFailIssuer() throws Exception {
         new JWTVerifier("such secret", "amaze audience", "very issuer")
                 .verifyIssuer(createSingletonJSONNode("iss", "wow"));
@@ -126,7 +126,7 @@ public class JWTVerifierTest {
                 .verifyAudience(createSingletonJSONNode("aud", "amaze audience"));
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test(expected = JWTAudienceException.class)
     public void shouldFailAudience() throws Exception {
         new JWTVerifier("such secret", "amaze audience")
                 .verifyAudience(createSingletonJSONNode("aud", "wow"));
@@ -151,7 +151,7 @@ public class JWTVerifierTest {
                         new ObjectMapper().readValue("[ \"foo\", \"amaze audience\" ]", ArrayNode.class)));
     }
     
-    @Test(expected = IllegalStateException.class)
+    @Test(expected = JWTAudienceException.class)
     public void shouldFailArrayAudience() throws Exception {
         new JWTVerifier("such secret", "amaze audience")
                 .verifyAudience(createSingletonJSONNode("aud",
