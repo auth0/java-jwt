@@ -17,17 +17,11 @@ import org.junit.Test;
  */
 public class RoundtripTest {
     private static final String SECRET;
-    private static final String SECRET_BASE64;
     static {
-        try {
-            SECRET = "my secret";
-            SECRET_BASE64 = Base64.encodeBase64String(SECRET.getBytes("UTF-8"));
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
+        SECRET = "my secret";
     }
     private static JWTSigner signer = new JWTSigner(SECRET);
-    private static JWTVerifier verifier = new JWTVerifier(SECRET_BASE64);
+    private static JWTVerifier verifier = new JWTVerifier(SECRET);
     
     /*
      * Roundtrip of different datatypes.

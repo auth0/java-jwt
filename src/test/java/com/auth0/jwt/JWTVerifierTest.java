@@ -14,13 +14,11 @@ import java.security.SignatureException;
 import static org.junit.Assert.assertEquals;
 
 public class JWTVerifierTest {
+	
+	private static final Base64 decoder = new Base64(true);;
 
-    @Test(expected = IllegalArgumentException.class)
-    public void constructorShouldFailOnNullSecret() {
-        new JWTVerifier(null);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
+    
+	@Test(expected = IllegalArgumentException.class)
     public void constructorShouldFailOnEmptySecret() {
         new JWTVerifier("");
     }
@@ -85,7 +83,7 @@ public class JWTVerifierTest {
                 "cGxlLmNvbS9pc19yb290Ijp0cnVlfQ" +
                 "." +
                 "dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk";
-        final String secret = "AyM1SysPpbyDfgZld3umj1qzKObwVMkoqQ-EstJQLr_T-1qS0gZH75aKtMN3Yj0iPS4hcgUuTwjAzZr1Z9CAow";
+        byte[] secret = decoder.decodeBase64("AyM1SysPpbyDfgZld3umj1qzKObwVMkoqQ-EstJQLr_T-1qS0gZH75aKtMN3Yj0iPS4hcgUuTwjAzZr1Z9CAow");
         new JWTVerifier(secret, "audience")
                 .verifySignature(jws.split("\\."), "HmacSHA256");
     }
