@@ -16,14 +16,14 @@ public class JWTSignerTest {
     public void shouldSignEmpty() throws Exception {
         HashMap<String, Object> claims = new HashMap<String, Object>();
         String token = signer.sign(claims);
-        assertEquals("eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.e30.22wExCVEVtV1rZU51TB9W64deZc_ZN7mc_Z1Yq0dmo0", token);
+        assertEquals("eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.e30.86pkOAQxvnSDd91EThNNpOTbO-hbvxdssnFjQqT04NU", token);
     }
 
     @Test
     public void shouldSignEmptyTwoParams() throws Exception {
         HashMap<String, Object> claims = new HashMap<String, Object>();
         String token = signer.sign(claims);
-        assertEquals("eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.e30.22wExCVEVtV1rZU51TB9W64deZc_ZN7mc_Z1Yq0dmo0", token);
+        assertEquals("eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.e30.86pkOAQxvnSDd91EThNNpOTbO-hbvxdssnFjQqT04NU", token);
     }
     
     @Test
@@ -31,7 +31,7 @@ public class JWTSignerTest {
         HashMap<String, Object> claims = new HashMap<String, Object>();
         claims.put("iss", "foo");
         String token = signer.sign(claims);
-        assertEquals("eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJpc3MiOiJmb28ifQ.7VNaEEPhOiEXfEgPrxkFFhQCAxl9X3F20sq9KVaVtJM", token);
+        assertEquals("eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJmb28ifQ.UbvkKJx4ubG9SQYs3Hpe6FJl1ix89jSLw0I9GNTnLgY", token);
     }
     
     @Test
@@ -39,7 +39,7 @@ public class JWTSignerTest {
         HashMap<String, Object> claims = new HashMap<String, Object>();
         claims.put("sub", "http://foo");
         String token = signer.sign(claims);
-        assertEquals("eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJzdWIiOiJodHRwOi8vZm9vIn0.GYhCLgXYbAXp2Lr8T2yif7ylBVK1XZFkO8hEBa8WP8U", token);
+        assertEquals("eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJodHRwOi8vZm9vIn0.EaYoTXJWUNd_1tWfZo4EZoKUP8hVMJm1LHBQNo4Xfwg", token);
     }
     
     @Test
@@ -47,7 +47,7 @@ public class JWTSignerTest {
         HashMap<String, Object> claims = new HashMap<String, Object>();
         claims.put("aud", "");
         String token = signer.sign(claims);
-        assertEquals("eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJhdWQiOiIifQ.qobL4k5su7O7ssfCr7drTScIhWjheIc9uxipkR9MC0A", token);
+        assertEquals("eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIifQ.T2EKheH_WVVwybctic8Sqk89miYVKADW0AeXOicDbz8", token);
     }
     
     @Test
@@ -58,7 +58,7 @@ public class JWTSignerTest {
         aud.add("ftp://foo");
         claims.put("aud", aud);
         String token = signer.sign(claims);
-        assertEquals("eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJhdWQiOlsieHl6IiwiZnRwOi8vZm9vIl19.xL_8PVO_8isoFSud1Nlqi8rA3jvdD5zALN3tjcQ0vbk", token);
+        assertEquals("eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOlsieHl6IiwiZnRwOi8vZm9vIl19.WGpsdOnLJ2k7Rr4WeEuabHO4wNQIhJfPMZot1DrTUgA", token);
     }
     
     @Test
@@ -66,7 +66,7 @@ public class JWTSignerTest {
         HashMap<String, Object> claims = new HashMap<String, Object>();
         claims.put("exp", 123);
         String token = signer.sign(claims);
-        assertEquals("eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJleHAiOjEyM30.1pI_TNQDCsKc3IEVX_2fcAKJmJZ8j3hhOfAvAdqKE0s", token);
+        assertEquals("eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjEyM30.FzAXEHf0LVQPOyRQFftA1VBAj8RmZGEfwQIPSfg_DUg", token);
     }
 
     @Test
@@ -74,7 +74,7 @@ public class JWTSignerTest {
         HashMap<String, Object> claims = new HashMap<String, Object>();
         claims.put("nbf", 0);
         String token = signer.sign(claims);
-        assertEquals("eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJuYmYiOjB9.uxwAmWxxPZwGRgfiXOHGxrXmxgay6tv93Pyiya3O5dE", token);
+        assertEquals("eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYmYiOjB9.ChHEHjtyr4qOUMu6KDsa2BjGXtkGurboD5ljr99gVzw", token);
     }
     
     @Test
@@ -82,7 +82,7 @@ public class JWTSignerTest {
         HashMap<String, Object> claims = new HashMap<String, Object>();
         claims.put("iat", Long.MAX_VALUE);
         String token = signer.sign(claims);
-        assertEquals("eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJpYXQiOjkyMjMzNzIwMzY4NTQ3NzU4MDd9.nsfMBVmmDR0u1tVN54UzHDZL2wylDA50YjzN2WxZEsU", token);
+        assertEquals("eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjkyMjMzNzIwMzY4NTQ3NzU4MDd9.7yrsheXoAuqk5hDcbKmT3l6aDNNr7RMnbVe6kVkvv4M", token);
     }
     
     @Test
@@ -90,7 +90,7 @@ public class JWTSignerTest {
         HashMap<String, Object> claims = new HashMap<String, Object>();
         claims.put("jti", "foo");
         String token = signer.sign(claims);
-        assertEquals("eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJqdGkiOiJmb28ifQ.6X8nx7sLNxdc4mYNL__gd0ab-m8QfheVHT2Y_2DQJMU", token);
+        assertEquals("eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJqdGkiOiJmb28ifQ.CriA-W8LKO4bCxy3e2Nu7kx2MxgcHGyFu_GVLMX3bko", token);
     }
     
     @Test
@@ -100,7 +100,7 @@ public class JWTSignerTest {
             claims.put(claimName, null);
         }
         String token = signer.sign(claims);
-        assertEquals("eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.e30.22wExCVEVtV1rZU51TB9W64deZc_ZN7mc_Z1Yq0dmo0", token);
+        assertEquals("eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.e30.86pkOAQxvnSDd91EThNNpOTbO-hbvxdssnFjQqT04NU", token);
     }
     
     @Test(expected = Exception.class)
@@ -163,7 +163,7 @@ public class JWTSignerTest {
     public void shouldOptionsNone() throws Exception {
         HashMap<String, Object> claims = new HashMap<String, Object>();
         String token = signer.sign(claims, new JWTSigner.Options());
-        assertEquals("eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.e30.22wExCVEVtV1rZU51TB9W64deZc_ZN7mc_Z1Yq0dmo0", token);
+        assertEquals("eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.e30.86pkOAQxvnSDd91EThNNpOTbO-hbvxdssnFjQqT04NU", token);
     }
     
     @Test
@@ -179,7 +179,7 @@ public class JWTSignerTest {
         HashMap<String, Object> claims = new HashMap<String, Object>();
         String token = signer.sign(claims,
                 new JWTSigner.Options().setAlgorithm(Algorithm.HS512));
-        assertEquals("eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFM1MTIifQ.e30.gH4cjvHOMA2QcZjwSqO-VZ4tyah8hDMVqUGAOth7vBWweOIzCwohpOlpLoRCKeDD3PyMqE1gwHqGuWDk2VuYmQ", token);
+        assertEquals("eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.e30.11MgCe-_uiheyy_kARCwhSZbeq3IkMn40GLQkczQ4Bjn_lkCYfSeqz0HeeYpitksiQ2bW47N0oGKCOYOlmQPyg", token);
     }
 
 }
