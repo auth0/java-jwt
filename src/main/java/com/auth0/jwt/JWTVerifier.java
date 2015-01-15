@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.security.InvalidKeyException;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
 import java.util.ArrayList;
@@ -118,7 +119,7 @@ public class JWTVerifier {
         hmac.init(new SecretKeySpec(secret, algorithm));
         byte[] sig = hmac.doFinal(new StringBuilder(pieces[0]).append(".").append(pieces[1]).toString().getBytes());
 
-        if (!Arrays.equals(sig, decoder.decodeBase64(pieces[2]))) {
+        if (!MessageDigest.isEqual(sig, decoder.decodeBase64(pieces[2]))) {
             throw new SignatureException("signature verification failed");
         }
     }
