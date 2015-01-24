@@ -26,9 +26,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  * No support for RSA encryption at present
  */
 public class JWTSigner {
-    private final byte[] secret;
+    private final String secret;
 
-    public JWTSigner(byte[] secret) {
+    public JWTSigner(String secret) {
         this.secret = secret;
     }
 
@@ -216,7 +216,7 @@ public class JWTSigner {
     /**
      * Switch the signing algorithm based on input, RSA not supported
      */
-    private static byte[] sign(Algorithm algorithm, String msg, byte[] secret) throws Exception {
+    private static byte[] sign(Algorithm algorithm, String msg, String secret) throws Exception {
         switch (algorithm) {
         case HS256:
         case HS384:
@@ -233,9 +233,9 @@ public class JWTSigner {
     /**
      * Sign an input string using HMAC and return the encrypted bytes
      */
-    private static byte[] signHmac(Algorithm algorithm, String msg, byte[] secret) throws Exception {
+    private static byte[] signHmac(Algorithm algorithm, String msg, String secret) throws Exception {
         Mac mac = Mac.getInstance(algorithm.getValue());
-        mac.init(new SecretKeySpec(secret, algorithm.getValue()));
+        mac.init(new SecretKeySpec(secret.getBytes(), algorithm.getValue()));
         return mac.doFinal(msg.getBytes());
     }
 
