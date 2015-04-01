@@ -15,11 +15,8 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import javax.naming.OperationNotSupportedException;
 
+import jodd.json.JsonSerializer;
 import org.apache.commons.codec.binary.Base64;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * JwtSigner implementation based on the Ruby implementation from http://jwt.io
@@ -89,11 +86,11 @@ public class JWTSigner {
         }
 
         // create the header
-        ObjectNode header = JsonNodeFactory.instance.objectNode();
+        Map<String, String> header = new HashMap<String, String>();
         header.put("typ", "JWT");
         header.put("alg", algorithm.name());
 
-        return base64UrlEncode(header.toString().getBytes("UTF-8"));
+        return base64UrlEncode(new JsonSerializer().serialize(header).getBytes("UTF-8"));
     }
 
     /**
@@ -113,7 +110,7 @@ public class JWTSigner {
         if (options != null)
             processPayloadOptions(claims, options);
 
-        String payload = new ObjectMapper().writeValueAsString(claims);
+        String payload = new JsonSerializer().deep(true).serialize(claims);
         return base64UrlEncode(payload.getBytes("UTF-8"));
     }
 

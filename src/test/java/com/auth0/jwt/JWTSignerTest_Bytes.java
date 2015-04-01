@@ -38,7 +38,7 @@ public class JWTSignerTest_Bytes {
         HashMap<String, Object> claims = new HashMap<String, Object>();
         claims.put("sub", "http://foo");
         String token = signer.sign(claims);
-        assertEquals("eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJodHRwOi8vZm9vIn0.EaYoTXJWUNd_1tWfZo4EZoKUP8hVMJm1LHBQNo4Xfwg", token);
+        assertEquals("eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJodHRwOlwvXC9mb28ifQ.JC0PF0tuFXlPzZ2wPGDKLRwg6seFGyVJ-g4mbgNA6E4", token);
     }
     
     @Test
@@ -57,7 +57,7 @@ public class JWTSignerTest_Bytes {
         aud.add("ftp://foo");
         claims.put("aud", aud);
         String token = signer.sign(claims);
-        assertEquals("eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOlsieHl6IiwiZnRwOi8vZm9vIl19.WGpsdOnLJ2k7Rr4WeEuabHO4wNQIhJfPMZot1DrTUgA", token);
+        assertEquals("eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOlsieHl6IiwiZnRwOlwvXC9mb28iXX0.WcxlzyTdNxy2QH5cDejJIY2D5wzw8FRCHpN8kvCPo94", token);
     }
     
     @Test
