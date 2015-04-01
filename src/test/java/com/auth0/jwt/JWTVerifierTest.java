@@ -1,15 +1,15 @@
 package com.auth0.jwt;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import jodd.json.JsonParser;
 import org.apache.commons.codec.binary.Base64;
 import org.junit.Test;
 
 import java.security.SignatureException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
@@ -50,7 +50,7 @@ public class JWTVerifierTest {
 
     @Test(expected = IllegalStateException.class)
     public void shouldFailIfAlgorithmIsNotSetOnToken() throws Exception {
-        new JWTVerifier("such secret").getAlgorithm(JsonNodeFactory.instance.objectNode());
+        new JWTVerifier("such secret").getAlgorithm(Collections.<String, Object>emptyMap());
     }
 
     @Test(expected = IllegalStateException.class)
@@ -115,7 +115,7 @@ public class JWTVerifierTest {
     @Test
     public void shouldVerifyIssuerWhenNotFoundInClaimsSet() throws Exception {
         new JWTVerifier("such secret", "amaze audience", "very issuer")
-                .verifyIssuer(JsonNodeFactory.instance.objectNode());
+                .verifyIssuer(Collections.<String, Object>emptyMap());
     }
 
     @Test
@@ -133,7 +133,7 @@ public class JWTVerifierTest {
     @Test
     public void shouldVerifyAudienceWhenNotFoundInClaimsSet() throws Exception {
         new JWTVerifier("such secret", "amaze audience")
-                .verifyAudience(JsonNodeFactory.instance.objectNode());
+                .verifyAudience(Collections.<String, Object>emptyMap());
     }
 
     @Test
@@ -146,14 +146,14 @@ public class JWTVerifierTest {
     public void shouldVerifyArrayAudience() throws Exception {
         new JWTVerifier("such secret", "amaze audience")
                 .verifyAudience(createSingletonJSONNode("aud",
-                        new ObjectMapper().readValue("[ \"foo\", \"amaze audience\" ]", ArrayNode.class)));
+                        new JsonParser().parse("[ \"foo\", \"amaze audience\" ]", List.class)));
     }
     
     @Test(expected = JWTAudienceException.class)
     public void shouldFailArrayAudience() throws Exception {
         new JWTVerifier("such secret", "amaze audience")
                 .verifyAudience(createSingletonJSONNode("aud",
-                        new ObjectMapper().readValue("[ \"foo\" ]", ArrayNode.class)));
+                        new JsonParser().parse("[ \"foo\" ]", List.class)));
     }
     
     @Test
@@ -162,22 +162,22 @@ public class JWTVerifierTest {
         final String encodedJSON = new String(encoder.encode("{\"some\": \"json\", \"number\": 123}".getBytes()));
         final JWTVerifier jwtVerifier = new JWTVerifier("secret", "audience");
 
-        final JsonNode decodedJSON = jwtVerifier.decodeAndParse(encodedJSON);
+        final Map<String, Object> decodedJSON = jwtVerifier.decodeAndParse(encodedJSON);
 
-        assertEquals("json", decodedJSON.get("some").asText());
+        assertEquals("json", decodedJSON.get("some").toString());
         assertEquals(null, decodedJSON.get("unexisting_property"));
-        assertEquals("123", decodedJSON.get("number").asText());
+        assertEquals("123", decodedJSON.get("number").toString());
     }
 
 
-    public static JsonNode createSingletonJSONNode(String key, String value) {
-        final ObjectNode jsonNodes = JsonNodeFactory.instance.objectNode();
-        jsonNodes.put(key, value);
-        return jsonNodes;
+    public static Map<String, Object> createSingletonJSONNode(String key, String value) {
+        Map<String, Object> node = new HashMap<String, Object>();
+        node.put(key, value);
+        return node;
     }
 
-    public static JsonNode createSingletonJSONNode(String key, JsonNode value) {
-        final ObjectNode jsonNodes = JsonNodeFactory.instance.objectNode();
+    public static Map<String, Object> createSingletonJSONNode(String key, Object value) {
+        final Map<String, Object> jsonNodes = new HashMap<String, Object>();
         jsonNodes.put(key, value);
         return jsonNodes;
     }
