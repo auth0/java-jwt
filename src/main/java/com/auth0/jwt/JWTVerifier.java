@@ -1,24 +1,21 @@
 package com.auth0.jwt;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import org.apache.commons.codec.binary.Base64;
-
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+
+import org.apache.commons.codec.binary.Base64;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * JWT Java Implementation
@@ -27,17 +24,19 @@ import java.util.Map;
  */
 public class JWTVerifier {
 
+	public static final Charset UTF_8 = Charset.forName("UTF-8");
+	
     private final byte[] secret;
     private final String audience;
     private final String issuer;
-    private final Base64 decoder = new Base64(true);;
+    private final Base64 decoder = new Base64(true);
 
     private final ObjectMapper mapper;
 
     private Map<String, String> algorithms;
 
     public JWTVerifier(String secret, String audience, String issuer) {
-        this(secret.getBytes(Charset.forName("UTF-8")), audience, issuer);
+        this(secret.getBytes(UTF_8), audience, issuer);
     }
 
     public JWTVerifier(String secret, String audience) {
@@ -117,7 +116,7 @@ public class JWTVerifier {
     void verifySignature(String[] pieces, String algorithm) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
         Mac hmac = Mac.getInstance(algorithm);
         hmac.init(new SecretKeySpec(secret, algorithm));
-        byte[] sig = hmac.doFinal(new StringBuilder(pieces[0]).append(".").append(pieces[1]).toString().getBytes());
+        byte[] sig = hmac.doFinal(new StringBuilder(pieces[0]).append(".").append(pieces[1]).toString().getBytes(UTF_8));
 
         if (!MessageDigest.isEqual(sig, decoder.decodeBase64(pieces[2]))) {
             throw new SignatureException("signature verification failed");
@@ -173,7 +172,7 @@ public class JWTVerifier {
     }
 
     JsonNode decodeAndParse(String b64String) throws IOException {
-        String jsonString = new String(decoder.decodeBase64(b64String), "UTF-8");
+        String jsonString = new String(decoder.decodeBase64(b64String), UTF_8);
         JsonNode jwtHeader = mapper.readValue(jsonString, JsonNode.class);
         return jwtHeader;
     }

@@ -3,6 +3,7 @@ package com.auth0.jwt;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -26,10 +27,13 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  * No support for RSA encryption at present
  */
 public class JWTSigner {
+	
+	public static final Charset UTF_8 = Charset.forName("UTF-8");
+	
     private final byte[] secret;
 
     public JWTSigner(String secret) {
-        this(secret.getBytes());
+        this(secret.getBytes(UTF_8));
     }
 
     public JWTSigner(byte[] secret) {
@@ -93,7 +97,7 @@ public class JWTSigner {
         header.put("typ", "JWT");
         header.put("alg", algorithm.name());
 
-        return base64UrlEncode(header.toString().getBytes("UTF-8"));
+        return base64UrlEncode(header.toString().getBytes(UTF_8));
     }
 
     /**
@@ -114,7 +118,7 @@ public class JWTSigner {
             processPayloadOptions(claims, options);
 
         String payload = new ObjectMapper().writeValueAsString(claims);
-        return base64UrlEncode(payload.getBytes("UTF-8"));
+        return base64UrlEncode(payload.getBytes(UTF_8));
     }
 
     private void processPayloadOptions(Map<String, Object> claims, Options options) {
@@ -214,7 +218,7 @@ public class JWTSigner {
      * Safe URL encode a byte array to a String
      */
     private String base64UrlEncode(byte[] str) {
-        return new String(Base64.encodeBase64URLSafe(str));
+        return new String(Base64.encodeBase64URLSafe(str), UTF_8);
     }
 
     /**
@@ -240,7 +244,7 @@ public class JWTSigner {
     private static byte[] signHmac(Algorithm algorithm, String msg, byte[] secret) throws Exception {
         Mac mac = Mac.getInstance(algorithm.getValue());
         mac.init(new SecretKeySpec(secret, algorithm.getValue()));
-        return mac.doFinal(msg.getBytes());
+        return mac.doFinal(msg.getBytes(UTF_8));
     }
 
     private String join(List<String> input, String on) {
