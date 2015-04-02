@@ -27,14 +27,20 @@ import java.util.Map;
  */
 public class JWTVerifier {
 
+    private static final ObjectMapper mapper = new ObjectMapper();
+
+    private static final Map<String, String> algorithms = new HashMap<String,String>(3);
+    
+    static {
+        algorithms.put("HS256", "HmacSHA256");
+        algorithms.put("HS384", "HmacSHA384");
+        algorithms.put("HS512", "HmacSHA512");
+    }
+
     private final byte[] secret;
     private final String audience;
     private final String issuer;
-    private final Base64 decoder = new Base64(true);;
-
-    private final ObjectMapper mapper;
-
-    private Map<String, String> algorithms;
+    private final Base64 decoder = new Base64(true);
 
     public JWTVerifier(String secret, String audience, String issuer) {
         this(secret.getBytes(Charset.forName("UTF-8")), audience, issuer);
@@ -52,13 +58,6 @@ public class JWTVerifier {
         if (secret == null || secret.length == 0) {
             throw new IllegalArgumentException("Secret cannot be null or empty");
         }
-
-    	mapper = new ObjectMapper();
-
-        algorithms = new HashMap<String, String>();
-        algorithms.put("HS256", "HmacSHA256");
-        algorithms.put("HS384", "HmacSHA384");
-        algorithms.put("HS512", "HmacSHA512");
 
         this.secret = secret;
         this.audience = audience;
