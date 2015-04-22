@@ -3,8 +3,6 @@ package com.auth0.jwt;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import org.apache.commons.codec.binary.Base64;
-
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
@@ -30,7 +28,7 @@ public class JWTVerifier {
     private final byte[] secret;
     private final String audience;
     private final String issuer;
-    private final Base64 decoder = new Base64(true);;
+    private final Base64 decoder = new Base64();;
 
     private final ObjectMapper mapper;
 
