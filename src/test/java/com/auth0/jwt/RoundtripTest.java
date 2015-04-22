@@ -97,15 +97,17 @@ public class RoundtripTest {
     @Test
     public void shouldOptionsIat() throws Exception {
         HashMap<String, Object> claims = new HashMap<String, Object>();
-        String token = signer.sign(claims,
-                new JWTSigner.Options().setIssuedAt(true));
+        long before = System.currentTimeMillis();
+        String token = signer.sign(claims, new JWTSigner.Options().setIssuedAt(true));
+        long after = System.currentTimeMillis();
         Map<String, Object> decoded = verifier.verify(token);
+
         assertEquals(decoded.size(), 1);
         long iat = ((Number) decoded.get("iat")).longValue();
-        assertTrue(iat >= System.currentTimeMillis() / 1000l);
-        assertTrue(iat < System.currentTimeMillis() / 1000l + 10);
+        assertTrue(iat >= before / 1000l);
+        assertTrue(iat <= after / 1000l);
     }
-    
+
     @Test
     public void shouldOptionsTimestamps() throws Exception {
         HashMap<String, Object> claims = new HashMap<String, Object>();
