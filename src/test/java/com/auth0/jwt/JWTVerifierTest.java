@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import org.apache.commons.codec.binary.Base64;
 import org.junit.Test;
 
 import java.security.SignatureException;
@@ -14,10 +13,7 @@ import java.security.SignatureException;
 import static org.junit.Assert.assertEquals;
 
 public class JWTVerifierTest {
-	
-	private static final Base64 decoder = new Base64(true);;
 
-    
 	@Test(expected = IllegalArgumentException.class)
     public void constructorShouldFailOnEmptySecret() {
         new JWTVerifier("");
@@ -83,7 +79,7 @@ public class JWTVerifierTest {
                 "cGxlLmNvbS9pc19yb290Ijp0cnVlfQ" +
                 "." +
                 "dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk";
-        byte[] secret = decoder.decodeBase64("AyM1SysPpbyDfgZld3umj1qzKObwVMkoqQ-EstJQLr_T-1qS0gZH75aKtMN3Yj0iPS4hcgUuTwjAzZr1Z9CAow");
+        byte[] secret = Base64.decodeBase64("AyM1SysPpbyDfgZld3umj1qzKObwVMkoqQ-EstJQLr_T-1qS0gZH75aKtMN3Yj0iPS4hcgUuTwjAzZr1Z9CAow");
         new JWTVerifier(secret, "audience")
                 .verifySignature(jws.split("\\."), "HmacSHA256");
     }
@@ -158,8 +154,7 @@ public class JWTVerifierTest {
     
     @Test
     public void decodeAndParse() throws Exception {
-        final Base64 encoder = new Base64(true);
-        final String encodedJSON = new String(encoder.encode("{\"some\": \"json\", \"number\": 123}".getBytes()));
+        final String encodedJSON = Base64.encodeBase64URLSafe("{\"some\": \"json\", \"number\": 123}".getBytes());
         final JWTVerifier jwtVerifier = new JWTVerifier("secret", "audience");
 
         final JsonNode decodedJSON = jwtVerifier.decodeAndParse(encodedJSON);

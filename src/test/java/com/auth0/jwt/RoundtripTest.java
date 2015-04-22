@@ -7,7 +7,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.codec.binary.Base64;
 import org.junit.Test;
 
 /**
@@ -105,7 +104,7 @@ public class RoundtripTest {
         assertTrue(iat >= System.currentTimeMillis() / 1000l);
         assertTrue(iat < System.currentTimeMillis() / 1000l + 10);
     }
-    
+
     @Test
     public void shouldOptionsTimestamps() throws Exception {
         HashMap<String, Object> claims = new HashMap<String, Object>();
