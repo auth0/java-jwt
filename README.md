@@ -3,13 +3,18 @@
 An implementation of [JSON Web Tokens](http://self-issued.info/docs/draft-ietf-oauth-json-web-token.html) developed against `draft-ietf-oauth-json-web-token-08`.
 
 ### Usage
+Note for Auth0 users:
+By default, Auth0's CLIENT_SECRET is base64-encoded.
+To work with JWTVerifier, it must be decoded first.
 
 ```java
 public class Application {
     public static void main (String [] args) {
         try {
+            Base64 decoder = new Base64(true);
+            byte[] secret = decoder.decodeBase64(CLIENT_SECRET);
             Map<String,Object> decodedPayload =
-                new JWTVerifier("secret", "audience").verify("my-token");
+                new JWTVerifier(secret, "audience").verify("my-token");
                 
             // Get custom fields from decoded Payload
             System.out.println(decodedPayload.get("name"));
@@ -30,7 +35,7 @@ Yes, here you are:
 <dependency>
     <groupId>com.auth0</groupId>
     <artifactId>java-jwt</artifactId>
-    <version>2.0.1</version>
+    <version>2.1.0</version>
 </dependency>
 ```
 
