@@ -106,7 +106,7 @@ public class JWTSigner {
         enforceStringOrURI(claims, "sub");
         enforceStringOrURICollection(claims, "aud");
         enforceIntDate(claims, "exp");
-        enforceIntDate(claims, "nbf");
+        enforceIntDate(claims, Claim.NOTBEFORE.getValue());
         enforceIntDate(claims, "iat");
         enforceString(claims, "jti");
 
@@ -122,7 +122,7 @@ public class JWTSigner {
         if (options.expirySeconds != null)
             claims.put("exp", now + options.expirySeconds);
         if (options.notValidBeforeLeeway != null)
-            claims.put("nbf", now - options.notValidBeforeLeeway);
+            claims.put(Claim.NOTBEFORE.getValue(), now - options.notValidBeforeLeeway);
         if (options.isIssuedAt())
             claims.put("iat", now);
         if (options.isJwtId())

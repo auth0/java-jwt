@@ -12,6 +12,7 @@ import java.util.Map;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
+import com.auth0.jwt.exception.JWTNotBeforeException;
 import org.apache.commons.codec.binary.Base64;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -105,6 +106,7 @@ public class JWTVerifier {
 
         // additional JWTClaims checks
         verifyExpiration(jwtPayload);
+        verifyNotBefore(jwtPayload);
         verifyIssuer(jwtPayload);
         verifyAudience(jwtPayload);
 
@@ -126,6 +128,14 @@ public class JWTVerifier {
 
         if (expiration != 0 && System.currentTimeMillis() / 1000L >= expiration) {
             throw new JWTExpiredException("jwt expired", expiration);
+        }
+    }
+
+    void verifyNotBefore(JsonNode jwtClaims) throws JWTNotBeforeException {
+        final long expiration = jwtClaims.has(Claim.NOTBEFORE.getValue()) ? jwtClaims.get(Claim.NOTBEFORE.getValue()).asLong(0) : 0;
+
+        if (expiration != 0 && System.currentTimeMillis() / 1000L < expiration) {
+            throw new JWTNotBeforeException("jwt is before expected timestamp", expiration);
         }
     }
 
