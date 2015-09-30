@@ -11,8 +11,6 @@ import org.apache.commons.codec.binary.Base64;
 import org.junit.Test;
 
 import java.security.SignatureException;
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
