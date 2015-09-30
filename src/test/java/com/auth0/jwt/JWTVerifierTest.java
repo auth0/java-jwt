@@ -1,5 +1,6 @@
 package com.auth0.jwt;
 
+import com.auth0.jwt.exception.JWTNotBeforeException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -14,11 +15,12 @@ import java.security.SignatureException;
 import static org.junit.Assert.assertEquals;
 
 public class JWTVerifierTest {
-	
-	private static final Base64 decoder = new Base64(true);;
 
-    
-	@Test(expected = IllegalArgumentException.class)
+    private static final Base64 decoder = new Base64(true);;
+    public static final java.lang.String SECRET_KEY = "such secret";
+
+
+    @Test(expected = IllegalArgumentException.class)
     public void constructorShouldFailOnEmptySecret() {
         new JWTVerifier("");
     }
@@ -98,6 +100,18 @@ public class JWTVerifierTest {
     public void shouldVerifyExpiration() throws Exception {
         new JWTVerifier("such secret").verifyExpiration(
                 createSingletonJSONNode("exp", Long.toString(System.currentTimeMillis() / 1000L + 50L)));
+    }
+
+    @Test(expected = JWTNotBeforeException.class)
+    public void shouldFailWhen1SecondBeforeNotBefore() throws Exception {
+        new JWTVerifier(SECRET_KEY).verifyNotBefore(
+                createSingletonJSONNode(Claim.NOTBEFORE.getValue(), Long.toString(System.currentTimeMillis() / 1000L + 1L)));
+    }
+
+    @Test
+    public void shouldVerifyNotBefore() throws Exception {
+        new JWTVerifier(SECRET_KEY).verifyNotBefore(
+                createSingletonJSONNode(Claim.NOTBEFORE.getValue(), Long.toString(System.currentTimeMillis() / 1000L - 50L)));
     }
 
     @Test
