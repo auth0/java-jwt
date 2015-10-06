@@ -171,7 +171,6 @@ public class JWTVerifier {
 
     JsonNode decodeAndParse(String b64String) throws IOException {
         String jsonString = new String(decoder.decode(b64String), "UTF-8");
-        JsonNode jwtHeader = mapper.readValue(jsonString, JsonNode.class);
-        return jwtHeader;
+        return mapper.readValue(jsonString, JsonNode.class);
     }
 }
