@@ -2,6 +2,7 @@ package com.auth0.jwt;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.lang.IllegalArgumentException;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -78,9 +79,12 @@ public class JWTVerifier {
      * @throws JWTVerifyException    when expiration, issuer or audience are invalid
      * @throws IllegalStateException when token's structure is invalid
      */
-    public Map<String, Object> verify(String token)
+    public Map<String, Object> verify(String token, Algorithm verifyAlg)
             throws NoSuchAlgorithmException, InvalidKeyException, IllegalStateException,
-            IOException, SignatureException, JWTVerifyException {
+            IllegalArgumentException, IOException, SignatureException, JWTVerifyException {
+    	if (verifyAlg == null || "".equals(verifyAlg.getValue())) {
+    		throw new IllegalArgumentException("The verification algorithm is not passed");
+    	}
         if (token == null || "".equals(token)) {
             throw new IllegalStateException("token not set");
         }
@@ -97,6 +101,10 @@ public class JWTVerifier {
 
         String algorithm = getAlgorithm(jwtHeader);
 
+        // Enforce the header has the expected algorithm 
+        if (!algorithm.equals(verifyAlg.getValue())) {
+        	throw new JWTVerifyException("Token with invalid algorithm");
+        }
         // get JWTClaims JSON object
         JsonNode jwtPayload = decodeAndParse(pieces[1]);
 

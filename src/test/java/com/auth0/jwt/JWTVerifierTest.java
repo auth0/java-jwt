@@ -25,27 +25,27 @@ public class JWTVerifierTest {
 
     @Test(expected = IllegalStateException.class)
     public void shouldFailOn1Segments() throws Exception {
-        new JWTVerifier("such secret").verify("crypto");
+        new JWTVerifier("such secret").verify("crypto", Algorithm.RS256);
     }
 
     @Test(expected = IllegalStateException.class)
     public void shouldFailOn2Segments() throws Exception {
-        new JWTVerifier("such secret").verify("much.crypto");
+        new JWTVerifier("such secret").verify("much.crypto", Algorithm.HS256);
     }
 
     @Test(expected = IllegalStateException.class)
     public void shouldFailOn4Segments() throws Exception {
-        new JWTVerifier("such secret").verify("much.crypto.so.token");
+        new JWTVerifier("such secret").verify("much.crypto.so.token", Algorithm.HS256);
     }
 
     @Test(expected = IllegalStateException.class)
     public void shouldFailOnEmptyStringToken() throws Exception {
-        new JWTVerifier("such secret").verify("");
+        new JWTVerifier("such secret").verify("", Algorithm.HS256);
     }
 
     @Test(expected = IllegalStateException.class)
     public void shouldFailOnNullToken() throws Exception {
-        new JWTVerifier("such secret").verify(null);
+        new JWTVerifier("such secret").verify(null, Algorithm.HS256);
     }
 
     @Test(expected = IllegalStateException.class)
