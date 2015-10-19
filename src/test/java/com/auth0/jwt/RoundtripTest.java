@@ -30,7 +30,7 @@ public class RoundtripTest {
     public void shouldEmpty() throws Exception {
         HashMap<String, Object> claims = new HashMap<String, Object>();
         String token = signer.sign(claims);
-        Map<String, Object> decoded = verifier.verify(token);
+        Map<String, Object> decoded = verifier.verify(token, Algorithm.HS256);
         assertEquals(claims, decoded);
     }
     
@@ -39,7 +39,7 @@ public class RoundtripTest {
         HashMap<String, Object> claims = new HashMap<String, Object>();
         claims.put("foo", "bar");
         String token = signer.sign(claims);
-        Map<String, Object> decoded = verifier.verify(token);
+        Map<String, Object> decoded = verifier.verify(token, Algorithm.HS256);
         assertEquals(claims, decoded);
     }
 
@@ -48,7 +48,7 @@ public class RoundtripTest {
         HashMap<String, Object> claims = new HashMap<String, Object>();
         claims.put("foo", (short) -10);
         String token = signer.sign(claims);
-        Map<String, Object> decoded = verifier.verify(token);
+        Map<String, Object> decoded = verifier.verify(token, Algorithm.HS256);
         Number fooValue = (Number) decoded.get("foo");
         decoded.put("foo", fooValue.shortValue());
         assertEquals(claims, decoded);
@@ -59,7 +59,7 @@ public class RoundtripTest {
         HashMap<String, Object> claims = new HashMap<String, Object>();
         claims.put("foo", Long.MAX_VALUE);
         String token = signer.sign(claims);
-        Map<String, Object> decoded = verifier.verify(token);
+        Map<String, Object> decoded = verifier.verify(token, Algorithm.HS256);
         assertEquals(claims, decoded);
     }
     
@@ -71,7 +71,7 @@ public class RoundtripTest {
         user.setPassword("bar");
         claims.put("user", user);
         String token = signer.sign(claims);
-        Map<String, Object> decoded = verifier.verify(token);
+        Map<String, Object> decoded = verifier.verify(token, Algorithm.HS256);
         HashMap<String, String> expectedUser = new HashMap<String, String>();
         expectedUser.put("username", "foo");
         expectedUser.put("password", "bar");
@@ -86,7 +86,7 @@ public class RoundtripTest {
         claims.put("foo", true);
         claims.put("bar", false);
         String token = signer.sign(claims);
-        Map<String, Object> decoded = verifier.verify(token);
+        Map<String, Object> decoded = verifier.verify(token, Algorithm.HS256);
         assertEquals(claims, decoded);
     }
 
@@ -100,7 +100,7 @@ public class RoundtripTest {
         long before = System.currentTimeMillis();
         String token = signer.sign(claims, new JWTSigner.Options().setIssuedAt(true));
         long after = System.currentTimeMillis();
-        Map<String, Object> decoded = verifier.verify(token);
+        Map<String, Object> decoded = verifier.verify(token, Algorithm.HS256);
 
         assertEquals(decoded.size(), 1);
         long iat = ((Number) decoded.get("iat")).longValue();
@@ -114,7 +114,7 @@ public class RoundtripTest {
         String token = signer.sign(claims,
                 new JWTSigner.Options()
         .setExpirySeconds(50).setNotValidBeforeLeeway(10).setIssuedAt(true));
-        Map<String, Object> decoded = verifier.verify(token);
+        Map<String, Object> decoded = verifier.verify(token, Algorithm.HS256);
         assertEquals(decoded.size(), 3);
         long iat = ((Number) decoded.get("iat")).longValue();
         long exp = ((Number) decoded.get("exp")).longValue();
@@ -128,7 +128,7 @@ public class RoundtripTest {
         HashMap<String, Object> claims = new HashMap<String, Object>();
         String token = signer.sign(claims,
                 new JWTSigner.Options().setJwtId(true));
-        Map<String, Object> decoded = verifier.verify(token);
+        Map<String, Object> decoded = verifier.verify(token, Algorithm.HS256);
         assertEquals(decoded.size(), 1);
         assertEquals(((String) decoded.get("jti")).length(), 36);
     }

@@ -14,7 +14,7 @@ public class Application {
             Base64 decoder = new Base64(true);
             byte[] secret = decoder.decodeBase64(CLIENT_SECRET);
             Map<String,Object> decodedPayload =
-                new JWTVerifier(secret, "audience").verify("my-token");
+                new JWTVerifier(secret, "audience").verify("my-token", Algorithm.HS256);
                 
             // Get custom fields from decoded Payload
             System.out.println(decodedPayload.get("name"));
