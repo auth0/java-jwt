@@ -1,30 +1,31 @@
 package com.auth0.jwt;
 
-import com.fasterxml.jackson.databind.JsonNode;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 public class JWTAudienceException extends JWTVerifyException {
-    private JsonNode audienceNode;
+    private Object audienceNode;
 
-    public JWTAudienceException(JsonNode audienceNode) {
+    public JWTAudienceException(Object audienceNode) {
         this.audienceNode = audienceNode;
     }
 
-    public JWTAudienceException(String message, JsonNode audienceNode) {
+    public JWTAudienceException(String message, Object audienceNode) {
         super(message);
         this.audienceNode = audienceNode;
     }
 
     public List<String> getAudience() {
-        ArrayList<String> audience = new ArrayList<String>();
-        if (audienceNode.isArray()) {
-            for (JsonNode jsonNode : audienceNode) {
-                audience.add(jsonNode.textValue());
+        ArrayList<String> audience = new ArrayList<>();
+        if (audienceNode instanceof Collection) {
+            for (Object jsonNode : (Collection) audienceNode) {
+                audience.add(jsonNode.toString());
             }
-        } else if (audienceNode.isTextual()) {
-            audience.add(audienceNode.textValue());
+	    } else if (audienceNode instanceof String) {
+            audience.add(audienceNode.toString());
         }
         return audience;
     }

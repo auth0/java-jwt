@@ -16,7 +16,7 @@
   <url>http://www.jwt.io</url>
 
   <properties>
-    <java.version>1.5</java.version>
+    <java.version>1.8</java.version>
     <repackage.base>com.auth0.jwt.internal</repackage.base>
   </properties>
 
@@ -47,14 +47,9 @@
   <dependencies>
     <!-- For JWT parsing-->
     <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-databind</artifactId>
-      <version>2.0.1</version>
-    </dependency>
-    <dependency>
-      <groupId>commons-codec</groupId>
-      <artifactId>commons-codec</artifactId>
-      <version>1.4</version>
+      <groupId>io.fastjson</groupId>
+      <artifactId>boon</artifactId>
+      <version>0.33</version>
     </dependency>
 
     <dependency>
@@ -92,12 +87,8 @@
                 <createDependencyReducedPom>true</createDependencyReducedPom>
                 <relocations>
                   <relocation>
-                    <pattern>com.fasterxml.jackson</pattern>
-                    <shadedPattern>${repackage.base}.com.fasterxml.jackson</shadedPattern>
-                  </relocation>
-                  <relocation>
-                    <pattern>org.apache.commons.codec</pattern>
-                    <shadedPattern>${repackage.base}.org.apache.commons.codec</shadedPattern>
+                    <pattern>org.boon</pattern>
+                    <shadedPattern>${repackage.base}.org.boon</shadedPattern>
                   </relocation>
                 </relocations>
               </configuration>

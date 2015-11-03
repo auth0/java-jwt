@@ -12,10 +12,10 @@ import java.util.Map;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
-import org.apache.commons.codec.binary.Base64;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Base64;
+import java.util.List;
+import org.boon.json.JsonParserAndMapper;
+import org.boon.json.JsonParserFactory;
 
 /**
  * JWT Java Implementation
@@ -27,9 +27,10 @@ public class JWTVerifier {
     private final byte[] secret;
     private final String audience;
     private final String issuer;
-    private final Base64 decoder = new Base64(true);;
+    private final Base64.Decoder decoder = Base64.getUrlDecoder();
+	private final JsonParserAndMapper fastParser = new JsonParserFactory().createFastParser();
 
-    private final ObjectMapper mapper;
+//    private final ObjectMapper mapper;
 
     private Map<String, String> algorithms;
 
@@ -50,7 +51,7 @@ public class JWTVerifier {
             throw new IllegalArgumentException("Secret cannot be null or empty");
         }
 
-    	mapper = new ObjectMapper();
+//    	mapper = new ObjectMapper();
 
         algorithms = new HashMap<String, String>();
         algorithms.put("HS256", "HmacSHA256");
@@ -93,12 +94,12 @@ public class JWTVerifier {
         }
 
         // get JWTHeader JSON object. Extract algorithm
-        JsonNode jwtHeader = decodeAndParse(pieces[0]);
+        Map<String,Object> jwtHeader = decodeAndParse(pieces[0]);
 
         String algorithm = getAlgorithm(jwtHeader);
 
         // get JWTClaims JSON object
-        JsonNode jwtPayload = decodeAndParse(pieces[1]);
+        Map<String,Object> jwtPayload = decodeAndParse(pieces[1]);
 
         // check signature
         verifySignature(pieces, algorithm);
@@ -108,7 +109,7 @@ public class JWTVerifier {
         verifyIssuer(jwtPayload);
         verifyAudience(jwtPayload);
 
-        return mapper.treeToValue(jwtPayload, Map.class);
+        return jwtPayload;
     }
 
     void verifySignature(String[] pieces, String algorithm) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
@@ -121,44 +122,64 @@ public class JWTVerifier {
         }
     }
 
-    void verifyExpiration(JsonNode jwtClaims) throws JWTExpiredException {
-        final long expiration = jwtClaims.has("exp") ? jwtClaims.get("exp").asLong(0) : 0;
-
-        if (expiration != 0 && System.currentTimeMillis() / 1000L >= expiration) {
+    void verifyExpiration(Map<String,Object> jwtClaims) throws JWTExpiredException {
+		if ( jwtClaims.containsKey("exp") == false  ) {
+			return;
+		}
+		Object exp = jwtClaims.get("exp");
+		final long expiration;
+        if ( exp instanceof String ) {
+			expiration = Long.parseLong((String)exp);
+		} else if ( exp instanceof Number ) {
+			expiration = ((Number) exp).longValue();
+		} else {
+			expiration = 0;
+		}
+		if (expiration != 0 && System.currentTimeMillis() / 1000L >= expiration) {
             throw new JWTExpiredException("jwt expired", expiration);
         }
     }
 
-    void verifyIssuer(JsonNode jwtClaims) throws JWTIssuerException {
-        final String issuerFromToken = jwtClaims.has("iss") ? jwtClaims.get("iss").asText() : null;
+    void verifyIssuer(Map<String,Object> jwtClaims) throws JWTIssuerException {
+        final String issuerFromToken = jwtClaims.containsKey("iss") ? jwtClaims.get("iss").toString() : null;
 
         if (issuerFromToken != null && issuer != null && !issuer.equals(issuerFromToken)) {
             throw new JWTIssuerException("jwt issuer invalid", issuerFromToken);
         }
     }
 
-    void verifyAudience(JsonNode jwtClaims) throws JWTAudienceException {
+    void verifyAudience(Map<String,Object> jwtClaims) throws JWTAudienceException {
         if (audience == null)
             return;
-        JsonNode audNode = jwtClaims.get("aud");
+        Object audNode = jwtClaims.get("aud");
         if (audNode == null)
             return;
-        if (audNode.isArray()) {
-            for (JsonNode jsonNode : audNode) {
-                if (audience.equals(jsonNode.textValue()))
+		if ( audNode instanceof List) {
+			List audList = (List)audNode;
+            for (Object audListElem : audList) {
+                if (audience.equals(audListElem.toString()))
                     return;
             }
-        } else if (audNode.isTextual()) {
-            if (audience.equals(audNode.textValue()))
-                return;
-        }
+		} else if ( audNode instanceof String) {
+            if (audience.equals(audNode.toString()))
+                return;			
+		}
+//        if (audNode.isArray()) {
+//            for (JsonNode jsonNode : audNode) {
+//                if (audience.equals(jsonNode.textValue()))
+//                    return;
+//            }
+//        } else if (audNode.isTextual()) {
+//            if (audience.equals(audNode.textValue()))
+//                return;
+//        }
         throw new JWTAudienceException("jwt audience invalid", audNode);
     }
 
-    String getAlgorithm(JsonNode jwtHeader) {
-        final String algorithmName = jwtHeader.has("alg") ? jwtHeader.get("alg").asText() : null;
+    String getAlgorithm(Map<String,Object> jwtHeader) {
+        final String algorithmName = jwtHeader.containsKey("alg") ? jwtHeader.get("alg").toString() : null;
 
-        if (jwtHeader.get("alg") == null) {
+        if (algorithmName == null) {
             throw new IllegalStateException("algorithm not set");
         }
 
@@ -169,9 +190,11 @@ public class JWTVerifier {
         return algorithms.get(algorithmName);
     }
 
-    JsonNode decodeAndParse(String b64String) throws IOException {
+//    JsonNode decodeAndParse(String b64String) throws IOException {
+	Map decodeAndParse(String b64String) throws IOException {
         String jsonString = new String(decoder.decode(b64String), "UTF-8");
-        JsonNode jwtHeader = mapper.readValue(jsonString, JsonNode.class);
+		Map<String,Object> jwtHeader = this.fastParser.parseMap(jsonString);
+//        JsonNode jwtHeader = mapper.readValue(jsonString, JsonNode.class);
         return jwtHeader;
     }
 }

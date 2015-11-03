@@ -15,11 +15,9 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import javax.naming.OperationNotSupportedException;
 
-import org.apache.commons.codec.binary.Base64;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.util.Base64;
+import org.boon.json.JsonSerializer;
+import org.boon.json.JsonSerializerFactory;
 
 /**
  * JwtSigner implementation based on the Ruby implementation from http://jwt.io
@@ -27,7 +25,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  */
 public class JWTSigner {
     private final byte[] secret;
-
+	private final JsonSerializer serializer = new JsonSerializerFactory().setSerializeAsSupport(false).useFieldsOnly().create();
+	private final Base64.Encoder encoder = Base64.getUrlEncoder().withoutPadding();
+	
     public JWTSigner(String secret) {
         this(secret.getBytes());
     }
@@ -89,11 +89,11 @@ public class JWTSigner {
         }
 
         // create the header
-        ObjectNode header = JsonNodeFactory.instance.objectNode();
-        header.put("typ", "JWT");
-        header.put("alg", algorithm.name());
-
-        return base64UrlEncode(header.toString().getBytes("UTF-8"));
+//        ObjectNode header = JsonNodeFactory.instance.objectNode();
+//        header.put("typ", "JWT");
+//        header.put("alg", algorithm.name());
+		String header = "{\"typ\":\"JWT\",\"alg\":\""+ algorithm.name() + "\"}";
+        return encoder.encodeToString(header.getBytes("UTF-8"));
     }
 
     /**
@@ -113,8 +113,9 @@ public class JWTSigner {
         if (options != null)
             processPayloadOptions(claims, options);
 
-        String payload = new ObjectMapper().writeValueAsString(claims);
-        return base64UrlEncode(payload.getBytes("UTF-8"));
+//        String payload = new ObjectMapper().writeValueAsString(claims);
+		String payload = this.serializer.serialize(claims).toString();
+        return encoder.encodeToString(payload.getBytes("UTF-8"));
     }
 
     private void processPayloadOptions(Map<String, Object> claims, Options options) {
@@ -207,14 +208,7 @@ public class JWTSigner {
      */
     private String encodedSignature(String signingInput, Algorithm algorithm) throws Exception {
         byte[] signature = sign(algorithm, signingInput, secret);
-        return base64UrlEncode(signature);
-    }
-
-    /**
-     * Safe URL encode a byte array to a String
-     */
-    private String base64UrlEncode(byte[] str) {
-        return new String(Base64.encodeBase64URLSafe(str));
+        return encoder.encodeToString(signature);
     }
 
     /**

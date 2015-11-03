@@ -1,22 +1,19 @@
 package com.auth0.jwt;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import org.apache.commons.codec.binary.Base64;
 import org.junit.Test;
 
 import java.security.SignatureException;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import org.boon.Lists;
 
 import static org.junit.Assert.assertEquals;
 
 public class JWTVerifierTest {
 	
-	private static final Base64 decoder = new Base64(true);;
-
     
 	@Test(expected = IllegalArgumentException.class)
     public void constructorShouldFailOnEmptySecret() {
@@ -50,7 +47,7 @@ public class JWTVerifierTest {
 
     @Test(expected = IllegalStateException.class)
     public void shouldFailIfAlgorithmIsNotSetOnToken() throws Exception {
-        new JWTVerifier("such secret").getAlgorithm(JsonNodeFactory.instance.objectNode());
+        new JWTVerifier("such secret").getAlgorithm(new HashMap<>());
     }
 
     @Test(expected = IllegalStateException.class)
@@ -83,19 +80,32 @@ public class JWTVerifierTest {
                 "cGxlLmNvbS9pc19yb290Ijp0cnVlfQ" +
                 "." +
                 "dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk";
-        byte[] secret = decoder.decodeBase64("AyM1SysPpbyDfgZld3umj1qzKObwVMkoqQ-EstJQLr_T-1qS0gZH75aKtMN3Yj0iPS4hcgUuTwjAzZr1Z9CAow");
+		
+        byte[] secret = Base64.getUrlDecoder().decode("AyM1SysPpbyDfgZld3umj1qzKObwVMkoqQ-EstJQLr_T-1qS0gZH75aKtMN3Yj0iPS4hcgUuTwjAzZr1Z9CAow");
         new JWTVerifier(secret, "audience")
                 .verifySignature(jws.split("\\."), "HmacSHA256");
     }
 
     @Test(expected = JWTExpiredException.class)
-    public void shouldFailWhenExpired1SecondAgo() throws Exception {
+    public void shouldFailWhenExpired1SecondAgoLong() throws Exception {
+        new JWTVerifier("such secret").verifyExpiration(
+                createSingletonJSONNode("exp", System.currentTimeMillis() / 1000L - 1L));
+    }
+
+    @Test(expected = JWTExpiredException.class)
+    public void shouldFailWhenExpired1SecondAgoString() throws Exception {
         new JWTVerifier("such secret").verifyExpiration(
                 createSingletonJSONNode("exp", Long.toString(System.currentTimeMillis() / 1000L - 1L)));
     }
 
     @Test
-    public void shouldVerifyExpiration() throws Exception {
+    public void shouldVerifyExpirationLong() throws Exception {
+        new JWTVerifier("such secret").verifyExpiration(
+                createSingletonJSONNode("exp", System.currentTimeMillis() / 1000L + 50L));
+    }
+
+    @Test
+    public void shouldVerifyExpirationString() throws Exception {
         new JWTVerifier("such secret").verifyExpiration(
                 createSingletonJSONNode("exp", Long.toString(System.currentTimeMillis() / 1000L + 50L)));
     }
@@ -115,7 +125,7 @@ public class JWTVerifierTest {
     @Test
     public void shouldVerifyIssuerWhenNotFoundInClaimsSet() throws Exception {
         new JWTVerifier("such secret", "amaze audience", "very issuer")
-                .verifyIssuer(JsonNodeFactory.instance.objectNode());
+                .verifyIssuer(new HashMap<>());
     }
 
     @Test
@@ -133,7 +143,7 @@ public class JWTVerifierTest {
     @Test
     public void shouldVerifyAudienceWhenNotFoundInClaimsSet() throws Exception {
         new JWTVerifier("such secret", "amaze audience")
-                .verifyAudience(JsonNodeFactory.instance.objectNode());
+                .verifyAudience(new HashMap<>());
     }
 
     @Test
@@ -145,40 +155,35 @@ public class JWTVerifierTest {
     @Test
     public void shouldVerifyArrayAudience() throws Exception {
         new JWTVerifier("such secret", "amaze audience")
-                .verifyAudience(createSingletonJSONNode("aud",
-                        new ObjectMapper().readValue("[ \"foo\", \"amaze audience\" ]", ArrayNode.class)));
+                .verifyAudience(createSingletonJSONNode("aud",Lists.list("foo","amaze audience")));
     }
     
     @Test(expected = JWTAudienceException.class)
     public void shouldFailArrayAudience() throws Exception {
         new JWTVerifier("such secret", "amaze audience")
-                .verifyAudience(createSingletonJSONNode("aud",
-                        new ObjectMapper().readValue("[ \"foo\" ]", ArrayNode.class)));
+                .verifyAudience(createSingletonJSONNode("aud",Lists.list("foo")));
     }
     
     @Test
     public void decodeAndParse() throws Exception {
-        final Base64 encoder = new Base64(true);
-        final String encodedJSON = new String(encoder.encode("{\"some\": \"json\", \"number\": 123}".getBytes()));
-        final JWTVerifier jwtVerifier = new JWTVerifier("secret", "audience");
-
-        final JsonNode decodedJSON = jwtVerifier.decodeAndParse(encodedJSON);
-
-        assertEquals("json", decodedJSON.get("some").asText());
+		final JWTVerifier jwtVerifier = new JWTVerifier("secret", "audience");
+		String encodedJSON = java.util.Base64.getUrlEncoder().withoutPadding().encodeToString("{\"some\": \"json\", \"number\": 123}".getBytes());		
+		final Map<String,Object> decodedJSON = jwtVerifier.decodeAndParse(encodedJSON);
+        assertEquals("json", decodedJSON.get("some").toString());
         assertEquals(null, decodedJSON.get("unexisting_property"));
-        assertEquals("123", decodedJSON.get("number").asText());
+        assertEquals("123", decodedJSON.get("number").toString());
     }
 
 
-    public static JsonNode createSingletonJSONNode(String key, String value) {
-        final ObjectNode jsonNodes = JsonNodeFactory.instance.objectNode();
-        jsonNodes.put(key, value);
-        return jsonNodes;
+    public static Map<String,Object> createSingletonJSONNode(String key, Object value) {
+		Map<String,Object> jsonNode = new HashMap<>();
+		jsonNode.put(key, value);
+        return jsonNode;
     }
 
-    public static JsonNode createSingletonJSONNode(String key, JsonNode value) {
-        final ObjectNode jsonNodes = JsonNodeFactory.instance.objectNode();
-        jsonNodes.put(key, value);
+    public static Map<String,Object> createSingletonJSONNode(String key, List values) {
+        final Map<String,Object>  jsonNodes =new HashMap<>();
+        jsonNodes.put(key, values);
         return jsonNodes;
     }
 }
