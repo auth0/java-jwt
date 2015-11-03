@@ -63,8 +63,8 @@ dependencies {
 
 // check if the new implementation generates the same output as the old one:
 //
-//  ./gradlew compabilityTest
-task compabilityTest(type: Test) {
+//  ./gradlew compatibilityTest
+task compatibilityTest(type: Test) {
     testClassesDir = sourceSets.legacy.output.classesDir
     classpath = sourceSets.legacy.runtimeClasspath
 }

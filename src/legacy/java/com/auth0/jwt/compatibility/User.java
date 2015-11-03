@@ -1,4 +1,4 @@
-package com.auth0.jwt.compability;
+package com.auth0.jwt.compatibility;
 
 import com.auth0.jwt.*;
 
