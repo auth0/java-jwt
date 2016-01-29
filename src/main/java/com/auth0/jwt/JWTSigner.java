@@ -102,6 +102,7 @@ public class JWTSigner {
      */
     private String encodedPayload(Map<String, Object> _claims, Options options) throws Exception {
         Map<String, Object> claims = new HashMap<String, Object>(_claims);
+//        各种校验
         enforceStringOrURI(claims, "iss");
         enforceStringOrURI(claims, "sub");
         enforceStringOrURICollection(claims, "aud");
@@ -110,13 +111,19 @@ public class JWTSigner {
         enforceIntDate(claims, "iat");
         enforceString(claims, "jti");
 
-        if (options != null)
-            processPayloadOptions(claims, options);
-
+        if (options != null){
+//        	塞入payload 特殊字段
+        	processPayloadOptions(claims, options);
+        }
         String payload = new ObjectMapper().writeValueAsString(claims);
         return base64UrlEncode(payload.getBytes("UTF-8"));
     }
-
+/**
+ *exp：Expirationtime 过期时间
+ *nbf: not before
+ *iat: Issued at , 发行时间
+ *jti: jwt Id  
+ **/
     private void processPayloadOptions(Map<String, Object> claims, Options options) {
         long now = System.currentTimeMillis() / 1000l;
         if (options.expirySeconds != null)
@@ -128,7 +135,11 @@ public class JWTSigner {
         if (options.isJwtId())
             claims.put("jti", UUID.randomUUID().toString());
     }
-
+    /****
+     * @param claims
+     * @param claimName
+     * @description 校验claimName 的value是否存在是否是Number
+     */
     private void enforceIntDate(Map<String, Object> claims, String claimName) {
         Object value = handleNullValue(claims, claimName);
         if (value == null)
@@ -159,7 +170,11 @@ public class JWTSigner {
             enforceStringOrURI(claims, "aud");
         }
     }
-
+/****
+ * @param claims
+ * @param claimName
+ * @description 校验claimName 的value是否存在是否是字符串
+ */
     private void enforceStringOrURI(Map<String, Object> claims, String claimName) {
         Object value = handleNullValue(claims, claimName);
         if (value == null)
@@ -168,7 +183,9 @@ public class JWTSigner {
         if (error != null)
             throw new RuntimeException(String.format("Claim '%s' is invalid: %s", claimName, error));
     }
-
+/*****
+ * 单纯判断是否是字符串
+ * **/
     private void enforceString(Map<String, Object> claims, String claimName) {
         Object value = handleNullValue(claims, claimName);
         if (value == null)
@@ -176,7 +193,15 @@ public class JWTSigner {
         if (!(value instanceof String))
             throw new RuntimeException(String.format("Claim '%s' is invalid: not a string", claimName));
     }
-
+/**
+ * 
+ * @param claims
+ * @param claimName
+ * @return
+ * @description 如果map中含有该key(claimName) 则需要判断value是否为空
+ * 如果为空则将该key干掉，并且返回null
+ * 如果没有该key 则直接返回null
+ */
     private Object handleNullValue(Map<String, Object> claims, String claimName) {
         if (! claims.containsKey(claimName))
             return null;
