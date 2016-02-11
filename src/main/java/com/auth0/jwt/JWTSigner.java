@@ -3,6 +3,7 @@ package com.auth0.jwt;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -93,7 +94,7 @@ public class JWTSigner {
         header.put("typ", "JWT");
         header.put("alg", algorithm.name());
 
-        return base64UrlEncode(header.toString().getBytes("UTF-8"));
+        return base64UrlEncode(header.toString().getBytes(StandardCharsets.UTF_8));
     }
 
     /**
@@ -114,7 +115,7 @@ public class JWTSigner {
             processPayloadOptions(claims, options);
 
         String payload = new ObjectMapper().writeValueAsString(claims);
-        return base64UrlEncode(payload.getBytes("UTF-8"));
+        return base64UrlEncode(payload.getBytes(StandardCharsets.UTF_8));
     }
 
     private void processPayloadOptions(Map<String, Object> claims, Options options) {

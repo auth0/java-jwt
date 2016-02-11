@@ -2,6 +2,7 @@ package com.auth0.jwt;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -34,7 +35,7 @@ public class JWTVerifier {
     private Map<String, String> algorithms;
 
     public JWTVerifier(String secret, String audience, String issuer) {
-        this(secret.getBytes(Charset.forName("UTF-8")), audience, issuer);
+        this(secret.getBytes(StandardCharsets.UTF_8), audience, issuer);
     }
 
     public JWTVerifier(String secret, String audience) {
@@ -170,7 +171,7 @@ public class JWTVerifier {
     }
 
     JsonNode decodeAndParse(String b64String) throws IOException {
-        String jsonString = new String(decoder.decode(b64String), "UTF-8");
+        String jsonString = new String(decoder.decode(b64String), StandardCharsets.UTF_8);
         JsonNode jwtHeader = mapper.readValue(jsonString, JsonNode.class);
         return jwtHeader;
     }
