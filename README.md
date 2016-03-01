@@ -53,7 +53,7 @@ public class Application {
         claims.put("iat", System.currentTimeMillis());
         claims.put("jti", UUID.randomUUID().toString());
 
-        // Get custom fields from decoded Payload
+        // Sign and get a Java JWT
         System.out.println(jwtSigner.sign(claims));
     }
 }
