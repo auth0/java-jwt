@@ -5,7 +5,9 @@ An implementation of [JSON Web Tokens](http://self-issued.info/docs/draft-ietf-o
 ### Usage
 Note for Auth0 users:
 By default, Auth0's CLIENT_SECRET is base64-encoded.
-To work with JWTVerifier, it must be decoded first.
+To work with JWTVerifier or JWTSigner, it must be decoded first.
+
+#### Verify a JWT Token
 
 ```java
 public class Application {
@@ -15,7 +17,7 @@ public class Application {
             byte[] secret = decoder.decodeBase64(CLIENT_SECRET);
             Map<String,Object> decodedPayload =
                 new JWTVerifier(secret, "audience").verify("my-token");
-                
+
             // Get custom fields from decoded Payload
             System.out.println(decodedPayload.get("name"));
         } catch (SignatureException signatureException) {
@@ -23,6 +25,36 @@ public class Application {
         } catch (IllegalStateException illegalStateException) {
             System.err.println("Invalid Token! " + illegalStateException);
         }
+    }
+}
+```
+
+#### Create a JWT Token
+
+```java
+public class Application {
+    public static void main (String [] args) {
+
+        Base64 decoder = new Base64(true);
+        byte[] secret = decoder.decodeBase64(CLIENT_SECRET);
+        JWTSigner jwtSigner = new JWTSigner(secret);
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("aud", CLIENT_KEY);
+
+        Map<String, Object> actions = new HashMap<>();
+        // Customize your scopes/actions with https://auth0.com/docs/api/v2/tokens
+        String[] actionsList = {"create", "read"};
+        actions.put("actions", actionsList);
+
+        Map<String, Object> users = new HashMap<>();
+        users.put("users", actions);
+
+        claims.put("scopes", users);
+        claims.put("iat", System.currentTimeMillis());
+        claims.put("jti", UUID.randomUUID().toString());
+
+        // Get custom fields from decoded Payload
+        System.out.println(jwtSigner.sign(claims));
     }
 }
 ```
