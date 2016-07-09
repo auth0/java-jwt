@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-
 import org.apache.commons.codec.binary.Base64;
 import org.junit.Test;
 
@@ -13,12 +12,15 @@ import java.security.SignatureException;
 
 import static org.junit.Assert.assertEquals;
 
+/**
+ * General library JWTVerifier related unit tests
+ */
 public class JWTVerifierTest {
-	
-	private static final Base64 decoder = new Base64(true);;
 
-    
-	@Test(expected = IllegalArgumentException.class)
+    private static final Base64 decoder = new Base64(true);
+
+
+    @Test(expected = IllegalArgumentException.class)
     public void constructorShouldFailOnEmptySecret() {
         new JWTVerifier("");
     }
@@ -53,14 +55,14 @@ public class JWTVerifierTest {
         new JWTVerifier("such secret").getAlgorithm(JsonNodeFactory.instance.objectNode());
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test(expected = JWTAlgorithmException.class)
     public void shouldFailIfAlgorithmIsNotSupported() throws Exception {
         new JWTVerifier("such secret").getAlgorithm(createSingletonJSONNode("alg", "doge-crypt"));
     }
 
     @Test
     public void shouldWorkIfAlgorithmIsSupported() throws Exception {
-       new JWTVerifier("such secret").getAlgorithm(createSingletonJSONNode("alg", "HS256"));
+        new JWTVerifier("such secret").getAlgorithm(createSingletonJSONNode("alg", "HS256"));
     }
 
     @Test(expected = SignatureException.class)
@@ -72,7 +74,7 @@ public class JWTVerifierTest {
                 "." +
                 "suchsignature_plzvalidate_zomgtokens";
         String secret = "AyM1SysPpbyDfgZld3umj1qzKObwVMkoqQ-EstJQLr_T-1qS0gZH75aKtMN3Yj0iPS4hcgUuTwjAzZr1Z9CAow";
-        new JWTVerifier(secret, "audience").verifySignature(jws.split("\\."), "HmacSHA256");
+        new JWTVerifier(secret, "audience").verifySignature(jws.split("\\."), Algorithm.HS256);
     }
 
     @Test
@@ -85,7 +87,7 @@ public class JWTVerifierTest {
                 "dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk";
         byte[] secret = decoder.decodeBase64("AyM1SysPpbyDfgZld3umj1qzKObwVMkoqQ-EstJQLr_T-1qS0gZH75aKtMN3Yj0iPS4hcgUuTwjAzZr1Z9CAow");
         new JWTVerifier(secret, "audience")
-                .verifySignature(jws.split("\\."), "HmacSHA256");
+                .verifySignature(jws.split("\\."), Algorithm.HS256);
     }
 
     @Test(expected = JWTExpiredException.class)
@@ -148,14 +150,14 @@ public class JWTVerifierTest {
                 .verifyAudience(createSingletonJSONNode("aud",
                         new ObjectMapper().readValue("[ \"foo\", \"amaze audience\" ]", ArrayNode.class)));
     }
-    
+
     @Test(expected = JWTAudienceException.class)
     public void shouldFailArrayAudience() throws Exception {
         new JWTVerifier("such secret", "amaze audience")
                 .verifyAudience(createSingletonJSONNode("aud",
                         new ObjectMapper().readValue("[ \"foo\" ]", ArrayNode.class)));
     }
-    
+
     @Test
     public void decodeAndParse() throws Exception {
         final Base64 encoder = new Base64(true);
