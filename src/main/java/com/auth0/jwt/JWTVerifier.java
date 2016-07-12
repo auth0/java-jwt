@@ -94,8 +94,9 @@ public class JWTVerifier {
      * @throws JWTAlgorithmException when the algorithm is missing or unsupported
      * @throws IllegalStateException when token's structure is invalid or secret / public key does not match algorithm of token
      */
+    @SuppressWarnings("WeakerAccess")
     public Map<String, Object> verify(final String token) throws NoSuchAlgorithmException, InvalidKeyException, IllegalStateException,
-            IOException, SignatureException, JWTVerifyException, JWTAlgorithmException {
+            IOException, SignatureException, JWTVerifyException {
         if (token == null || "".equals(token)) {
             throw new IllegalStateException("token not set");
         }
@@ -113,7 +114,7 @@ public class JWTVerifier {
         return mapper.treeToValue(jwtPayload, Map.class);
     }
 
-    protected void verifySignature(final String[] pieces, final Algorithm algorithm) throws NoSuchAlgorithmException,
+    void verifySignature(final String[] pieces, final Algorithm algorithm) throws NoSuchAlgorithmException,
             InvalidKeyException, SignatureException, JWTAlgorithmException, IllegalStateException {
         Validate.notNull(pieces);
         Validate.notNull(algorithm);
@@ -136,24 +137,24 @@ public class JWTVerifier {
         }
     }
 
-    void verifyHmac(final Algorithm algorithm, final String[] pieces, final byte[] secret) throws SignatureException, NoSuchAlgorithmException, InvalidKeyException {
+    private void verifyHmac(final Algorithm algorithm, final String[] pieces, final byte[] secret) throws SignatureException, NoSuchAlgorithmException, InvalidKeyException {
         if (secret == null || secret.length == 0) {
             throw new IllegalStateException("Secret cannot be null or empty when using algorithm: " + algorithm.getValue());
         }
         final Mac hmac = Mac.getInstance(algorithm.getValue());
         hmac.init(new SecretKeySpec(secret, algorithm.getValue()));
-        final byte[] sig = hmac.doFinal(new StringBuilder(pieces[0]).append(".").append(pieces[1]).toString().getBytes());
+        final byte[] sig = hmac.doFinal((pieces[0] + "." + pieces[1]).getBytes());
         if (!MessageDigest.isEqual(sig, decoder.decode(pieces[2]))) {
             throw new SignatureException("signature verification failed");
         }
     }
 
-    void verifyRs(final Algorithm algorithm, final String[] pieces, final PublicKey publicKey) throws SignatureException, NoSuchAlgorithmException, InvalidKeyException, JWTAlgorithmException {
+    private void verifyRs(final Algorithm algorithm, final String[] pieces, final PublicKey publicKey) throws SignatureException, NoSuchAlgorithmException, InvalidKeyException, JWTAlgorithmException {
         if (publicKey == null) {
             throw new IllegalStateException("PublicKey cannot be null when using algorithm: " + algorithm.getValue());
         }
         final byte[] decodedSignatureBytes = new Base64(true).decode(pieces[2]);
-        final byte[] headerPayloadBytes = new StringBuilder(pieces[0]).append(".").append(pieces[1]).toString().getBytes();
+        final byte[] headerPayloadBytes = (pieces[0] + "." + pieces[1]).getBytes();
         final boolean verified = verifySignatureWithPublicKey(this.publicKey, headerPayloadBytes, decodedSignatureBytes, algorithm);
         if (!verified) {
             throw new SignatureException("signature verification failed");
@@ -175,7 +176,7 @@ public class JWTVerifier {
         }
     }
 
-    protected void verifyExpiration(final JsonNode jwtClaims) throws JWTExpiredException {
+    void verifyExpiration(final JsonNode jwtClaims) throws JWTExpiredException {
         Validate.notNull(jwtClaims);
         final long expiration = jwtClaims.has("exp") ? jwtClaims.get("exp").asLong(0) : 0;
         if (expiration != 0 && System.currentTimeMillis() / 1000L >= expiration) {
@@ -183,34 +184,44 @@ public class JWTVerifier {
         }
     }
 
-    protected void verifyIssuer(final JsonNode jwtClaims) throws JWTIssuerException {
+    void verifyIssuer(final JsonNode jwtClaims) throws JWTIssuerException {
         Validate.notNull(jwtClaims);
+
+        if (this.issuer == null ) {
+            return;
+        }
+
         final String issuerFromToken = jwtClaims.has("iss") ? jwtClaims.get("iss").asText() : null;
-        if (issuerFromToken != null && issuer != null && !issuer.equals(issuerFromToken)) {
+
+        if (issuerFromToken == null || !issuer.equals(issuerFromToken)) {
             throw new JWTIssuerException("jwt issuer invalid", issuerFromToken);
         }
     }
 
-    protected void verifyAudience(final JsonNode jwtClaims) throws JWTAudienceException {
+    void verifyAudience(final JsonNode jwtClaims) throws JWTAudienceException {
         Validate.notNull(jwtClaims);
-        if (audience == null)
+        if (audience == null) {
             return;
+        }
         final JsonNode audNode = jwtClaims.get("aud");
-        if (audNode == null)
-            return;
+        if (audNode == null) {
+            throw new JWTAudienceException("jwt audience invalid", null);
+        }
         if (audNode.isArray()) {
             for (final JsonNode jsonNode : audNode) {
-                if (audience.equals(jsonNode.textValue()))
+                if (audience.equals(jsonNode.textValue())) {
                     return;
+                }
             }
         } else if (audNode.isTextual()) {
-            if (audience.equals(audNode.textValue()))
+            if (audience.equals(audNode.textValue())) {
                 return;
+            }
         }
         throw new JWTAudienceException("jwt audience invalid", audNode);
     }
 
-    protected Algorithm getAlgorithm(final JsonNode jwtHeader) throws JWTAlgorithmException {
+    Algorithm getAlgorithm(final JsonNode jwtHeader) throws JWTAlgorithmException {
         Validate.notNull(jwtHeader);
         final String algorithmName = jwtHeader.has("alg") ? jwtHeader.get("alg").asText() : null;
         if (jwtHeader.get("alg") == null) {
@@ -219,11 +230,10 @@ public class JWTVerifier {
         return Algorithm.findByName(algorithmName);
     }
 
-    protected JsonNode decodeAndParse(final String b64String) throws IOException {
+    JsonNode decodeAndParse(final String b64String) throws IOException {
         Validate.notNull(b64String);
         final String jsonString = new String(decoder.decode(b64String), "UTF-8");
-        final JsonNode jwtHeader = mapper.readValue(jsonString, JsonNode.class);
-        return jwtHeader;
+        return mapper.readValue(jsonString, JsonNode.class);
     }
 
 }
