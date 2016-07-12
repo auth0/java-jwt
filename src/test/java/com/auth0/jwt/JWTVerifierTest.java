@@ -6,7 +6,9 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.commons.codec.binary.Base64;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import java.security.SignatureException;
 
@@ -19,6 +21,8 @@ public class JWTVerifierTest {
 
     private static final Base64 decoder = new Base64(true);
 
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
 
     @Test(expected = IllegalArgumentException.class)
     public void constructorShouldFailOnEmptySecret() {
@@ -85,7 +89,7 @@ public class JWTVerifierTest {
                 "cGxlLmNvbS9pc19yb290Ijp0cnVlfQ" +
                 "." +
                 "dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk";
-        byte[] secret = decoder.decodeBase64("AyM1SysPpbyDfgZld3umj1qzKObwVMkoqQ-EstJQLr_T-1qS0gZH75aKtMN3Yj0iPS4hcgUuTwjAzZr1Z9CAow");
+        byte[] secret = decoder.decode("AyM1SysPpbyDfgZld3umj1qzKObwVMkoqQ-EstJQLr_T-1qS0gZH75aKtMN3Yj0iPS4hcgUuTwjAzZr1Z9CAow");
         new JWTVerifier(secret, "audience")
                 .verifySignature(jws.split("\\."), Algorithm.HS256);
     }
@@ -116,6 +120,7 @@ public class JWTVerifierTest {
 
     @Test
     public void shouldVerifyIssuerWhenNotFoundInClaimsSet() throws Exception {
+        expectedException.expect(JWTIssuerException.class);
         new JWTVerifier("such secret", "amaze audience", "very issuer")
                 .verifyIssuer(JsonNodeFactory.instance.objectNode());
     }
@@ -134,6 +139,7 @@ public class JWTVerifierTest {
 
     @Test
     public void shouldVerifyAudienceWhenNotFoundInClaimsSet() throws Exception {
+        expectedException.expect(JWTAudienceException.class);
         new JWTVerifier("such secret", "amaze audience")
                 .verifyAudience(JsonNodeFactory.instance.objectNode());
     }
@@ -171,6 +177,19 @@ public class JWTVerifierTest {
         assertEquals("123", decodedJSON.get("number").asText());
     }
 
+    @Test
+    public void shouldVerifyAudienceFromToken() throws Exception {
+        expectedException.expect(JWTAudienceException.class);
+        JWTVerifier verifier = new JWTVerifier("I.O.U a secret", "samples-api", null);
+        verifier.verify("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.wLlz9xDltxqKHQC7BeauPi5Q4KQK4nDjlRqQPvKVLYk");
+    }
+
+    @Test
+    public void shouldVerifyIssuerFromToken() throws Exception {
+        expectedException.expect(JWTIssuerException.class);
+        JWTVerifier verifier = new JWTVerifier("I.O.U a secret", null, "samples.auth0.com");
+        verifier.verify("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.wLlz9xDltxqKHQC7BeauPi5Q4KQK4nDjlRqQPvKVLYk");
+    }
 
     public static JsonNode createSingletonJSONNode(String key, String value) {
         final ObjectNode jsonNodes = JsonNodeFactory.instance.objectNode();

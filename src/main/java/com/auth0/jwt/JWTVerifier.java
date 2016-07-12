@@ -185,27 +185,37 @@ public class JWTVerifier {
 
     protected void verifyIssuer(final JsonNode jwtClaims) throws JWTIssuerException {
         Validate.notNull(jwtClaims);
+
+        if (this.issuer == null ) {
+            return;
+        }
+
         final String issuerFromToken = jwtClaims.has("iss") ? jwtClaims.get("iss").asText() : null;
-        if (issuerFromToken != null && issuer != null && !issuer.equals(issuerFromToken)) {
+
+        if (issuerFromToken == null || !issuer.equals(issuerFromToken)) {
             throw new JWTIssuerException("jwt issuer invalid", issuerFromToken);
         }
     }
 
     protected void verifyAudience(final JsonNode jwtClaims) throws JWTAudienceException {
         Validate.notNull(jwtClaims);
-        if (audience == null)
+        if (audience == null) {
             return;
+        }
         final JsonNode audNode = jwtClaims.get("aud");
-        if (audNode == null)
-            return;
+        if (audNode == null) {
+            throw new JWTAudienceException("jwt audience invalid", null);
+        }
         if (audNode.isArray()) {
             for (final JsonNode jsonNode : audNode) {
-                if (audience.equals(jsonNode.textValue()))
+                if (audience.equals(jsonNode.textValue())) {
                     return;
+                }
             }
         } else if (audNode.isTextual()) {
-            if (audience.equals(audNode.textValue()))
+            if (audience.equals(audNode.textValue())) {
                 return;
+            }
         }
         throw new JWTAudienceException("jwt audience invalid", audNode);
     }

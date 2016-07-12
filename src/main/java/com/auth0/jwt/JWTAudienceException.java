@@ -14,13 +14,11 @@ public class JWTAudienceException extends JWTVerifyException {
     private JsonNode audienceNode;
 
     public JWTAudienceException(final JsonNode audienceNode) {
-        Validate.notNull(audienceNode);
         this.audienceNode = audienceNode;
     }
 
     public JWTAudienceException(final String message, final JsonNode audienceNode) {
         super(message);
-        Validate.notNull(audienceNode);
         this.audienceNode = audienceNode;
     }
 
