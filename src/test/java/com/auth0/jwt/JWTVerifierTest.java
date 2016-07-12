@@ -24,53 +24,62 @@ public class JWTVerifierTest {
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void constructorShouldFailOnEmptySecret() {
+        expectedException.expect(IllegalArgumentException.class);
         new JWTVerifier("");
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void shouldFailOn1Segments() throws Exception {
-        new JWTVerifier("such secret").verify("crypto");
+        expectedException.expect(IllegalStateException.class);
+        signatureVerifier().verify("crypto");
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void shouldFailOn2Segments() throws Exception {
-        new JWTVerifier("such secret").verify("much.crypto");
+        expectedException.expect(IllegalStateException.class);
+        signatureVerifier().verify("much.crypto");
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void shouldFailOn4Segments() throws Exception {
-        new JWTVerifier("such secret").verify("much.crypto.so.token");
+        expectedException.expect(IllegalStateException.class);
+        signatureVerifier().verify("much.crypto.so.token");
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void shouldFailOnEmptyStringToken() throws Exception {
-        new JWTVerifier("such secret").verify("");
+        expectedException.expect(IllegalStateException.class);
+        signatureVerifier().verify("");
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void shouldFailOnNullToken() throws Exception {
-        new JWTVerifier("such secret").verify(null);
+        expectedException.expect(IllegalStateException.class);
+        signatureVerifier().verify(null);
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void shouldFailIfAlgorithmIsNotSetOnToken() throws Exception {
-        new JWTVerifier("such secret").getAlgorithm(JsonNodeFactory.instance.objectNode());
+        expectedException.expect(IllegalStateException.class);
+        signatureVerifier().getAlgorithm(JsonNodeFactory.instance.objectNode());
     }
 
-    @Test(expected = JWTAlgorithmException.class)
+    @Test
     public void shouldFailIfAlgorithmIsNotSupported() throws Exception {
-        new JWTVerifier("such secret").getAlgorithm(createSingletonJSONNode("alg", "doge-crypt"));
+        expectedException.expect(JWTAlgorithmException.class);
+        signatureVerifier().getAlgorithm(createSingletonJSONNode("alg", "doge-crypt"));
     }
 
     @Test
     public void shouldWorkIfAlgorithmIsSupported() throws Exception {
-        new JWTVerifier("such secret").getAlgorithm(createSingletonJSONNode("alg", "HS256"));
+        signatureVerifier().getAlgorithm(createSingletonJSONNode("alg", "HS256"));
     }
 
-    @Test(expected = SignatureException.class)
+    @Test
     public void shouldFailOnInvalidSignature() throws Exception {
+        expectedException.expect(SignatureException.class);
         final String jws = "eyJ0eXAiOiJKV1QiLA0KICJhbGciOiJIUzI1NiJ9" +
                 "." +
                 "eyJpc3MiOiJqb2UiLA0KICJleHAiOjEzMDA4MTkzODAsDQogImh0dHA6Ly9leGFt" +
@@ -78,7 +87,7 @@ public class JWTVerifierTest {
                 "." +
                 "suchsignature_plzvalidate_zomgtokens";
         String secret = "AyM1SysPpbyDfgZld3umj1qzKObwVMkoqQ-EstJQLr_T-1qS0gZH75aKtMN3Yj0iPS4hcgUuTwjAzZr1Z9CAow";
-        new JWTVerifier(secret, "audience").verifySignature(jws.split("\\."), Algorithm.HS256);
+        signatureVerifier(secret).verifySignature(jws.split("\\."), Algorithm.HS256);
     }
 
     @Test
@@ -90,76 +99,80 @@ public class JWTVerifierTest {
                 "." +
                 "dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk";
         byte[] secret = decoder.decode("AyM1SysPpbyDfgZld3umj1qzKObwVMkoqQ-EstJQLr_T-1qS0gZH75aKtMN3Yj0iPS4hcgUuTwjAzZr1Z9CAow");
-        new JWTVerifier(secret, "audience")
+        signatureVerifier(secret)
                 .verifySignature(jws.split("\\."), Algorithm.HS256);
     }
 
-    @Test(expected = JWTExpiredException.class)
+    @Test
     public void shouldFailWhenExpired1SecondAgo() throws Exception {
-        new JWTVerifier("such secret").verifyExpiration(
+        expectedException.expect(JWTExpiredException.class);
+        signatureVerifier().verifyExpiration(
                 createSingletonJSONNode("exp", Long.toString(System.currentTimeMillis() / 1000L - 1L)));
     }
 
     @Test
     public void shouldVerifyExpiration() throws Exception {
-        new JWTVerifier("such secret").verifyExpiration(
+        signatureVerifier().verifyExpiration(
                 createSingletonJSONNode("exp", Long.toString(System.currentTimeMillis() / 1000L + 50L)));
     }
 
     @Test
     public void shouldVerifyIssuer() throws Exception {
-        new JWTVerifier("such secret", "amaze audience", "very issuer")
+        issuerVerifier("very issuer")
                 .verifyIssuer(createSingletonJSONNode("iss", "very issuer"));
     }
 
-    @Test(expected = JWTIssuerException.class)
+    @Test
     public void shouldFailIssuer() throws Exception {
-        new JWTVerifier("such secret", "amaze audience", "very issuer")
+        expectedException.expect(JWTIssuerException.class);
+        issuerVerifier("very issuer")
                 .verifyIssuer(createSingletonJSONNode("iss", "wow"));
     }
 
     @Test
     public void shouldVerifyIssuerWhenNotFoundInClaimsSet() throws Exception {
         expectedException.expect(JWTIssuerException.class);
-        new JWTVerifier("such secret", "amaze audience", "very issuer")
+        issuerVerifier("very issuer")
                 .verifyIssuer(JsonNodeFactory.instance.objectNode());
     }
 
     @Test
     public void shouldVerifyAudience() throws Exception {
-        new JWTVerifier("such secret", "amaze audience")
+        audienceVerifier("amaze audience")
                 .verifyAudience(createSingletonJSONNode("aud", "amaze audience"));
     }
 
-    @Test(expected = JWTAudienceException.class)
+    @Test
     public void shouldFailAudience() throws Exception {
-        new JWTVerifier("such secret", "amaze audience")
+        expectedException.expect(JWTAudienceException.class);
+        audienceVerifier("amaze audience")
                 .verifyAudience(createSingletonJSONNode("aud", "wow"));
     }
 
     @Test
     public void shouldVerifyAudienceWhenNotFoundInClaimsSet() throws Exception {
         expectedException.expect(JWTAudienceException.class);
-        new JWTVerifier("such secret", "amaze audience")
+        audienceVerifier("amaze audience")
                 .verifyAudience(JsonNodeFactory.instance.objectNode());
     }
 
     @Test
     public void shouldVerifyNullAudience() throws Exception {
-        new JWTVerifier("such secret")
+        signatureVerifier()
                 .verifyAudience(createSingletonJSONNode("aud", "wow"));
     }
 
     @Test
     public void shouldVerifyArrayAudience() throws Exception {
-        new JWTVerifier("such secret", "amaze audience")
+        audienceVerifier("amaze audience")
                 .verifyAudience(createSingletonJSONNode("aud",
                         new ObjectMapper().readValue("[ \"foo\", \"amaze audience\" ]", ArrayNode.class)));
     }
 
-    @Test(expected = JWTAudienceException.class)
+    @Test
     public void shouldFailArrayAudience() throws Exception {
-        new JWTVerifier("such secret", "amaze audience")
+        expectedException.expect(JWTAudienceException.class);
+        audienceVerifier("amaze audience")
                 .verifyAudience(createSingletonJSONNode("aud",
                         new ObjectMapper().readValue("[ \"foo\" ]", ArrayNode.class)));
     }
@@ -191,13 +204,33 @@ public class JWTVerifierTest {
         verifier.verify("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.wLlz9xDltxqKHQC7BeauPi5Q4KQK4nDjlRqQPvKVLYk");
     }
 
-    public static JsonNode createSingletonJSONNode(String key, String value) {
+    private static JWTVerifier signatureVerifier() {
+        return new JWTVerifier("such secret");
+    }
+
+    private static JWTVerifier signatureVerifier(String secret) {
+        return new JWTVerifier(secret);
+    }
+
+    private static JWTVerifier signatureVerifier(byte[] secret) {
+        return new JWTVerifier(secret);
+    }
+
+    private static JWTVerifier issuerVerifier(String issuer) {
+        return new JWTVerifier("such secret", null, issuer);
+    }
+
+    private static JWTVerifier audienceVerifier(String audience) {
+        return new JWTVerifier("such secret", audience);
+    }
+
+    private static JsonNode createSingletonJSONNode(String key, String value) {
         final ObjectNode jsonNodes = JsonNodeFactory.instance.objectNode();
         jsonNodes.put(key, value);
         return jsonNodes;
     }
 
-    public static JsonNode createSingletonJSONNode(String key, JsonNode value) {
+    private static JsonNode createSingletonJSONNode(String key, JsonNode value) {
         final ObjectNode jsonNodes = JsonNodeFactory.instance.objectNode();
         jsonNodes.put(key, value);
         return jsonNodes;
