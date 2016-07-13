@@ -1,5 +1,10 @@
 # Java JWT
 
+[![Build Status](https://travis-ci.org/auth0/java-jwt.svg?branch=master)](https://travis-ci.org/auth0/java-jwt)
+[![Coverage Status](https://img.shields.io/codecov/c/github/auth0/java-jwt/master.svg?style=flat-square)](https://codecov.io/github/auth0/java-jwt)
+[![License](http://img.shields.io/:license-mit-blue.svg?style=flat)](http://doge.mit-license.org)
+[![Maven Central](https://img.shields.io/maven-central/v/com.auth0/java-jwt.svg)](http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22java-jwt%22)
+
 An implementation of [JSON Web Tokens](http://self-issued.info/docs/draft-ietf-oauth-json-web-token.html) developed against `draft-ietf-oauth-json-web-token-08`.
 
 ## Installation
