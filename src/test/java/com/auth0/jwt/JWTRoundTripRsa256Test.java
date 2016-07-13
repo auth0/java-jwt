@@ -10,10 +10,7 @@ import java.security.*;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.auth0.jwt.pem.PemReader.readPrivateKey;
 import static com.auth0.jwt.pem.PemReader.readPublicKey;
