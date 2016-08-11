@@ -22,7 +22,7 @@ An implementation of [JSON Web Tokens](http://self-issued.info/docs/draft-ietf-o
 ### Gradle
 
 ```gradle
-compile 'com.auth0.java-jwt:2.2.0'
+compile 'com.auth0:java-jwt:2.2.0'
 ```
 
 ## Usage
