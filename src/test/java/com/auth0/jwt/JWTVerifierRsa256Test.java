@@ -1,9 +1,16 @@
 package com.auth0.jwt;
 
+import com.auth0.jwt.pem.X509CertUtils;
+import org.apache.commons.codec.binary.Base64;
 import org.junit.Test;
 
+import java.io.File;
+import java.nio.file.Files;
 import java.security.PublicKey;
 import java.security.SignatureException;
+import java.security.cert.X509Certificate;
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.auth0.jwt.pem.PemReader.readPublicKey;
 import static junit.framework.TestCase.assertNotNull;
@@ -13,10 +20,10 @@ import static junit.framework.TestCase.assertNotNull;
  */
 public class JWTVerifierRsa256Test {
 
-    public final static String RESOURCES_DIR = "src/test/resources/auth0-pem/";
-    public final static String MISMATCHED_RESOURCES_DIR = "src/test/resources/test-pem/";
-    public final static String PUBLIC_KEY_PEM_FILENAME = "key.pem";
-    public final static String MISMATCHED_PUBLIC_KEY_PEM_FILENAME = "test-auth0.pem";
+    private final static String RESOURCES_DIR = "src/test/resources/auth0-pem/";
+    private final static String MISMATCHED_RESOURCES_DIR = "src/test/resources/test-pem/";
+    private final static String PUBLIC_KEY_PEM_FILENAME = "key.pem";
+    private final static String MISMATCHED_PUBLIC_KEY_PEM_FILENAME = "test-auth0.pem";
 
 
 
@@ -67,7 +74,7 @@ public class JWTVerifierRsa256Test {
 
     /**
      * Here we modify the payload section on an otherwise legal JWT Token and check verification using the correct Public Key and
-     * unaltered JWT signnature (which now doesn't match the payload) fails
+     * unaltered JWT signature (which now doesn't match the payload) fails
      */
     @Test(expected = SignatureException.class)
     public void shouldFailOnInvalidJWTTokenPayload() throws Exception {
@@ -81,5 +88,19 @@ public class JWTVerifierRsa256Test {
         new JWTVerifier(publicKey, "audience").verifySignature(token.split("\\."), Algorithm.RS256);
     }
 
+    @Test(expected = IllegalStateException.class)
+    public void shouldFailWithJwtThaHasTamperedAlgorithm() throws Exception {
+        final File file = new File(RESOURCES_DIR + PUBLIC_KEY_PEM_FILENAME);
+        final byte[] data = Files.readAllBytes(file.toPath());
+        JWTSigner signer = new JWTSigner(data);
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("sub", "userid");
+        JWTSigner.Options options = new JWTSigner.Options();
+        options.setAlgorithm(Algorithm.HS256);
+        String jwt = signer.sign(claims, options);
+        new JWTVerifier(data).verify(jwt);
+        final PublicKey publicKey = readPublicKey(RESOURCES_DIR + PUBLIC_KEY_PEM_FILENAME);
+        new JWTVerifier(publicKey).verify(jwt);
+    }
 }
 

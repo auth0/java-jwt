@@ -104,6 +104,15 @@ public class JWTVerifierTest {
     }
 
     @Test
+    public void shouldFailWithJwtThaHasTamperedAlgorithm() throws Exception {
+        expectedException.expect(IllegalStateException.class);
+        String tamperedAlg = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJqb2UiLCJleHAiOjEzMDA4MTkzODAsImh0dHA6Ly9leGFtcGxlLmNvbS9pc19yb290Ijp0cnVlfQ.QRsN2SlYJ3EEn7P9dnZGsq9tjyv3giOWzZJzhy67zZs";
+        byte[] secret = decoder.decode("AyM1SysPpbyDfgZld3umj1qzKObwVMkoqQ-EstJQLr_T-1qS0gZH75aKtMN3Yj0iPS4hcgUuTwjAzZr1Z9CAow");
+        JWTVerifier verifier = new JWTVerifier(secret);
+        verifier.verify(tamperedAlg);
+    }
+
+    @Test
     public void shouldFailWhenExpired1SecondAgo() throws Exception {
         expectedException.expect(JWTExpiredException.class);
         signatureVerifier().verifyExpiration(
