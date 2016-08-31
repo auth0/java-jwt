@@ -1,19 +1,19 @@
 package com.auth0.jwt;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Test things that are difficult using signer or verifier alone. In particular, setting
  * claims via Options produces output dependent on current time.
  *
  */
-public class RoundtripTest {
+public class JWTRoundTripTest {
     private static final String SECRET;
     static {
         SECRET = "my secret";
@@ -129,6 +129,32 @@ public class RoundtripTest {
         Map<String, Object> decoded = verifier.verify(token);
         assertEquals(decoded.size(), 1);
         assertEquals(((String) decoded.get("jti")).length(), 36);
+    }
+
+
+    public static class User {
+
+        private String username;
+        private String password;
+
+        public User() {
+        }
+
+        public String getUsername() {
+            return username;
+        }
+
+        public void setUsername(String username) {
+            this.username = username;
+        }
+
+        public String getPassword() {
+            return password;
+        }
+
+        public void setPassword(String password) {
+            this.password = password;
+        }
     }
 }
 

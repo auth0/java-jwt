@@ -1,7 +1,8 @@
 package com.auth0.jwt;
 
-
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import java.security.SignatureException;
 import java.util.Base64;
@@ -12,56 +13,75 @@ import org.boon.Lists;
 
 import static org.junit.Assert.assertEquals;
 
+/**
+ * General library JWTVerifier related unit tests
+ */
 public class JWTVerifierTest {
-	
     
+    public static Map<String,Object> createSingletonJSONNode(String key, Object value) {
+		Map<String,Object> jsonNode = new HashMap<>();
+		jsonNode.put(key, value);
+        return jsonNode;
+    }
+
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
+
 	@Test(expected = IllegalArgumentException.class)
     public void constructorShouldFailOnEmptySecret() {
         new JWTVerifier("");
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void shouldFailOn1Segments() throws Exception {
-        new JWTVerifier("such secret").verify("crypto");
+        expectedException.expect(IllegalStateException.class);
+        signatureVerifier().verify("crypto");
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void shouldFailOn2Segments() throws Exception {
-        new JWTVerifier("such secret").verify("much.crypto");
+        expectedException.expect(IllegalStateException.class);
+        signatureVerifier().verify("much.crypto");
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void shouldFailOn4Segments() throws Exception {
-        new JWTVerifier("such secret").verify("much.crypto.so.token");
+        expectedException.expect(IllegalStateException.class);
+        signatureVerifier().verify("much.crypto.so.token");
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void shouldFailOnEmptyStringToken() throws Exception {
-        new JWTVerifier("such secret").verify("");
+        expectedException.expect(IllegalStateException.class);
+        signatureVerifier().verify("");
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void shouldFailOnNullToken() throws Exception {
-        new JWTVerifier("such secret").verify(null);
+        expectedException.expect(IllegalStateException.class);
+        signatureVerifier().verify(null);
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void shouldFailIfAlgorithmIsNotSetOnToken() throws Exception {
+        expectedException.expect(IllegalStateException.class);
         new JWTVerifier("such secret").getAlgorithm(new HashMap<>());
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void shouldFailIfAlgorithmIsNotSupported() throws Exception {
-        new JWTVerifier("such secret").getAlgorithm(createSingletonJSONNode("alg", "doge-crypt"));
+        expectedException.expect(JWTAlgorithmException.class);
+        signatureVerifier().getAlgorithm(createSingletonJSONNode("alg", "doge-crypt"));
     }
 
     @Test
     public void shouldWorkIfAlgorithmIsSupported() throws Exception {
-       new JWTVerifier("such secret").getAlgorithm(createSingletonJSONNode("alg", "HS256"));
+        signatureVerifier().getAlgorithm(createSingletonJSONNode("alg", "HS256"));
     }
 
-    @Test(expected = SignatureException.class)
+    @Test
     public void shouldFailOnInvalidSignature() throws Exception {
+        expectedException.expect(SignatureException.class);
         final String jws = "eyJ0eXAiOiJKV1QiLA0KICJhbGciOiJIUzI1NiJ9" +
                 "." +
                 "eyJpc3MiOiJqb2UiLA0KICJleHAiOjEzMDA4MTkzODAsDQogImh0dHA6Ly9leGFt" +
@@ -69,7 +89,7 @@ public class JWTVerifierTest {
                 "." +
                 "suchsignature_plzvalidate_zomgtokens";
         String secret = "AyM1SysPpbyDfgZld3umj1qzKObwVMkoqQ-EstJQLr_T-1qS0gZH75aKtMN3Yj0iPS4hcgUuTwjAzZr1Z9CAow";
-        new JWTVerifier(secret, "audience").verifySignature(jws.split("\\."), "HmacSHA256");
+        signatureVerifier(secret).verifySignature(jws.split("\\."), Algorithm.HS256);
     }
 
     @Test
@@ -83,7 +103,7 @@ public class JWTVerifierTest {
 		
         byte[] secret = Base64.getUrlDecoder().decode("AyM1SysPpbyDfgZld3umj1qzKObwVMkoqQ-EstJQLr_T-1qS0gZH75aKtMN3Yj0iPS4hcgUuTwjAzZr1Z9CAow");
         new JWTVerifier(secret, "audience")
-                .verifySignature(jws.split("\\."), "HmacSHA256");
+                .verifySignature(jws.split("\\."), Algorithm.HS256);
     }
 
     @Test(expected = JWTExpiredException.class)
@@ -100,8 +120,8 @@ public class JWTVerifierTest {
 
     @Test
     public void shouldVerifyExpirationLong() throws Exception {
-        new JWTVerifier("such secret").verifyExpiration(
-                createSingletonJSONNode("exp", System.currentTimeMillis() / 1000L + 50L));
+        signatureVerifier().verifyExpiration(
+              createSingletonJSONNode("exp", System.currentTimeMillis() / 1000L + 50L));
     }
 
     @Test
@@ -112,58 +132,57 @@ public class JWTVerifierTest {
 
     @Test
     public void shouldVerifyIssuer() throws Exception {
-        new JWTVerifier("such secret", "amaze audience", "very issuer")
+        issuerVerifier("very issuer")
                 .verifyIssuer(createSingletonJSONNode("iss", "very issuer"));
     }
 
-    @Test(expected = JWTIssuerException.class)
+    @Test
     public void shouldFailIssuer() throws Exception {
-        new JWTVerifier("such secret", "amaze audience", "very issuer")
+        expectedException.expect(JWTIssuerException.class);
+        issuerVerifier("very issuer")
                 .verifyIssuer(createSingletonJSONNode("iss", "wow"));
     }
 
     @Test
     public void shouldVerifyIssuerWhenNotFoundInClaimsSet() throws Exception {
-        new JWTVerifier("such secret", "amaze audience", "very issuer")
-                .verifyIssuer(new HashMap<>());
     }
 
     @Test
     public void shouldVerifyAudience() throws Exception {
-        new JWTVerifier("such secret", "amaze audience")
+        audienceVerifier("amaze audience")
                 .verifyAudience(createSingletonJSONNode("aud", "amaze audience"));
     }
 
     @Test(expected = JWTAudienceException.class)
     public void shouldFailAudience() throws Exception {
-        new JWTVerifier("such secret", "amaze audience")
+        audienceVerifier("amaze audience")
                 .verifyAudience(createSingletonJSONNode("aud", "wow"));
     }
 
-    @Test
+    @Test(expected = JWTIssuerException.class)
     public void shouldVerifyAudienceWhenNotFoundInClaimsSet() throws Exception {
+        new JWTVerifier("such secret", "amaze audience", "very issuer")
+                .verifyIssuer(new HashMap<>());
+    }
+
+    @Test
+    public void shouldVerifyNullAudience() throws Exception {
+        signatureVerifier()
+                .verifyAudience(createSingletonJSONNode("aud", "wow"));
+    }
+
+    @Test(expected = JWTAudienceException.class)
+    public void shouldVerifyArrayAudience() throws Exception {
         new JWTVerifier("such secret", "amaze audience")
                 .verifyAudience(new HashMap<>());
     }
 
     @Test
-    public void shouldVerifyNullAudience() throws Exception {
-        new JWTVerifier("such secret")
-                .verifyAudience(createSingletonJSONNode("aud", "wow"));
-    }
-
-    @Test
-    public void shouldVerifyArrayAudience() throws Exception {
+    public void shouldFailArrayAudience() throws Exception {
         new JWTVerifier("such secret", "amaze audience")
                 .verifyAudience(createSingletonJSONNode("aud",Lists.list("foo","amaze audience")));
     }
-    
-    @Test(expected = JWTAudienceException.class)
-    public void shouldFailArrayAudience() throws Exception {
-        new JWTVerifier("such secret", "amaze audience")
-                .verifyAudience(createSingletonJSONNode("aud",Lists.list("foo")));
-    }
-    
+
     @Test
     public void decodeAndParse() throws Exception {
 		final JWTVerifier jwtVerifier = new JWTVerifier("secret", "audience");
@@ -174,16 +193,39 @@ public class JWTVerifierTest {
         assertEquals("123", decodedJSON.get("number").toString());
     }
 
-
-    public static Map<String,Object> createSingletonJSONNode(String key, Object value) {
-		Map<String,Object> jsonNode = new HashMap<>();
-		jsonNode.put(key, value);
-        return jsonNode;
+    @Test
+    public void shouldVerifyAudienceFromToken() throws Exception {
+        expectedException.expect(JWTAudienceException.class);
+        JWTVerifier verifier = new JWTVerifier("I.O.U a secret", "samples-api", null);
+        verifier.verify("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.wLlz9xDltxqKHQC7BeauPi5Q4KQK4nDjlRqQPvKVLYk");
     }
 
-    public static Map<String,Object> createSingletonJSONNode(String key, List values) {
-        final Map<String,Object>  jsonNodes =new HashMap<>();
-        jsonNodes.put(key, values);
-        return jsonNodes;
+    @Test
+    public void shouldVerifyIssuerFromToken() throws Exception {
+        expectedException.expect(JWTIssuerException.class);
+        JWTVerifier verifier = new JWTVerifier("I.O.U a secret", null, "samples.auth0.com");
+        verifier.verify("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.wLlz9xDltxqKHQC7BeauPi5Q4KQK4nDjlRqQPvKVLYk");
     }
+
+    private static JWTVerifier signatureVerifier() {
+        return new JWTVerifier("such secret");
+    }
+
+    private static JWTVerifier signatureVerifier(String secret) {
+        return new JWTVerifier(secret);
+    }
+
+    private static JWTVerifier signatureVerifier(byte[] secret) {
+        return new JWTVerifier(secret);
+    }
+
+    private static JWTVerifier issuerVerifier(String issuer) {
+        return new JWTVerifier("such secret", null, issuer);
+    }
+
+    private static JWTVerifier audienceVerifier(String audience) {
+        return new JWTVerifier("such secret", audience);
+    }
+
+
 }

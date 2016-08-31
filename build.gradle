@@ -52,10 +52,13 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.10'
     
     compile 'io.fastjson:boon:0.33'
-    
+    compile 'org.apache.commons:commons-lang3:3.4'
+    compile 'org.bouncycastle:bcprov-jdk15on:1.52'
+        
     legacyCompile "com.fasterxml.jackson.core:jackson-databind:2.6.0"
     legacyCompile "commons-codec:commons-codec:1.4"
     legacyCompile 'junit:junit:4.10'
+    
     jmh "com.fasterxml.jackson.core:jackson-databind:2.6.0"
     jmh "commons-codec:commons-codec:1.4"
     jmh 'io.fastjson:boon:0.33'

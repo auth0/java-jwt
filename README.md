@@ -1,50 +1,79 @@
 # Java JWT
 
+[![Build Status](https://travis-ci.org/auth0/java-jwt.svg?branch=master)](https://travis-ci.org/auth0/java-jwt)
+[![Coverage Status](https://img.shields.io/codecov/c/github/auth0/java-jwt/master.svg?style=flat-square)](https://codecov.io/github/auth0/java-jwt)
+[![License](http://img.shields.io/:license-mit-blue.svg?style=flat)](http://doge.mit-license.org)
+[![Maven Central](https://img.shields.io/maven-central/v/com.auth0/java-jwt.svg)](http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22java-jwt%22)
+
 An implementation of [JSON Web Tokens](http://self-issued.info/docs/draft-ietf-oauth-json-web-token.html) developed against `draft-ietf-oauth-json-web-token-08`.
 
-### Usage
-Note for Auth0 users:
-By default, Auth0's CLIENT_SECRET is base64-encoded.
-To work with JWTVerifier, it must be decoded first.
+## Installation
 
-```java
-public class Application {
-    public static void main (String [] args) {
-        try {
-            Base64 decoder = new Base64(true);
-            byte[] secret = decoder.decodeBase64(CLIENT_SECRET);
-            Map<String,Object> decodedPayload =
-                new JWTVerifier(secret, "audience").verify("my-token");
-                
-            // Get custom fields from decoded Payload
-            System.out.println(decodedPayload.get("name"));
-        } catch (SignatureException signatureException) {
-            System.err.println("Invalid signature!");
-        } catch (IllegalStateException illegalStateException) {
-            System.err.println("Invalid Token! " + illegalStateException);
-        }
-    }
-}
-```
-
-#### Maven coordinates?
-
-Yes, here you are:
+### Maven
 
 ```xml
 <dependency>
     <groupId>com.auth0</groupId>
     <artifactId>java-jwt</artifactId>
-    <version>2.1.0</version>
+    <version>2.2.0</version>
 </dependency>
 ```
 
-### Credits
+### Gradle
 
-Most of the code have been written by Luis Faja <https://bitbucket.org/lluisfaja/javajwt>. We just wrapped it in a nicer interface and published it to Maven Central. We'll be adding support for signing and other algorithms in the future.
+```gradle
+compile 'com.auth0:java-jwt:2.2.0'
+```
+
+## Usage
+
+### Sign JWT (HS256)
+
+```java
+final String issuer = "https://mydomain.com/";
+final String secret = "{{a secret used for signing}}";
+
+final long iat = System.currentTimeMillis() / 1000l; // issued at claim 
+final long exp = iat + 60L; // expires claim. In this case the token expires in 60 seconds
+
+final JWTSigner signer = new JWTSigner(secret);
+final HashMap<String, Object> claims = new HashMap<String, Object>();
+claims.put("iss", issuer);
+claims.put("exp", exp);
+claims.put("iat", iat);
+
+final String jwt = signer.sign(claims);
+```
+
+### Verify JWT (HS256)
+
+```java
+final String secret = "{{secret used for signing}}";
+try {
+    final JWTVerifier verifier = new JWTVerifier(secret);
+    final Map<String,Object> claims= jwtVerifier.verify(jwt);
+} catch (JWTVerifyException e) {
+    // Invalid Token
+}
+```
+
+### Validate aud & iss claims
+
+```java
+final String secret = "{{secret used for signing}}";
+try {
+    final JWTVerifier verifier = new JWTVerifier(secret, "{{my-audience}}", "{{my-issuer}}");
+    final Map<String,Object> claims= jwtVerifier.verify(jwt);
+} catch (JWTVerifyException e) {
+    // Invalid Token
+}
+```
+
 
 ### Why another JSON Web Token implementation for Java?
-We think that current JWT implementations are either too complex or not tested enough. We want something simple with the right number of abstractions.
+
+We believe existing JWT implementations in Java are either too complex or not tested enough.
+This library aims to be simple and achieve the right level of abstraction.
 
 ## Issue Reporting
 

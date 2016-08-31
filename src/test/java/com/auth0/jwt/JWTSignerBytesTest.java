@@ -1,5 +1,7 @@
 package com.auth0.jwt;
 
+import com.auth0.jwt.Algorithm;
+import com.auth0.jwt.JWTSigner;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -8,13 +10,12 @@ import java.util.LinkedList;
 
 import static org.junit.Assert.assertEquals;
 
-
 /**
- * General library JwtSigner related unit tests
+ * General library JwtSigner unit tests using byte constructor alternative for secret
  */
-public class JWTSignerTest {
-    private static JWTSigner signer = new JWTSigner("my secret");
-
+public class JWTSignerBytesTest {
+    private static JWTSigner signer = new JWTSigner(new byte[] { 109, 121, 32, 115, 101, 99, 114, 101, 116});
+    
     @Test
     public void shouldSignEmpty() throws Exception {
         HashMap<String, Object> claims = new HashMap<String, Object>();
@@ -44,7 +45,7 @@ public class JWTSignerTest {
         String token = signer.sign(claims);
         assertEquals("eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJodHRwOi8vZm9vIn0.EaYoTXJWUNd_1tWfZo4EZoKUP8hVMJm1LHBQNo4Xfwg", token);
     }
-
+    
     @Test
     public void shouldSignStringOrURI3() throws Exception {
         HashMap<String, Object> claims = new HashMap<String, Object>();
@@ -52,7 +53,7 @@ public class JWTSignerTest {
         String token = signer.sign(claims);
         assertEquals("eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIifQ.T2EKheH_WVVwybctic8Sqk89miYVKADW0AeXOicDbz8", token);
     }
-
+    
     @Test
     public void shouldSignStringOrURICollection() throws Exception {
         HashMap<String, Object> claims = new HashMap<String, Object>();
@@ -63,9 +64,17 @@ public class JWTSignerTest {
         String token = signer.sign(claims);
         assertEquals("eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOlsieHl6IiwiZnRwOi8vZm9vIl19.WGpsdOnLJ2k7Rr4WeEuabHO4wNQIhJfPMZot1DrTUgA", token);
     }
-
+    
     @Test
     public void shouldSignIntDate1() throws Exception {
+        HashMap<String, Object> claims = new HashMap<String, Object>();
+        claims.put("exp", 123);
+        String token = signer.sign(claims);
+        assertEquals("eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjEyM30.FzAXEHf0LVQPOyRQFftA1VBAj8RmZGEfwQIPSfg_DUg", token);
+    }
+
+    @Test
+    public void bytes_shouldSignIntDate1() throws Exception {
         HashMap<String, Object> claims = new HashMap<String, Object>();
         claims.put("exp", 123);
         String token = signer.sign(claims);
@@ -89,13 +98,21 @@ public class JWTSignerTest {
     }
 
     @Test
+    public void bytes_shouldSignIntDate2() throws Exception {
+        HashMap<String, Object> claims = new HashMap<String, Object>();
+        claims.put("nbf", 0);
+        String token = signer.sign(claims);
+        assertEquals("eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYmYiOjB9.ChHEHjtyr4qOUMu6KDsa2BjGXtkGurboD5ljr99gVzw", token);
+    }
+    
+    @Test
     public void shouldSignString() throws Exception {
         HashMap<String, Object> claims = new HashMap<String, Object>();
         claims.put("jti", "foo");
         String token = signer.sign(claims);
         assertEquals("eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJqdGkiOiJmb28ifQ.CriA-W8LKO4bCxy3e2Nu7kx2MxgcHGyFu_GVLMX3bko", token);
     }
-
+    
     @Test
     public void shouldSignNullEqualsMissing() throws Exception {
         HashMap<String, Object> claims = new HashMap<String, Object>();
@@ -105,70 +122,70 @@ public class JWTSignerTest {
         String token = signer.sign(claims);
         assertEquals("eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.e30.86pkOAQxvnSDd91EThNNpOTbO-hbvxdssnFjQqT04NU", token);
     }
-
+    
     @Test(expected = Exception.class)
     public void shouldFailExpectStringOrURI1() throws Exception {
         HashMap<String, Object> claims = new HashMap<String, Object>();
         claims.put("iss", 0);
         signer.sign(claims);
     }
-
+    
     @Test(expected = Exception.class)
     public void shouldFailExpectStringOrURI2() throws Exception {
         HashMap<String, Object> claims = new HashMap<String, Object>();
         claims.put("sub", ":");
         signer.sign(claims);
     }
-
+    
     @Test(expected = Exception.class)
     public void shouldFailExpectStringOrURICollection1() throws Exception {
         HashMap<String, Object> claims = new HashMap<String, Object>();
         claims.put("aud", 0);
         signer.sign(claims);
     }
-
+    
     @Test(expected = Exception.class)
     public void shouldFailExpectStringOrURICollection2() throws Exception {
         HashMap<String, Object> claims = new HashMap<String, Object>();
         claims.put("aud", Arrays.asList(0));
         signer.sign(claims);
     }
-
+    
     @Test(expected = Exception.class)
     public void shouldFailExpectStringOrURICollection3() throws Exception {
         HashMap<String, Object> claims = new HashMap<String, Object>();
         claims.put("aud", Arrays.asList(":"));
         signer.sign(claims);
     }
-
+    
     @Test(expected = Exception.class)
     public void shouldFailExpectIntDate1() throws Exception {
         HashMap<String, Object> claims = new HashMap<String, Object>();
         claims.put("exp", -1);
         signer.sign(claims);
     }
-
+    
     @Test(expected = Exception.class)
     public void shouldFailExpectIntDate2() throws Exception {
         HashMap<String, Object> claims = new HashMap<String, Object>();
         claims.put("nbf", "100");
         signer.sign(claims);
     }
-
+    
     @Test(expected = Exception.class)
     public void shouldFailExpectString() throws Exception {
         HashMap<String, Object> claims = new HashMap<String, Object>();
         claims.put("jti", 100);
         signer.sign(claims);
     }
-
+    
     @Test
     public void shouldOptionsNone() throws Exception {
         HashMap<String, Object> claims = new HashMap<String, Object>();
         String token = signer.sign(claims, new JWTSigner.Options());
         assertEquals("eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.e30.86pkOAQxvnSDd91EThNNpOTbO-hbvxdssnFjQqT04NU", token);
     }
-
+    
     @Test
     public void shouldOptionsAll() throws Exception {
         HashMap<String, Object> claims = new HashMap<String, Object>();

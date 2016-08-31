@@ -1,30 +1,51 @@
 package com.auth0.jwt;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.security.*;
+import java.util.stream.Collectors;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-import javax.naming.OperationNotSupportedException;
 
-import java.util.Base64;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.apache.commons.lang3.Validate;
+
 import org.boon.json.JsonSerializer;
 import org.boon.json.JsonSerializerFactory;
 
 /**
- * JwtSigner implementation based on the Ruby implementation from http://jwt.io
- * No support for RSA encryption at present
+ * Handles JWT Sign Operation
+ *
+ * Default algorithm when none provided is HMAC SHA-256 ("HS256")
+ *
+ * See associated library test cases for clear examples on usage
+ *
  */
 public class JWTSigner {
-    private final byte[] secret;
+
+    static {
+        if (Security.getProvider(BouncyCastleProvider.PROVIDER_NAME) == null) {
+            Security.addProvider(new BouncyCastleProvider());
+        }
+    }
+
+    private byte[] secret;
+    private PrivateKey privateKey;
+
+    // Default algorithm HMAC SHA-256 ("HS256")
+    protected final static Algorithm DEFAULT_ALGORITHM = Algorithm.HS256;
+
 	private final JsonSerializer serializer = new JsonSerializerFactory().setSerializeAsSupport(false).useFieldsOnly().create();
 	private final Base64.Encoder encoder = Base64.getUrlEncoder().withoutPadding();
 	
@@ -32,62 +53,58 @@ public class JWTSigner {
         this(secret.getBytes());
     }
 
-    public JWTSigner(byte[] secret) {
+    public JWTSigner(final byte[] secret) {
+        Validate.notNull(secret);
         this.secret = secret;
+    }
+
+    public JWTSigner(final PrivateKey privateKey) {
+        this.privateKey = privateKey;
     }
 
     /**
      * Generate a JSON Web Token.
-     *  using the default algorithm HMAC SHA-256 ("HS256")
-     * and no claims automatically set.
      *
-     * @param claims A map of the JWT claims that form the payload. Registered claims
-     *               must be of appropriate Java datatype as following:
-     *               <ul>
-     *                  <li>iss, sub: String
-     *                  <li>exp, nbf, iat, jti: numeric, eg. Long
-     *                  <li>aud: String, or Collection&lt;String&gt;
-     *               </ul>
-     *               All claims with a null value are left out the JWT.
-     *               Any claims set automatically as specified in
-     *               the "options" parameter override claims in this map.
-     *
-     *
+     * @param claims  A map of the JWT claims that form the payload. Registered claims
+     *                must be of appropriate Java datatype as following:
+     *                <ul>
+     *                <li>iss, sub: String
+     *                <li>exp, nbf, iat, jti: numeric, eg. Long
+     *                <li>aud: String, or Collection&lt;String&gt;
+     *                </ul>
+     *                All claims with a null value are left out the JWT.
+     *                Any claims set automatically as specified in
+     *                the "options" parameter override claims in this map.
      * @param options Allow choosing the signing algorithm, and automatic setting of some registered claims.
      */
-    public String sign(Map<String, Object> claims, Options options) {
-        Algorithm algorithm = Algorithm.HS256;
-        if (options != null && options.algorithm != null)
-            algorithm = options.algorithm;
-
-        List<String> segments = new ArrayList<String>();
+    public String sign(final Map<String, Object> claims, final Options options) {
+        Validate.notNull(claims);
+        final Algorithm algorithm = (options != null && options.algorithm != null) ? options.algorithm : DEFAULT_ALGORITHM;
+        final List<String> segments = new ArrayList<>();
         try {
             segments.add(encodedHeader(algorithm));
             segments.add(encodedPayload(claims, options));
             segments.add(encodedSignature(join(segments, "."), algorithm));
+            return join(segments, ".");
         } catch (Exception e) {
-            throw (e instanceof RuntimeException) ? (RuntimeException) e : new RuntimeException(e);
+            throw new RuntimeException(e.getCause());
         }
-
-        return join(segments, ".");
     }
 
     /**
      * Generate a JSON Web Token using the default algorithm HMAC SHA-256 ("HS256")
      * and no claims automatically set.
      */
-    public String sign(Map<String, Object> claims) {
+    public String sign(final Map<String, Object> claims) {
+        Validate.notNull(claims);
         return sign(claims, null);
     }
 
     /**
      * Generate the header part of a JSON web token.
      */
-    private String encodedHeader(Algorithm algorithm) throws UnsupportedEncodingException {
-        if (algorithm == null) { // default the algorithm if not specified
-            algorithm = Algorithm.HS256;
-        }
-
+    private String encodedHeader(final Algorithm algorithm) throws UnsupportedEncodingException {
+        Validate.notNull(algorithm);
         // create the header
 //        ObjectNode header = JsonNodeFactory.instance.objectNode();
 //        header.put("typ", "JWT");
@@ -98,10 +115,11 @@ public class JWTSigner {
 
     /**
      * Generate the JSON web token payload string from the claims.
+     *
      * @param options
      */
-    private String encodedPayload(Map<String, Object> _claims, Options options) throws Exception {
-        Map<String, Object> claims = new HashMap<String, Object>(_claims);
+    private String encodedPayload(final Map<String, Object> _claims, final Options options) throws IOException {
+        final Map<String, Object> claims = new HashMap<>(_claims);
         enforceStringOrURI(claims, "iss");
         enforceStringOrURI(claims, "sub");
         enforceStringOrURICollection(claims, "aud");
@@ -109,17 +127,18 @@ public class JWTSigner {
         enforceIntDate(claims, "nbf");
         enforceIntDate(claims, "iat");
         enforceString(claims, "jti");
-
-        if (options != null)
+        if (options != null) {
             processPayloadOptions(claims, options);
-
-//        String payload = new ObjectMapper().writeValueAsString(claims);
-		String payload = this.serializer.serialize(claims).toString();
+        }
+//      String payload = new ObjectMapper().writeValueAsString(claims);
+            String payload = this.serializer.serialize(claims).toString();
         return encoder.encodeToString(payload.getBytes("UTF-8"));
     }
 
-    private void processPayloadOptions(Map<String, Object> claims, Options options) {
-        long now = System.currentTimeMillis() / 1000l;
+    private void processPayloadOptions(final Map<String, Object> claims, final Options options) {
+        Validate.notNull(claims);
+        Validate.notNull(options);
+        final long now = System.currentTimeMillis() / 1000l;
         if (options.expirySeconds != null)
             claims.put("exp", now + options.expirySeconds);
         if (options.notValidBeforeLeeway != null)
@@ -130,58 +149,65 @@ public class JWTSigner {
             claims.put("jti", UUID.randomUUID().toString());
     }
 
-    private void enforceIntDate(Map<String, Object> claims, String claimName) {
-        Object value = handleNullValue(claims, claimName);
+    // consider cleanup
+    private void enforceIntDate(final Map<String, Object> claims, final String claimName) {
+        Validate.notNull(claims);
+        Validate.notNull(claimName);
+        final Object value = handleNullValue(claims, claimName);
         if (value == null)
             return;
         if (!(value instanceof Number)) {
-            throw new RuntimeException(String.format("Claim '%s' is invalid: must be an instance of Number", claimName));
+            throw new IllegalStateException(String.format("Claim '%s' is invalid: must be an instance of Number", claimName));
         }
-        long longValue = ((Number) value).longValue();
+        final long longValue = ((Number) value).longValue();
         if (longValue < 0)
-            throw new RuntimeException(String.format("Claim '%s' is invalid: must be non-negative", claimName));
+            throw new IllegalStateException(String.format("Claim '%s' is invalid: must be non-negative", claimName));
         claims.put(claimName, longValue);
     }
 
-    private void enforceStringOrURICollection(Map<String, Object> claims, String claimName) {
-        Object values = handleNullValue(claims, claimName);
+    // consider cleanup
+    private void enforceStringOrURICollection(final Map<String, Object> claims, final String claimName) {
+        final Object values = handleNullValue(claims, claimName);
         if (values == null)
             return;
         if (values instanceof Collection) {
-            @SuppressWarnings({ "unchecked" })
-            Iterator<Object> iterator = ((Collection<Object>) values).iterator();
+            @SuppressWarnings({"unchecked"})
+            final Iterator<Object> iterator = ((Collection<Object>) values).iterator();
             while (iterator.hasNext()) {
                 Object value = iterator.next();
                 String error = checkStringOrURI(value);
                 if (error != null)
-                    throw new RuntimeException(String.format("Claim 'aud' element is invalid: %s", error));
+                    throw new IllegalStateException(String.format("Claim 'aud' element is invalid: %s", error));
             }
         } else {
             enforceStringOrURI(claims, "aud");
         }
     }
 
-    private void enforceStringOrURI(Map<String, Object> claims, String claimName) {
-        Object value = handleNullValue(claims, claimName);
+    // consider cleanup
+    private void enforceStringOrURI(final Map<String, Object> claims, final String claimName) {
+        final Object value = handleNullValue(claims, claimName);
         if (value == null)
             return;
-        String error = checkStringOrURI(value);
+        final String error = checkStringOrURI(value);
         if (error != null)
-            throw new RuntimeException(String.format("Claim '%s' is invalid: %s", claimName, error));
+            throw new IllegalStateException(String.format("Claim '%s' is invalid: %s", claimName, error));
     }
 
-    private void enforceString(Map<String, Object> claims, String claimName) {
-        Object value = handleNullValue(claims, claimName);
+    // consider cleanup
+    private void enforceString(final Map<String, Object> claims, final String claimName) {
+        final Object value = handleNullValue(claims, claimName);
         if (value == null)
             return;
         if (!(value instanceof String))
-            throw new RuntimeException(String.format("Claim '%s' is invalid: not a string", claimName));
+            throw new IllegalStateException(String.format("Claim '%s' is invalid: not a string", claimName));
     }
 
-    private Object handleNullValue(Map<String, Object> claims, String claimName) {
-        if (! claims.containsKey(claimName))
+    // consider cleanup
+    private Object handleNullValue(final Map<String, Object> claims, final String claimName) {
+        if (!claims.containsKey(claimName))
             return null;
-        Object value = claims.get(claimName);
+        final Object value = claims.get(claimName);
         if (value == null) {
             claims.remove(claimName);
             return null;
@@ -189,10 +215,11 @@ public class JWTSigner {
         return value;
     }
 
-    private String checkStringOrURI(Object value) {
+    // consider cleanup
+    private String checkStringOrURI(final Object value) {
         if (!(value instanceof String))
             return "not a string";
-        String stringOrUri = (String) value;
+        final String stringOrUri = (String) value;
         if (!stringOrUri.contains(":"))
             return null;
         try {
@@ -206,50 +233,59 @@ public class JWTSigner {
     /**
      * Sign the header and payload
      */
-    private String encodedSignature(String signingInput, Algorithm algorithm) throws Exception {
-        byte[] signature = sign(algorithm, signingInput, secret);
-        return encoder.encodeToString(signature);
-    }
-
-    /**
-     * Switch the signing algorithm based on input, RSA not supported
-     */
-    private static byte[] sign(Algorithm algorithm, String msg, byte[] secret) throws Exception {
+   
+    private String encodedSignature(final String signingInput, final Algorithm algorithm) throws NoSuchAlgorithmException, InvalidKeyException,
+            NoSuchProviderException, SignatureException, JWTAlgorithmException {
+        Validate.notNull(signingInput);
+        Validate.notNull(algorithm);
+//        byte[] signature = sign(algorithm, signingInput, secret);
+//        return encoder.encodeToString(signature);
         switch (algorithm) {
-        case HS256:
-        case HS384:
-        case HS512:
-            return signHmac(algorithm, msg, secret);
-        case RS256:
-        case RS384:
-        case RS512:
-        default:
-            throw new OperationNotSupportedException("Unsupported signing method");
+            case HS256:
+            case HS384:
+            case HS512:
+                return encoder.encodeToString(signHmac(algorithm, signingInput, secret));
+            case RS256:
+            case RS384:
+            case RS512:
+                return encoder.encodeToString(signRs(algorithm, signingInput, privateKey));
+            default:
+                throw new JWTAlgorithmException("Unsupported signing method");
         }
     }
+
 
     /**
      * Sign an input string using HMAC and return the encrypted bytes
      */
-    private static byte[] signHmac(Algorithm algorithm, String msg, byte[] secret) throws Exception {
-        Mac mac = Mac.getInstance(algorithm.getValue());
+    private static byte[] signHmac(final Algorithm algorithm, final String msg, final byte[] secret) throws NoSuchAlgorithmException, InvalidKeyException {
+        Validate.notNull(algorithm);
+        Validate.notNull(msg);
+        Validate.notNull(secret);
+        final Mac mac = Mac.getInstance(algorithm.getValue());
         mac.init(new SecretKeySpec(secret, algorithm.getValue()));
         return mac.doFinal(msg.getBytes());
     }
 
-    private String join(List<String> input, String on) {
-        int size = input.size();
-        int count = 1;
-        StringBuilder joined = new StringBuilder();
-        for (String string : input) {
-            joined.append(string);
-            if (count < size) {
-                joined.append(on);
-            }
-            count++;
-        }
+    /**
+     * Sign an input string using RSA and return the encrypted bytes
+     */
+    private static byte[] signRs(final Algorithm algorithm, final String msg, final PrivateKey privateKey) throws NoSuchProviderException,
+            NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+        Validate.notNull(algorithm);
+        Validate.notNull(msg);
+        Validate.notNull(privateKey);
+        final byte[] messageBytes = msg.getBytes();
+        final Signature signature = Signature.getInstance(algorithm.getValue(), "BC");
+        signature.initSign(privateKey);
+        signature.update(messageBytes);
+        return signature.sign();
+    }
 
-        return joined.toString();
+    private String join(final List<String> input, final String separator) {
+        Validate.notNull(input);
+        Validate.notNull(separator);
+        return input.stream().collect(Collectors.joining(separator));
     }
 
     /**
@@ -257,6 +293,7 @@ public class JWTSigner {
      * claims to be automatically set.
      */
     public static class Options {
+
         private Algorithm algorithm;
         private Integer expirySeconds;
         private Integer notValidBeforeLeeway;
@@ -266,10 +303,11 @@ public class JWTSigner {
         public Algorithm getAlgorithm() {
             return algorithm;
         }
+
         /**
-         * Algorithm to sign JWT with. Default is <code>HS256</code>.
+         * Algorithm to sign JWT with.
          */
-        public Options setAlgorithm(Algorithm algorithm) {
+        public Options setAlgorithm(final Algorithm algorithm) {
             this.algorithm = algorithm;
             return this;
         }
@@ -278,11 +316,12 @@ public class JWTSigner {
         public Integer getExpirySeconds() {
             return expirySeconds;
         }
+
         /**
          * Set JWT claim "exp" to current timestamp plus this value.
          * Overrides content of <code>claims</code> in <code>sign()</code>.
          */
-        public Options setExpirySeconds(Integer expirySeconds) {
+        public Options setExpirySeconds(final Integer expirySeconds) {
             this.expirySeconds = expirySeconds;
             return this;
         }
@@ -290,11 +329,12 @@ public class JWTSigner {
         public Integer getNotValidBeforeLeeway() {
             return notValidBeforeLeeway;
         }
+
         /**
          * Set JWT claim "nbf" to current timestamp minus this value.
          * Overrides content of <code>claims</code> in <code>sign()</code>.
          */
-        public Options setNotValidBeforeLeeway(Integer notValidBeforeLeeway) {
+        public Options setNotValidBeforeLeeway(final Integer notValidBeforeLeeway) {
             this.notValidBeforeLeeway = notValidBeforeLeeway;
             return this;
         }
@@ -302,11 +342,12 @@ public class JWTSigner {
         public boolean isIssuedAt() {
             return issuedAt;
         }
+
         /**
          * Set JWT claim "iat" to current timestamp. Defaults to false.
          * Overrides content of <code>claims</code> in <code>sign()</code>.
          */
-        public Options setIssuedAt(boolean issuedAt) {
+        public Options setIssuedAt(final boolean issuedAt) {
             this.issuedAt = issuedAt;
             return this;
         }
@@ -314,13 +355,16 @@ public class JWTSigner {
         public boolean isJwtId() {
             return jwtId;
         }
+
         /**
          * Set JWT claim "jti" to a pseudo random unique value (type 4 UUID). Defaults to false.
          * Overrides content of <code>claims</code> in <code>sign()</code>.
          */
-        public Options setJwtId(boolean jwtId) {
+        public Options setJwtId(final boolean jwtId) {
             this.jwtId = jwtId;
             return this;
         }
+
     }
+
 }

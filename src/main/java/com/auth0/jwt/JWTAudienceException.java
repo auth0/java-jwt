@@ -6,6 +6,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Represents Exception related to Audience - for example illegal audience on JWT Verification
+ */
 public class JWTAudienceException extends JWTVerifyException {
     private Object audienceNode;
 
