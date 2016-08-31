@@ -1,7 +1,5 @@
 package com.auth0.jwt.pem;
 
-import org.apache.commons.codec.binary.Base64;
-
 import java.io.ByteArrayInputStream;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
@@ -16,7 +14,7 @@ public class X509CertUtils {
 
     private static final String PEM_BEGIN_MARKER = "-----BEGIN CERTIFICATE-----";
     private static final String PEM_END_MARKER = "-----END CERTIFICATE-----";
-
+    
     /**
      * Parses a DER-encoded X.509 certificate.
      */
@@ -52,9 +50,11 @@ public class X509CertUtils {
         if (markerEnd < 0) {
             return null;
         }
+        java.util.Base64.Decoder decoder = java.util.Base64.getDecoder();
         buf = buf.substring(0, markerEnd);
         buf = buf.replaceAll("\\s", "");
-        return parse(new Base64(true).decodeBase64(buf));
+        return parse(decoder.decode(buf));
+        //return parse(new Base64(true).decodeBase64(buf));
     }
 
 }

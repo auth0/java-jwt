@@ -1,14 +1,11 @@
 package com.auth0.jwt;
 
-import com.auth0.jwt.pem.X509CertUtils;
-import org.apache.commons.codec.binary.Base64;
 import org.junit.Test;
 
 import java.io.File;
 import java.nio.file.Files;
 import java.security.PublicKey;
 import java.security.SignatureException;
-import java.security.cert.X509Certificate;
 import java.util.HashMap;
 import java.util.Map;
 

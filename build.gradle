@@ -1,0 +1,100 @@
+plugins {
+    id 'me.champeau.gradle.jmh' version '0.2.0'
+}
+apply plugin: 'me.champeau.gradle.jmh'
+apply plugin: 'java'
+
+sourceCompatibility = '1.8'
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+
+if (!hasProperty('mainClass')) {
+    ext.mainClass = ''
+}
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+
+task resolveSources << {
+    def componentIds = configurations.compile.incoming.resolutionResult.allDependencies.collect { it.selected.id }
+    componentIds += configurations.testCompile.incoming.resolutionResult.allDependencies.collect { it.selected.id }
+
+    def result = dependencies.createArtifactResolutionQuery()
+        .forComponents(componentIds)
+        .withArtifacts(JvmLibrary, SourcesArtifact, JavadocArtifact)
+        .execute()
+
+    for (component in result.resolvedComponents) {
+        component.getArtifacts(SourcesArtifact).each { println "Source artifact for ${component.id}: ${it.file}" }
+    }
+}
+
+group = "com.auth0"
+version = "2.1.1-SNAPSHOT"
+
+
+sourceSets {
+    legacy {
+        java {
+          compileClasspath += sourceSets.main.output + sourceSets.main.runtimeClasspath
+          runtimeClasspath = output + compileClasspath 
+        }
+    }
+    jmh {
+        java {
+           compileClasspath +=  sourceSets.legacy.runtimeClasspath
+        }
+    }
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.10'
+    
+    compile 'io.fastjson:boon:0.33'
+    compile 'org.apache.commons:commons-lang3:3.4'
+    compile 'org.bouncycastle:bcprov-jdk15on:1.52'
+        
+    legacyCompile "com.fasterxml.jackson.core:jackson-databind:2.6.0"
+    legacyCompile "commons-codec:commons-codec:1.4"
+    legacyCompile 'junit:junit:4.10'
+    
+    jmh "com.fasterxml.jackson.core:jackson-databind:2.6.0"
+    jmh "commons-codec:commons-codec:1.4"
+    jmh 'io.fastjson:boon:0.33'
+}
+
+// check if the new implementation generates the same output as the old one:
+//
+//  ./gradlew compatibilityTest
+task compatibilityTest(type: Test) {
+    testClassesDir = sourceSets.legacy.output.classesDir
+    classpath = sourceSets.legacy.runtimeClasspath
+}
+
+// starts the benchmark to compare the speed:
+// apache commons codec Base64 vs jdk Base64
+// boon JSON vs jackson JSON
+// old vs new jwt implementation
+//
+// ./gradlew jmh
+//
+// the report is in build/reports/jmh/human.txt
+jmh {
+    verbosity = "NORMAL"
+    include = ".*Benchmark"
+    failOnError = true
+    fork = 1
+    iterations = 5
+    timeOnIteration = '2s' 
+    warmupIterations = 2
+}
+
+project.tasks.jmh.doFirst {
+    classpath += sourceSets.legacy.runtimeClasspath
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.8'
+}
+

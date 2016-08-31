@@ -1,13 +1,14 @@
 package com.auth0.jwt;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.Validate;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+import java.util.Base64;
+import java.util.List;
+import org.boon.json.JsonParserAndMapper;
+import org.boon.json.JsonParserFactory;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.security.*;
@@ -33,9 +34,9 @@ public class JWTVerifier {
     private PublicKey publicKey;
     private final String audience;
     private final String issuer;
-    private final Base64 decoder = new Base64(true);
+    private final Base64.Decoder decoder = Base64.getUrlDecoder();
+	private final JsonParserAndMapper fastParser = new JsonParserFactory().createFastParser();
 
-    private final ObjectMapper mapper;
 
 
     public JWTVerifier(final String secret, final String audience, final String issuer) {
@@ -62,7 +63,6 @@ public class JWTVerifier {
         if (secret == null || secret.length == 0) {
             throw new IllegalArgumentException("Secret cannot be null or empty");
         }
-        mapper = new ObjectMapper();
         this.secret = secret;
         this.audience = audience;
         this.issuer = issuer;
@@ -70,7 +70,6 @@ public class JWTVerifier {
 
     public JWTVerifier(final PublicKey publicKey, final String audience, final String issuer) {
         Validate.notNull(publicKey);
-        mapper = new ObjectMapper();
         this.publicKey = publicKey;
         this.audience = audience;
         this.issuer = issuer;
@@ -104,14 +103,19 @@ public class JWTVerifier {
         if (pieces.length != 3) {
             throw new IllegalStateException("Wrong number of segments: " + pieces.length);
         }
-        final JsonNode jwtHeader = decodeAndParse(pieces[0]);
-        final Algorithm algorithm = getAlgorithm(jwtHeader);
-        final JsonNode jwtPayload = decodeAndParse(pieces[1]);
+        // get JWTHeader JSON object. Extract algorithm
+        Map<String,Object> jwtHeader = decodeAndParse(pieces[0]);
+
+        Algorithm algorithm = getAlgorithm(jwtHeader);
+
+        // get JWTClaims JSON object
+        Map<String,Object> jwtPayload = decodeAndParse(pieces[1]);
+
         verifySignature(pieces, algorithm);
         verifyExpiration(jwtPayload);
         verifyIssuer(jwtPayload);
         verifyAudience(jwtPayload);
-        return mapper.treeToValue(jwtPayload, Map.class);
+        return jwtPayload;
     }
 
     void verifySignature(final String[] pieces, final Algorithm algorithm) throws NoSuchAlgorithmException,
@@ -149,11 +153,29 @@ public class JWTVerifier {
         }
     }
 
+    void verifyExpiration(Map<String,Object> jwtClaims) throws JWTExpiredException {
+		if ( jwtClaims.containsKey("exp") == false  ) {
+			return;
+		}
+		Object exp = jwtClaims.get("exp");
+		final long expiration;
+        if ( exp instanceof String ) {
+			expiration = Long.parseLong((String)exp);
+		} else if ( exp instanceof Number ) {
+			expiration = ((Number) exp).longValue();
+		} else {
+			expiration = 0;
+		}
+		if (expiration != 0 && System.currentTimeMillis() / 1000L >= expiration) {
+           throw new JWTExpiredException("jwt expired", expiration);
+        }
+    }
+
     private void verifyRs(final Algorithm algorithm, final String[] pieces, final PublicKey publicKey) throws SignatureException, NoSuchAlgorithmException, InvalidKeyException, JWTAlgorithmException {
         if (publicKey == null) {
             throw new IllegalStateException("PublicKey cannot be null when using algorithm: " + algorithm.getValue());
         }
-        final byte[] decodedSignatureBytes = new Base64(true).decode(pieces[2]);
+        final byte[] decodedSignatureBytes = decoder.decode(pieces[2]);
         final byte[] headerPayloadBytes = (pieces[0] + "." + pieces[1]).getBytes();
         final boolean verified = verifySignatureWithPublicKey(this.publicKey, headerPayloadBytes, decodedSignatureBytes, algorithm);
         if (!verified) {
@@ -176,64 +198,66 @@ public class JWTVerifier {
         }
     }
 
-    void verifyExpiration(final JsonNode jwtClaims) throws JWTExpiredException {
-        Validate.notNull(jwtClaims);
-        final long expiration = jwtClaims.has("exp") ? jwtClaims.get("exp").asLong(0) : 0;
-        if (expiration != 0 && System.currentTimeMillis() / 1000L >= expiration) {
-            throw new JWTExpiredException("jwt expired", expiration);
-        }
-    }
-
-    void verifyIssuer(final JsonNode jwtClaims) throws JWTIssuerException {
+ 
+    void verifyIssuer(Map<String,Object> jwtClaims) throws JWTIssuerException {
         Validate.notNull(jwtClaims);
 
         if (this.issuer == null ) {
             return;
         }
-
-        final String issuerFromToken = jwtClaims.has("iss") ? jwtClaims.get("iss").asText() : null;
+        final String issuerFromToken = jwtClaims.containsKey("iss") ? jwtClaims.get("iss").toString() : null;
 
         if (issuerFromToken == null || !issuer.equals(issuerFromToken)) {
             throw new JWTIssuerException("jwt issuer invalid", issuerFromToken);
         }
     }
 
-    void verifyAudience(final JsonNode jwtClaims) throws JWTAudienceException {
+    void verifyAudience(Map<String,Object> jwtClaims) throws JWTAudienceException {
         Validate.notNull(jwtClaims);
-        if (audience == null) {
+        if (audience == null)
             return;
-        }
-        final JsonNode audNode = jwtClaims.get("aud");
-        if (audNode == null) {
+        Object audNode = jwtClaims.get("aud");
+        if (audNode == null)
             throw new JWTAudienceException("jwt audience invalid", null);
-        }
-        if (audNode.isArray()) {
-            for (final JsonNode jsonNode : audNode) {
-                if (audience.equals(jsonNode.textValue())) {
+		if ( audNode instanceof List) {
+			List audList = (List)audNode;
+            for (Object audListElem : audList) {
+                if (audience.equals(audListElem.toString())) {
                     return;
                 }
             }
-        } else if (audNode.isTextual()) {
-            if (audience.equals(audNode.textValue())) {
+		} else if ( audNode instanceof String) {
+            if (audience.equals(audNode.toString()))
                 return;
-            }
-        }
+		}
+//        if (audNode.isArray()) {
+//            for (JsonNode jsonNode : audNode) {
+//                if (audience.equals(jsonNode.textValue()))
+//                    return;
+//            }
+//        } else if (audNode.isTextual()) {
+//            if (audience.equals(audNode.textValue()))
+//                return;
+//        }
         throw new JWTAudienceException("jwt audience invalid", audNode);
     }
 
-    Algorithm getAlgorithm(final JsonNode jwtHeader) throws JWTAlgorithmException {
+    Algorithm getAlgorithm(Map<String,Object> jwtHeader) throws JWTAlgorithmException {
         Validate.notNull(jwtHeader);
-        final String algorithmName = jwtHeader.has("alg") ? jwtHeader.get("alg").asText() : null;
-        if (jwtHeader.get("alg") == null) {
+        final String algorithmName = jwtHeader.containsKey("alg") ? jwtHeader.get("alg").toString() : null;
+
+        if (algorithmName == null) {
             throw new IllegalStateException("algorithm not set");
         }
         return Algorithm.findByName(algorithmName);
     }
 
-    JsonNode decodeAndParse(final String b64String) throws IOException {
-        Validate.notNull(b64String);
-        final String jsonString = new String(decoder.decode(b64String), "UTF-8");
-        return mapper.readValue(jsonString, JsonNode.class);
+//    JsonNode decodeAndParse(String b64String) throws IOException {
+	Map decodeAndParse(String b64String) throws IOException {
+        String jsonString = new String(decoder.decode(b64String), "UTF-8");
+		Map<String,Object> jwtHeader = this.fastParser.parseMap(jsonString);
+//        JsonNode jwtHeader = mapper.readValue(jsonString, JsonNode.class);
+        return jwtHeader;
     }
 
 }

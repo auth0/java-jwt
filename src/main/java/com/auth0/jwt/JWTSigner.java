@@ -1,21 +1,28 @@
 package com.auth0.jwt;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.Validate;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.security.*;
-import java.util.*;
+import java.util.stream.Collectors;
+
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.apache.commons.lang3.Validate;
+
+import org.boon.json.JsonSerializer;
+import org.boon.json.JsonSerializerFactory;
 
 /**
  * Handles JWT Sign Operation
@@ -39,7 +46,10 @@ public class JWTSigner {
     // Default algorithm HMAC SHA-256 ("HS256")
     protected final static Algorithm DEFAULT_ALGORITHM = Algorithm.HS256;
 
-    public JWTSigner(final String secret) {
+	private final JsonSerializer serializer = new JsonSerializerFactory().setSerializeAsSupport(false).useFieldsOnly().create();
+	private final Base64.Encoder encoder = Base64.getUrlEncoder().withoutPadding();
+	
+    public JWTSigner(String secret) {
         this(secret.getBytes());
     }
 
@@ -96,10 +106,11 @@ public class JWTSigner {
     private String encodedHeader(final Algorithm algorithm) throws UnsupportedEncodingException {
         Validate.notNull(algorithm);
         // create the header
-        final ObjectNode header = JsonNodeFactory.instance.objectNode();
-        header.put("typ", "JWT");
-        header.put("alg", algorithm.name());
-        return base64UrlEncode(header.toString().getBytes("UTF-8"));
+//        ObjectNode header = JsonNodeFactory.instance.objectNode();
+//        header.put("typ", "JWT");
+//        header.put("alg", algorithm.name());
+		String header = "{\"typ\":\"JWT\",\"alg\":\""+ algorithm.name() + "\"}";
+        return encoder.encodeToString(header.getBytes("UTF-8"));
     }
 
     /**
@@ -119,8 +130,9 @@ public class JWTSigner {
         if (options != null) {
             processPayloadOptions(claims, options);
         }
-        final String payload = new ObjectMapper().writeValueAsString(claims);
-        return base64UrlEncode(payload.getBytes("UTF-8"));
+//      String payload = new ObjectMapper().writeValueAsString(claims);
+            String payload = this.serializer.serialize(claims).toString();
+        return encoder.encodeToString(payload.getBytes("UTF-8"));
     }
 
     private void processPayloadOptions(final Map<String, Object> claims, final Options options) {
@@ -221,31 +233,27 @@ public class JWTSigner {
     /**
      * Sign the header and payload
      */
+   
     private String encodedSignature(final String signingInput, final Algorithm algorithm) throws NoSuchAlgorithmException, InvalidKeyException,
             NoSuchProviderException, SignatureException, JWTAlgorithmException {
         Validate.notNull(signingInput);
         Validate.notNull(algorithm);
+//        byte[] signature = sign(algorithm, signingInput, secret);
+//        return encoder.encodeToString(signature);
         switch (algorithm) {
             case HS256:
             case HS384:
             case HS512:
-                return base64UrlEncode(signHmac(algorithm, signingInput, secret));
+                return encoder.encodeToString(signHmac(algorithm, signingInput, secret));
             case RS256:
             case RS384:
             case RS512:
-                return base64UrlEncode(signRs(algorithm, signingInput, privateKey));
+                return encoder.encodeToString(signRs(algorithm, signingInput, privateKey));
             default:
                 throw new JWTAlgorithmException("Unsupported signing method");
         }
     }
 
-    /**
-     * Safe URL encode a byte array to a String
-     */
-    private String base64UrlEncode(final byte[] str) {
-        Validate.notNull(str);
-        return new String(Base64.encodeBase64URLSafe(str));
-    }
 
     /**
      * Sign an input string using HMAC and return the encrypted bytes
@@ -277,7 +285,7 @@ public class JWTSigner {
     private String join(final List<String> input, final String separator) {
         Validate.notNull(input);
         Validate.notNull(separator);
-        return StringUtils.join(input.iterator(), separator);
+        return input.stream().collect(Collectors.joining(separator));
     }
 
     /**

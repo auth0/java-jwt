@@ -9,16 +9,14 @@
 
   <groupId>com.auth0</groupId>
   <artifactId>java-jwt</artifactId>
-  <version>2.2.1-SNAPSHOT</version>
+  <version>2.1.1-SNAPSHOT</version>
 
   <name>Java JWT</name>
-  <description>Java implementation of JSON Web Token developed against draft-ietf-oauth-json-web-token-08.
-  </description>
+  <description>Java implementation of JSON Web Token developed against draft-ietf-oauth-json-web-token-08.</description>
   <url>http://www.jwt.io</url>
 
   <properties>
-    <java.target.version>1.7</java.target.version>
-    <java.source.version>1.7</java.source.version>
+    <java.version>1.8</java.version>
     <repackage.base>com.auth0.jwt.internal</repackage.base>
   </properties>
 
@@ -39,23 +37,20 @@
   <dependencies>
 
     <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-databind</artifactId>
-      <version>2.0.1</version>
+      <groupId>io.fastjson</groupId>
+      <artifactId>boon</artifactId>
+      <version>0.33</version>
     </dependency>
-
     <dependency>
       <groupId>org.bouncycastle</groupId>
       <artifactId>bcprov-jdk15on</artifactId>
       <version>1.52</version>
     </dependency>
-
     <dependency>
       <groupId>commons-codec</groupId>
       <artifactId>commons-codec</artifactId>
       <version>1.4</version>
     </dependency>
-
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
@@ -86,8 +81,8 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.1</version>
         <configuration>
-          <source>${java.source.version}</source>
-          <target>${java.target.version}</target>
+          <source>${java.version}</source>
+          <target>${java.version}</target>
           <encoding>UTF-8</encoding>
         </configuration>
       </plugin>
@@ -135,8 +130,8 @@
               <createDependencyReducedPom>true</createDependencyReducedPom>
               <relocations>
                 <relocation>
-                  <pattern>com.fasterxml.jackson</pattern>
-                  <shadedPattern>${repackage.base}.com.fasterxml.jackson</shadedPattern>
+                    <pattern>org.boon</pattern>
+                    <shadedPattern>${repackage.base}.org.boon</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>org.apache.commons.codec</pattern>
