@@ -1,12 +1,13 @@
 package com.auth0.jwt;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
+//import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -80,6 +81,35 @@ public class JWTSigner {
             throw new RuntimeException(e.getCause());
         }
     }
+    /**
+     * Generate a JSON Web Token.
+     *
+     * @param claims  A map of the JWT claims that form the payload. Registered claims
+     *                must be of appropriate Java datatype as following:
+     *                <ul>
+     *                <li>iss, sub: String
+     *                <li>exp, nbf, iat, jti: numeric, eg. Long
+     *                <li>aud: String, or Collection&lt;String&gt;
+     *                </ul>
+     *                All claims with a null value are left out the JWT.
+     *                Any claims set automatically as specified in
+     *                the "options" parameter override claims in this map.
+     * @param options Allow choosing the signing algorithm, and automatic setting of some registered claims.
+     * @param header Allow add headers
+     */
+    public String sign(final Map<String, Object> claims, final Options options,final Map<String,String> header) {
+        Validate.notNull(claims);
+        final Algorithm algorithm = (options != null && options.algorithm != null) ? options.algorithm : DEFAULT_ALGORITHM;
+        final List<String> segments = new ArrayList<>();
+        try {
+            segments.add(encodedHeader(algorithm,header));
+            segments.add(encodedPayload(claims, options));
+            segments.add(encodedSignature(join(segments, "."), algorithm));
+            return join(segments, ".");
+        } catch (Exception e) {
+            throw new RuntimeException(e.getCause());
+        }
+    }
 
     /**
      * Generate a JSON Web Token using the default algorithm HMAC SHA-256 ("HS256")
@@ -101,6 +131,20 @@ public class JWTSigner {
         header.put("alg", algorithm.name());
         return base64UrlEncode(header.toString().getBytes("UTF-8"));
     }
+
+    private String encodedHeader(final Algorithm algorithm,Map<String,String> _header) throws UnsupportedEncodingException {
+        Validate.notNull(algorithm);
+        // create the header
+        final ObjectNode header = JsonNodeFactory.instance.objectNode();
+        header.put("typ", "JWT");
+        header.put("alg", algorithm.name());
+        for (Map.Entry<String, String> entry : _header.entrySet()) {
+            header.put( entry.getKey() ,  entry.getValue());
+        }
+
+        return base64UrlEncode(header.toString().getBytes("UTF-8"));
+    }
+
 
     /**
      * Generate the JSON web token payload string from the claims.
