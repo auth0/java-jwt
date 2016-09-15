@@ -51,7 +51,7 @@ final String jwt = signer.sign(claims);
 final String secret = "{{secret used for signing}}";
 try {
     final JWTVerifier verifier = new JWTVerifier(secret);
-    final Map<String,Object> claims= jwtVerifier.verify(jwt);
+    final Map<String,Object> claims = verifier.verify(jwt);
 } catch (JWTVerifyException e) {
     // Invalid Token
 }
@@ -63,7 +63,7 @@ try {
 final String secret = "{{secret used for signing}}";
 try {
     final JWTVerifier verifier = new JWTVerifier(secret, "{{my-audience}}", "{{my-issuer}}");
-    final Map<String,Object> claims= jwtVerifier.verify(jwt);
+    final Map<String,Object> claims = verifier.verify(jwt);
 } catch (JWTVerifyException e) {
     // Invalid Token
 }
