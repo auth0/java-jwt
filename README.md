@@ -15,14 +15,14 @@ An implementation of [JSON Web Tokens](http://self-issued.info/docs/draft-ietf-o
 <dependency>
     <groupId>com.auth0</groupId>
     <artifactId>java-jwt</artifactId>
-    <version>2.2.0</version>
+    <version>2.2.1</version>
 </dependency>
 ```
 
 ### Gradle
 
 ```gradle
-compile 'com.auth0:java-jwt:2.2.0'
+compile 'com.auth0:java-jwt:2.2.1'
 ```
 
 ## Usage
