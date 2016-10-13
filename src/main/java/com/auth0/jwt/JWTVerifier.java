@@ -33,7 +33,6 @@ public class JWTVerifier {
     private PublicKey publicKey;
     private final String audience;
     private final String issuer;
-    private final Base64 decoder = new Base64(true);
 
     private final ObjectMapper mapper;
 
@@ -144,7 +143,7 @@ public class JWTVerifier {
         final Mac hmac = Mac.getInstance(algorithm.getValue());
         hmac.init(new SecretKeySpec(secret, algorithm.getValue()));
         final byte[] sig = hmac.doFinal((pieces[0] + "." + pieces[1]).getBytes());
-        if (!MessageDigest.isEqual(sig, decoder.decode(pieces[2]))) {
+        if (!MessageDigest.isEqual(sig, new Base64(true).decode(pieces[2]))) {
             throw new SignatureException("signature verification failed");
         }
     }
@@ -232,7 +231,7 @@ public class JWTVerifier {
 
     JsonNode decodeAndParse(final String b64String) throws IOException {
         Validate.notNull(b64String);
-        final String jsonString = new String(decoder.decode(b64String), "UTF-8");
+        final String jsonString = new String(new Base64(true).decode(b64String), "UTF-8");
         return mapper.readValue(jsonString, JsonNode.class);
     }
 
