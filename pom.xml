@@ -143,8 +143,8 @@
                   <shadedPattern>${repackage.base}.org.apache.commons.codec</shadedPattern>
                 </relocation>
                 <relocation>
-                  <pattern>org.apache.commons.io</pattern>
-                  <shadedPattern>${repackage.base}.org.apache.commons.io</shadedPattern>
+                  <pattern>commons-io</pattern>
+                  <shadedPattern>${repackage.base}.commons-io</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>org.apache.commons.lang3</pattern>
