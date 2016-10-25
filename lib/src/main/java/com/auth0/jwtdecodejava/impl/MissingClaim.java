@@ -1,17 +1,12 @@
-package com.auth0.jwtdecodejava;
+package com.auth0.jwtdecodejava.impl;
 
 import com.auth0.jwtdecodejava.exceptions.JWTException;
-import com.auth0.jwtdecodejava.impl.BaseClaim;
-import com.sun.istack.internal.NotNull;
+import com.auth0.jwtdecodejava.interfaces.Claim;
 
 import java.util.Date;
 import java.util.List;
 
-public class MissingClaim extends BaseClaim {
-
-    public MissingClaim(@NotNull String name) {
-        super(name);
-    }
+public final class MissingClaim implements Claim {
 
     @Override
     public boolean isMissing() {

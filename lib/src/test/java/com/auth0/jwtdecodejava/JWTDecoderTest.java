@@ -1,6 +1,5 @@
 package com.auth0.jwtdecodejava;
 
-import com.auth0.jwtdecodejava.interfaces.Payload;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -19,9 +18,8 @@ public class JWTDecoderTest {
     }
 
     @Test
-    public void getPayload() throws Exception {
-        JWTDecoder decoder = new JWTDecoder("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ");
-        Payload jwt = decoder.getPayload();
+    public void getSubject() throws Exception {
+        JWTDecoder jwt = new JWTDecoder("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ");
         assertThat(jwt.getSubject(), is(notNullValue()));
         assertThat(jwt.getSubject(), is("1234567890"));
     }

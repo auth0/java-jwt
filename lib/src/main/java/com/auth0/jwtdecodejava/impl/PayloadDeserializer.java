@@ -1,4 +1,4 @@
-package com.auth0.jwtdecodejava.impl.jackson;
+package com.auth0.jwtdecodejava.impl;
 
 import com.auth0.jwtdecodejava.exceptions.JWTException;
 import com.auth0.jwtdecodejava.interfaces.Payload;

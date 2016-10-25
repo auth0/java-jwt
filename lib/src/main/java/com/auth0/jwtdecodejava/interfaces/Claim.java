@@ -1,20 +1,11 @@
 package com.auth0.jwtdecodejava.interfaces;
 
-import com.sun.istack.internal.NotNull;
 import com.sun.istack.internal.Nullable;
 
 import java.util.Date;
 import java.util.List;
 
 public interface Claim {
-
-    /**
-     * Get this Claim's name.
-     *
-     * @return this Claim's name.
-     */
-    @NotNull
-    String getName();
 
     boolean isMissing();
 
@@ -45,7 +36,7 @@ public interface Claim {
      * @return the value as a Double or null.
      */
     @Nullable
-    public Double asDouble();
+    Double asDouble();
 
     /**
      * Get this Claim as a String.
@@ -54,7 +45,7 @@ public interface Claim {
      * @return the value as a String or null.
      */
     @Nullable
-    public String asString();
+    String asString();
 
     /**
      * Get this Claim as a Date.

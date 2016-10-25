@@ -1,20 +1,23 @@
 package com.auth0.jwtdecodejava;
 
 import com.auth0.jwtdecodejava.exceptions.JWTException;
+import com.auth0.jwtdecodejava.impl.JWTParser;
+import com.auth0.jwtdecodejava.interfaces.Claim;
 import com.auth0.jwtdecodejava.interfaces.Header;
+import com.auth0.jwtdecodejava.interfaces.JWT;
 import com.auth0.jwtdecodejava.interfaces.Payload;
-import com.auth0.jwtdecodejava.impl.jackson.JacksonConverter;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sun.istack.internal.NotNull;
 
 import java.io.IOException;
+import java.util.Date;
 
-public class JWTDecoder {
+public final class JWTDecoder implements JWT {
 
     private Header header;
     private Payload payload;
     private String signature;
 
-    public JWTDecoder(String jwt) {
+    private JWTDecoder(String jwt) {
         try {
             parseToken(jwt);
         } catch (IOException e) {
@@ -22,22 +25,14 @@ public class JWTDecoder {
         }
     }
 
-    public Header getHeader() {
-        return header;
-    }
-
-    public Payload getPayload() {
-        return payload;
-    }
-
-    public String getSignature() {
-        return signature;
+    public static JWT decode(String jwt){
+        return new JWTDecoder(jwt);
     }
 
     private void parseToken(String token) throws IOException {
         final String[] parts = splitToken(token);
-        final JacksonConverter converter = new JacksonConverter(new ObjectMapper());
-//        header = converter.parseHeader(Utils.base64Decode(parts[0]));
+        final JWTParser converter = new JWTParser();
+        header = converter.parseHeader(Utils.base64Decode(parts[0]));
         payload = converter.parsePayload(Utils.base64Decode(parts[1]));
         signature = parts[2];
     }
@@ -50,4 +45,63 @@ public class JWTDecoder {
         return parts;
     }
 
+    @Override
+    public String getAlgorithm() {
+        return header.getAlgorithm();
+    }
+
+    @Override
+    public String getType() {
+        return header.getType();
+    }
+
+    @Override
+    public String getContentType() {
+        return header.getContentType();
+    }
+
+    @Override
+    public String getIssuer() {
+        return payload.getIssuer();
+    }
+
+    @Override
+    public String getSubject() {
+        return payload.getSubject();
+    }
+
+    @Override
+    public String[] getAudience() {
+        return payload.getAudience();
+    }
+
+    @Override
+    public Date getExpiresAt() {
+        return payload.getExpiresAt();
+    }
+
+    @Override
+    public Date getNotBefore() {
+        return payload.getNotBefore();
+    }
+
+    @Override
+    public Date getIssuedAt() {
+        return payload.getIssuedAt();
+    }
+
+    @Override
+    public String getId() {
+        return payload.getId();
+    }
+
+    @Override
+    public Claim getClaim(@NotNull String name) {
+        return payload.getClaim(name);
+    }
+
+    @Override
+    public String getSignature() {
+        return signature;
+    }
 }

@@ -1,22 +1,22 @@
-package com.auth0.jwtdecodejava.impl.jackson;
+package com.auth0.jwtdecodejava.impl;
 
-import com.auth0.jwtdecodejava.impl.BaseClaim;
+import com.auth0.jwtdecodejava.interfaces.Claim;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.NullNode;
 import com.sun.istack.internal.NotNull;
-
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
-public class ClaimImpl extends BaseClaim {
+public class ClaimImpl implements Claim {
 
     private final JsonNode data;
 
-    public ClaimImpl(@NotNull String name, @NotNull JsonNode node) {
-        super(name);
-        this.data = node;
+    public ClaimImpl(@NotNull JsonNode node) {
+        this.data = node == null ? NullNode.getInstance() : node;
     }
 
     @Override
@@ -31,26 +31,29 @@ public class ClaimImpl extends BaseClaim {
 
     @Override
     public Boolean asBoolean() {
-        return data.asBoolean();
+        return isNull() ? null : data.asBoolean();
     }
 
     @Override
     public Integer asInt() {
-        return data.asInt();
+        return isNull() ? null : data.asInt();
     }
 
     @Override
     public Double asDouble() {
-        return data.asDouble();
+        return isNull() ? null : data.asDouble();
     }
 
     @Override
     public String asString() {
-        return data.asText();
+        return isNull() ? null : data.asText();
     }
 
     @Override
     public Date asDate() {
+        if (isNull()) {
+            return null;
+        }
         long seconds = data.asLong();
         return new Date(seconds * 1000);
     }
@@ -58,11 +61,11 @@ public class ClaimImpl extends BaseClaim {
     @Override
     @SuppressWarnings("unchecked")
     public <T> T[] asArray(Class<T> tClazz) throws Exception {
-        ObjectMapper mapper = new ObjectMapper();
-        if (!data.isArray()) {
+        if (data.isNull() || !data.isArray()) {
             return (T[]) Array.newInstance(tClazz, 0);
         }
 
+        ObjectMapper mapper = new ObjectMapper();
         T[] arr = (T[]) Array.newInstance(tClazz, data.size());
         for (int i = 0; i < data.size(); i++) {
             arr[i] = mapper.treeToValue(data.get(i), tClazz);
@@ -72,15 +75,31 @@ public class ClaimImpl extends BaseClaim {
 
     @Override
     public <T> List<T> asList(Class<T> tClazz) throws Exception {
-        ObjectMapper mapper = new ObjectMapper();
-        if (!data.isArray()) {
+        if (data.isNull() || !data.isArray()) {
             return new ArrayList<>(0);
         }
 
+        ObjectMapper mapper = new ObjectMapper();
         List<T> list = new ArrayList<>();
         for (int i = 0; i < data.size(); i++) {
             list.add(mapper.treeToValue(data.get(i), tClazz));
         }
         return list;
+    }
+
+    public static Claim extractClaim(@NotNull String claimName, @NotNull Map<String, JsonNode> tree) {
+        JsonNode node = tree.get(claimName);
+        return claimFromNode(node);
+    }
+
+    @NotNull
+    public static Claim claimFromNode(JsonNode node) {
+        if (node == null || node.isMissingNode()) {
+            return new MissingClaim();
+        }
+        if (node.isObject() && node.size() == 0) {
+            return new NullClaim();
+        }
+        return new ClaimImpl(node);
     }
 }
