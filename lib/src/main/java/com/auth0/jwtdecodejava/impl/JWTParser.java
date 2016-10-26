@@ -1,5 +1,6 @@
 package com.auth0.jwtdecodejava.impl;
 
+import com.auth0.jwtdecodejava.exceptions.JWTException;
 import com.auth0.jwtdecodejava.interfaces.Header;
 import com.auth0.jwtdecodejava.interfaces.JWTPartsParser;
 import com.auth0.jwtdecodejava.interfaces.Payload;
@@ -23,13 +24,13 @@ public class JWTParser implements JWTPartsParser {
     }
 
     @Override
-    public Payload parsePayload(String json) throws IOException {
-        return mapper.readValue(json, Payload.class);
+    public Payload parsePayload(String json) throws JWTException {
+        return convertFromJSON(json, Payload.class);
     }
 
     @Override
-    public Header parseHeader(String json) throws IOException {
-        return mapper.readValue(json, Header.class);
+    public Header parseHeader(String json) throws JWTException {
+        return convertFromJSON(json, Header.class);
     }
 
     private void addDeserializers(ObjectMapper mapper) {
@@ -44,5 +45,18 @@ public class JWTParser implements JWTPartsParser {
         mapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
         mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
         return mapper;
+    }
+
+    @SuppressWarnings("WeakerAccess")
+    <T> T convertFromJSON(String json, Class<T> tClazz) throws JWTException {
+        JWTException exception = new JWTException(String.format("The string '%s' doesn't have a valid JSON format.", json));
+        if (json == null || !json.startsWith("{") || !json.endsWith("}")) {
+            throw exception;
+        }
+        try {
+            return mapper.readValue(json, tClazz);
+        } catch (IOException e) {
+            throw exception;
+        }
     }
 }

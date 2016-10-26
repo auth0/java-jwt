@@ -8,8 +8,9 @@ import com.auth0.jwtdecodejava.interfaces.JWT;
 import com.auth0.jwtdecodejava.interfaces.Payload;
 import com.sun.istack.internal.NotNull;
 
-import java.io.IOException;
 import java.util.Date;
+
+import static com.auth0.jwtdecodejava.Utils.base64Decode;
 
 public final class JWTDecoder implements JWT {
 
@@ -18,22 +19,18 @@ public final class JWTDecoder implements JWT {
     private String signature;
 
     private JWTDecoder(String jwt) {
-        try {
-            parseToken(jwt);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        parseToken(jwt);
     }
 
-    public static JWT decode(String jwt){
+    public static JWT decode(String jwt) {
         return new JWTDecoder(jwt);
     }
 
-    private void parseToken(String token) throws IOException {
+    private void parseToken(String token) throws JWTException {
         final String[] parts = splitToken(token);
         final JWTParser converter = new JWTParser();
-        header = converter.parseHeader(Utils.base64Decode(parts[0]));
-        payload = converter.parsePayload(Utils.base64Decode(parts[1]));
+        header = converter.parseHeader(base64Decode(parts[0]));
+        payload = converter.parsePayload(base64Decode(parts[1]));
         signature = parts[2];
     }
 
@@ -103,5 +100,11 @@ public final class JWTDecoder implements JWT {
     @Override
     public String getSignature() {
         return signature;
+    }
+
+    @Override
+    public boolean isExpired() {
+        //TODO: Add advanced validation
+        return false;
     }
 }

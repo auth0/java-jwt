@@ -1,10 +1,13 @@
 package com.auth0.jwtdecodejava.impl;
 
+import com.auth0.jwtdecodejava.exceptions.JWTException;
 import com.auth0.jwtdecodejava.interfaces.Claim;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.sun.istack.internal.NotNull;
+
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Date;
@@ -26,7 +29,7 @@ public class ClaimImpl implements Claim {
 
     @Override
     public boolean isNull() {
-        return data.isNull();
+        return data.isNull() || data.isObject() && data.size() == 0;
     }
 
     @Override
@@ -60,7 +63,7 @@ public class ClaimImpl implements Claim {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> T[] asArray(Class<T> tClazz) throws Exception {
+    public <T> T[] asArray(Class<T> tClazz) throws JWTException {
         if (data.isNull() || !data.isArray()) {
             return (T[]) Array.newInstance(tClazz, 0);
         }
@@ -68,13 +71,17 @@ public class ClaimImpl implements Claim {
         ObjectMapper mapper = new ObjectMapper();
         T[] arr = (T[]) Array.newInstance(tClazz, data.size());
         for (int i = 0; i < data.size(); i++) {
-            arr[i] = mapper.treeToValue(data.get(i), tClazz);
+            try {
+                arr[i] = mapper.treeToValue(data.get(i), tClazz);
+            } catch (JsonProcessingException e) {
+                throw new JWTException("Couldn't map the Claim's array contents to " + tClazz.getSimpleName(), e);
+            }
         }
         return arr;
     }
 
     @Override
-    public <T> List<T> asList(Class<T> tClazz) throws Exception {
+    public <T> List<T> asList(Class<T> tClazz) throws JWTException {
         if (data.isNull() || !data.isArray()) {
             return new ArrayList<>(0);
         }
@@ -82,7 +89,11 @@ public class ClaimImpl implements Claim {
         ObjectMapper mapper = new ObjectMapper();
         List<T> list = new ArrayList<>();
         for (int i = 0; i < data.size(); i++) {
-            list.add(mapper.treeToValue(data.get(i), tClazz));
+            try {
+                list.add(mapper.treeToValue(data.get(i), tClazz));
+            } catch (JsonProcessingException e) {
+                throw new JWTException("Couldn't map the Claim's array contents to " + tClazz.getSimpleName(), e);
+            }
         }
         return list;
     }
@@ -96,9 +107,6 @@ public class ClaimImpl implements Claim {
     public static Claim claimFromNode(JsonNode node) {
         if (node == null || node.isMissingNode()) {
             return new MissingClaim();
-        }
-        if (node.isObject() && node.size() == 0) {
-            return new NullClaim();
         }
         return new ClaimImpl(node);
     }

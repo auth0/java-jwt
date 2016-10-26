@@ -1,5 +1,6 @@
 package com.auth0.jwtdecodejava.interfaces;
 
+import com.auth0.jwtdecodejava.exceptions.JWTException;
 import com.sun.istack.internal.Nullable;
 
 import java.util.Date;
@@ -63,7 +64,7 @@ public interface Claim {
      * @return the value as an Array or an empty Array.
      * @throws Exception if the values inside the Array can't be converted to a class T.
      */
-    <T> T[] asArray(Class<T> tClazz) throws Exception;
+    <T> T[] asArray(Class<T> tClazz) throws JWTException;
 
     /**
      * Get this Claim as a List of type T.
@@ -72,5 +73,5 @@ public interface Claim {
      * @return the value as a List or an empty List.
      * @throws Exception if the values inside the List can't be converted to a class T.
      */
-    <T> List<T> asList(Class<T> tClazz) throws Exception;
+    <T> List<T> asList(Class<T> tClazz) throws JWTException;
 }

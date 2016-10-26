@@ -1,6 +1,7 @@
 package com.auth0.jwtdecodejava.impl;
 
 import com.auth0.jwtdecodejava.UserPojo;
+import com.auth0.jwtdecodejava.exceptions.JWTException;
 import com.auth0.jwtdecodejava.interfaces.Claim;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,6 +18,7 @@ import java.util.Date;
 import static com.auth0.jwtdecodejava.impl.ClaimImpl.claimFromNode;
 import static com.auth0.jwtdecodejava.impl.JWTParser.getDefaultObjectMapper;
 import static org.hamcrest.Matchers.*;
+import static org.hamcrest.core.IsNull.notNullValue;
 import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertThat;
 
@@ -157,7 +159,7 @@ public class ClaimImplTest {
         JsonNode value = mapper.valueToTree(new String[]{"keys", "values"});
         Claim claim = claimFromNode(value);
 
-        exception.expect(Exception.class);
+        exception.expect(JWTException.class);
         claim.asArray(UserPojo.class);
     }
 
@@ -202,7 +204,27 @@ public class ClaimImplTest {
         JsonNode value = mapper.valueToTree(new String[]{"keys", "values"});
         Claim claim = claimFromNode(value);
 
-        exception.expect(Exception.class);
+        exception.expect(JWTException.class);
         claim.asList(UserPojo.class);
+    }
+
+    @Test
+    public void shouldReturnMissingClaimWhenParsingNullValue() throws Exception {
+        JsonNode value = mapper.valueToTree(null);
+        Claim claim = claimFromNode(value);
+
+        assertThat(claim, is(notNullValue()));
+        assertThat(claim, is(instanceOf(MissingClaim.class)));
+        assertThat(claim.isMissing(), is(true));
+    }
+
+    @Test
+    public void shouldReturnValidButNullClaimIfTreeIsEmpty() throws Exception {
+        JsonNode value = mapper.valueToTree(new Object());
+        Claim claim = claimFromNode(value);
+
+        assertThat(claim, is(notNullValue()));
+        assertThat(claim, is(instanceOf(ClaimImpl.class)));
+        assertThat(claim.isNull(), is(true));
     }
 }

@@ -1,5 +1,6 @@
 package com.auth0.jwtdecodejava.impl;
 
+import com.auth0.jwtdecodejava.exceptions.JWTException;
 import com.auth0.jwtdecodejava.interfaces.Claim;
 import com.auth0.jwtdecodejava.interfaces.Payload;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -8,6 +9,7 @@ import com.sun.istack.internal.NotNull;
 import java.util.Date;
 import java.util.Map;
 
+import static com.auth0.jwtdecodejava.impl.ClaimImpl.claimFromNode;
 import static com.auth0.jwtdecodejava.impl.ClaimImpl.extractClaim;
 import static com.auth0.jwtdecodejava.impl.Claims.*;
 
@@ -30,12 +32,20 @@ public class PayloadImpl implements Payload {
 
     @Override
     public String[] getAudience() {
+        JsonNode audNode = tree.get(AUDIENCE);
+        if (audNode == null || audNode.isNull()) {
+            return new String[]{};
+        }
+        if (audNode.isTextual() && !audNode.asText().isEmpty()) {
+            return new String[]{audNode.asText()};
+        }
+        Claim claim = claimFromNode(audNode);
         try {
-            return extractClaim(AUDIENCE, tree).asArray(String.class);
+            return claim.asArray(String.class);
         } catch (Exception e) {
             e.printStackTrace();
+            throw new JWTException("The Audience contained invalid values.", e);
         }
-        return new String[]{};
     }
 
     @Override

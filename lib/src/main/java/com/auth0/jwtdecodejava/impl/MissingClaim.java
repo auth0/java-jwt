@@ -44,12 +44,12 @@ public final class MissingClaim implements Claim {
     }
 
     @Override
-    public <T> T[] asArray(Class<T> tClazz) throws Exception {
+    public <T> T[] asArray(Class<T> tClazz) throws JWTException {
         throw new JWTException("Missing Claim");
     }
 
     @Override
-    public <T> List<T> asList(Class<T> tClazz) throws Exception {
+    public <T> List<T> asList(Class<T> tClazz) throws JWTException {
         throw new JWTException("Missing Claim");
     }
 }
