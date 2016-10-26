@@ -8,10 +8,10 @@ import java.util.Map;
 import static com.auth0.jwtdecodejava.impl.ClaimImpl.extractClaim;
 import static com.auth0.jwtdecodejava.impl.Claims.*;
 
-public class HeaderImpl implements Header {
+class HeaderImpl implements Header {
     private final Map<String, JsonNode> tree;
 
-    public HeaderImpl(Map<String, JsonNode> tree) {
+    HeaderImpl(Map<String, JsonNode> tree) {
         this.tree = tree;
     }
 

@@ -5,7 +5,6 @@ import com.auth0.jwtdecodejava.interfaces.Claim;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.NullNode;
 import com.sun.istack.internal.NotNull;
 
 import java.lang.reflect.Array;
@@ -14,47 +13,37 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-public class ClaimImpl implements Claim {
+class ClaimImpl extends BaseClaim {
 
     private final JsonNode data;
 
-    public ClaimImpl(@NotNull JsonNode node) {
-        this.data = node == null ? NullNode.getInstance() : node;
-    }
-
-    @Override
-    public boolean isMissing() {
-        return data.isMissingNode();
-    }
-
-    @Override
-    public boolean isNull() {
-        return data.isNull() || data.isObject() && data.size() == 0;
+    private ClaimImpl(@NotNull JsonNode node) {
+        this.data = node;
     }
 
     @Override
     public Boolean asBoolean() {
-        return isNull() || !data.isBoolean() ? null : data.asBoolean();
+        return !data.isBoolean() ? null : data.asBoolean();
     }
 
     @Override
     public Integer asInt() {
-        return isNull() || !data.isNumber() ? null : data.asInt();
+        return !data.isNumber() ? null : data.asInt();
     }
 
     @Override
     public Double asDouble() {
-        return isNull() || !data.isNumber() ? null : data.asDouble();
+        return !data.isNumber() ? null : data.asDouble();
     }
 
     @Override
     public String asString() {
-        return isNull() || !data.isTextual() ? null : data.asText();
+        return !data.isTextual() ? null : data.asText();
     }
 
     @Override
     public Date asDate() {
-        if (isNull() || !data.canConvertToLong()) {
+        if (!data.canConvertToLong()) {
             return null;
         }
         long seconds = data.asLong();
@@ -64,8 +53,8 @@ public class ClaimImpl implements Claim {
     @Override
     @SuppressWarnings("unchecked")
     public <T> T[] asArray(Class<T> tClazz) throws JWTException {
-        if (data.isNull() || !data.isArray()) {
-            return (T[]) Array.newInstance(tClazz, 0);
+        if (!data.isArray()) {
+            return null;
         }
 
         ObjectMapper mapper = new ObjectMapper();
@@ -82,8 +71,8 @@ public class ClaimImpl implements Claim {
 
     @Override
     public <T> List<T> asList(Class<T> tClazz) throws JWTException {
-        if (data.isNull() || !data.isArray()) {
-            return new ArrayList<>(0);
+        if (!data.isArray()) {
+            return null;
         }
 
         ObjectMapper mapper = new ObjectMapper();
@@ -105,8 +94,8 @@ public class ClaimImpl implements Claim {
 
     @NotNull
     public static Claim claimFromNode(JsonNode node) {
-        if (node == null || node.isMissingNode()) {
-            return new MissingClaim();
+        if (node == null || node.isNull() || node.isMissingNode()) {
+            return new BaseClaim();
         }
         return new ClaimImpl(node);
     }

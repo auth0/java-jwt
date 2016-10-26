@@ -13,10 +13,10 @@ import static com.auth0.jwtdecodejava.impl.ClaimImpl.claimFromNode;
 import static com.auth0.jwtdecodejava.impl.ClaimImpl.extractClaim;
 import static com.auth0.jwtdecodejava.impl.Claims.*;
 
-public class PayloadImpl implements Payload {
+class PayloadImpl implements Payload {
     private Map<String, JsonNode> tree;
 
-    public PayloadImpl(Map<String, JsonNode> tree) {
+    PayloadImpl(Map<String, JsonNode> tree) {
         this.tree = tree;
     }
 

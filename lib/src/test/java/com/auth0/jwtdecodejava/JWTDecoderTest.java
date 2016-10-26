@@ -1,7 +1,7 @@
 package com.auth0.jwtdecodejava;
 
 import com.auth0.jwtdecodejava.exceptions.JWTException;
-import com.auth0.jwtdecodejava.impl.MissingClaim;
+import com.auth0.jwtdecodejava.impl.BaseClaim;
 import com.auth0.jwtdecodejava.interfaces.Claim;
 import com.auth0.jwtdecodejava.interfaces.JWT;
 import com.sun.istack.internal.Nullable;
@@ -120,7 +120,7 @@ public class JWTDecoderTest {
 
     @Test
     public void shouldGetExpirationTime() throws Exception {
-        JWT jwt = JWTDecoder.decode("eyJhbGciOiJIUzI1NiJ9.eyJleHAiOiIxNDc2NzI3MDg2In0.XwZztHlQwnAgmnQvrcWXJloLOUaLZGiY0HOXJCKRaks");
+        JWT jwt = JWTDecoder.decode("eyJhbGciOiJIUzI1NiJ9.eyJleHAiOjE0NzY3MjcwODZ9.L9dcPHEDQew2u9MkDCORFkfDGcSOsgoPqNY-LUMLEHg");
         assertThat(jwt, is(notNullValue()));
         assertThat(jwt.getExpiresAt(), is(instanceOf(Date.class)));
         long ms = 1476727086L * 1000;
@@ -131,7 +131,7 @@ public class JWTDecoderTest {
 
     @Test
     public void shouldGetNotBefore() throws Exception {
-        JWT jwt = JWTDecoder.decode("eyJhbGciOiJIUzI1NiJ9.eyJuYmYiOiIxNDc2NzI3MDg2In0.pi3Fi3oFiXk5A5AetDdL0hjVx_rt6F5r_YiG6HoCYDw");
+        JWT jwt = JWTDecoder.decode("eyJhbGciOiJIUzI1NiJ9.eyJuYmYiOjE0NzY3MjcwODZ9.tkpD3iCPQPVqjnjpDVp2bJMBAgpVCG9ZjlBuMitass0");
         assertThat(jwt, is(notNullValue()));
         assertThat(jwt.getNotBefore(), is(instanceOf(Date.class)));
         long ms = 1476727086L * 1000;
@@ -142,7 +142,7 @@ public class JWTDecoderTest {
 
     @Test
     public void shouldGetIssuedAt() throws Exception {
-        JWT jwt = JWTDecoder.decode("eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOiIxNDc2NzI3MDg2In0.u6BxwrO7S0sqDY8-1cUOLzU2uejAJBzQQF8g_o5BAgo");
+        JWT jwt = JWTDecoder.decode("eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE0NzY3MjcwODZ9.KPjGoW665E8V5_27Jugab8qSTxLk2cgquhPCBfAP0_w");
         assertThat(jwt, is(notNullValue()));
         assertThat(jwt.getIssuedAt(), is(instanceOf(Date.class)));
         long ms = 1476727086L * 1000;
@@ -202,7 +202,7 @@ public class JWTDecoderTest {
         JWT jwt = JWTDecoder.decode("eyJhbGciOiJIUzI1NiJ9.e30.K17vlwhE8FCMShdl1_65jEYqsQqBOVMPUU9IgG-QlTM");
         assertThat(jwt, is(notNullValue()));
         assertThat(jwt.getClaim("notExisting"), is(notNullValue()));
-        assertThat(jwt.getClaim("notExisting"), is(instanceOf(MissingClaim.class)));
+        assertThat(jwt.getClaim("notExisting"), is(instanceOf(BaseClaim.class)));
     }
 
     @Test

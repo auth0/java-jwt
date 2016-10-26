@@ -18,7 +18,7 @@ public class JWTParser implements JWTPartsParser {
         this(getDefaultObjectMapper());
     }
 
-    public JWTParser(ObjectMapper mapper) {
+    JWTParser(ObjectMapper mapper) {
         addDeserializers(mapper);
         this.mapper = mapper;
     }

@@ -6,50 +6,44 @@ import com.auth0.jwtdecodejava.interfaces.Claim;
 import java.util.Date;
 import java.util.List;
 
-public final class MissingClaim implements Claim {
-
+public class BaseClaim implements Claim {
     @Override
-    public boolean isMissing() {
+    public boolean isNull() {
         return true;
     }
 
     @Override
-    public boolean isNull() {
-        return false;
-    }
-
-    @Override
     public Boolean asBoolean() {
-        throw new JWTException("Missing Claim");
+        return null;
     }
 
     @Override
     public Integer asInt() {
-        throw new JWTException("Missing Claim");
+        return null;
     }
 
     @Override
     public Double asDouble() {
-        throw new JWTException("Missing Claim");
+        return null;
     }
 
     @Override
     public String asString() {
-        throw new JWTException("Missing Claim");
+        return null;
     }
 
     @Override
     public Date asDate() {
-        throw new JWTException("Missing Claim");
+        return null;
     }
 
     @Override
     public <T> T[] asArray(Class<T> tClazz) throws JWTException {
-        throw new JWTException("Missing Claim");
+        return null;
     }
 
     @Override
     public <T> List<T> asList(Class<T> tClazz) throws JWTException {
-        throw new JWTException("Missing Claim");
+        return null;
     }
 }

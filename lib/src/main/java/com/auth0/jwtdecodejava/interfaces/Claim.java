@@ -8,8 +8,6 @@ import java.util.List;
 
 public interface Claim {
 
-    boolean isMissing();
-
     boolean isNull();
 
     /**

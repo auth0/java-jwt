@@ -137,21 +137,19 @@ public class ClaimImplTest {
     }
 
     @Test
-    public void shouldGetEmptyArrayIfNullValue() throws Exception {
+    public void shouldGetNullArrayIfNullValue() throws Exception {
         JsonNode value = mapper.valueToTree(null);
         Claim claim = claimFromNode(value);
 
-        assertThat(claim.asArray(String.class), is(notNullValue()));
-        assertThat(claim.asArray(String.class), is(IsArrayWithSize.<String>emptyArray()));
+        assertThat(claim.asArray(String.class), is(nullValue()));
     }
 
     @Test
-    public void shouldGetEmptyArrayIfNonArrayValue() throws Exception {
+    public void shouldGetNullArrayIfNonArrayValue() throws Exception {
         JsonNode value = mapper.valueToTree(1);
         Claim claim = claimFromNode(value);
 
-        assertThat(claim.asArray(String.class), is(notNullValue()));
-        assertThat(claim.asArray(String.class), is(IsArrayWithSize.<String>emptyArray()));
+        assertThat(claim.asArray(String.class), is(nullValue()));
     }
 
     @Test
@@ -182,21 +180,19 @@ public class ClaimImplTest {
     }
 
     @Test
-    public void shouldGetEmptyListIfNullValue() throws Exception {
+    public void shouldGetNullListIfNullValue() throws Exception {
         JsonNode value = mapper.valueToTree(null);
         Claim claim = claimFromNode(value);
 
-        assertThat(claim.asList(String.class), is(notNullValue()));
-        assertThat(claim.asList(String.class), is(IsEmptyCollection.emptyCollectionOf(String.class)));
+        assertThat(claim.asList(String.class), is(nullValue()));
     }
 
     @Test
-    public void shouldGetEmptyListIfNonArrayValue() throws Exception {
+    public void shouldGetNullListIfNonArrayValue() throws Exception {
         JsonNode value = mapper.valueToTree(1);
         Claim claim = claimFromNode(value);
 
-        assertThat(claim.asList(String.class), is(notNullValue()));
-        assertThat(claim.asList(String.class), is(IsEmptyCollection.emptyCollectionOf(String.class)));
+        assertThat(claim.asList(String.class), is(nullValue()));
     }
 
     @Test
@@ -209,13 +205,13 @@ public class ClaimImplTest {
     }
 
     @Test
-    public void shouldReturnMissingClaimWhenParsingNullValue() throws Exception {
+    public void shouldReturnBaseClaimWhenParsingNullValue() throws Exception {
         JsonNode value = mapper.valueToTree(null);
         Claim claim = claimFromNode(value);
 
         assertThat(claim, is(notNullValue()));
-        assertThat(claim, is(instanceOf(MissingClaim.class)));
-        assertThat(claim.isMissing(), is(true));
+        assertThat(claim, is(instanceOf(BaseClaim.class)));
+        assertThat(claim.isNull(), is(true));
     }
 
     @Test

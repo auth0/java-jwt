@@ -13,11 +13,11 @@ import java.util.Map;
 
 public class PayloadDeserializer extends StdDeserializer<Payload> {
 
-    public PayloadDeserializer() {
+    PayloadDeserializer() {
         this(null);
     }
 
-    protected PayloadDeserializer(Class<?> vc) {
+    private PayloadDeserializer(Class<?> vc) {
         super(vc);
     }
 
