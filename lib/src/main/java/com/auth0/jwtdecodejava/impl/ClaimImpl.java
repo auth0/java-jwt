@@ -34,27 +34,27 @@ public class ClaimImpl implements Claim {
 
     @Override
     public Boolean asBoolean() {
-        return isNull() ? null : data.asBoolean();
+        return isNull() || !data.isBoolean() ? null : data.asBoolean();
     }
 
     @Override
     public Integer asInt() {
-        return isNull() ? null : data.asInt();
+        return isNull() || !data.isNumber() ? null : data.asInt();
     }
 
     @Override
     public Double asDouble() {
-        return isNull() ? null : data.asDouble();
+        return isNull() || !data.isNumber() ? null : data.asDouble();
     }
 
     @Override
     public String asString() {
-        return isNull() ? null : data.asText();
+        return isNull() || !data.isTextual() ? null : data.asText();
     }
 
     @Override
     public Date asDate() {
-        if (isNull()) {
+        if (isNull() || !data.canConvertToLong()) {
             return null;
         }
         long seconds = data.asLong();

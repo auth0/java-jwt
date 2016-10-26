@@ -43,11 +43,11 @@ public class ClaimImplTest {
     }
 
     @Test
-    public void shouldGetNullBooleanIfNotPrimitiveValue() throws Exception {
-        JsonNode value = mapper.valueToTree(new Object());
-        Claim claim = claimFromNode(value);
-
-        assertThat(claim.asBoolean(), is(nullValue()));
+    public void shouldGetNullBooleanIfNotBooleanValue() throws Exception {
+        JsonNode objectValue = mapper.valueToTree(new Object());
+        assertThat(claimFromNode(objectValue).asBoolean(), is(nullValue()));
+        JsonNode stringValue = mapper.valueToTree("boolean");
+        assertThat(claimFromNode(stringValue).asBoolean(), is(nullValue()));
     }
 
     @Test
@@ -60,11 +60,11 @@ public class ClaimImplTest {
     }
 
     @Test
-    public void shouldGetNullIntIfNotPrimitiveValue() throws Exception {
-        JsonNode value = mapper.valueToTree(new Object());
-        Claim claim = claimFromNode(value);
-
-        assertThat(claim.asInt(), is(nullValue()));
+    public void shouldGetNullIntIfNotIntValue() throws Exception {
+        JsonNode objectValue = mapper.valueToTree(new Object());
+        assertThat(claimFromNode(objectValue).asInt(), is(nullValue()));
+        JsonNode stringValue = mapper.valueToTree("123");
+        assertThat(claimFromNode(stringValue).asInt(), is(nullValue()));
     }
 
     @Test
@@ -77,16 +77,16 @@ public class ClaimImplTest {
     }
 
     @Test
-    public void shouldGetNullDoubleIfNotPrimitiveValue() throws Exception {
-        JsonNode value = mapper.valueToTree(new Object());
-        Claim claim = claimFromNode(value);
-
-        assertThat(claim.asDouble(), is(nullValue()));
+    public void shouldGetNullDoubleIfNotDoubleValue() throws Exception {
+        JsonNode objectValue = mapper.valueToTree(new Object());
+        assertThat(claimFromNode(objectValue).asDouble(), is(nullValue()));
+        JsonNode stringValue = mapper.valueToTree("123.23");
+        assertThat(claimFromNode(stringValue).asDouble(), is(nullValue()));
     }
 
     @Test
     public void shouldGetDateValue() throws Exception {
-        JsonNode value = mapper.valueToTree("1476824844");
+        JsonNode value = mapper.valueToTree(1476824844L);
         Claim claim = claimFromNode(value);
 
         assertThat(claim.asDate(), is(notNullValue()));
@@ -94,11 +94,11 @@ public class ClaimImplTest {
     }
 
     @Test
-    public void shouldGetNullDateIfNotPrimitiveValue() throws Exception {
-        JsonNode value = mapper.valueToTree(new Object());
-        Claim claim = claimFromNode(value);
-
-        assertThat(claim.asDate(), is(nullValue()));
+    public void shouldGetNullDateIfNotDateValue() throws Exception {
+        JsonNode objectValue = mapper.valueToTree(new Object());
+        assertThat(claimFromNode(objectValue).asDate(), is(nullValue()));
+        JsonNode stringValue = mapper.valueToTree("1476824844");
+        assertThat(claimFromNode(stringValue).asDate(), is(nullValue()));
     }
 
     @Test
@@ -111,11 +111,11 @@ public class ClaimImplTest {
     }
 
     @Test
-    public void shouldGetNullStringIfNotPrimitiveValue() throws Exception {
-        JsonNode value = mapper.valueToTree(new Object());
-        Claim claim = claimFromNode(value);
-
-        assertThat(claim.asString(), is(nullValue()));
+    public void shouldGetNullStringIfNotStringValue() throws Exception {
+        JsonNode objectValue = mapper.valueToTree(new Object());
+        assertThat(claimFromNode(objectValue).asString(), is(nullValue()));
+        JsonNode intValue = mapper.valueToTree(12345);
+        assertThat(claimFromNode(intValue).asString(), is(nullValue()));
     }
 
     @Test
