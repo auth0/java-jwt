@@ -71,5 +71,5 @@ public interface Payload {
      * @return the Claim if found or null.
      */
     @Nullable
-    public Claim getClaim(@NotNull String name);
+    Claim getClaim(@NotNull String name);
 }

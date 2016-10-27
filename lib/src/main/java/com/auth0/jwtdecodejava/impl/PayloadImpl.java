@@ -1,6 +1,5 @@
 package com.auth0.jwtdecodejava.impl;
 
-import com.auth0.jwtdecodejava.exceptions.JWTException;
 import com.auth0.jwtdecodejava.interfaces.Claim;
 import com.auth0.jwtdecodejava.interfaces.Payload;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -9,68 +8,67 @@ import com.sun.istack.internal.NotNull;
 import java.util.Date;
 import java.util.Map;
 
-import static com.auth0.jwtdecodejava.impl.ClaimImpl.claimFromNode;
 import static com.auth0.jwtdecodejava.impl.ClaimImpl.extractClaim;
-import static com.auth0.jwtdecodejava.impl.Claims.*;
 
 class PayloadImpl implements Payload {
-    private Map<String, JsonNode> tree;
+    private final String issuer;
+    private final String subject;
+    private final String[] audience;
+    private final Date expiresAt;
+    private final Date notBefore;
+    private final Date issuedAt;
+    private final String jwtId;
+    private final Map<String, JsonNode> extras;
 
-    PayloadImpl(Map<String, JsonNode> tree) {
-        this.tree = tree;
+    PayloadImpl(String issuer, String subject, String[] audience, Date expiresAt, Date notBefore, Date issuedAt, String jwtId, Map<String, JsonNode> extras) {
+        this.issuer = issuer;
+        this.subject = subject;
+        this.audience = audience;
+        this.expiresAt = expiresAt;
+        this.notBefore = notBefore;
+        this.issuedAt = issuedAt;
+        this.jwtId = jwtId;
+        this.extras = extras;
     }
 
     @Override
     public String getIssuer() {
-        return extractClaim(ISSUER, tree).asString();
+        return issuer;
     }
 
     @Override
     public String getSubject() {
-        return extractClaim(SUBJECT, tree).asString();
+        return subject;
     }
 
     @Override
     public String[] getAudience() {
-        JsonNode audNode = tree.get(AUDIENCE);
-        if (audNode == null || audNode.isNull()) {
-            return new String[]{};
-        }
-        if (audNode.isTextual() && !audNode.asText().isEmpty()) {
-            return new String[]{audNode.asText()};
-        }
-        Claim claim = claimFromNode(audNode);
-        try {
-            return claim.asArray(String.class);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new JWTException("The Audience contained invalid values.", e);
-        }
+        return audience;
     }
 
     @Override
     public Date getExpiresAt() {
-        return extractClaim(EXPIRES_AT, tree).asDate();
+        return expiresAt;
     }
 
     @Override
     public Date getNotBefore() {
-        return extractClaim(NOT_BEFORE, tree).asDate();
+        return notBefore;
     }
 
     @Override
     public Date getIssuedAt() {
-        return extractClaim(ISSUED_AT, tree).asDate();
+        return issuedAt;
     }
 
     @Override
     public String getId() {
-        return extractClaim(JWT_ID, tree).asString();
+        return jwtId;
     }
 
     @Override
     public Claim getClaim(@NotNull String name) {
-        return extractClaim(name, tree);
+        return extractClaim(name, extras);
     }
 
 }
