@@ -18,9 +18,9 @@ class PayloadImpl implements Payload {
     private final Date notBefore;
     private final Date issuedAt;
     private final String jwtId;
-    private final Map<String, JsonNode> extras;
+    private final Map<String, JsonNode> tree;
 
-    PayloadImpl(String issuer, String subject, String[] audience, Date expiresAt, Date notBefore, Date issuedAt, String jwtId, Map<String, JsonNode> extras) {
+    PayloadImpl(String issuer, String subject, String[] audience, Date expiresAt, Date notBefore, Date issuedAt, String jwtId, Map<String, JsonNode> tree) {
         this.issuer = issuer;
         this.subject = subject;
         this.audience = audience;
@@ -28,7 +28,7 @@ class PayloadImpl implements Payload {
         this.notBefore = notBefore;
         this.issuedAt = issuedAt;
         this.jwtId = jwtId;
-        this.extras = extras;
+        this.tree = tree;
     }
 
     @Override
@@ -68,7 +68,7 @@ class PayloadImpl implements Payload {
 
     @Override
     public Claim getClaim(@NotNull String name) {
-        return extractClaim(name, extras);
+        return extractClaim(name, tree);
     }
 
 }

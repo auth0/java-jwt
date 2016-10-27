@@ -32,19 +32,19 @@ public class PayloadDeserializer extends StdDeserializer<Payload> {
             throw new JWTException("Null map");
         }
 
-        String issuer = removeString(tree, Claims.ISSUER);
-        String subject = removeString(tree, Claims.SUBJECT);
-        String[] audience = removeStringOrArray(tree, Claims.AUDIENCE);
-        Date expiresAt = removeDate(tree, Claims.EXPIRES_AT);
-        Date notBefore = removeDate(tree, Claims.NOT_BEFORE);
-        Date issuedAt = removeDate(tree, Claims.ISSUED_AT);
-        String jwtId = removeString(tree, Claims.JWT_ID);
+        String issuer = getString(tree, Claims.ISSUER);
+        String subject = getString(tree, Claims.SUBJECT);
+        String[] audience = getStringOrArray(tree, Claims.AUDIENCE);
+        Date expiresAt = getDate(tree, Claims.EXPIRES_AT);
+        Date notBefore = getDate(tree, Claims.NOT_BEFORE);
+        Date issuedAt = getDate(tree, Claims.ISSUED_AT);
+        String jwtId = getString(tree, Claims.JWT_ID);
 
         return new PayloadImpl(issuer, subject, audience, expiresAt, notBefore, issuedAt, jwtId, tree);
     }
 
-    private String[] removeStringOrArray(Map<String, JsonNode> tree, String claimName) {
-        JsonNode node = tree.remove(claimName);
+    private String[] getStringOrArray(Map<String, JsonNode> tree, String claimName) {
+        JsonNode node = tree.get(claimName);
         if (node == null || node.isNull() || !(node.isArray() || node.isTextual())) {
             return null;
         }
@@ -64,8 +64,8 @@ public class PayloadDeserializer extends StdDeserializer<Payload> {
         return arr;
     }
 
-    private Date removeDate(Map<String, JsonNode> tree, String claimName) {
-        JsonNode node = tree.remove(claimName);
+    private Date getDate(Map<String, JsonNode> tree, String claimName) {
+        JsonNode node = tree.get(claimName);
         if (node == null || node.isNull() || !node.canConvertToLong()) {
             return null;
         }
@@ -73,8 +73,8 @@ public class PayloadDeserializer extends StdDeserializer<Payload> {
         return new Date(ms);
     }
 
-    private String removeString(Map<String, JsonNode> tree, String claimName) {
-        JsonNode node = tree.remove(claimName);
+    private String getString(Map<String, JsonNode> tree, String claimName) {
+        JsonNode node = tree.get(claimName);
         if (node == null || node.isNull()) {
             return null;
         }
