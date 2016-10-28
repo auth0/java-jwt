@@ -1,5 +1,6 @@
 package com.auth0.jwtdecodejava;
 
+import com.auth0.jwtdecodejava.enums.Algorithm;
 import com.auth0.jwtdecodejava.exceptions.JWTException;
 import com.auth0.jwtdecodejava.impl.JWTParser;
 import com.auth0.jwtdecodejava.interfaces.Claim;
@@ -27,23 +28,15 @@ public final class JWTDecoder implements JWT {
     }
 
     private void parseToken(String token) throws JWTException {
-        final String[] parts = splitToken(token);
+        final String[] parts = Utils.splitToken(token);
         final JWTParser converter = new JWTParser();
         header = converter.parseHeader(base64Decode(parts[0]));
         payload = converter.parsePayload(base64Decode(parts[1]));
         signature = parts[2];
     }
 
-    private String[] splitToken(String token) {
-        String[] parts = token.split("\\.");
-        if (parts.length != 3) {
-            throw new JWTException(String.format("The token was expected to have 3 parts, but got %s.", parts.length));
-        }
-        return parts;
-    }
-
     @Override
-    public String getAlgorithm() {
+    public Algorithm getAlgorithm() {
         return header.getAlgorithm();
     }
 
