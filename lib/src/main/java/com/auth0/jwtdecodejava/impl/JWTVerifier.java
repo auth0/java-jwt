@@ -27,6 +27,10 @@ public class JWTVerifier {
         this.claims = new HashMap<>();
     }
 
+    public static JWTVerifier init() throws IllegalArgumentException {
+        return init(Algorithm.none, null);
+    }
+
     public static JWTVerifier init(Algorithm algorithm, String secret) throws IllegalArgumentException {
         if (algorithm == null) {
             throw new IllegalArgumentException("The Algorithm cannot be null.");
@@ -39,6 +43,10 @@ public class JWTVerifier {
                     throw new IllegalArgumentException(String.format("You can't use the %s algorithm without providing a valid Secret.", algorithm.name()));
                 }
                 break;
+            case none:
+                if (secret != null) {
+                    throw new IllegalArgumentException("You can't use the Algorithm 'none' with a non-null Secret.");
+                }
             default:
         }
         return new JWTVerifier(algorithm, secret);
@@ -98,6 +106,10 @@ public class JWTVerifier {
                     throw new SignatureVerificationException(algorithm, e);
                 }
                 break;
+            case none:
+                if (!parts[2].isEmpty()){
+                    throw new SignatureVerificationException(algorithm);
+                }
             default:
         }
     }

@@ -19,6 +19,33 @@ public class JWTVerifierTest {
     public ExpectedException exception = ExpectedException.none();
 
     @Test
+    public void shouldAcceptNoneAlgorithmWhenUsingDefaultConstructor() throws Exception {
+        String token = "eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJpc3MiOiJhdXRoMCJ9.";
+        JWT jwt = JWTVerifier.init()
+                .verify(token);
+
+        assertThat(jwt, is(notNullValue()));
+    }
+
+    @Test
+    public void shouldAcceptNoneAlgorithm() throws Exception {
+        String token = "eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJpc3MiOiJhdXRoMCJ9.";
+        JWT jwt = JWTVerifier.init(Algorithm.none, null)
+                .verify(token);
+
+        assertThat(jwt, is(notNullValue()));
+    }
+
+    @Test
+    public void shouldThrowWhenUsingNoneAlgorithmAndPassingASecret() throws Exception {
+        exception.expect(IllegalArgumentException.class);
+        exception.expectMessage("You can't use the Algorithm 'none' with a non-null Secret.");
+        String token = "eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJpc3MiOiJhdXRoMCJ9.";
+        JWTVerifier.init(Algorithm.none, "something")
+                .verify(token);
+    }
+
+    @Test
     public void shouldThrowWhenInitializedWithoutAlgorithm() throws Exception {
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage("The Algorithm cannot be null");
