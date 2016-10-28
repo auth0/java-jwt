@@ -1,7 +1,5 @@
 package com.auth0.jwtdecodejava.interfaces;
 
-import com.sun.istack.internal.Nullable;
-
 public interface Signature {
 
     /**
@@ -9,6 +7,5 @@ public interface Signature {
      *
      * @return the Signature of the Payload.
      */
-    @Nullable
     String getSignature();
 }

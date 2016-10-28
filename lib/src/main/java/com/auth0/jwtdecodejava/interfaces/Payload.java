@@ -1,10 +1,6 @@
 package com.auth0.jwtdecodejava.interfaces;
 
-import com.sun.istack.internal.NotNull;
-import com.sun.istack.internal.Nullable;
-
 import java.util.Date;
-import java.util.Map;
 
 public interface Payload {
 
@@ -13,7 +9,6 @@ public interface Payload {
      *
      * @return the Issuer value or null.
      */
-    @Nullable
     String getIssuer();
 
     /**
@@ -21,7 +16,6 @@ public interface Payload {
      *
      * @return the Subject value or null.
      */
-    @Nullable
     String getSubject();
 
     /**
@@ -29,7 +23,6 @@ public interface Payload {
      *
      * @return the Audience value or null.
      */
-    @Nullable
     String[] getAudience();
 
     /**
@@ -37,7 +30,6 @@ public interface Payload {
      *
      * @return the Expiration Time value or null.
      */
-    @Nullable
     Date getExpiresAt();
 
     /**
@@ -45,7 +37,6 @@ public interface Payload {
      *
      * @return the Not Before value or null.
      */
-    @Nullable
     Date getNotBefore();
 
     /**
@@ -53,7 +44,6 @@ public interface Payload {
      *
      * @return the Issued At value or null.
      */
-    @Nullable
     Date getIssuedAt();
 
     /**
@@ -61,7 +51,6 @@ public interface Payload {
      *
      * @return the Payload ID value or null.
      */
-    @Nullable
     String getId();
 
     /**
@@ -70,6 +59,5 @@ public interface Payload {
      * @param name the name of the Claim to retrieve.
      * @return the Claim if found or null.
      */
-    @Nullable
-    Claim getClaim(@NotNull String name);
+    Claim getClaim(String name);
 }

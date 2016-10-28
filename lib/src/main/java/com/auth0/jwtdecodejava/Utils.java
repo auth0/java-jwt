@@ -2,7 +2,6 @@ package com.auth0.jwtdecodejava;
 
 import com.auth0.jwtdecodejava.enums.Algorithm;
 import com.auth0.jwtdecodejava.exceptions.JWTException;
-import com.sun.istack.internal.Nullable;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.StringUtils;
 
@@ -14,7 +13,6 @@ import java.security.NoSuchAlgorithmException;
 
 public class Utils {
 
-    @Nullable
     public static String base64Decode(String string) throws JWTException {
         String decoded;
         try {
@@ -25,7 +23,6 @@ public class Utils {
         return decoded;
     }
 
-    @Nullable
     public static String base64Encode(String string) throws JWTException {
         String encoded;
         try {

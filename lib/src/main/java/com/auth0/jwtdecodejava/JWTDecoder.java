@@ -7,7 +7,6 @@ import com.auth0.jwtdecodejava.interfaces.Claim;
 import com.auth0.jwtdecodejava.interfaces.Header;
 import com.auth0.jwtdecodejava.interfaces.JWT;
 import com.auth0.jwtdecodejava.interfaces.Payload;
-import com.sun.istack.internal.NotNull;
 
 import java.util.Date;
 
@@ -86,7 +85,7 @@ public final class JWTDecoder implements JWT {
     }
 
     @Override
-    public Claim getClaim(@NotNull String name) {
+    public Claim getClaim(String name) {
         return payload.getClaim(name);
     }
 

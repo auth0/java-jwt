@@ -3,7 +3,6 @@ package com.auth0.jwtdecodejava.impl;
 import com.auth0.jwtdecodejava.interfaces.Claim;
 import com.auth0.jwtdecodejava.interfaces.Payload;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.sun.istack.internal.NotNull;
 
 import java.util.Date;
 import java.util.Map;
@@ -67,7 +66,7 @@ class PayloadImpl implements Payload {
     }
 
     @Override
-    public Claim getClaim(@NotNull String name) {
+    public Claim getClaim(String name) {
         return extractClaim(name, tree);
     }
 
