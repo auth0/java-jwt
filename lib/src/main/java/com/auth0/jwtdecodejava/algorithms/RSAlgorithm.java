@@ -1,15 +1,13 @@
-package com.auth0.jwtdecodejava.enums;
+package com.auth0.jwtdecodejava.algorithms;
 
-import org.apache.commons.codec.digest.HmacAlgorithms;
-
-public enum HSAlgorithm implements Algorithm {
-    HS256(HmacAlgorithms.HMAC_SHA_256.toString()),
-    HS384(HmacAlgorithms.HMAC_SHA_384.toString()),
-    HS512(HmacAlgorithms.HMAC_SHA_512.toString());
+public enum RSAlgorithm implements Algorithm {
+    RS256("SHA256withRSA"),
+    RS384("SHA384withRSA"),
+    RS512("SHA512withRSA");
 
     private final String description;
 
-    HSAlgorithm(String description) {
+    RSAlgorithm(String description) {
         this.description = description;
     }
 

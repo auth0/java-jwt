@@ -1,7 +1,7 @@
 package com.auth0.jwtdecodejava;
 
-import com.auth0.jwtdecodejava.enums.HSAlgorithm;
-import com.auth0.jwtdecodejava.enums.RSAlgorithm;
+import com.auth0.jwtdecodejava.algorithms.HSAlgorithm;
+import com.auth0.jwtdecodejava.algorithms.RSAlgorithm;
 import com.auth0.jwtdecodejava.exceptions.JWTException;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.StringUtils;
@@ -10,9 +10,9 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.*;
 
-public class Utils {
+class SignUtils {
 
-    public static String base64Decode(String string) throws JWTException {
+    static String base64Decode(String string) throws JWTException {
         String decoded;
         try {
             decoded = StringUtils.newStringUtf8(Base64.decodeBase64(string));
@@ -22,7 +22,7 @@ public class Utils {
         return decoded;
     }
 
-    public static String base64Encode(String string) throws JWTException {
+    static String base64Encode(String string) throws JWTException {
         String encoded;
         try {
             encoded = StringUtils.newStringUtf8(Base64.encodeBase64(string.getBytes(), false, true));
@@ -32,7 +32,7 @@ public class Utils {
         return encoded;
     }
 
-    public static String[] splitToken(String token) {
+    static String[] splitToken(String token) {
         String[] parts = token.split("\\.");
         if (parts.length == 2 && token.endsWith(".")) {
             //Tokens with alg='none' have empty String as Signature.
@@ -44,7 +44,7 @@ public class Utils {
         return parts;
     }
 
-    public static boolean verifyHS(HSAlgorithm algorithm, String[] jwtParts, String secret) throws NoSuchAlgorithmException, InvalidKeyException {
+    static boolean verifyHS(HSAlgorithm algorithm, String[] jwtParts, String secret) throws NoSuchAlgorithmException, InvalidKeyException {
         if (secret == null) {
             throw new IllegalArgumentException("The Secret cannot be null");
         }
@@ -59,7 +59,7 @@ public class Utils {
         return MessageDigest.isEqual(result, Base64.decodeBase64(jwtParts[2]));
     }
 
-    public static boolean verifyRS(RSAlgorithm algorithm, String[] jwtParts, PublicKey publicKey) throws InvalidKeyException, NoSuchAlgorithmException, SignatureException {
+    static boolean verifyRS(RSAlgorithm algorithm, String[] jwtParts, PublicKey publicKey) throws InvalidKeyException, NoSuchAlgorithmException, SignatureException {
         if (publicKey == null) {
             throw new IllegalArgumentException("The PublicKey cannot be null");
         }

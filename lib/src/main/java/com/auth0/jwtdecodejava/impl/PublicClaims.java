@@ -1,7 +1,7 @@
 package com.auth0.jwtdecodejava.impl;
 
 
-abstract class Claims {
+public abstract class PublicClaims {
 
     //Header
     public static final String ALGORITHM = "alg";

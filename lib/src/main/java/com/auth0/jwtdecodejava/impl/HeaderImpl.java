@@ -1,16 +1,16 @@
 package com.auth0.jwtdecodejava.impl;
 
-import com.auth0.jwtdecodejava.enums.Algorithm;
-import com.auth0.jwtdecodejava.enums.HSAlgorithm;
-import com.auth0.jwtdecodejava.enums.NoneAlgorithm;
-import com.auth0.jwtdecodejava.enums.RSAlgorithm;
+import com.auth0.jwtdecodejava.algorithms.Algorithm;
+import com.auth0.jwtdecodejava.algorithms.HSAlgorithm;
+import com.auth0.jwtdecodejava.algorithms.NoneAlgorithm;
+import com.auth0.jwtdecodejava.algorithms.RSAlgorithm;
 import com.auth0.jwtdecodejava.interfaces.Header;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import java.util.Map;
 
 import static com.auth0.jwtdecodejava.impl.ClaimImpl.extractClaim;
-import static com.auth0.jwtdecodejava.impl.Claims.*;
+import static com.auth0.jwtdecodejava.impl.PublicClaims.*;
 
 class HeaderImpl implements Header {
     private final Map<String, JsonNode> tree;

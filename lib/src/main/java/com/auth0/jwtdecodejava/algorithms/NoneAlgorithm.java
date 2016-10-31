@@ -1,13 +1,11 @@
-package com.auth0.jwtdecodejava.enums;
+package com.auth0.jwtdecodejava.algorithms;
 
-public enum RSAlgorithm implements Algorithm {
-    RS256("SHA256withRSA"),
-    RS384("SHA384withRSA"),
-    RS512("SHA512withRSA");
+public enum NoneAlgorithm implements Algorithm {
+    none("none");
 
     private final String description;
 
-    RSAlgorithm(String description) {
+    NoneAlgorithm(String description) {
         this.description = description;
     }
 

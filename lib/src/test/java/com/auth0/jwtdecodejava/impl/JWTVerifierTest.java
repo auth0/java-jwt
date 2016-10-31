@@ -1,7 +1,8 @@
 package com.auth0.jwtdecodejava.impl;
 
-import com.auth0.jwtdecodejava.enums.HSAlgorithm;
-import com.auth0.jwtdecodejava.enums.RSAlgorithm;
+import com.auth0.jwtdecodejava.JWTVerifier;
+import com.auth0.jwtdecodejava.algorithms.HSAlgorithm;
+import com.auth0.jwtdecodejava.algorithms.RSAlgorithm;
 import com.auth0.jwtdecodejava.exceptions.InvalidClaimException;
 import com.auth0.jwtdecodejava.interfaces.JWT;
 import org.junit.Rule;

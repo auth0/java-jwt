@@ -1,4 +1,4 @@
-package com.auth0.jwtdecodejava.enums;
+package com.auth0.jwtdecodejava.algorithms;
 
 public interface Algorithm {
 

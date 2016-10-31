@@ -1,6 +1,6 @@
 package com.auth0.jwtdecodejava.interfaces;
 
-import com.auth0.jwtdecodejava.enums.Algorithm;
+import com.auth0.jwtdecodejava.algorithms.Algorithm;
 
 public interface Header {
 

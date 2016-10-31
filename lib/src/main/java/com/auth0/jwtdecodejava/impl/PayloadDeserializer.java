@@ -32,13 +32,13 @@ public class PayloadDeserializer extends StdDeserializer<Payload> {
             throw new JWTException("Null map");
         }
 
-        String issuer = getString(tree, Claims.ISSUER);
-        String subject = getString(tree, Claims.SUBJECT);
-        String[] audience = getStringOrArray(tree, Claims.AUDIENCE);
-        Date expiresAt = getDate(tree, Claims.EXPIRES_AT);
-        Date notBefore = getDate(tree, Claims.NOT_BEFORE);
-        Date issuedAt = getDate(tree, Claims.ISSUED_AT);
-        String jwtId = getString(tree, Claims.JWT_ID);
+        String issuer = getString(tree, PublicClaims.ISSUER);
+        String subject = getString(tree, PublicClaims.SUBJECT);
+        String[] audience = getStringOrArray(tree, PublicClaims.AUDIENCE);
+        Date expiresAt = getDate(tree, PublicClaims.EXPIRES_AT);
+        Date notBefore = getDate(tree, PublicClaims.NOT_BEFORE);
+        Date issuedAt = getDate(tree, PublicClaims.ISSUED_AT);
+        String jwtId = getString(tree, PublicClaims.JWT_ID);
 
         return new PayloadImpl(issuer, subject, audience, expiresAt, notBefore, issuedAt, jwtId, tree);
     }

@@ -1,15 +1,14 @@
-package com.auth0.jwtdecodejava.impl;
+package com.auth0.jwtdecodejava;
 
-import com.auth0.jwtdecodejava.JWTDecoder;
-import com.auth0.jwtdecodejava.Utils;
-import com.auth0.jwtdecodejava.enums.Algorithm;
-import com.auth0.jwtdecodejava.enums.HSAlgorithm;
-import com.auth0.jwtdecodejava.enums.NoneAlgorithm;
-import com.auth0.jwtdecodejava.enums.RSAlgorithm;
+import com.auth0.jwtdecodejava.algorithms.Algorithm;
+import com.auth0.jwtdecodejava.algorithms.HSAlgorithm;
+import com.auth0.jwtdecodejava.algorithms.NoneAlgorithm;
+import com.auth0.jwtdecodejava.algorithms.RSAlgorithm;
 import com.auth0.jwtdecodejava.exceptions.AlgorithmMismatchException;
 import com.auth0.jwtdecodejava.exceptions.InvalidClaimException;
 import com.auth0.jwtdecodejava.exceptions.JWTException;
 import com.auth0.jwtdecodejava.exceptions.SignatureVerificationException;
+import com.auth0.jwtdecodejava.impl.PublicClaims;
 import com.auth0.jwtdecodejava.interfaces.JWT;
 
 import java.security.InvalidKeyException;
@@ -21,7 +20,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.auth0.jwtdecodejava.enums.NoneAlgorithm.none;
+import static com.auth0.jwtdecodejava.algorithms.NoneAlgorithm.none;
 
 public class JWTVerifier {
     private final Algorithm algorithm;
@@ -62,44 +61,44 @@ public class JWTVerifier {
     }
 
     public JWTVerifier withIssuer(String issuer) {
-        requireClaim(Claims.ISSUER, issuer);
+        requireClaim(PublicClaims.ISSUER, issuer);
         return this;
     }
 
     public JWTVerifier withSubject(String subject) {
-        requireClaim(Claims.SUBJECT, subject);
+        requireClaim(PublicClaims.SUBJECT, subject);
         return this;
     }
 
     public JWTVerifier withAudience(String[] audience) {
-        requireClaim(Claims.AUDIENCE, audience);
+        requireClaim(PublicClaims.AUDIENCE, audience);
         return this;
     }
 
     public JWTVerifier withExpiresAt(Date expiresAt) {
-        requireClaim(Claims.EXPIRES_AT, expiresAt);
+        requireClaim(PublicClaims.EXPIRES_AT, expiresAt);
         return this;
     }
 
     public JWTVerifier withNotBefore(Date notBefore) {
-        requireClaim(Claims.NOT_BEFORE, notBefore);
+        requireClaim(PublicClaims.NOT_BEFORE, notBefore);
         return this;
     }
 
     public JWTVerifier withIssuedAt(Date issuedAt) {
-        requireClaim(Claims.ISSUED_AT, issuedAt);
+        requireClaim(PublicClaims.ISSUED_AT, issuedAt);
         return this;
     }
 
     public JWTVerifier withJWTId(String jwtId) {
-        requireClaim(Claims.JWT_ID, jwtId);
+        requireClaim(PublicClaims.JWT_ID, jwtId);
         return this;
     }
 
     public JWT verify(String token) throws JWTException {
         JWT jwt = JWTDecoder.decode(token);
         verifyAlgorithm(jwt, algorithm);
-        verifySignature(Utils.splitToken(token));
+        verifySignature(SignUtils.splitToken(token));
         verifyClaims(jwt, claims);
         return jwt;
     }
@@ -107,13 +106,13 @@ public class JWTVerifier {
     private void verifySignature(String[] parts) {
         if (algorithm instanceof HSAlgorithm) {
             try {
-                Utils.verifyHS((HSAlgorithm) algorithm, parts, secret);
+                SignUtils.verifyHS((HSAlgorithm) algorithm, parts, secret);
             } catch (NoSuchAlgorithmException | InvalidKeyException e) {
                 throw new SignatureVerificationException(algorithm, e);
             }
         } else if (algorithm instanceof RSAlgorithm) {
             try {
-                Utils.verifyRS((RSAlgorithm) algorithm, parts, key);
+                SignUtils.verifyRS((RSAlgorithm) algorithm, parts, key);
             } catch (InvalidKeyException | NoSuchAlgorithmException | SignatureException e) {
                 throw new SignatureVerificationException(algorithm, e);
             }
@@ -136,9 +135,9 @@ public class JWTVerifier {
 
     private void assertValidClaim(JWT jwt, String claimName, Object expectedValue) {
         boolean isValid;
-        if (Claims.AUDIENCE.equals(claimName)) {
+        if (PublicClaims.AUDIENCE.equals(claimName)) {
             isValid = Arrays.equals(jwt.getAudience(), (String[]) expectedValue);
-        } else if (Claims.NOT_BEFORE.equals(claimName) || Claims.EXPIRES_AT.equals(claimName) || Claims.ISSUED_AT.equals(claimName)) {
+        } else if (PublicClaims.NOT_BEFORE.equals(claimName) || PublicClaims.EXPIRES_AT.equals(claimName) || PublicClaims.ISSUED_AT.equals(claimName)) {
             Date dateValue = (Date) expectedValue;
             isValid = dateValue.equals(jwt.getClaim(claimName).asDate());
         } else {

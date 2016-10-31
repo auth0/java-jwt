@@ -1,6 +1,6 @@
 package com.auth0.jwtdecodejava;
 
-import com.auth0.jwtdecodejava.enums.HSAlgorithm;
+import com.auth0.jwtdecodejava.algorithms.HSAlgorithm;
 import com.auth0.jwtdecodejava.exceptions.JWTException;
 import com.auth0.jwtdecodejava.impl.BaseClaim;
 import com.auth0.jwtdecodejava.interfaces.Claim;
@@ -11,7 +11,7 @@ import org.junit.rules.ExpectedException;
 
 import java.util.Date;
 
-import static com.auth0.jwtdecodejava.Utils.base64Encode;
+import static com.auth0.jwtdecodejava.SignUtils.base64Encode;
 import static junit.framework.TestCase.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -86,7 +86,7 @@ public class JWTDecoderTest {
         assertThat(jwt.getSignature(), is("XmNK3GpH3Ys_7wsYBfq4C3M6goz71I7dTgUkuIa5lyQ"));
     }
 
-    // Public Claims
+    // Public PublicClaims
 
     @Test
     public void shouldGetIssuer() throws Exception {
@@ -195,7 +195,7 @@ public class JWTDecoderTest {
         assertFalse(expiresInTheFuture.isExpired());
     }
 
-    //Private Claims
+    //Private PublicClaims
 
     @Test
     public void shouldGetMissingClaimIfClaimDoesNotExist() throws Exception {
