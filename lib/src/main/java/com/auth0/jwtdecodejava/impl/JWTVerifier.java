@@ -3,6 +3,9 @@ package com.auth0.jwtdecodejava.impl;
 import com.auth0.jwtdecodejava.JWTDecoder;
 import com.auth0.jwtdecodejava.Utils;
 import com.auth0.jwtdecodejava.enums.Algorithm;
+import com.auth0.jwtdecodejava.enums.HSAlgorithm;
+import com.auth0.jwtdecodejava.enums.NoneAlgorithm;
+import com.auth0.jwtdecodejava.enums.RSAlgorithm;
 import com.auth0.jwtdecodejava.exceptions.AlgorithmMismatchException;
 import com.auth0.jwtdecodejava.exceptions.InvalidClaimException;
 import com.auth0.jwtdecodejava.exceptions.JWTException;
@@ -18,6 +21,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.auth0.jwtdecodejava.enums.NoneAlgorithm.none;
+
 public class JWTVerifier {
     private final Algorithm algorithm;
     private final String secret;
@@ -32,28 +37,28 @@ public class JWTVerifier {
     }
 
     public static JWTVerifier init() throws IllegalArgumentException {
-        return init(Algorithm.none, null);
+        return init(none, null, null);
     }
 
-    public static JWTVerifier init(Algorithm algorithm, String secret) throws IllegalArgumentException {
+    public static JWTVerifier init(HSAlgorithm algorithm, String secret) throws IllegalArgumentException {
+        return init(algorithm, null, secret);
+    }
+
+    public static JWTVerifier init(RSAlgorithm algorithm, PublicKey publicKey) throws IllegalArgumentException {
+        return init(algorithm, publicKey, null);
+    }
+
+    private static JWTVerifier init(Algorithm algorithm, PublicKey publicKey, String secret) throws IllegalArgumentException {
         if (algorithm == null) {
             throw new IllegalArgumentException("The Algorithm cannot be null.");
         }
-        switch (algorithm) {
-            case HS256:
-            case HS384:
-            case HS512:
-                if (secret == null) {
-                    throw new IllegalArgumentException(String.format("You can't use the %s algorithm without providing a valid Secret.", algorithm.name()));
-                }
-                break;
-            case none:
-                if (secret != null) {
-                    throw new IllegalArgumentException("You can't use the Algorithm 'none' with a non-null Secret.");
-                }
-            default:
+        if (algorithm instanceof HSAlgorithm && secret == null) {
+            throw new IllegalArgumentException(String.format("You can't use the %s algorithm without providing a valid Secret.", algorithm.name()));
         }
-        return new JWTVerifier(algorithm, secret, null);
+        if (algorithm instanceof RSAlgorithm && publicKey == null) {
+            throw new IllegalArgumentException(String.format("You can't use the %s algorithm without providing a valid PublicKey.", algorithm.name()));
+        }
+        return new JWTVerifier(algorithm, secret, publicKey);
     }
 
     public JWTVerifier withIssuer(String issuer) {
@@ -93,37 +98,27 @@ public class JWTVerifier {
 
     public JWT verify(String token) throws JWTException {
         JWT jwt = JWTDecoder.decode(token);
-        verifyClaims(jwt, claims);
         verifyAlgorithm(jwt, algorithm);
         verifySignature(Utils.splitToken(token));
+        verifyClaims(jwt, claims);
         return jwt;
     }
 
     private void verifySignature(String[] parts) {
-        switch (algorithm) {
-            case HS256:
-            case HS384:
-            case HS512:
-                try {
-                    Utils.verifyHS(parts, secret, algorithm);
-                } catch (NoSuchAlgorithmException | InvalidKeyException e) {
-                    throw new SignatureVerificationException(algorithm, e);
-                }
-                break;
-            case RS256:
-            case RS384:
-            case RS512:
-                try {
-                    Utils.verifyRS(parts, key, algorithm);
-                } catch (InvalidKeyException | NoSuchAlgorithmException | SignatureException e) {
-                    throw new SignatureVerificationException(algorithm, e);
-                }
-                break;
-            case none:
-                if (!parts[2].isEmpty()) {
-                    throw new SignatureVerificationException(algorithm);
-                }
-            default:
+        if (algorithm instanceof HSAlgorithm) {
+            try {
+                Utils.verifyHS((HSAlgorithm) algorithm, parts, secret);
+            } catch (NoSuchAlgorithmException | InvalidKeyException e) {
+                throw new SignatureVerificationException(algorithm, e);
+            }
+        } else if (algorithm instanceof RSAlgorithm) {
+            try {
+                Utils.verifyRS((RSAlgorithm) algorithm, parts, key);
+            } catch (InvalidKeyException | NoSuchAlgorithmException | SignatureException e) {
+                throw new SignatureVerificationException(algorithm, e);
+            }
+        } else if (algorithm instanceof NoneAlgorithm && !parts[2].isEmpty()) {
+            throw new SignatureVerificationException(algorithm);
         }
     }
 

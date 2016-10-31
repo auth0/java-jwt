@@ -1,6 +1,7 @@
 package com.auth0.jwtdecodejava;
 
-import com.auth0.jwtdecodejava.enums.Algorithm;
+import com.auth0.jwtdecodejava.enums.HSAlgorithm;
+import com.auth0.jwtdecodejava.enums.RSAlgorithm;
 import com.auth0.jwtdecodejava.exceptions.JWTException;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.StringUtils;
@@ -31,20 +32,6 @@ public class Utils {
         return encoded;
     }
 
-    public static boolean verifyHS(String[] jwtParts, String secret, Algorithm algorithm) throws NoSuchAlgorithmException, InvalidKeyException {
-        if (secret == null) {
-            throw new IllegalArgumentException("The Secret cannot be null");
-        }
-        if (algorithm != Algorithm.HS256 && algorithm != Algorithm.HS384 && algorithm != Algorithm.HS512) {
-            throw new IllegalArgumentException("The Algorithm must be one of HS256, HS384, or HS512.");
-        }
-        Mac mac = Mac.getInstance(algorithm.toString());
-        mac.init(new SecretKeySpec(secret.getBytes(), algorithm.toString()));
-        String message = String.format("%s.%s", jwtParts[0], jwtParts[1]);
-        byte[] result = mac.doFinal(message.getBytes());
-        return MessageDigest.isEqual(result, Base64.decodeBase64(jwtParts[2]));
-    }
-
     public static String[] splitToken(String token) {
         String[] parts = token.split("\\.");
         if (parts.length == 2 && token.endsWith(".")) {
@@ -57,16 +44,31 @@ public class Utils {
         return parts;
     }
 
-    public static boolean verifyRS(String[] jwtParts, PublicKey publicKey, Algorithm algorithm) throws InvalidKeyException, NoSuchAlgorithmException, SignatureException {
+    public static boolean verifyHS(HSAlgorithm algorithm, String[] jwtParts, String secret) throws NoSuchAlgorithmException, InvalidKeyException {
+        if (secret == null) {
+            throw new IllegalArgumentException("The Secret cannot be null");
+        }
+        if (algorithm == null) {
+            throw new IllegalArgumentException("The Algorithm must be one of HS256, HS384, or HS512.");
+        }
+
+        Mac mac = Mac.getInstance(algorithm.describe());
+        mac.init(new SecretKeySpec(secret.getBytes(), algorithm.describe()));
+        String message = String.format("%s.%s", jwtParts[0], jwtParts[1]);
+        byte[] result = mac.doFinal(message.getBytes());
+        return MessageDigest.isEqual(result, Base64.decodeBase64(jwtParts[2]));
+    }
+
+    public static boolean verifyRS(RSAlgorithm algorithm, String[] jwtParts, PublicKey publicKey) throws InvalidKeyException, NoSuchAlgorithmException, SignatureException {
         if (publicKey == null) {
             throw new IllegalArgumentException("The PublicKey cannot be null");
         }
-        if (algorithm != Algorithm.RS256 && algorithm != Algorithm.RS384 && algorithm != Algorithm.RS512) {
+        if (algorithm == null) {
             throw new IllegalArgumentException("The Algorithm must be one of RS256, RS384, or RS512.");
         }
 
         final String content = String.format("%s.%s", jwtParts[0], jwtParts[1]);
-        Signature s = Signature.getInstance(algorithm.toString());
+        Signature s = Signature.getInstance(algorithm.describe());
         s.initVerify(publicKey);
         s.update(content.getBytes());
         return s.verify(Base64.decodeBase64(jwtParts[2]));
