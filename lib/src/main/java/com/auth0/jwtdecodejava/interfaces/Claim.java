@@ -1,7 +1,6 @@
 package com.auth0.jwtdecodejava.interfaces;
 
 import com.auth0.jwtdecodejava.exceptions.JWTException;
-import com.sun.istack.internal.Nullable;
 
 import java.util.Date;
 import java.util.List;
@@ -16,7 +15,6 @@ public interface Claim {
      *
      * @return the value as a Boolean or null.
      */
-    @Nullable
     Boolean asBoolean();
 
     /**
@@ -25,7 +23,6 @@ public interface Claim {
      *
      * @return the value as an Integer or null.
      */
-    @Nullable
     Integer asInt();
 
     /**
@@ -34,7 +31,6 @@ public interface Claim {
      *
      * @return the value as a Double or null.
      */
-    @Nullable
     Double asDouble();
 
     /**
@@ -43,7 +39,6 @@ public interface Claim {
      *
      * @return the value as a String or null.
      */
-    @Nullable
     String asString();
 
     /**
@@ -52,7 +47,6 @@ public interface Claim {
      *
      * @return the value as a Date or null.
      */
-    @Nullable
     Date asDate();
 
     /**

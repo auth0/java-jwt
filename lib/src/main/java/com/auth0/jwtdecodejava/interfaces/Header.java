@@ -1,18 +1,13 @@
 package com.auth0.jwtdecodejava.interfaces;
 
-import com.sun.istack.internal.Nullable;
-
-import java.util.Map;
+import com.auth0.jwtdecodejava.enums.Algorithm;
 
 public interface Header {
 
-    @Nullable
-    String getAlgorithm();
+    Algorithm getAlgorithm();
 
-    @Nullable
     String getType();
 
-    @Nullable
     String getContentType();
 
 }

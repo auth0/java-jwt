@@ -1,10 +1,10 @@
 package com.auth0.jwtdecodejava;
 
+import com.auth0.jwtdecodejava.enums.Algorithm;
 import com.auth0.jwtdecodejava.exceptions.JWTException;
 import com.auth0.jwtdecodejava.impl.BaseClaim;
 import com.auth0.jwtdecodejava.interfaces.Claim;
 import com.auth0.jwtdecodejava.interfaces.JWT;
-import com.sun.istack.internal.Nullable;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -76,7 +76,7 @@ public class JWTDecoderTest {
     public void shouldGetHeader() throws Exception {
         JWT jwt = JWTDecoder.decode("eyJhbGciOiJIUzI1NiJ9.e30.XmNK3GpH3Ys_7wsYBfq4C3M6goz71I7dTgUkuIa5lyQ");
         assertThat(jwt, is(notNullValue()));
-        assertThat(jwt.getAlgorithm(), is("HS256"));
+        assertThat(jwt.getAlgorithm(), is(Algorithm.HS256));
     }
 
     @Test
@@ -223,7 +223,7 @@ public class JWTDecoderTest {
 
     //Helper Methods
 
-    private JWT customTimeJWT(@Nullable Long iat, @Nullable Long exp) {
+    private JWT customTimeJWT(Long iat, Long exp) {
         String header = base64Encode("{}");
         StringBuilder bodyBuilder = new StringBuilder("{");
         if (iat != null) {

@@ -1,5 +1,6 @@
 package com.auth0.jwtdecodejava.impl;
 
+import com.auth0.jwtdecodejava.enums.Algorithm;
 import com.auth0.jwtdecodejava.interfaces.Header;
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -16,8 +17,9 @@ class HeaderImpl implements Header {
     }
 
     @Override
-    public String getAlgorithm() {
-        return extractClaim(ALGORITHM, tree).asString();
+    public Algorithm getAlgorithm() {
+        String alg = extractClaim(ALGORITHM, tree).asString();
+        return Algorithm.parseFrom(alg);
     }
 
     @Override

@@ -5,7 +5,6 @@ import com.auth0.jwtdecodejava.interfaces.Claim;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sun.istack.internal.NotNull;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -17,7 +16,7 @@ class ClaimImpl extends BaseClaim {
 
     private final JsonNode data;
 
-    private ClaimImpl(@NotNull JsonNode node) {
+    private ClaimImpl(JsonNode node) {
         this.data = node;
     }
 
@@ -87,12 +86,11 @@ class ClaimImpl extends BaseClaim {
         return list;
     }
 
-    public static Claim extractClaim(@NotNull String claimName, @NotNull Map<String, JsonNode> tree) {
+    public static Claim extractClaim(String claimName, Map<String, JsonNode> tree) {
         JsonNode node = tree.get(claimName);
         return claimFromNode(node);
     }
 
-    @NotNull
     public static Claim claimFromNode(JsonNode node) {
         if (node == null || node.isNull() || node.isMissingNode()) {
             return new BaseClaim();
