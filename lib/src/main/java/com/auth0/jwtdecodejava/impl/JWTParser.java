@@ -1,6 +1,6 @@
 package com.auth0.jwtdecodejava.impl;
 
-import com.auth0.jwtdecodejava.exceptions.JWTException;
+import com.auth0.jwtdecodejava.exceptions.JWTDecodeException;
 import com.auth0.jwtdecodejava.interfaces.Header;
 import com.auth0.jwtdecodejava.interfaces.JWTPartsParser;
 import com.auth0.jwtdecodejava.interfaces.Payload;
@@ -24,12 +24,12 @@ public class JWTParser implements JWTPartsParser {
     }
 
     @Override
-    public Payload parsePayload(String json) throws JWTException {
+    public Payload parsePayload(String json) throws JWTDecodeException {
         return convertFromJSON(json, Payload.class);
     }
 
     @Override
-    public Header parseHeader(String json) throws JWTException {
+    public Header parseHeader(String json) throws JWTDecodeException {
         return convertFromJSON(json, Header.class);
     }
 
@@ -48,8 +48,8 @@ public class JWTParser implements JWTPartsParser {
     }
 
     @SuppressWarnings("WeakerAccess")
-    <T> T convertFromJSON(String json, Class<T> tClazz) throws JWTException {
-        JWTException exception = new JWTException(String.format("The string '%s' doesn't have a valid JSON format.", json));
+    <T> T convertFromJSON(String json, Class<T> tClazz) throws JWTDecodeException {
+        JWTDecodeException exception = new JWTDecodeException(String.format("The string '%s' doesn't have a valid JSON format.", json));
         if (json == null || !json.startsWith("{") || !json.endsWith("}")) {
             throw exception;
         }

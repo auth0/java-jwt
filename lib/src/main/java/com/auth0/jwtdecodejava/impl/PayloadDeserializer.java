@@ -1,6 +1,6 @@
 package com.auth0.jwtdecodejava.impl;
 
-import com.auth0.jwtdecodejava.exceptions.JWTException;
+import com.auth0.jwtdecodejava.exceptions.JWTDecodeException;
 import com.auth0.jwtdecodejava.interfaces.Payload;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.Map;
 
-public class PayloadDeserializer extends StdDeserializer<Payload> {
+class PayloadDeserializer extends StdDeserializer<Payload> {
 
     PayloadDeserializer() {
         this(null);
@@ -29,7 +29,7 @@ public class PayloadDeserializer extends StdDeserializer<Payload> {
         Map<String, JsonNode> tree = p.getCodec().readValue(p, new TypeReference<Map<String, JsonNode>>() {
         });
         if (tree == null) {
-            throw new JWTException("Null map");
+            throw new JWTDecodeException("Null map");
         }
 
         String issuer = getString(tree, PublicClaims.ISSUER);
@@ -43,7 +43,7 @@ public class PayloadDeserializer extends StdDeserializer<Payload> {
         return new PayloadImpl(issuer, subject, audience, expiresAt, notBefore, issuedAt, jwtId, tree);
     }
 
-    private String[] getStringOrArray(Map<String, JsonNode> tree, String claimName) {
+    private String[] getStringOrArray(Map<String, JsonNode> tree, String claimName) throws JWTDecodeException {
         JsonNode node = tree.get(claimName);
         if (node == null || node.isNull() || !(node.isArray() || node.isTextual())) {
             return null;
@@ -58,7 +58,7 @@ public class PayloadDeserializer extends StdDeserializer<Payload> {
             try {
                 arr[i] = mapper.treeToValue(node.get(i), String.class);
             } catch (JsonProcessingException e) {
-                throw new JWTException("Couldn't map the Claim's array contents to String", e);
+                throw new JWTDecodeException("Couldn't map the Claim's array contents to String", e);
             }
         }
         return arr;

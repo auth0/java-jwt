@@ -2,7 +2,7 @@ package com.auth0.jwtdecodejava;
 
 import com.auth0.jwtdecodejava.algorithms.HSAlgorithm;
 import com.auth0.jwtdecodejava.algorithms.RSAlgorithm;
-import com.auth0.jwtdecodejava.exceptions.JWTException;
+import com.auth0.jwtdecodejava.exceptions.JWTDecodeException;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -48,7 +48,7 @@ public class SignUtilsTest {
 
     @Test
     public void shouldThrowOnSplitTokenWithMoreThan3Parts() throws Exception {
-        exception.expect(JWTException.class);
+        exception.expect(JWTDecodeException.class);
         exception.expectMessage("The token was expected to have 3 parts, but got 4.");
         String token = "this.has.four.parts";
         SignUtils.splitToken(token);
@@ -56,7 +56,7 @@ public class SignUtilsTest {
 
     @Test
     public void shouldThrowOnSplitTokenWithLessThan3Parts() throws Exception {
-        exception.expect(JWTException.class);
+        exception.expect(JWTDecodeException.class);
         exception.expectMessage("The token was expected to have 3 parts, but got 2.");
         String token = "two.parts";
         SignUtils.splitToken(token);

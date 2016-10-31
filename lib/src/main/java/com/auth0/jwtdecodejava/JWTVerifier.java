@@ -6,7 +6,7 @@ import com.auth0.jwtdecodejava.algorithms.NoneAlgorithm;
 import com.auth0.jwtdecodejava.algorithms.RSAlgorithm;
 import com.auth0.jwtdecodejava.exceptions.AlgorithmMismatchException;
 import com.auth0.jwtdecodejava.exceptions.InvalidClaimException;
-import com.auth0.jwtdecodejava.exceptions.JWTException;
+import com.auth0.jwtdecodejava.exceptions.JWTVerificationException;
 import com.auth0.jwtdecodejava.exceptions.SignatureVerificationException;
 import com.auth0.jwtdecodejava.impl.PublicClaims;
 import com.auth0.jwtdecodejava.interfaces.JWT;
@@ -22,6 +22,9 @@ import java.util.Map;
 
 import static com.auth0.jwtdecodejava.algorithms.NoneAlgorithm.none;
 
+/**
+ * The JWTVerifier class holds the verify method to assert that a given Token has not only a proper JWT format, but also it's signature matches.
+ */
 public class JWTVerifier {
     private final Algorithm algorithm;
     private final String secret;
@@ -35,14 +38,35 @@ public class JWTVerifier {
         this.claims = new HashMap<>();
     }
 
-    public static JWTVerifier init() throws IllegalArgumentException {
+    /**
+     * Initialize a JWTVerifier instance using the Algorithm "none".
+     *
+     * @return a JWTVerifier instance to configure.
+     */
+    public static JWTVerifier init() {
         return init(none, null, null);
     }
 
+    /**
+     * Initialize a JWTVerifier instance using a HS Algorithm.
+     *
+     * @param algorithm a HSAlgorithm. Valid values are HS256, HS384, HS512.
+     * @param secret    to use when verifying the signature.
+     * @return a JWTVerifier instance to configure.
+     * @throws IllegalArgumentException if the provided algorithm is null or if the secret is null.
+     */
     public static JWTVerifier init(HSAlgorithm algorithm, String secret) throws IllegalArgumentException {
         return init(algorithm, null, secret);
     }
 
+    /**
+     * Initialize a JWTVerifier instance using a RS Algorithm.
+     *
+     * @param algorithm a RSAlgorithm. Valid values are RS256, RS384, RS512.
+     * @param publicKey to use when verifying the signature.
+     * @return a JWTVerifier instance to configure.
+     * @throws IllegalArgumentException if the provided algorithm is null or if the publicKey is null.
+     */
     public static JWTVerifier init(RSAlgorithm algorithm, PublicKey publicKey) throws IllegalArgumentException {
         return init(algorithm, publicKey, null);
     }
@@ -60,42 +84,84 @@ public class JWTVerifier {
         return new JWTVerifier(algorithm, secret, publicKey);
     }
 
+    /**
+     * Require a specific Issuer ("iss") claim.
+     *
+     * @return this same JWTVerifier instance.
+     */
     public JWTVerifier withIssuer(String issuer) {
         requireClaim(PublicClaims.ISSUER, issuer);
         return this;
     }
 
+    /**
+     * Require a specific Subject ("sub") claim.
+     *
+     * @return this same JWTVerifier instance.
+     */
     public JWTVerifier withSubject(String subject) {
         requireClaim(PublicClaims.SUBJECT, subject);
         return this;
     }
 
+    /**
+     * Require a specific Audience ("aud") claim.
+     *
+     * @return this same JWTVerifier instance.
+     */
     public JWTVerifier withAudience(String[] audience) {
         requireClaim(PublicClaims.AUDIENCE, audience);
         return this;
     }
 
+    /**
+     * Require a specific Expires At ("exp") claim.
+     *
+     * @return this same JWTVerifier instance.
+     */
     public JWTVerifier withExpiresAt(Date expiresAt) {
         requireClaim(PublicClaims.EXPIRES_AT, expiresAt);
         return this;
     }
 
+    /**
+     * Require a specific Not Before ("nbf") claim.
+     *
+     * @return this same JWTVerifier instance.
+     */
     public JWTVerifier withNotBefore(Date notBefore) {
         requireClaim(PublicClaims.NOT_BEFORE, notBefore);
         return this;
     }
 
+    /**
+     * Require a specific Issued At ("iat") claim.
+     *
+     * @return this same JWTVerifier instance.
+     */
     public JWTVerifier withIssuedAt(Date issuedAt) {
         requireClaim(PublicClaims.ISSUED_AT, issuedAt);
         return this;
     }
 
+    /**
+     * Require a specific JWT Id ("jti") claim.
+     *
+     * @return this same JWTVerifier instance.
+     */
     public JWTVerifier withJWTId(String jwtId) {
         requireClaim(PublicClaims.JWT_ID, jwtId);
         return this;
     }
 
-    public JWT verify(String token) throws JWTException {
+    /**
+     * Perform the verification against the given Token, using any previous configured options.
+     *
+     * @param token the String representation of the JWT.
+     * @return a verified JWT.
+     * @throws JWTVerificationException if any of the required contents inside the JWT is invalid.
+     */
+    public JWT verify(String token) throws JWTVerificationException {
         JWT jwt = JWTDecoder.decode(token);
         verifyAlgorithm(jwt, algorithm);
         verifySignature(SignUtils.splitToken(token));
@@ -103,7 +169,7 @@ public class JWTVerifier {
         return jwt;
     }
 
-    private void verifySignature(String[] parts) {
+    private void verifySignature(String[] parts) throws SignatureVerificationException {
         if (algorithm instanceof HSAlgorithm) {
             try {
                 SignUtils.verifyHS((HSAlgorithm) algorithm, parts, secret);
@@ -121,7 +187,7 @@ public class JWTVerifier {
         }
     }
 
-    private void verifyAlgorithm(JWT jwt, Algorithm expectedAlgorithm) throws AlgorithmMismatchException, IllegalArgumentException {
+    private void verifyAlgorithm(JWT jwt, Algorithm expectedAlgorithm) throws AlgorithmMismatchException {
         if (!expectedAlgorithm.equals(jwt.getAlgorithm())) {
             throw new AlgorithmMismatchException("The provided Algorithm doesn't match the one defined in the JWT's Header.");
         }
@@ -133,7 +199,7 @@ public class JWTVerifier {
         }
     }
 
-    private void assertValidClaim(JWT jwt, String claimName, Object expectedValue) {
+    private void assertValidClaim(JWT jwt, String claimName, Object expectedValue) throws InvalidClaimException {
         boolean isValid;
         if (PublicClaims.AUDIENCE.equals(claimName)) {
             isValid = Arrays.equals(jwt.getAudience(), (String[]) expectedValue);

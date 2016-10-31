@@ -1,6 +1,6 @@
 package com.auth0.jwtdecodejava.impl;
 
-import com.auth0.jwtdecodejava.exceptions.JWTException;
+import com.auth0.jwtdecodejava.exceptions.JWTDecodeException;
 import com.auth0.jwtdecodejava.interfaces.Header;
 import com.auth0.jwtdecodejava.interfaces.Payload;
 import com.fasterxml.jackson.databind.Module;
@@ -56,7 +56,7 @@ public class JWTParserTest {
     @Test
     public void shouldThrowOnInvalidPayload() throws Exception {
         String jsonPayload = "{{";
-        exception.expect(JWTException.class);
+        exception.expect(JWTDecodeException.class);
         exception.expectMessage(String.format("The string '%s' doesn't have a valid JSON format.", jsonPayload));
         Payload payload = parser.parsePayload(jsonPayload);
         assertThat(payload, is(nullValue()));
@@ -74,7 +74,7 @@ public class JWTParserTest {
     @Test
     public void shouldThrowOnInvalidHeader() throws Exception {
         String jsonHeader = "}}";
-        exception.expect(JWTException.class);
+        exception.expect(JWTDecodeException.class);
         exception.expectMessage(String.format("The string '%s' doesn't have a valid JSON format.", jsonHeader));
         Header header = parser.parseHeader(jsonHeader);
         assertThat(header, is(nullValue()));
@@ -89,7 +89,7 @@ public class JWTParserTest {
 
     @Test
     public void shouldThrowWhenConvertingIfNullJson() throws Exception {
-        exception.expect(JWTException.class);
+        exception.expect(JWTDecodeException.class);
         exception.expectMessage("The string 'null' doesn't have a valid JSON format.");
         String json = null;
         Object object = parser.convertFromJSON(json, Object.class);
@@ -98,7 +98,7 @@ public class JWTParserTest {
 
     @Test
     public void shouldThrowWhenConvertingFromInvalidJson() throws Exception {
-        exception.expect(JWTException.class);
+        exception.expect(JWTDecodeException.class);
         exception.expectMessage("The string '}{' doesn't have a valid JSON format.");
         String json = "}{";
         Object object = parser.convertFromJSON(json, Object.class);

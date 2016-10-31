@@ -1,7 +1,7 @@
 package com.auth0.jwtdecodejava;
 
 import com.auth0.jwtdecodejava.algorithms.Algorithm;
-import com.auth0.jwtdecodejava.exceptions.JWTException;
+import com.auth0.jwtdecodejava.exceptions.JWTDecodeException;
 import com.auth0.jwtdecodejava.impl.JWTParser;
 import com.auth0.jwtdecodejava.interfaces.Claim;
 import com.auth0.jwtdecodejava.interfaces.Header;
@@ -10,27 +10,44 @@ import com.auth0.jwtdecodejava.interfaces.Payload;
 
 import java.util.Date;
 
-import static com.auth0.jwtdecodejava.SignUtils.base64Decode;
-
+/**
+ * The JWTDecoder class holds the decode method to parse a given Token into it's JWT representation.
+ */
 public final class JWTDecoder implements JWT {
 
     private Header header;
     private Payload payload;
     private String signature;
 
-    private JWTDecoder(String jwt) {
+    private JWTDecoder(String jwt) throws JWTDecodeException {
         parseToken(jwt);
     }
 
-    public static JWT decode(String jwt) {
-        return new JWTDecoder(jwt);
+    /**
+     * Decode a given Token into a JWT instance.
+     * Note that this method doesn't verify the JWT's signature! Use it only if you trust the issuer of the Token.
+     *
+     * @param token the String representation of the JWT.
+     * @return a decoded JWT.
+     * @throws JWTDecodeException if any part of the Token contained an invalid JWT or JSON format.
+     */
+    public static JWT decode(String token) throws JWTDecodeException {
+        return new JWTDecoder(token);
     }
 
-    private void parseToken(String token) throws JWTException {
+    private void parseToken(String token) throws JWTDecodeException {
         final String[] parts = SignUtils.splitToken(token);
         final JWTParser converter = new JWTParser();
-        header = converter.parseHeader(base64Decode(parts[0]));
-        payload = converter.parsePayload(base64Decode(parts[1]));
+        String headerJson;
+        String payloadJson;
+        try {
+            headerJson = SignUtils.base64Decode(parts[0]);
+            payloadJson = SignUtils.base64Decode(parts[1]);
+        } catch (NullPointerException e) {
+            throw new JWTDecodeException("The UTF-8 Charset isn't initialized.", e);
+        }
+        header = converter.parseHeader(headerJson);
+        payload = converter.parsePayload(payloadJson);
         signature = parts[2];
     }
 

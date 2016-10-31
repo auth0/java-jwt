@@ -12,6 +12,9 @@ import java.util.Map;
 import static com.auth0.jwtdecodejava.impl.ClaimImpl.extractClaim;
 import static com.auth0.jwtdecodejava.impl.PublicClaims.*;
 
+/**
+ * The HeaderImpl class implements the Header interface.
+ */
 class HeaderImpl implements Header {
     private final Map<String, JsonNode> tree;
 

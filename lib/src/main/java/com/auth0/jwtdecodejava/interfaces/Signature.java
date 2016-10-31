@@ -1,11 +1,14 @@
 package com.auth0.jwtdecodejava.interfaces;
 
+/**
+ * The Signature class represents the 3rd part of the JWT, where the Signature value is hold.
+ */
 public interface Signature {
 
     /**
-     * Get the Signature from this Payload as a Base64 encoded String.
+     * Getter for the Signature contained in the JWT as a Base64 encoded String.
      *
-     * @return the Signature of the Payload.
+     * @return the Signature of the JWT.
      */
     String getSignature();
 }

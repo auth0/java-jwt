@@ -2,6 +2,9 @@ package com.auth0.jwtdecodejava.interfaces;
 
 import java.util.Date;
 
+/**
+ * The Payload class represents the 2nd part of the JWT, where the Payload value is hold.
+ */
 public interface Payload {
 
     /**

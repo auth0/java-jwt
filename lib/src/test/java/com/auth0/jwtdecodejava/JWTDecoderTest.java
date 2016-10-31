@@ -1,7 +1,7 @@
 package com.auth0.jwtdecodejava;
 
 import com.auth0.jwtdecodejava.algorithms.HSAlgorithm;
-import com.auth0.jwtdecodejava.exceptions.JWTException;
+import com.auth0.jwtdecodejava.exceptions.JWTDecodeException;
 import com.auth0.jwtdecodejava.impl.BaseClaim;
 import com.auth0.jwtdecodejava.interfaces.Claim;
 import com.auth0.jwtdecodejava.interfaces.JWT;
@@ -31,14 +31,14 @@ public class JWTDecoderTest {
     // Exceptions
     @Test
     public void shouldThrowIfLessThan3Parts() throws Exception {
-        exception.expect(JWTException.class);
+        exception.expect(JWTDecodeException.class);
         exception.expectMessage("The token was expected to have 3 parts, but got 2.");
         JWTDecoder.decode("two.parts");
     }
 
     @Test
     public void shouldThrowIfMoreThan3Parts() throws Exception {
-        exception.expect(JWTException.class);
+        exception.expect(JWTDecodeException.class);
         exception.expectMessage("The token was expected to have 3 parts, but got 4.");
         JWTDecoder.decode("this.has.four.parts");
     }
@@ -47,7 +47,7 @@ public class JWTDecoderTest {
     public void shouldThrowIfPayloadHasInvalidJSONFormat() throws Exception {
         String validJson = "{}";
         String invalidJson = "{}}{";
-        exception.expect(JWTException.class);
+        exception.expect(JWTDecodeException.class);
         exception.expectMessage(String.format("The string '%s' doesn't have a valid JSON format.", invalidJson));
         customJWT(validJson, invalidJson, "signature");
     }
@@ -56,7 +56,7 @@ public class JWTDecoderTest {
     public void shouldThrowIfHeaderHasInvalidJSONFormat() throws Exception {
         String validJson = "{}";
         String invalidJson = "{}}{";
-        exception.expect(JWTException.class);
+        exception.expect(JWTDecodeException.class);
         exception.expectMessage(String.format("The string '%s' doesn't have a valid JSON format.", invalidJson));
         customJWT(invalidJson, validJson, "signature");
     }

@@ -1,12 +1,10 @@
 package com.auth0.jwtdecodejava.impl;
 
 import com.auth0.jwtdecodejava.UserPojo;
-import com.auth0.jwtdecodejava.exceptions.JWTException;
+import com.auth0.jwtdecodejava.exceptions.JWTDecodeException;
 import com.auth0.jwtdecodejava.interfaces.Claim;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.hamcrest.collection.IsArrayWithSize;
-import org.hamcrest.collection.IsEmptyCollection;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -157,7 +155,7 @@ public class ClaimImplTest {
         JsonNode value = mapper.valueToTree(new String[]{"keys", "values"});
         Claim claim = claimFromNode(value);
 
-        exception.expect(JWTException.class);
+        exception.expect(JWTDecodeException.class);
         claim.asArray(UserPojo.class);
     }
 
@@ -200,7 +198,7 @@ public class ClaimImplTest {
         JsonNode value = mapper.valueToTree(new String[]{"keys", "values"});
         Claim claim = claimFromNode(value);
 
-        exception.expect(JWTException.class);
+        exception.expect(JWTDecodeException.class);
         claim.asList(UserPojo.class);
     }
 

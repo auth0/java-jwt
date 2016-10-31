@@ -1,6 +1,6 @@
 package com.auth0.jwtdecodejava.impl;
 
-import com.auth0.jwtdecodejava.exceptions.JWTException;
+import com.auth0.jwtdecodejava.exceptions.JWTDecodeException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationContext;
@@ -10,13 +10,13 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import java.io.IOException;
 import java.util.Map;
 
-public class HeaderDeserializer extends StdDeserializer<HeaderImpl> {
+class HeaderDeserializer extends StdDeserializer<HeaderImpl> {
 
-    public HeaderDeserializer() {
+    HeaderDeserializer() {
         this(null);
     }
 
-    protected HeaderDeserializer(Class<?> vc) {
+    private HeaderDeserializer(Class<?> vc) {
         super(vc);
     }
 
@@ -25,7 +25,7 @@ public class HeaderDeserializer extends StdDeserializer<HeaderImpl> {
         Map<String, JsonNode> tree = p.getCodec().readValue(p, new TypeReference<Map<String, JsonNode>>() {
         });
         if (tree == null) {
-            throw new JWTException("Null map");
+            throw new JWTDecodeException("Null map");
         }
         return new HeaderImpl(tree);
     }
