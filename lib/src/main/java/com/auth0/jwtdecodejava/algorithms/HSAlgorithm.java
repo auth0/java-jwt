@@ -1,27 +1,26 @@
-package com.auth0.jwtdecodejava.enums;
+package com.auth0.jwtdecodejava.algorithms;
 
 import org.apache.commons.codec.digest.HmacAlgorithms;
 
-public enum Algorithm {
-    none(null),
+public enum HSAlgorithm implements Algorithm {
     HS256(HmacAlgorithms.HMAC_SHA_256.toString()),
     HS384(HmacAlgorithms.HMAC_SHA_384.toString()),
     HS512(HmacAlgorithms.HMAC_SHA_512.toString());
 
     private final String description;
 
-    Algorithm(String description) {
+    HSAlgorithm(String description) {
         this.description = description;
     }
 
     @Override
-    public String toString() {
+    public String describe() {
         return description;
     }
 
-    public static Algorithm parseFrom(String algorithmName) {
+    public static Algorithm resolveFrom(String name) {
         try {
-            return Algorithm.valueOf(algorithmName);
+            return valueOf(name);
         } catch (IllegalArgumentException ignored) {
             return null;
         }

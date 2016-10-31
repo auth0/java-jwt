@@ -1,8 +1,8 @@
 package com.auth0.jwtdecodejava.exceptions;
 
-import com.auth0.jwtdecodejava.enums.Algorithm;
+import com.auth0.jwtdecodejava.algorithms.Algorithm;
 
-public class SignatureVerificationException extends JWTException {
+public class SignatureVerificationException extends JWTVerificationException {
     public SignatureVerificationException(Algorithm algorithm) {
         this(algorithm, null);
     }

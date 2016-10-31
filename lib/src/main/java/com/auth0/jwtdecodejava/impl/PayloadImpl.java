@@ -9,6 +9,9 @@ import java.util.Map;
 
 import static com.auth0.jwtdecodejava.impl.ClaimImpl.extractClaim;
 
+/**
+ * The PayloadImpl class implements the Payload interface.
+ */
 class PayloadImpl implements Payload {
     private final String issuer;
     private final String subject;

@@ -1,6 +1,6 @@
 package com.auth0.jwtdecodejava.impl;
 
-import com.auth0.jwtdecodejava.exceptions.JWTException;
+import com.auth0.jwtdecodejava.exceptions.JWTDecodeException;
 import com.auth0.jwtdecodejava.interfaces.Claim;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -12,6 +12,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * The ClaimImpl class implements the Claim interface.
+ */
 class ClaimImpl extends BaseClaim {
 
     private final JsonNode data;
@@ -51,7 +54,7 @@ class ClaimImpl extends BaseClaim {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> T[] asArray(Class<T> tClazz) throws JWTException {
+    public <T> T[] asArray(Class<T> tClazz) throws JWTDecodeException {
         if (!data.isArray()) {
             return null;
         }
@@ -62,14 +65,14 @@ class ClaimImpl extends BaseClaim {
             try {
                 arr[i] = mapper.treeToValue(data.get(i), tClazz);
             } catch (JsonProcessingException e) {
-                throw new JWTException("Couldn't map the Claim's array contents to " + tClazz.getSimpleName(), e);
+                throw new JWTDecodeException("Couldn't map the Claim's array contents to " + tClazz.getSimpleName(), e);
             }
         }
         return arr;
     }
 
     @Override
-    public <T> List<T> asList(Class<T> tClazz) throws JWTException {
+    public <T> List<T> asList(Class<T> tClazz) throws JWTDecodeException {
         if (!data.isArray()) {
             return null;
         }
@@ -80,18 +83,31 @@ class ClaimImpl extends BaseClaim {
             try {
                 list.add(mapper.treeToValue(data.get(i), tClazz));
             } catch (JsonProcessingException e) {
-                throw new JWTException("Couldn't map the Claim's array contents to " + tClazz.getSimpleName(), e);
+                throw new JWTDecodeException("Couldn't map the Claim's array contents to " + tClazz.getSimpleName(), e);
             }
         }
         return list;
     }
 
-    public static Claim extractClaim(String claimName, Map<String, JsonNode> tree) {
+    /**
+     * Helper method to extract a Claim from the given JsonNode tree.
+     *
+     * @param claimName the Claim to search for.
+     * @param tree      the JsonNode tree to search the Claim in.
+     * @return a valid non-null Claim.
+     */
+    static Claim extractClaim(String claimName, Map<String, JsonNode> tree) {
         JsonNode node = tree.get(claimName);
         return claimFromNode(node);
     }
 
-    public static Claim claimFromNode(JsonNode node) {
+    /**
+     * Helper method to create a Claim representation from the given JsonNode.
+     *
+     * @param node the JsonNode to convert into a Claim.
+     * @return a valid Claim instance. If the node is null or missing, a BaseClaim will be returned.
+     */
+    static Claim claimFromNode(JsonNode node) {
         if (node == null || node.isNull() || node.isMissingNode()) {
             return new BaseClaim();
         }

@@ -1,10 +1,13 @@
 package com.auth0.jwtdecodejava.interfaces;
 
-import com.auth0.jwtdecodejava.exceptions.JWTException;
+import com.auth0.jwtdecodejava.exceptions.JWTDecodeException;
 
 import java.util.Date;
 import java.util.List;
 
+/**
+ * The Claim class holds the value in a generic way so that it can be recovered in many representations.
+ */
 public interface Claim {
 
     boolean isNull();
@@ -54,16 +57,16 @@ public interface Claim {
      * If the value isn't an Array, an empty Array will be returned.
      *
      * @return the value as an Array or an empty Array.
-     * @throws Exception if the values inside the Array can't be converted to a class T.
+     * @throws JWTDecodeException if the values inside the Array can't be converted to a class T.
      */
-    <T> T[] asArray(Class<T> tClazz) throws JWTException;
+    <T> T[] asArray(Class<T> tClazz) throws JWTDecodeException;
 
     /**
      * Get this Claim as a List of type T.
      * If the value isn't an Array, an empty List will be returned.
      *
      * @return the value as a List or an empty List.
-     * @throws Exception if the values inside the List can't be converted to a class T.
+     * @throws JWTDecodeException if the values inside the List can't be converted to a class T.
      */
-    <T> List<T> asList(Class<T> tClazz) throws JWTException;
+    <T> List<T> asList(Class<T> tClazz) throws JWTDecodeException;
 }
