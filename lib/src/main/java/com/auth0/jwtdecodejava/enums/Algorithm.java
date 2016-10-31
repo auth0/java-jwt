@@ -6,7 +6,10 @@ public enum Algorithm {
     none(null),
     HS256(HmacAlgorithms.HMAC_SHA_256.toString()),
     HS384(HmacAlgorithms.HMAC_SHA_384.toString()),
-    HS512(HmacAlgorithms.HMAC_SHA_512.toString());
+    HS512(HmacAlgorithms.HMAC_SHA_512.toString()),
+    RS256("SHA256withRSA"),
+    RS384("SHA384withRSA"),
+    RS512("SHA512withRSA");
 
     private final String description;
 

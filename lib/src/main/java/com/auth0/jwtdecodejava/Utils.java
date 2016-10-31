@@ -7,9 +7,7 @@ import org.apache.commons.codec.binary.StringUtils;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-import java.security.InvalidKeyException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import java.security.*;
 
 public class Utils {
 
@@ -57,5 +55,20 @@ public class Utils {
             throw new JWTException(String.format("The token was expected to have 3 parts, but got %s.", parts.length));
         }
         return parts;
+    }
+
+    public static boolean verifyRS(String[] jwtParts, PublicKey publicKey, Algorithm algorithm) throws InvalidKeyException, NoSuchAlgorithmException, SignatureException {
+        if (publicKey == null) {
+            throw new IllegalArgumentException("The PublicKey cannot be null");
+        }
+        if (algorithm != Algorithm.RS256 && algorithm != Algorithm.RS384 && algorithm != Algorithm.RS512) {
+            throw new IllegalArgumentException("The Algorithm must be one of RS256, RS384, or RS512.");
+        }
+
+        final String content = String.format("%s.%s", jwtParts[0], jwtParts[1]);
+        Signature s = Signature.getInstance(algorithm.toString());
+        s.initVerify(publicKey);
+        s.update(content.getBytes());
+        return s.verify(Base64.decodeBase64(jwtParts[2]));
     }
 }

@@ -11,6 +11,8 @@ import com.auth0.jwtdecodejava.interfaces.JWT;
 
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
+import java.security.SignatureException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -19,10 +21,12 @@ import java.util.Map;
 public class JWTVerifier {
     private final Algorithm algorithm;
     private final String secret;
+    private final PublicKey key;
     private final Map<String, Object> claims;
 
-    private JWTVerifier(Algorithm algorithm, String secret) {
+    private JWTVerifier(Algorithm algorithm, String secret, PublicKey key) {
         this.algorithm = algorithm;
+        this.key = key;
         this.secret = secret;
         this.claims = new HashMap<>();
     }
@@ -49,7 +53,7 @@ public class JWTVerifier {
                 }
             default:
         }
-        return new JWTVerifier(algorithm, secret);
+        return new JWTVerifier(algorithm, secret, null);
     }
 
     public JWTVerifier withIssuer(String issuer) {
@@ -106,8 +110,17 @@ public class JWTVerifier {
                     throw new SignatureVerificationException(algorithm, e);
                 }
                 break;
+            case RS256:
+            case RS384:
+            case RS512:
+                try {
+                    Utils.verifyRS(parts, key, algorithm);
+                } catch (InvalidKeyException | NoSuchAlgorithmException | SignatureException e) {
+                    throw new SignatureVerificationException(algorithm, e);
+                }
+                break;
             case none:
-                if (!parts[2].isEmpty()){
+                if (!parts[2].isEmpty()) {
                     throw new SignatureVerificationException(algorithm);
                 }
             default:
