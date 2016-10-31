@@ -3,109 +3,136 @@ package com.auth0.jwtdecodejava;
 import com.auth0.jwtdecodejava.algorithms.Algorithm;
 import com.auth0.jwtdecodejava.exceptions.*;
 import com.auth0.jwtdecodejava.impl.PublicClaims;
-import com.auth0.jwtdecodejava.interfaces.JWT;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * The JWTVerifier class holds the verify method to assert that a given Token has not only a proper JWT format, but also it's signature matches.
  */
-public class JWTVerifier {
+class JWTVerifier {
     private final Algorithm algorithm;
     private final Map<String, Object> claims;
 
-    private JWTVerifier(Algorithm algorithm) throws IllegalArgumentException {
-        if (algorithm == null) {
-            throw new IllegalArgumentException("The Algorithm cannot be null.");
-        }
+    private JWTVerifier(Algorithm algorithm, Map<String, Object> claims) {
         this.algorithm = algorithm;
-        this.claims = new HashMap<>();
+        this.claims = Collections.unmodifiableMap(claims);
     }
 
     /**
      * Initialize a JWTVerifier instance using a HS Algorithm.
      *
-     * @param algorithm a HSAlgorithm. Valid values are HS256, HS384, HS512.
+     * @param algorithm the Algorithm to use on the JWT verification.
      * @return a JWTVerifier instance to configure.
-     * @throws IllegalArgumentException if the provided algorithm is null or if the secret is null.
+     * @throws IllegalArgumentException if the provided algorithm is null.
      */
-    public static JWTVerifier init(Algorithm algorithm) throws IllegalArgumentException {
-        return new JWTVerifier(algorithm);
-    }
-
-
-    /**
-     * Require a specific Issuer ("iss") claim.
-     *
-     * @return this same JWTVerifier instance.
-     */
-    public JWTVerifier withIssuer(String issuer) {
-        requireClaim(PublicClaims.ISSUER, issuer);
-        return this;
+    static JWTVerifier.Verification init(Algorithm algorithm) throws IllegalArgumentException {
+        return new Verification(algorithm);
     }
 
     /**
-     * Require a specific Subject ("sub") claim.
-     *
-     * @return this same JWTVerifier instance.
+     * The Verification class holds the Claims required by a JWT to be valid.
      */
-    public JWTVerifier withSubject(String subject) {
-        requireClaim(PublicClaims.SUBJECT, subject);
-        return this;
+    static class Verification {
+        private final Algorithm algorithm;
+        private final Map<String, Object> claims;
+
+        Verification(Algorithm algorithm) throws IllegalArgumentException {
+            if (algorithm == null) {
+                throw new IllegalArgumentException("The Algorithm cannot be null.");
+            }
+
+            this.algorithm = algorithm;
+            this.claims = new HashMap<>();
+        }
+
+        /**
+         * Require a specific Issuer ("iss") claim.
+         *
+         * @return this same Verification instance.
+         */
+        public Verification withIssuer(String issuer) {
+            requireClaim(PublicClaims.ISSUER, issuer);
+            return this;
+        }
+
+        /**
+         * Require a specific Subject ("sub") claim.
+         *
+         * @return this same Verification instance.
+         */
+        public Verification withSubject(String subject) {
+            requireClaim(PublicClaims.SUBJECT, subject);
+            return this;
+        }
+
+        /**
+         * Require a specific Audience ("aud") claim.
+         *
+         * @return this same Verification instance.
+         */
+        public Verification withAudience(String[] audience) {
+            requireClaim(PublicClaims.AUDIENCE, audience);
+            return this;
+        }
+
+        /**
+         * Require a specific Expires At ("exp") claim.
+         *
+         * @return this same Verification instance.
+         */
+        public Verification withExpiresAt(Date expiresAt) {
+            requireClaim(PublicClaims.EXPIRES_AT, expiresAt);
+            return this;
+        }
+
+        /**
+         * Require a specific Not Before ("nbf") claim.
+         *
+         * @return this same Verification instance.
+         */
+        public Verification withNotBefore(Date notBefore) {
+            requireClaim(PublicClaims.NOT_BEFORE, notBefore);
+            return this;
+        }
+
+        /**
+         * Require a specific Issued At ("iat") claim.
+         *
+         * @return this same Verification instance.
+         */
+        public Verification withIssuedAt(Date issuedAt) {
+            requireClaim(PublicClaims.ISSUED_AT, issuedAt);
+            return this;
+        }
+
+        /**
+         * Require a specific JWT Id ("jti") claim.
+         *
+         * @return this same Verification instance.
+         */
+        public Verification withJWTId(String jwtId) {
+            requireClaim(PublicClaims.JWT_ID, jwtId);
+            return this;
+        }
+
+        /**
+         * Creates a new and reusable instance of the JWTVerifier with the configuration already provided.
+         *
+         * @return a new JWTVerifier instance.
+         */
+        public JWTVerifier build() {
+            return new JWTVerifier(algorithm, claims);
+        }
+
+        private void requireClaim(String name, Object value) {
+            if (value == null) {
+                claims.remove(name);
+                return;
+            }
+            claims.put(name, value);
+        }
     }
 
-    /**
-     * Require a specific Audience ("aud") claim.
-     *
-     * @return this same JWTVerifier instance.
-     */
-    public JWTVerifier withAudience(String[] audience) {
-        requireClaim(PublicClaims.AUDIENCE, audience);
-        return this;
-    }
-
-    /**
-     * Require a specific Expires At ("exp") claim.
-     *
-     * @return this same JWTVerifier instance.
-     */
-    public JWTVerifier withExpiresAt(Date expiresAt) {
-        requireClaim(PublicClaims.EXPIRES_AT, expiresAt);
-        return this;
-    }
-
-    /**
-     * Require a specific Not Before ("nbf") claim.
-     *
-     * @return this same JWTVerifier instance.
-     */
-    public JWTVerifier withNotBefore(Date notBefore) {
-        requireClaim(PublicClaims.NOT_BEFORE, notBefore);
-        return this;
-    }
-
-    /**
-     * Require a specific Issued At ("iat") claim.
-     *
-     * @return this same JWTVerifier instance.
-     */
-    public JWTVerifier withIssuedAt(Date issuedAt) {
-        requireClaim(PublicClaims.ISSUED_AT, issuedAt);
-        return this;
-    }
-
-    /**
-     * Require a specific JWT Id ("jti") claim.
-     *
-     * @return this same JWTVerifier instance.
-     */
-    public JWTVerifier withJWTId(String jwtId) {
-        requireClaim(PublicClaims.JWT_ID, jwtId);
-        return this;
-    }
 
     /**
      * Perform the verification against the given Token, using any previous configured options.
@@ -116,7 +143,7 @@ public class JWTVerifier {
      * @throws JWTVerificationException if any of the required contents inside the JWT is invalid.
      */
     public JWT verify(String token) throws JWTDecodeException, JWTVerificationException {
-        JWT jwt = JWTDecoder.decode(token);
+        JWT jwt = new JWT(JWTDecoder.decode(token));
         verifyAlgorithm(jwt, algorithm);
         verifySignature(SignUtils.splitToken(token));
         verifyClaims(jwt, claims);
@@ -154,13 +181,5 @@ public class JWTVerifier {
         if (!isValid) {
             throw new InvalidClaimException(String.format("The Claim '%s' value doesn't match the required one.", claimName));
         }
-    }
-
-    private void requireClaim(String name, Object value) {
-        if (value == null) {
-            claims.remove(name);
-            return;
-        }
-        claims.put(name, value);
     }
 }
