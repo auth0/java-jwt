@@ -4,6 +4,7 @@ import com.auth0.jwtdecodejava.interfaces.Header;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 import static com.auth0.jwtdecodejava.impl.ClaimImpl.extractClaim;
@@ -16,7 +17,11 @@ class HeaderImpl implements Header {
     private final Map<String, JsonNode> tree;
 
     HeaderImpl(Map<String, JsonNode> tree) {
-        this.tree = Collections.unmodifiableMap(tree);
+        this.tree = Collections.unmodifiableMap(tree == null ? new HashMap<String, JsonNode>() : tree);
+    }
+
+    Map<String, JsonNode> getTree() {
+        return tree;
     }
 
     @Override
