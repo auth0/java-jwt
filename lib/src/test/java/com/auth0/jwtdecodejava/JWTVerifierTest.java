@@ -1,20 +1,17 @@
 package com.auth0.jwtdecodejava;
 
-import com.auth0.jwtdecodejava.algorithms.HSAlgorithm;
-import com.auth0.jwtdecodejava.algorithms.RSAlgorithm;
+import com.auth0.jwtdecodejava.algorithms.Algorithm;
 import com.auth0.jwtdecodejava.exceptions.InvalidClaimException;
 import com.auth0.jwtdecodejava.interfaces.JWT;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import java.security.PublicKey;
 import java.util.Date;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
 
 public class JWTVerifierTest {
 
@@ -22,78 +19,16 @@ public class JWTVerifierTest {
     public ExpectedException exception = ExpectedException.none();
 
     @Test
-    public void shouldAcceptNoneAlgorithmWhenUsingDefaultConstructor() throws Exception {
-        String token = "eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJpc3MiOiJhdXRoMCJ9.";
-        JWT jwt = JWTVerifier.init()
-                .verify(token);
-
-        assertThat(jwt, is(notNullValue()));
-    }
-
-    @Test
-    public void shouldThrowWhenInitializedWithSecretButWithoutAlgorithm() throws Exception {
+    public void shouldThrowWhenInitializedWithoutAlgorithm() throws Exception {
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage("The Algorithm cannot be null");
-        JWTVerifier.init(null, "secret");
-    }
-
-    @Test
-    public void shouldThrowWhenInitializedWithPublicKeyButWithoutRSAlgorithm() throws Exception {
-        exception.expect(IllegalArgumentException.class);
-        exception.expectMessage("The Algorithm cannot be null");
-        PublicKey key = mock(PublicKey.class);
-        JWTVerifier.init(null, key);
-    }
-
-    @Test
-    public void shouldThrowWhenInitializedWithHS256AlgorithmWithoutSecret() throws Exception {
-        exception.expect(IllegalArgumentException.class);
-        exception.expectMessage("You can't use the HS256 algorithm without providing a valid Secret.");
-        JWTVerifier.init(HSAlgorithm.HS256, null);
-    }
-
-
-    @Test
-    public void shouldThrowWhenInitializedWithHS384AlgorithmWithoutSecret() throws Exception {
-        exception.expect(IllegalArgumentException.class);
-        exception.expectMessage("You can't use the HS384 algorithm without providing a valid Secret.");
-        JWTVerifier.init(HSAlgorithm.HS384, null);
-    }
-
-
-    @Test
-    public void shouldThrowWhenInitializedWithHS512AlgorithmWithoutSecret() throws Exception {
-        exception.expect(IllegalArgumentException.class);
-        exception.expectMessage("You can't use the HS512 algorithm without providing a valid Secret.");
-        JWTVerifier.init(HSAlgorithm.HS512, null);
-    }
-
-    @Test
-    public void shouldThrowWhenInitializedWithRS256AlgorithmWithoutPublicKey() throws Exception {
-        exception.expect(IllegalArgumentException.class);
-        exception.expectMessage("You can't use the RS256 algorithm without providing a valid PublicKey.");
-        JWTVerifier.init(RSAlgorithm.RS256, null);
-    }
-
-
-    @Test
-    public void shouldThrowWhenInitializedWithRS384AlgorithmWithoutPublicKey() throws Exception {
-        exception.expect(IllegalArgumentException.class);
-        exception.expectMessage("You can't use the RS384 algorithm without providing a valid PublicKey.");
-        JWTVerifier.init(RSAlgorithm.RS384, null);
-    }
-
-    @Test
-    public void shouldThrowWhenInitializedWithRS512AlgorithmWithoutPublicKey() throws Exception {
-        exception.expect(IllegalArgumentException.class);
-        exception.expectMessage("You can't use the RS512 algorithm without providing a valid PublicKey.");
-        JWTVerifier.init(RSAlgorithm.RS512, null);
+        JWTVerifier.init(null);
     }
 
     @Test
     public void shouldValidateIssuer() throws Exception {
-        String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhdXRoMCJ9.MT8JrEvIB69bH5W9RUR2ap-H3e69fM7LEQCiZF-7FbI";
-        JWT jwt = JWTVerifier.init(HSAlgorithm.HS256, "secret")
+        String token = "eyJhbGciOiJIUzI1NiIsImN0eSI6IkpXVCJ9.eyJpc3MiOiJhdXRoMCJ9.mZ0m_N1J4PgeqWmi903JuUoDRZDBPB7HwkS4nVyWH1M";
+        JWT jwt = JWTVerifier.init(Algorithm.HMAC256("secret"))
                 .withIssuer("auth0")
                 .verify(token);
 
@@ -104,17 +39,16 @@ public class JWTVerifierTest {
     public void shouldThrowOnInvalidIssuer() throws Exception {
         exception.expect(InvalidClaimException.class);
         exception.expectMessage("The Claim 'iss' value doesn't match the required one.");
-        String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhdXRoMCJ9.MT8JrEvIB69bH5W9RUR2ap-H3e69fM7LEQCiZF-7FbI";
-        JWTVerifier.init(HSAlgorithm.HS256, "secret")
+        String token = "eyJhbGciOiJIUzI1NiIsImN0eSI6IkpXVCJ9.eyJpc3MiOiJhdXRoMCJ9.mZ0m_N1J4PgeqWmi903JuUoDRZDBPB7HwkS4nVyWH1M";
+        JWTVerifier.init(Algorithm.HMAC256("secret"))
                 .withIssuer("invalid")
                 .verify(token);
     }
 
-
     @Test
     public void shouldValidateSubject() throws Exception {
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.Rq8IxqeX7eA6GgYxlcHdPFVRNFFZc5rEI3MQTZZbK3I";
-        JWT jwt = JWTVerifier.init(HSAlgorithm.HS256, "secret")
+        JWT jwt = JWTVerifier.init(Algorithm.HMAC256("secret"))
                 .withSubject("1234567890")
                 .verify(token);
 
@@ -126,22 +60,22 @@ public class JWTVerifierTest {
         exception.expect(InvalidClaimException.class);
         exception.expectMessage("The Claim 'sub' value doesn't match the required one.");
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.Rq8IxqeX7eA6GgYxlcHdPFVRNFFZc5rEI3MQTZZbK3I";
-        JWTVerifier.init(HSAlgorithm.HS256, "secret")
+        JWTVerifier.init(Algorithm.HMAC256("secret"))
                 .withSubject("invalid")
                 .verify(token);
     }
 
     @Test
     public void shouldValidateAudience() throws Exception {
-        String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJNYXJrIn0.MT8JrEvIB69bH5W9RUR2ap-H3e69fM7LEQCiZF-7FbI";
-        JWT jwt = JWTVerifier.init(HSAlgorithm.HS256, "secret")
+        String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJNYXJrIn0.xWB6czYI0XObbVhLAxe55TwChWZg7zO08RxONWU2iY4";
+        JWT jwt = JWTVerifier.init(Algorithm.HMAC256("secret"))
                 .withAudience(new String[]{"Mark"})
                 .verify(token);
 
         assertThat(jwt, is(notNullValue()));
 
-        String tokenArr = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOlsiTWFyayIsIkRhdmlkIl19.MT8JrEvIB69bH5W9RUR2ap-H3e69fM7LEQCiZF-7FbI";
-        JWT jwtArr = JWTVerifier.init(HSAlgorithm.HS256, "secret")
+        String tokenArr = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOlsiTWFyayIsIkRhdmlkIl19.6WfbIt8m61f9WlCYIQn5CThvw4UNyC66qrPaoinfssw";
+        JWT jwtArr = JWTVerifier.init(Algorithm.HMAC256("secret"))
                 .withAudience(new String[]{"Mark", "David"})
                 .verify(tokenArr);
 
@@ -153,15 +87,15 @@ public class JWTVerifierTest {
         exception.expect(InvalidClaimException.class);
         exception.expectMessage("The Claim 'aud' value doesn't match the required one.");
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.Rq8IxqeX7eA6GgYxlcHdPFVRNFFZc5rEI3MQTZZbK3I";
-        JWTVerifier.init(HSAlgorithm.HS256, "secret")
+        JWTVerifier.init(Algorithm.HMAC256("secret"))
                 .withAudience(new String[]{"nope"})
                 .verify(token);
     }
 
     @Test
     public void shouldValidateExpiresAt() throws Exception {
-        String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE0Nzc1OTJ9.MT8JrEvIB69bH5W9RUR2ap-H3e69fM7LEQCiZF-7FbI";
-        JWT jwt = JWTVerifier.init(HSAlgorithm.HS256, "secret")
+        String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE0Nzc1OTJ9.isvT0Pqx0yjnZk53mUFSeYFJLDs-Ls9IsNAm86gIdZo";
+        JWT jwt = JWTVerifier.init(Algorithm.HMAC256("secret"))
                 .withExpiresAt(new Date(1477592000))
                 .verify(token);
 
@@ -172,16 +106,16 @@ public class JWTVerifierTest {
     public void shouldThrowOnInvalidExpiresAt() throws Exception {
         exception.expect(InvalidClaimException.class);
         exception.expectMessage("The Claim 'exp' value doesn't match the required one.");
-        String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE0Nzc1OTJ9.MT8JrEvIB69bH5W9RUR2ap-H3e69fM7LEQCiZF-7FbI";
-        JWTVerifier.init(HSAlgorithm.HS256, "secret")
+        String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE0Nzc1OTJ9.isvT0Pqx0yjnZk53mUFSeYFJLDs-Ls9IsNAm86gIdZo";
+        JWTVerifier.init(Algorithm.HMAC256("secret"))
                 .withExpiresAt(new Date())
                 .verify(token);
     }
 
     @Test
     public void shouldValidateNotBefore() throws Exception {
-        String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYmYiOjE0Nzc1OTJ9.MT8JrEvIB69bH5W9RUR2ap-H3e69fM7LEQCiZF-7FbI";
-        JWT jwt = JWTVerifier.init(HSAlgorithm.HS256, "secret")
+        String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYmYiOjE0Nzc1OTJ9.wq4ZmnSF2VOxcQBxPLfeh1J2Ozy1Tj5iUaERm3FKaw8";
+        JWT jwt = JWTVerifier.init(Algorithm.HMAC256("secret"))
                 .withNotBefore(new Date(1477592000))
                 .verify(token);
 
@@ -192,16 +126,16 @@ public class JWTVerifierTest {
     public void shouldThrowOnInvalidNotBefore() throws Exception {
         exception.expect(InvalidClaimException.class);
         exception.expectMessage("The Claim 'nbf' value doesn't match the required one.");
-        String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYmYiOjE0Nzc1OTJ9.MT8JrEvIB69bH5W9RUR2ap-H3e69fM7LEQCiZF-7FbI";
-        JWTVerifier.init(HSAlgorithm.HS256, "secret")
+        String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYmYiOjE0Nzc1OTJ9.wq4ZmnSF2VOxcQBxPLfeh1J2Ozy1Tj5iUaERm3FKaw8";
+        JWTVerifier.init(Algorithm.HMAC256("secret"))
                 .withNotBefore(new Date())
                 .verify(token);
     }
 
     @Test
     public void shouldValidateIssuedAt() throws Exception {
-        String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE0Nzc1OTJ9.MT8JrEvIB69bH5W9RUR2ap-H3e69fM7LEQCiZF-7FbI";
-        JWT jwt = JWTVerifier.init(HSAlgorithm.HS256, "secret")
+        String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE0Nzc1OTJ9.0WJky9eLN7kuxLyZlmbcXRL3Wy8hLoNCEk5CCl2M4lo";
+        JWT jwt = JWTVerifier.init(Algorithm.HMAC256("secret"))
                 .withIssuedAt(new Date(1477592000))
                 .verify(token);
 
@@ -212,16 +146,16 @@ public class JWTVerifierTest {
     public void shouldThrowOnInvalidIssuedAt() throws Exception {
         exception.expect(InvalidClaimException.class);
         exception.expectMessage("The Claim 'iat' value doesn't match the required one.");
-        String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE0Nzc1OTJ9.MT8JrEvIB69bH5W9RUR2ap-H3e69fM7LEQCiZF-7FbI";
-        JWTVerifier.init(HSAlgorithm.HS256, "secret")
+        String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE0Nzc1OTJ9.0WJky9eLN7kuxLyZlmbcXRL3Wy8hLoNCEk5CCl2M4lo";
+        JWTVerifier.init(Algorithm.HMAC256("secret"))
                 .withIssuedAt(new Date())
                 .verify(token);
     }
 
     @Test
     public void shouldValidateJWTId() throws Exception {
-        String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJqd3RfaWRfMTIzIn0.MT8JrEvIB69bH5W9RUR2ap-H3e69fM7LEQCiZF-7FbI";
-        JWT jwt = JWTVerifier.init(HSAlgorithm.HS256, "secret")
+        String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJqd3RfaWRfMTIzIn0.0kegfXUvwOYioP8PDaLMY1IlV8HOAzSVz3EGL7-jWF4";
+        JWT jwt = JWTVerifier.init(Algorithm.HMAC256("secret"))
                 .withJWTId("jwt_id_123")
                 .verify(token);
 
@@ -232,16 +166,16 @@ public class JWTVerifierTest {
     public void shouldThrowOnInvalidJWTId() throws Exception {
         exception.expect(InvalidClaimException.class);
         exception.expectMessage("The Claim 'jti' value doesn't match the required one.");
-        String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJqd3RfaWRfMTIzIn0.MT8JrEvIB69bH5W9RUR2ap-H3e69fM7LEQCiZF-7FbI";
-        JWTVerifier.init(HSAlgorithm.HS256, "secret")
+        String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJqd3RfaWRfMTIzIn0.0kegfXUvwOYioP8PDaLMY1IlV8HOAzSVz3EGL7-jWF4";
+        JWTVerifier.init(Algorithm.HMAC256("secret"))
                 .withJWTId("invalid")
                 .verify(token);
     }
 
     @Test
     public void shouldSkipClaimValidationsIfNoClaimsRequired() throws Exception {
-        String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.e30.MT8JrEvIB69bH5W9RUR2ap-H3e69fM7LEQCiZF-7FbI";
-        JWT jwt = JWTVerifier.init(HSAlgorithm.HS256, "secret")
+        String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.e30.t-IDcSemACt8x4iTMCda8Yhe3iZaWbvV5XKSTbuAn0M";
+        JWT jwt = JWTVerifier.init(Algorithm.HMAC256("secret"))
                 .verify(token);
 
         assertThat(jwt, is(notNullValue()));

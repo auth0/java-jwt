@@ -1,4 +1,4 @@
-package com.auth0.jwtdecodejava;
+package com.auth0.jwtdecodejava.algorithms;
 
 import org.bouncycastle.util.io.pem.PemObject;
 import org.bouncycastle.util.io.pem.PemReader;

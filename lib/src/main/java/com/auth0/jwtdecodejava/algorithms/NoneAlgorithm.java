@@ -1,24 +1,17 @@
 package com.auth0.jwtdecodejava.algorithms;
 
-public enum NoneAlgorithm implements Algorithm {
-    none("none");
+import com.auth0.jwtdecodejava.exceptions.SignatureVerificationException;
 
-    private final String description;
+class NoneAlgorithm extends Algorithm {
 
-    NoneAlgorithm(String description) {
-        this.description = description;
+    NoneAlgorithm() {
+        super("none", "none");
     }
 
     @Override
-    public String describe() {
-        return description;
-    }
-
-    public static Algorithm resolveFrom(String name) {
-        try {
-            return valueOf(name);
-        } catch (IllegalArgumentException ignored) {
-            return null;
+    public void verify(String[] jwtParts) throws SignatureVerificationException {
+        if (!jwtParts[2].isEmpty()) {
+            throw new SignatureVerificationException(this);
         }
     }
 }

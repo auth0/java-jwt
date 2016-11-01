@@ -1,6 +1,5 @@
 package com.auth0.jwtdecodejava;
 
-import com.auth0.jwtdecodejava.algorithms.Algorithm;
 import com.auth0.jwtdecodejava.exceptions.JWTDecodeException;
 import com.auth0.jwtdecodejava.impl.JWTParser;
 import com.auth0.jwtdecodejava.interfaces.Claim;
@@ -52,7 +51,7 @@ public final class JWTDecoder implements JWT {
     }
 
     @Override
-    public Algorithm getAlgorithm() {
+    public String getAlgorithm() {
         return header.getAlgorithm();
     }
 
