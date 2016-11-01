@@ -44,7 +44,7 @@ public class HeaderImplTest {
 
         assertThat(header, is(notNullValue()));
         assertThat(header.getAlgorithm(), is(notNullValue()));
-        assertThat(header.getAlgorithm(), is("HS2384"));
+        assertThat(header.getAlgorithm(), is("HS384"));
     }
 
     @Test
