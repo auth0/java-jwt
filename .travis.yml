@@ -10,7 +10,9 @@ cache:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
 script:
-  - "./gradlew clean check --continue"
+  - "./gradlew clean check jacocoTestReport --continue"
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
 branches:
   only:
   - v3
