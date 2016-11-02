@@ -16,10 +16,11 @@ public class HeaderImplTest {
     @Rule
     public ExpectedException exception = ExpectedException.none();
 
+    @SuppressWarnings("Convert2Diamond")
     @Test
     public void shouldHaveUnmodifiableTree() throws Exception {
         exception.expect(UnsupportedOperationException.class);
-        HeaderImpl header = new HeaderImpl(new HashMap<>());
+        HeaderImpl header = new HeaderImpl(new HashMap<String, JsonNode>());
         header.getTree().put("something", null);
     }
 

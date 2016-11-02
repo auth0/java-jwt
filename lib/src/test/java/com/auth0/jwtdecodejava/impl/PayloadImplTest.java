@@ -36,10 +36,11 @@ public class PayloadImplTest {
         payload = new PayloadImpl("issuer", "subject", new String[]{"audience"}, expiresAt, notBefore, issuedAt, "jwtId", tree);
     }
 
+    @SuppressWarnings("Convert2Diamond")
     @Test
     public void shouldHaveUnmodifiableTree() throws Exception {
         exception.expect(UnsupportedOperationException.class);
-        PayloadImpl payload = new PayloadImpl(null, null, null, null, null, null, null, new HashMap<>());
+        PayloadImpl payload = new PayloadImpl(null, null, null, null, null, null, null, new HashMap<String, JsonNode>());
         payload.getTree().put("something", null);
     }
 
