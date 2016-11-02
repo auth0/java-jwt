@@ -4,7 +4,9 @@ import com.auth0.jwtdecodejava.interfaces.Claim;
 import com.auth0.jwtdecodejava.interfaces.Payload;
 import com.fasterxml.jackson.databind.JsonNode;
 
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 import static com.auth0.jwtdecodejava.impl.ClaimImpl.extractClaim;
@@ -30,7 +32,11 @@ class PayloadImpl implements Payload {
         this.notBefore = notBefore;
         this.issuedAt = issuedAt;
         this.jwtId = jwtId;
-        this.tree = tree;
+        this.tree = Collections.unmodifiableMap(tree == null ? new HashMap<String, JsonNode>() : tree);
+    }
+
+    Map<String, JsonNode> getTree() {
+        return tree;
     }
 
     @Override

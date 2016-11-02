@@ -5,9 +5,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import java.io.File;
-import java.io.IOException;
-import java.security.PublicKey;
+import static com.auth0.jwtdecodejava.PemUtils.readPublicKey;
 
 public class RSAAlgorithmTest {
 
@@ -63,10 +61,5 @@ public class RSAAlgorithmTest {
         String jwt = "eyJhbGciOiJSUzUxMiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhdXRoMCJ9.mvL5LoMyIrWYjk5umEXZTmbyIrkbbcVPUkvdGZbu0qFBxGOf0nXP5PZBvPcOu084lvpwVox5n3VaD4iqzW-PsJyvKFgi5TnwmsbKchAp7JexQEsQOnTSGcfRqeUUiBZqRQdYsho71oAB3T4FnalDdFEpM-fztcZY9XqKyayqZLreTeBjqJm4jfOWH7KfGBHgZExQhe96NLq1UA9eUyQwdOA1Z0SgXe4Ja5PxZ6Fm37KnVDtDlNnY4JAAGFo6y74aGNnp_BKgpaVJCGFu1f1S5xCQ1HSvs8ZSdVWs5NgawW3wRd0kRt_GJ_Y3mIwiF4qUyHWGtsSHu_qjVdCTtbFyow";
         Algorithm algorithm = Algorithm.RSA512(readPublicKey(INVALID_PUBLIC_KEY_FILE));
         algorithm.verify(jwt.split("\\."));
-    }
-
-    private PublicKey readPublicKey(String filePath) throws IOException {
-        byte[] bytes = PemUtils.parsePEMFile(new File(filePath));
-        return PemUtils.getPublicKey(bytes, "RSA");
     }
 }

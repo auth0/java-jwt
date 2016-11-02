@@ -12,7 +12,7 @@ import java.util.Date;
 /**
  * The JWTDecoder class holds the decode method to parse a given Token into it's JWT representation.
  */
-public final class JWTDecoder implements JWT {
+final class JWTDecoder implements JWT {
 
     private Header header;
     private Payload payload;
@@ -30,7 +30,7 @@ public final class JWTDecoder implements JWT {
      * @return a decoded JWT.
      * @throws JWTDecodeException if any part of the Token contained an invalid JWT or JSON format.
      */
-    public static JWT decode(String token) throws JWTDecodeException {
+    static JWT decode(String token) throws JWTDecodeException {
         return new JWTDecoder(token);
     }
 

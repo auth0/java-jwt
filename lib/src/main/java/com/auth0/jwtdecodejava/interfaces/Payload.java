@@ -57,10 +57,10 @@ public interface Payload {
     String getId();
 
     /**
-     * Get a Private Claim given it's name. If the Claim wasn't specified in the Payload payload, null will be returned.
+     * Get a Private Claim given it's name. If the Claim wasn't specified in the Payload, a BaseClaim will be returned.
      *
      * @param name the name of the Claim to retrieve.
-     * @return the Claim if found or null.
+     * @return a non-null Claim.
      */
     Claim getClaim(String name);
 }

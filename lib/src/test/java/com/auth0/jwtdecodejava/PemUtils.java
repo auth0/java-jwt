@@ -1,4 +1,4 @@
-package com.auth0.jwtdecodejava.algorithms;
+package com.auth0.jwtdecodejava;
 
 import org.bouncycastle.util.io.pem.PemObject;
 import org.bouncycastle.util.io.pem.PemReader;
@@ -14,7 +14,7 @@ import java.security.spec.EncodedKeySpec;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
 
-class PemUtils {
+public class PemUtils {
 
     static byte[] parsePEMFile(File pemFile) throws IOException {
         if (!pemFile.isFile() || !pemFile.exists()) {
@@ -40,4 +40,10 @@ class PemUtils {
 
         return publicKey;
     }
+
+    public static PublicKey readPublicKey(String filepath) throws IOException {
+        byte[] bytes = PemUtils.parsePEMFile(new File(filepath));
+        return PemUtils.getPublicKey(bytes, "RSA");
+    }
+
 }
