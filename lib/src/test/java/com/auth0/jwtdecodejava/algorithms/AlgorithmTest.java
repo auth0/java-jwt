@@ -59,6 +59,27 @@ public class AlgorithmTest {
     }
 
     @Test
+    public void shouldThrowECDSA256VerificationWithNullPublicKey() throws Exception {
+        exception.expect(IllegalArgumentException.class);
+        exception.expectMessage("The PublicKey cannot be null");
+        Algorithm.ECDSA256(null);
+    }
+
+    @Test
+    public void shouldThrowECDSA384VerificationWithNullPublicKey() throws Exception {
+        exception.expect(IllegalArgumentException.class);
+        exception.expectMessage("The PublicKey cannot be null");
+        Algorithm.ECDSA384(null);
+    }
+
+    @Test
+    public void shouldThrowECDSA512VerificationWithNullPublicKey() throws Exception {
+        exception.expect(IllegalArgumentException.class);
+        exception.expectMessage("The PublicKey cannot be null");
+        Algorithm.ECDSA512(null);
+    }
+
+    @Test
     public void shouldCreateHMAC256Algorithm() throws Exception {
         Algorithm algorithm = Algorithm.HMAC256("secret");
 
@@ -125,6 +146,42 @@ public class AlgorithmTest {
         assertThat(algorithm.getDescription(), is("SHA512withRSA"));
         assertThat(algorithm.getName(), is("RS512"));
         assertThat(((RSAAlgorithm) algorithm).getPublicKey(), is(key));
+    }
+
+    @Test
+    public void shouldCreateECDSA256Algorithm() throws Exception {
+        PublicKey key = mock(PublicKey.class);
+        Algorithm algorithm = Algorithm.ECDSA256(key);
+
+        assertThat(algorithm, is(notNullValue()));
+        assertThat(algorithm, is(instanceOf(ECDSAAlgorithm.class)));
+        assertThat(algorithm.getDescription(), is("SHA256withECDSA"));
+        assertThat(algorithm.getName(), is("ES256"));
+        assertThat(((ECDSAAlgorithm) algorithm).getPublicKey(), is(key));
+    }
+
+    @Test
+    public void shouldCreateECDSA384Algorithm() throws Exception {
+        PublicKey key = mock(PublicKey.class);
+        Algorithm algorithm = Algorithm.ECDSA384(key);
+
+        assertThat(algorithm, is(notNullValue()));
+        assertThat(algorithm, is(instanceOf(ECDSAAlgorithm.class)));
+        assertThat(algorithm.getDescription(), is("SHA384withECDSA"));
+        assertThat(algorithm.getName(), is("ES384"));
+        assertThat(((ECDSAAlgorithm) algorithm).getPublicKey(), is(key));
+    }
+
+    @Test
+    public void shouldCreateECDSA512Algorithm() throws Exception {
+        PublicKey key = mock(PublicKey.class);
+        Algorithm algorithm = Algorithm.ECDSA512(key);
+
+        assertThat(algorithm, is(notNullValue()));
+        assertThat(algorithm, is(instanceOf(ECDSAAlgorithm.class)));
+        assertThat(algorithm.getDescription(), is("SHA512withECDSA"));
+        assertThat(algorithm.getName(), is("ES512"));
+        assertThat(((ECDSAAlgorithm) algorithm).getPublicKey(), is(key));
     }
 
     @Test
