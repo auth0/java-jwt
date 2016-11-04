@@ -79,7 +79,7 @@ public abstract class Algorithm {
      * @return a valid ECDSA256 Algorithm.
      */
     public static Algorithm ECDSA256(PublicKey publicKey) {
-        return new ECDSAAlgorithm("ES256", "SHA256withECDSA", publicKey);
+        return new ECDSAAlgorithm("ES256", "SHA256withECDSA", 32, publicKey);
     }
 
     /**
@@ -89,7 +89,7 @@ public abstract class Algorithm {
      * @return a valid ECDSA384 Algorithm.
      */
     public static Algorithm ECDSA384(PublicKey publicKey) {
-        return new ECDSAAlgorithm("ES384", "SHA384withECDSA", publicKey);
+        return new ECDSAAlgorithm("ES384", "SHA384withECDSA", 48, publicKey);
     }
 
     /**
@@ -99,7 +99,7 @@ public abstract class Algorithm {
      * @return a valid ECDSA512 Algorithm.
      */
     public static Algorithm ECDSA512(PublicKey publicKey) {
-        return new ECDSAAlgorithm("ES512", "SHA512withECDSA", publicKey);
+        return new ECDSAAlgorithm("ES512", "SHA512withECDSA", 66, publicKey);
     }
 
     public static Algorithm none() {
