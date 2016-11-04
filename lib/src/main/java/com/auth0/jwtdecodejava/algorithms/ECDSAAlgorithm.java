@@ -31,7 +31,7 @@ class ECDSAAlgorithm extends Algorithm {
             s.initVerify(publicKey);
             s.update(content.getBytes());
             byte[] signature = Base64.decodeBase64(jwtParts[2]);
-            if (isJOSESignature(signature)) {
+            if (!isDERSignature(signature)) {
                 signature = JOSEToDER(signature);
             }
             boolean valid = s.verify(signature);
@@ -43,9 +43,10 @@ class ECDSAAlgorithm extends Algorithm {
         }
     }
 
-    private boolean isJOSESignature(byte[] signature) {
-        //TODO: Check if the signature has JOSE format.
-        return true;
+    private boolean isDERSignature(byte[] signature) {
+        // DER Structure: http://crypto.stackexchange.com/a/1797
+        // Should begin with 0x30 and have exactly the expected length
+        return signature[0] == 0x30 && signature.length == ecNumberSize * 2;
     }
 
     private byte[] JOSEToDER(byte[] joseSignature) throws SignatureException {
