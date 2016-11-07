@@ -3,20 +3,29 @@ package com.auth0.jwtdecodejava.algorithms;
 import com.auth0.jwtdecodejava.exceptions.SignatureVerificationException;
 import org.apache.commons.codec.binary.Base64;
 
-import java.security.*;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
+import java.security.SignatureException;
 
 class ECDSAAlgorithm extends Algorithm {
 
+    private final CryptoHelper crypto;
     private final int ecNumberSize;
     private final PublicKey publicKey;
 
-    ECDSAAlgorithm(String id, String algorithm, int ecNumberSize, PublicKey publicKey) {
+    ECDSAAlgorithm(CryptoHelper crypto, String id, String algorithm, int ecNumberSize, PublicKey publicKey) {
         super(id, algorithm);
         if (publicKey == null) {
             throw new IllegalArgumentException("The PublicKey cannot be null");
         }
         this.ecNumberSize = ecNumberSize;
         this.publicKey = publicKey;
+        this.crypto = crypto;
+    }
+
+    ECDSAAlgorithm(String id, String algorithm, int ecNumberSize, PublicKey publicKey) {
+        this(new CryptoHelper(), id, algorithm, ecNumberSize, publicKey);
     }
 
     PublicKey getPublicKey() {
@@ -27,14 +36,12 @@ class ECDSAAlgorithm extends Algorithm {
     public void verify(String[] jwtParts) throws SignatureVerificationException {
         try {
             String content = String.format("%s.%s", jwtParts[0], jwtParts[1]);
-            Signature s = Signature.getInstance(getDescription());
-            s.initVerify(publicKey);
-            s.update(content.getBytes());
             byte[] signature = Base64.decodeBase64(jwtParts[2]);
             if (!isDERSignature(signature)) {
                 signature = JOSEToDER(signature);
             }
-            boolean valid = s.verify(signature);
+            boolean valid = crypto.verifySignatureFor(getDescription(), publicKey, content.getBytes(), signature);
+
             if (!valid) {
                 throw new SignatureVerificationException(this);
             }
@@ -61,7 +68,7 @@ class ECDSAAlgorithm extends Algorithm {
         int sLength = ecNumberSize - sPadding;
 
         int length = 2 + rLength + 2 + sLength;
-        if (length > 0xFF) {
+        if (length > 255) {
             throw new SignatureException("Invalid ECDSA signature format");
         }
 

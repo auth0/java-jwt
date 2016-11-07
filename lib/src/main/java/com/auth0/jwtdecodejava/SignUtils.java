@@ -4,9 +4,7 @@ import com.auth0.jwtdecodejava.exceptions.JWTDecodeException;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.StringUtils;
 
-import java.security.*;
-
-class SignUtils {
+abstract class SignUtils {
 
     /**
      * Decodes a given String from it's Base64 string representation into a UTF-8 String.

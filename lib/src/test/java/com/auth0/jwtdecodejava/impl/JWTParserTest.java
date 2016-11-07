@@ -11,12 +11,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import java.io.IOException;
+
 import static com.auth0.jwtdecodejava.impl.JWTParser.getDefaultObjectMapper;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 public class JWTParserTest {
 
@@ -42,6 +43,19 @@ public class JWTParserTest {
         ObjectMapper mapper = mock(ObjectMapper.class);
         new JWTParser(mapper);
         verify(mapper).registerModule(any(Module.class));
+    }
+
+    @Test
+    public void shouldThrowOnReadValueException() throws Exception {
+        String jsonPayload = "{}";
+        exception.expect(JWTDecodeException.class);
+        exception.expectMessage(String.format("The string '%s' doesn't have a valid JSON format.", jsonPayload));
+
+        ObjectMapper mapper = mock(ObjectMapper.class);
+        when(mapper.readValue(eq(jsonPayload), eq(Object.class))).thenThrow(IOException.class);
+        JWTParser parser = new JWTParser(mapper);
+
+        parser.convertFromJSON(jsonPayload, Object.class);
     }
 
     @Test

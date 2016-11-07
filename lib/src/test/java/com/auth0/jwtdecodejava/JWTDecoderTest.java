@@ -74,7 +74,7 @@ public class JWTDecoderTest {
     // Parts
 
     @Test
-    public void shouldGetHeader() throws Exception {
+    public void shouldGetAlgorithm() throws Exception {
         JWT jwt = JWTDecoder.decode("eyJhbGciOiJIUzI1NiJ9.e30.XmNK3GpH3Ys_7wsYBfq4C3M6goz71I7dTgUkuIa5lyQ");
         assertThat(jwt, is(notNullValue()));
         assertThat(jwt.getAlgorithm(), is("HS256"));
@@ -157,6 +157,20 @@ public class JWTDecoderTest {
         JWT jwt = JWTDecoder.decode("eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiIxMjM0NTY3ODkwIn0.m3zgEfVUFOd-CvL3xG5BuOWLzb0zMQZCqiVNQQOPOvA");
         assertThat(jwt, is(notNullValue()));
         assertThat(jwt.getId(), is("1234567890"));
+    }
+
+    @Test
+    public void shouldGetContentType() throws Exception {
+        JWT jwt = JWTDecoder.decode("eyJhbGciOiJIUzI1NiIsImN0eSI6ImF3ZXNvbWUifQ.e30.AIm-pJDOaAyct9qKMlN-lQieqNDqc3d4erqUZc5SHAs");
+        assertThat(jwt, is(notNullValue()));
+        assertThat(jwt.getContentType(), is("awesome"));
+    }
+
+    @Test
+    public void shouldGetType() throws Exception {
+        JWT jwt = JWTDecoder.decode("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXUyJ9.e30.WdFmrzx8b9v_a-r6EHC2PTAaWywgm_8LiP8RBRhYwkI");
+        assertThat(jwt, is(notNullValue()));
+        assertThat(jwt.getType(), is("JWS"));
     }
 
     @Test
