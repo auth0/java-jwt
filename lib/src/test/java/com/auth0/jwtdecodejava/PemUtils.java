@@ -3,20 +3,18 @@ package com.auth0.jwtdecodejava;
 import org.bouncycastle.util.io.pem.PemObject;
 import org.bouncycastle.util.io.pem.PemReader;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
+import java.security.interfaces.ECPublicKey;
 import java.security.spec.EncodedKeySpec;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
 
 public class PemUtils {
 
-    static byte[] parsePEMFile(File pemFile) throws IOException {
+    private static byte[] parsePEMFile(File pemFile) throws IOException {
         if (!pemFile.isFile() || !pemFile.exists()) {
             throw new FileNotFoundException(String.format("The file '%s' doesn't exist.", pemFile.getAbsolutePath()));
         }
@@ -25,8 +23,7 @@ public class PemUtils {
         return pemObject.getContent();
     }
 
-
-    static PublicKey getPublicKey(byte[] keyBytes, String algorithm) {
+    private static PublicKey getPublicKey(byte[] keyBytes, String algorithm) {
         PublicKey publicKey = null;
         try {
             KeyFactory kf = KeyFactory.getInstance(algorithm);
@@ -41,9 +38,15 @@ public class PemUtils {
         return publicKey;
     }
 
-    public static PublicKey readPublicKey(String filepath) throws IOException {
+    public static PublicKey readPublicKeyFromFile(String filepath, String algorithm) throws IOException {
         byte[] bytes = PemUtils.parsePEMFile(new File(filepath));
-        return PemUtils.getPublicKey(bytes, "RSA");
+        return PemUtils.getPublicKey(bytes, algorithm);
+    }
+
+    public static ECPublicKey readPublicKeyFromRawString(String pemString, String algorithm) throws Exception {
+        PemReader reader = new PemReader(new StringReader(pemString));
+        PemObject pemObject = reader.readPemObject();
+        return (ECPublicKey) PemUtils.getPublicKey(pemObject.getContent(), algorithm);
     }
 
 }

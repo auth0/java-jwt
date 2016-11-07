@@ -1,6 +1,7 @@
 package com.auth0.jwtdecodejava;
 
 import com.auth0.jwtdecodejava.algorithms.Algorithm;
+import com.auth0.jwtdecodejava.exceptions.AlgorithmMismatchException;
 import com.auth0.jwtdecodejava.exceptions.InvalidClaimException;
 import com.auth0.jwtdecodejava.interfaces.JWT;
 import org.junit.Rule;
@@ -9,8 +10,7 @@ import org.junit.rules.ExpectedException;
 
 import java.util.Date;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 public class JWTVerifierTest {
@@ -23,6 +23,14 @@ public class JWTVerifierTest {
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage("The Algorithm cannot be null");
         JWTVerifier.init(null);
+    }
+
+    @Test
+    public void shouldThrowWhenAlgorithmDoesntMatchTheTokensAlgorithm() throws Exception {
+        exception.expect(AlgorithmMismatchException.class);
+        exception.expectMessage("The provided Algorithm doesn't match the one defined in the JWT's Header.");
+        JWTVerifier verifier = JWTVerifier.init(Algorithm.HMAC512("secret")).build();
+        verifier.verify("eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJhdXRoMCJ9.s69x7Mmu4JqwmdxiK6sesALO7tcedbFsKEEITUxw9ho");
     }
 
     @Test
@@ -185,6 +193,17 @@ public class JWTVerifierTest {
                 .withJWTId("invalid")
                 .build()
                 .verify(token);
+    }
+
+    @Test
+    public void shouldRemoveClaimWhenPassingNull() throws Exception {
+        JWTVerifier verifier = JWTVerifier.init(Algorithm.HMAC256("secret"))
+                .withIssuer("iss")
+                .withIssuer(null)
+                .build();
+
+        assertThat(verifier.claims, is(notNullValue()));
+        assertThat(verifier.claims, not(hasKey("iss")));
     }
 
     @Test

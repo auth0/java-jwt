@@ -25,7 +25,7 @@ class HeaderDeserializer extends StdDeserializer<HeaderImpl> {
         Map<String, JsonNode> tree = p.getCodec().readValue(p, new TypeReference<Map<String, JsonNode>>() {
         });
         if (tree == null) {
-            throw new JWTDecodeException("Null map");
+            throw new JWTDecodeException("Parsing the Header's JSON resulted on a Null map");
         }
         return new HeaderImpl(tree);
     }

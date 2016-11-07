@@ -11,7 +11,7 @@ import java.util.*;
  */
 class JWTVerifier {
     private final Algorithm algorithm;
-    private final Map<String, Object> claims;
+    final Map<String, Object> claims;
 
     private JWTVerifier(Algorithm algorithm, Map<String, Object> claims) {
         this.algorithm = algorithm;

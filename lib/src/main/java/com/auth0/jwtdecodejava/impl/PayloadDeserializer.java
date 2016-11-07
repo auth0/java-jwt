@@ -29,7 +29,7 @@ class PayloadDeserializer extends StdDeserializer<Payload> {
         Map<String, JsonNode> tree = p.getCodec().readValue(p, new TypeReference<Map<String, JsonNode>>() {
         });
         if (tree == null) {
-            throw new JWTDecodeException("Null map");
+            throw new JWTDecodeException("Parsing the Payload's JSON resulted on a Null map");
         }
 
         String issuer = getString(tree, PublicClaims.ISSUER);
@@ -43,7 +43,7 @@ class PayloadDeserializer extends StdDeserializer<Payload> {
         return new PayloadImpl(issuer, subject, audience, expiresAt, notBefore, issuedAt, jwtId, tree);
     }
 
-    private String[] getStringOrArray(Map<String, JsonNode> tree, String claimName) throws JWTDecodeException {
+    String[] getStringOrArray(Map<String, JsonNode> tree, String claimName) throws JWTDecodeException {
         JsonNode node = tree.get(claimName);
         if (node == null || node.isNull() || !(node.isArray() || node.isTextual())) {
             return null;

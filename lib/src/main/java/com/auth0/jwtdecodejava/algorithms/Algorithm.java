@@ -13,7 +13,7 @@ public abstract class Algorithm {
     private final String description;
 
     /**
-     * Creates a new Algorithms instance using SHA256withRSA. Tokens specify this as "RS256".
+     * Creates a new Algorithm instance using SHA256withRSA. Tokens specify this as "RS256".
      *
      * @param publicKey the key to use in the verify instance.
      * @return a valid RSA256 Algorithm.
@@ -23,7 +23,7 @@ public abstract class Algorithm {
     }
 
     /**
-     * Creates a new Algorithms instance using SHA384withRSA. Tokens specify this as "RS384".
+     * Creates a new Algorithm instance using SHA384withRSA. Tokens specify this as "RS384".
      *
      * @param publicKey the key to use in the verify instance.
      * @return a valid RSA384 Algorithm.
@@ -33,7 +33,7 @@ public abstract class Algorithm {
     }
 
     /**
-     * Creates a new Algorithms instance using SHA512withRSA. Tokens specify this as "RS512".
+     * Creates a new Algorithm instance using SHA512withRSA. Tokens specify this as "RS512".
      *
      * @param publicKey the key to use in the verify instance.
      * @return a valid RSA512 Algorithm.
@@ -43,7 +43,7 @@ public abstract class Algorithm {
     }
 
     /**
-     * Creates a new Algorithms instance using HmacSHA256. Tokens specify this as "HS256".
+     * Creates a new Algorithm instance using HmacSHA256. Tokens specify this as "HS256".
      *
      * @param secret the secret to use in the verify instance.
      * @return a valid HMAC256 Algorithm.
@@ -53,7 +53,7 @@ public abstract class Algorithm {
     }
 
     /**
-     * Creates a new Algorithms instance using HmacSHA384. Tokens specify this as "HS384".
+     * Creates a new Algorithm instance using HmacSHA384. Tokens specify this as "HS384".
      *
      * @param secret the secret to use in the verify instance.
      * @return a valid HMAC384 Algorithm.
@@ -63,13 +63,43 @@ public abstract class Algorithm {
     }
 
     /**
-     * Creates a new Algorithms instance using HmacSHA512. Tokens specify this as "HS512".
+     * Creates a new Algorithm instance using HmacSHA512. Tokens specify this as "HS512".
      *
      * @param secret the secret to use in the verify instance.
      * @return a valid HMAC512 Algorithm.
      */
     public static Algorithm HMAC512(String secret) {
         return new HMACAlgorithm("HS512", "HmacSHA512", secret);
+    }
+
+    /**
+     * Creates a new Algorithm instance using SHA256withECDSA. Tokens specify this as "ES256".
+     *
+     * @param publicKey the key to use in the verify instance.
+     * @return a valid ECDSA256 Algorithm.
+     */
+    public static Algorithm ECDSA256(PublicKey publicKey) {
+        return new ECDSAAlgorithm("ES256", "SHA256withECDSA", 32, publicKey);
+    }
+
+    /**
+     * Creates a new Algorithm instance using SHA384withECDSA. Tokens specify this as "ES384".
+     *
+     * @param publicKey the key to use in the verify instance.
+     * @return a valid ECDSA384 Algorithm.
+     */
+    public static Algorithm ECDSA384(PublicKey publicKey) {
+        return new ECDSAAlgorithm("ES384", "SHA384withECDSA", 48, publicKey);
+    }
+
+    /**
+     * Creates a new Algorithm instance using SHA512withECDSA. Tokens specify this as "ES512".
+     *
+     * @param publicKey the key to use in the verify instance.
+     * @return a valid ECDSA512 Algorithm.
+     */
+    public static Algorithm ECDSA512(PublicKey publicKey) {
+        return new ECDSAAlgorithm("ES512", "SHA512withECDSA", 66, publicKey);
     }
 
     public static Algorithm none() {
