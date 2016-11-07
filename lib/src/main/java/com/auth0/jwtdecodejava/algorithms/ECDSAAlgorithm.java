@@ -46,7 +46,7 @@ class ECDSAAlgorithm extends Algorithm {
     private boolean isDERSignature(byte[] signature) {
         // DER Structure: http://crypto.stackexchange.com/a/1797
         // Should begin with 0x30 and have exactly the expected length
-        return signature[0] == 0x30 && signature.length == ecNumberSize * 2;
+        return signature[0] == 0x30 && signature.length != ecNumberSize * 2;
     }
 
     private byte[] JOSEToDER(byte[] joseSignature) throws SignatureException {
