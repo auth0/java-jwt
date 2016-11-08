@@ -21,3 +21,9 @@ jacocoTestReport {
         html.enabled = true
     }
 }
+
+test {
+    testLogging {
+        events "skipped", "failed", "standardError"
+    }
+}
