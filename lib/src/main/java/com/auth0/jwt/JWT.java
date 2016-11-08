@@ -38,11 +38,6 @@ public final class JWT implements com.auth0.jwt.interfaces.JWT {
     }
 
     @Override
-    public boolean isExpired() {
-        return jwt.isExpired();
-    }
-
-    @Override
     public String getSignature() {
         return jwt.getSignature();
     }

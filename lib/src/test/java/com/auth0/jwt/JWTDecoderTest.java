@@ -12,10 +12,8 @@ import org.junit.rules.ExpectedException;
 import java.util.Date;
 
 import static com.auth0.jwt.SignUtils.base64Encode;
-import static junit.framework.TestCase.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertTrue;
 
 public class JWTDecoderTest {
     @Rule
@@ -173,49 +171,6 @@ public class JWTDecoderTest {
         assertThat(jwt.getType(), is("JWS"));
     }
 
-    @Test
-    public void shouldBeExpired() throws Exception {
-        long pastSeconds = System.currentTimeMillis() / 1000;
-        long futureSeconds = (System.currentTimeMillis() + 10000) / 1000;
-
-        JWT issuedAndExpiresInTheFuture = customTimeJWT(futureSeconds, futureSeconds, futureSeconds);
-        assertTrue(issuedAndExpiresInTheFuture.isExpired());
-        JWT issuedInTheFuture = customTimeJWT(futureSeconds, null, null);
-        assertTrue(issuedInTheFuture.isExpired());
-
-        JWT issuedAndExpiresInThePast = customTimeJWT(pastSeconds, pastSeconds, pastSeconds);
-        assertTrue(issuedAndExpiresInThePast.isExpired());
-        JWT expiresInThePast = customTimeJWT(null, pastSeconds, null);
-        assertTrue(expiresInThePast.isExpired());
-
-        JWT issuedInTheFutureExpiresInThePast = customTimeJWT(futureSeconds, pastSeconds, pastSeconds);
-        assertTrue(issuedInTheFutureExpiresInThePast.isExpired());
-
-        JWT notBeforeThePast = customTimeJWT(null, null, pastSeconds);
-        assertTrue(notBeforeThePast.isExpired());
-    }
-
-    @Test
-    public void shouldNotBeExpired() throws Exception {
-        long pastSeconds = System.currentTimeMillis() / 1000;
-        long futureSeconds = (System.currentTimeMillis() + 10000) / 1000;
-
-        JWT missingDates = customTimeJWT(null, null, null);
-        assertFalse(missingDates.isExpired());
-
-        JWT issuedInThePastExpiresInTheFuture = customTimeJWT(pastSeconds, futureSeconds, futureSeconds);
-        assertFalse(issuedInThePastExpiresInTheFuture.isExpired());
-
-        JWT issuedInThePast = customTimeJWT(pastSeconds, null, null);
-        assertFalse(issuedInThePast.isExpired());
-
-        JWT expiresInTheFuture = customTimeJWT(null, futureSeconds, null);
-        assertFalse(expiresInTheFuture.isExpired());
-
-        JWT notBeforeTheFuture = customTimeJWT(null, null, futureSeconds);
-        assertFalse(notBeforeTheFuture.isExpired());
-    }
-
     //Private PublicClaims
 
     @Test
@@ -244,35 +199,10 @@ public class JWTDecoderTest {
 
     //Helper Methods
 
-    private JWT customTimeJWT(Long iat, Long exp, Long nbf) {
-        String header = base64Encode("{}");
-        StringBuilder bodyBuilder = new StringBuilder("{");
-        if (iat != null) {
-            bodyBuilder.append("\"iat\":").append(iat.longValue());
-        }
-        if (exp != null) {
-            if (iat != null) {
-                bodyBuilder.append(",");
-            }
-            bodyBuilder.append("\"exp\":").append(exp.longValue());
-        }
-        if (nbf != null) {
-            if (iat != null || exp != null) {
-                bodyBuilder.append(",");
-            }
-            bodyBuilder.append("\"nbf\":").append(nbf.longValue());
-        }
-        bodyBuilder.append("}");
-        String body = base64Encode(bodyBuilder.toString());
-        String signature = "sign";
-        return JWTDecoder.decode(String.format("%s.%s.%s", header, body, signature));
-    }
-
     private JWT customJWT(String jsonHeader, String jsonPayload, String signature) {
         String header = base64Encode(jsonHeader);
         String body = base64Encode(jsonPayload);
         return JWTDecoder.decode(String.format("%s.%s.%s", header, body, signature));
     }
-
 
 }

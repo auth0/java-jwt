@@ -1,6 +1,5 @@
 package com.auth0.jwt;
 
-import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.AlgorithmMismatchException;
 import com.auth0.jwt.exceptions.InvalidClaimException;
@@ -11,11 +10,15 @@ import org.junit.rules.ExpectedException;
 
 import java.util.Date;
 
+import static com.auth0.jwt.SignUtils.base64Encode;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class JWTVerifierTest {
 
+    private static final long DATE_TOKEN_MS_VALUE = 1477592 * 1000;
     @Rule
     public ExpectedException exception = ExpectedException.none();
 
@@ -108,70 +111,231 @@ public class JWTVerifierTest {
                 .verify(token);
     }
 
+    // Generic Delta
     @Test
-    public void shouldValidateExpiresAt() throws Exception {
+    public void shouldAddDefaultTimeDeltaToDateClaims() throws Exception {
+        Algorithm algorithm = mock(Algorithm.class);
+        JWTVerifier verifier = JWTVerifier.init(algorithm)
+                .build();
+
+        assertThat(verifier.claims, is(notNullValue()));
+        assertThat(verifier.claims, hasEntry("iat", 0L));
+        assertThat(verifier.claims, hasEntry("exp", 0L));
+        assertThat(verifier.claims, hasEntry("nbf", 0L));
+    }
+
+    @Test
+    public void shouldAddCustomTimeDeltaToDateClaims() throws Exception {
+        Algorithm algorithm = mock(Algorithm.class);
+        JWTVerifier verifier = JWTVerifier.init(algorithm)
+                .acceptTimeDelta(1234L)
+                .build();
+
+        assertThat(verifier.claims, is(notNullValue()));
+        assertThat(verifier.claims, hasEntry("iat", 1234L));
+        assertThat(verifier.claims, hasEntry("exp", 1234L));
+        assertThat(verifier.claims, hasEntry("nbf", 1234L));
+    }
+
+    @Test
+    public void shouldOverrideDefaultIssuedAtTimeDelta() throws Exception {
+        Algorithm algorithm = mock(Algorithm.class);
+        JWTVerifier verifier = JWTVerifier.init(algorithm)
+                .acceptTimeDelta(1234L)
+                .acceptIssuedAt(9999L)
+                .build();
+
+        assertThat(verifier.claims, is(notNullValue()));
+        assertThat(verifier.claims, hasEntry("iat", 9999L));
+        assertThat(verifier.claims, hasEntry("exp", 1234L));
+        assertThat(verifier.claims, hasEntry("nbf", 1234L));
+    }
+
+    @Test
+    public void shouldOverrideDefaultExpiresAtTimeDelta() throws Exception {
+        Algorithm algorithm = mock(Algorithm.class);
+        JWTVerifier verifier = JWTVerifier.init(algorithm)
+                .acceptTimeDelta(1234L)
+                .acceptExpiresAt(9999L)
+                .build();
+
+        assertThat(verifier.claims, is(notNullValue()));
+        assertThat(verifier.claims, hasEntry("iat", 1234L));
+        assertThat(verifier.claims, hasEntry("exp", 9999L));
+        assertThat(verifier.claims, hasEntry("nbf", 1234L));
+    }
+
+    @Test
+    public void shouldOverrideDefaultNotBeforeTimeDelta() throws Exception {
+        Algorithm algorithm = mock(Algorithm.class);
+        JWTVerifier verifier = JWTVerifier.init(algorithm)
+                .acceptTimeDelta(1234L)
+                .acceptNotBefore(9999L)
+                .build();
+
+        assertThat(verifier.claims, is(notNullValue()));
+        assertThat(verifier.claims, hasEntry("iat", 1234L));
+        assertThat(verifier.claims, hasEntry("exp", 1234L));
+        assertThat(verifier.claims, hasEntry("nbf", 9999L));
+    }
+
+    @Test
+    public void shouldThrowOnNegativeCustomTimeDelta() throws Exception {
+        exception.expect(IllegalArgumentException.class);
+        exception.expectMessage("Delta value can't be negative.");
+        Algorithm algorithm = mock(Algorithm.class);
+        JWTVerifier.init(algorithm)
+                .acceptTimeDelta(-1);
+    }
+
+    // Expires At
+    @Test
+    public void shouldValidateExpiresAtWithDelta() throws Exception {
+        Clock clock = mock(Clock.class);
+        when(clock.getToday()).thenReturn(new Date(DATE_TOKEN_MS_VALUE + 299));
+
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE0Nzc1OTJ9.isvT0Pqx0yjnZk53mUFSeYFJLDs-Ls9IsNAm86gIdZo";
         JWT jwt = JWTVerifier.init(Algorithm.HMAC256("secret"))
-                .withExpiresAt(new Date(1477592000))
-                .build()
+                .acceptExpiresAt(300)
+                .build(clock)
                 .verify(token);
 
         assertThat(jwt, is(notNullValue()));
     }
 
     @Test
-    public void shouldThrowOnInvalidExpiresAt() throws Exception {
+    public void shouldValidateExpiresAtIfPresent() throws Exception {
+        Clock clock = mock(Clock.class);
+        when(clock.getToday()).thenReturn(new Date(DATE_TOKEN_MS_VALUE));
+
+        String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE0Nzc1OTJ9.isvT0Pqx0yjnZk53mUFSeYFJLDs-Ls9IsNAm86gIdZo";
+        JWT jwt = JWTVerifier.init(Algorithm.HMAC256("secret"))
+                .build(clock)
+                .verify(token);
+
+        assertThat(jwt, is(notNullValue()));
+    }
+
+    @Test
+    public void shouldThrowOnInvalidExpiresAtIfPresent() throws Exception {
         exception.expect(InvalidClaimException.class);
-        exception.expectMessage("The Claim 'exp' value doesn't match the required one.");
+        exception.expectMessage(startsWith("The Token has expired on"));
+        Clock clock = mock(Clock.class);
+        when(clock.getToday()).thenReturn(new Date(DATE_TOKEN_MS_VALUE + 10));
+
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE0Nzc1OTJ9.isvT0Pqx0yjnZk53mUFSeYFJLDs-Ls9IsNAm86gIdZo";
         JWTVerifier.init(Algorithm.HMAC256("secret"))
-                .withExpiresAt(new Date())
-                .build()
+                .build(clock)
                 .verify(token);
     }
 
     @Test
-    public void shouldValidateNotBefore() throws Exception {
+    public void shouldThrowOnNegativeExpiresAtDelta() throws Exception {
+        exception.expect(IllegalArgumentException.class);
+        exception.expectMessage("Delta value can't be negative.");
+        Algorithm algorithm = mock(Algorithm.class);
+        JWTVerifier.init(algorithm)
+                .acceptExpiresAt(-1);
+    }
+
+    // Not before
+    @Test
+    public void shouldValidateNotBeforeWithDelta() throws Exception {
+        Clock clock = mock(Clock.class);
+        when(clock.getToday()).thenReturn(new Date(DATE_TOKEN_MS_VALUE - 299));
+
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYmYiOjE0Nzc1OTJ9.wq4ZmnSF2VOxcQBxPLfeh1J2Ozy1Tj5iUaERm3FKaw8";
         JWT jwt = JWTVerifier.init(Algorithm.HMAC256("secret"))
-                .withNotBefore(new Date(1477592000))
-                .build()
+                .acceptNotBefore(300)
+                .build(clock)
                 .verify(token);
 
         assertThat(jwt, is(notNullValue()));
     }
 
     @Test
-    public void shouldThrowOnInvalidNotBefore() throws Exception {
+    public void shouldThrowOnInvalidNotBeforeIfPresent() throws Exception {
         exception.expect(InvalidClaimException.class);
-        exception.expectMessage("The Claim 'nbf' value doesn't match the required one.");
+        exception.expectMessage(startsWith("The Token can't be used before"));
+        Clock clock = mock(Clock.class);
+        when(clock.getToday()).thenReturn(new Date(DATE_TOKEN_MS_VALUE - 10));
+
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYmYiOjE0Nzc1OTJ9.wq4ZmnSF2VOxcQBxPLfeh1J2Ozy1Tj5iUaERm3FKaw8";
         JWTVerifier.init(Algorithm.HMAC256("secret"))
-                .withNotBefore(new Date())
-                .build()
+                .build(clock)
                 .verify(token);
     }
 
     @Test
-    public void shouldValidateIssuedAt() throws Exception {
-        String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE0Nzc1OTJ9.0WJky9eLN7kuxLyZlmbcXRL3Wy8hLoNCEk5CCl2M4lo";
+    public void shouldValidateNotBeforeIfPresent() throws Exception {
+        Clock clock = mock(Clock.class);
+        when(clock.getToday()).thenReturn(new Date(DATE_TOKEN_MS_VALUE));
+
+        String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE0Nzc1OTJ9.isvT0Pqx0yjnZk53mUFSeYFJLDs-Ls9IsNAm86gIdZo";
         JWT jwt = JWTVerifier.init(Algorithm.HMAC256("secret"))
-                .withIssuedAt(new Date(1477592000))
-                .build()
+                .build(clock)
                 .verify(token);
 
         assertThat(jwt, is(notNullValue()));
     }
 
     @Test
-    public void shouldThrowOnInvalidIssuedAt() throws Exception {
+    public void shouldThrowOnNegativeNotBeforeDelta() throws Exception {
+        exception.expect(IllegalArgumentException.class);
+        exception.expectMessage("Delta value can't be negative.");
+        Algorithm algorithm = mock(Algorithm.class);
+        JWTVerifier.init(algorithm)
+                .acceptNotBefore(-1);
+    }
+
+    // Issued At
+    @Test
+    public void shouldValidateIssuedAtWithDelta() throws Exception {
+        Clock clock = mock(Clock.class);
+        when(clock.getToday()).thenReturn(new Date(DATE_TOKEN_MS_VALUE - 299));
+
+        String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE0Nzc1OTJ9.0WJky9eLN7kuxLyZlmbcXRL3Wy8hLoNCEk5CCl2M4lo";
+        JWT jwt = JWTVerifier.init(Algorithm.HMAC256("secret"))
+                .acceptIssuedAt(300)
+                .build(clock)
+                .verify(token);
+
+        assertThat(jwt, is(notNullValue()));
+    }
+
+    @Test
+    public void shouldThrowOnInvalidIssuedAtIfPresent() throws Exception {
         exception.expect(InvalidClaimException.class);
-        exception.expectMessage("The Claim 'iat' value doesn't match the required one.");
+        exception.expectMessage(startsWith("The Token can't be used before"));
+        Clock clock = mock(Clock.class);
+        when(clock.getToday()).thenReturn(new Date(DATE_TOKEN_MS_VALUE - 10));
+
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE0Nzc1OTJ9.0WJky9eLN7kuxLyZlmbcXRL3Wy8hLoNCEk5CCl2M4lo";
         JWTVerifier.init(Algorithm.HMAC256("secret"))
-                .withIssuedAt(new Date())
-                .build()
+                .build(clock)
                 .verify(token);
+    }
+
+    @Test
+    public void shouldValidateIssuedAtIfPresent() throws Exception {
+        Clock clock = mock(Clock.class);
+        when(clock.getToday()).thenReturn(new Date(DATE_TOKEN_MS_VALUE));
+
+        String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE0Nzc1OTJ9.0WJky9eLN7kuxLyZlmbcXRL3Wy8hLoNCEk5CCl2M4lo";
+        JWT jwt = JWTVerifier.init(Algorithm.HMAC256("secret"))
+                .build(clock)
+                .verify(token);
+
+        assertThat(jwt, is(notNullValue()));
+    }
+
+    @Test
+    public void shouldThrowOnNegativeIssuedAtDelta() throws Exception {
+        exception.expect(IllegalArgumentException.class);
+        exception.expectMessage("Delta value can't be negative.");
+        Algorithm algorithm = mock(Algorithm.class);
+        JWTVerifier.init(algorithm)
+                .acceptIssuedAt(-1);
     }
 
     @Test
@@ -198,7 +362,8 @@ public class JWTVerifierTest {
 
     @Test
     public void shouldRemoveClaimWhenPassingNull() throws Exception {
-        JWTVerifier verifier = JWTVerifier.init(Algorithm.HMAC256("secret"))
+        Algorithm algorithm = mock(Algorithm.class);
+        JWTVerifier verifier = JWTVerifier.init(algorithm)
                 .withIssuer("iss")
                 .withIssuer(null)
                 .build();
@@ -215,5 +380,38 @@ public class JWTVerifierTest {
                 .verify(token);
 
         assertThat(jwt, is(notNullValue()));
+    }
+
+
+    //Helper Methods
+
+    private JWT customTimeJWT(Long iat, Long exp, Long nbf) {
+        String header = base64Encode("{}");
+        StringBuilder bodyBuilder = new StringBuilder("{");
+        if (iat != null) {
+            bodyBuilder.append("\"iat\":").append(iat.longValue());
+        }
+        if (exp != null) {
+            if (iat != null) {
+                bodyBuilder.append(",");
+            }
+            bodyBuilder.append("\"exp\":").append(exp.longValue());
+        }
+        if (nbf != null) {
+            if (iat != null || exp != null) {
+                bodyBuilder.append(",");
+            }
+            bodyBuilder.append("\"nbf\":").append(nbf.longValue());
+        }
+        bodyBuilder.append("}");
+        String body = base64Encode(bodyBuilder.toString());
+        String signature = "sign";
+        return JWTDecoder.decode(String.format("%s.%s.%s", header, body, signature));
+    }
+
+    private JWT customJWT(String jsonHeader, String jsonPayload, String signature) {
+        String header = base64Encode(jsonHeader);
+        String body = base64Encode(jsonPayload);
+        return JWTDecoder.decode(String.format("%s.%s.%s", header, body, signature));
     }
 }

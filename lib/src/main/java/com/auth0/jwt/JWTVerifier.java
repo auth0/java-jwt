@@ -12,10 +12,12 @@ import java.util.*;
 class JWTVerifier {
     private final Algorithm algorithm;
     final Map<String, Object> claims;
+    private final Clock clock;
 
-    private JWTVerifier(Algorithm algorithm, Map<String, Object> claims) {
+    private JWTVerifier(Algorithm algorithm, Map<String, Object> claims, Clock clock) {
         this.algorithm = algorithm;
         this.claims = Collections.unmodifiableMap(claims);
+        this.clock = clock;
     }
 
     /**
@@ -35,6 +37,7 @@ class JWTVerifier {
     static class Verification {
         private final Algorithm algorithm;
         private final Map<String, Object> claims;
+        private long defaultDelta;
 
         Verification(Algorithm algorithm) throws IllegalArgumentException {
             if (algorithm == null) {
@@ -43,6 +46,7 @@ class JWTVerifier {
 
             this.algorithm = algorithm;
             this.claims = new HashMap<>();
+            this.defaultDelta = 0;
         }
 
         /**
@@ -76,32 +80,66 @@ class JWTVerifier {
         }
 
         /**
-         * Require a specific Expires At ("exp") claim.
+         * Define the default window in milliseconds in which the Not Before, Issued At and Expires At Claims will still be valid.
+         * Setting a specific delta value on a given Claim will override this value for that Claim.
          *
+         * @param delta the window in milliseconds in which the Not Before, Issued At and Expires At Claims will still be valid.
          * @return this same Verification instance.
+         * @throws IllegalArgumentException if delta is negative.
          */
-        public Verification withExpiresAt(Date expiresAt) {
-            requireClaim(PublicClaims.EXPIRES_AT, expiresAt);
+        public Verification acceptTimeDelta(long delta) throws IllegalArgumentException {
+            if (delta < 0) {
+                throw new IllegalArgumentException("Delta value can't be negative.");
+            }
+            this.defaultDelta = delta;
             return this;
         }
 
         /**
-         * Require a specific Not Before ("nbf") claim.
+         * Set a specific delta window in milliseconds in which the Expires At ("exp") Claim will still be valid.
+         * Expiration Date is always verified when the value is present. This method overrides the value set with acceptTimeDelta
          *
+         * @param delta the window in milliseconds in which the Expires At Claim will still be valid.
          * @return this same Verification instance.
+         * @throws IllegalArgumentException if delta is negative.
          */
-        public Verification withNotBefore(Date notBefore) {
-            requireClaim(PublicClaims.NOT_BEFORE, notBefore);
+        public Verification acceptExpiresAt(long delta) throws IllegalArgumentException {
+            if (delta < 0) {
+                throw new IllegalArgumentException("Delta value can't be negative.");
+            }
+            requireClaim(PublicClaims.EXPIRES_AT, delta);
             return this;
         }
 
         /**
-         * Require a specific Issued At ("iat") claim.
+         * Set a specific delta window in milliseconds in which the Not Before ("nbf") Claim will still be valid.
+         * Not Before Date is always verified when the value is present. This method overrides the value set with acceptTimeDelta
          *
+         * @param delta the window in milliseconds in which the Not Before Claim will still be valid.
          * @return this same Verification instance.
+         * @throws IllegalArgumentException if delta is negative.
          */
-        public Verification withIssuedAt(Date issuedAt) {
-            requireClaim(PublicClaims.ISSUED_AT, issuedAt);
+        public Verification acceptNotBefore(long delta) throws IllegalArgumentException {
+            if (delta < 0) {
+                throw new IllegalArgumentException("Delta value can't be negative.");
+            }
+            requireClaim(PublicClaims.NOT_BEFORE, delta);
+            return this;
+        }
+
+        /**
+         * Set a specific delta window in milliseconds in which the Issued At ("iat") Claim will still be valid.
+         * Issued At Date is always verified when the value is present. This method overrides the value set with acceptTimeDelta
+         *
+         * @param delta the window in milliseconds in which the Issued At Claim will still be valid.
+         * @return this same Verification instance.
+         * @throws IllegalArgumentException if delta is negative.
+         */
+        public Verification acceptIssuedAt(long delta) throws IllegalArgumentException {
+            if (delta < 0) {
+                throw new IllegalArgumentException("Delta value can't be negative.");
+            }
+            requireClaim(PublicClaims.ISSUED_AT, delta);
             return this;
         }
 
@@ -121,7 +159,31 @@ class JWTVerifier {
          * @return a new JWTVerifier instance.
          */
         public JWTVerifier build() {
-            return new JWTVerifier(algorithm, claims);
+            return this.build(new Clock());
+        }
+
+        /**
+         * Creates a new and reusable instance of the JWTVerifier with the configuration already provided.
+         * ONLY FOR TEST PURPOSES.
+         *
+         * @param clock the instance that will handle the current time.
+         * @return a new JWTVerifier instance with a custom Clock.
+         */
+        JWTVerifier build(Clock clock) {
+            addDeltaToDateClaims();
+            return new JWTVerifier(algorithm, claims, clock);
+        }
+
+        private void addDeltaToDateClaims() {
+            if (!claims.containsKey(PublicClaims.EXPIRES_AT)) {
+                claims.put(PublicClaims.EXPIRES_AT, defaultDelta);
+            }
+            if (!claims.containsKey(PublicClaims.NOT_BEFORE)) {
+                claims.put(PublicClaims.NOT_BEFORE, defaultDelta);
+            }
+            if (!claims.containsKey(PublicClaims.ISSUED_AT)) {
+                claims.put(PublicClaims.ISSUED_AT, defaultDelta);
+            }
         }
 
         private void requireClaim(String name, Object value) {
@@ -167,19 +229,30 @@ class JWTVerifier {
     }
 
     private void assertValidClaim(JWT jwt, String claimName, Object expectedValue) throws InvalidClaimException {
+        String errMessage = String.format("The Claim '%s' value doesn't match the required one.", claimName);
         boolean isValid;
         if (PublicClaims.AUDIENCE.equals(claimName)) {
             isValid = Arrays.equals(jwt.getAudience(), (String[]) expectedValue);
         } else if (PublicClaims.NOT_BEFORE.equals(claimName) || PublicClaims.EXPIRES_AT.equals(claimName) || PublicClaims.ISSUED_AT.equals(claimName)) {
-            Date dateValue = (Date) expectedValue;
-            isValid = dateValue.equals(jwt.getClaim(claimName).asDate());
+            long deltaValue = (long) expectedValue;
+            Date today = clock.getToday();
+            Date date = jwt.getClaim(claimName).asDate();
+            if (PublicClaims.EXPIRES_AT.equals(claimName)) {
+                today.setTime(today.getTime() - deltaValue);
+                isValid = date == null || !today.after(date);
+                errMessage = String.format("The Token has expired on %s.", date);
+            } else {
+                today.setTime(today.getTime() + deltaValue);
+                isValid = date == null || !today.before(date);
+                errMessage = String.format("The Token can't be used before %s.", date);
+            }
         } else {
             String stringValue = (String) expectedValue;
             isValid = stringValue.equals(jwt.getClaim(claimName).asString());
         }
 
         if (!isValid) {
-            throw new InvalidClaimException(String.format("The Claim '%s' value doesn't match the required one.", claimName));
+            throw new InvalidClaimException(errMessage);
         }
     }
 }
