@@ -87,6 +87,33 @@ If the token has an invalid syntax or the header or payload are not JSONs, a `JW
 If the token has an invalid signature or the Claim requirement is not met, a `JWTVerificationException` will raise.
 
 
+#### Time Validation
+
+The JWT token may include DateNumber fields that can be used to validate that:
+* The token was issued in a past date `"iat" < TODAY`
+* The token hasn't expired yet `"exp" > TODAY` and
+* The token can already be used. `"nbf" > TODAY`
+
+When verifying a token the time validation occurs automatically, resulting in a `JWTVerificationException` being throw when the values are invalid. If any of the previous fields are missing they won't be considered in this validation.
+
+To specify a **delta window** or leeway in which the Token should still be considered valid, use the `acceptTimeDelta()` method in the `JWTVerifier` builder and pass a positive milliseconds value. This applies to every item listed above.
+
+```java
+JWTVerifier verifier = JWT.require(Algorithm.RSA256(key))
+    .acceptTimeDelta(100) //nbf, iat and exp
+    .build();
+```
+
+You can also specify a custom value for a given Date claim and override the default one for only that claim.
+
+```java
+JWTVerifier verifier = JWT.require(Algorithm.RSA256(key))
+    .acceptTimeDelta(100)   //nbf and iat
+    .acceptExpiresAt(500)   //exp
+    .build();
+```
+
+
 ### Registered Claims
 
 #### Issuer ("iss")
@@ -143,14 +170,6 @@ Returns the JWT ID value or null if it's not defined.
 
 ```java
 String id = jwt.getId();
-```
-
-#### Time Validation
-
-The JWT token may include DateNumber fields that can be used to validate that the token was issued in a past date `"iat" < TODAY` and that the expiration date is in the future `"exp" > TODAY`. This library includes a method that checks both of this fields and returns the validity of the token. If any of the fields is missing they won't be considered.
-
-```java
-boolean isExpired = jwt.isExpired();
 ```
 
 ### Private Claims
