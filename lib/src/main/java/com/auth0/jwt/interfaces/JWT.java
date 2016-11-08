@@ -5,6 +5,11 @@ package com.auth0.jwt.interfaces;
  */
 public interface JWT extends Payload, Header, Signature {
 
-    //TODO replace with advanced validations
+    /**
+     * Tests whether this token's DateTime values IssuedAt, ExpiresAt and NotBefore are time valid.
+     * If any of them are missing they won't be taken into account. If the token it's expired it shouldn't be used.
+     *
+     * @return whether the token should be used or not.
+     */
     boolean isExpired();
 }

@@ -1,6 +1,5 @@
 package com.auth0.jwt;
 
-import com.auth0.jwt.JWTDecoder;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.impl.BaseClaim;
 import com.auth0.jwt.interfaces.Claim;
@@ -175,42 +174,46 @@ public class JWTDecoderTest {
     }
 
     @Test
-    @Ignore("Pending implementation")
     public void shouldBeExpired() throws Exception {
         long pastSeconds = System.currentTimeMillis() / 1000;
         long futureSeconds = (System.currentTimeMillis() + 10000) / 1000;
 
-        JWT issuedAndExpiresInTheFuture = customTimeJWT(futureSeconds, futureSeconds);
+        JWT issuedAndExpiresInTheFuture = customTimeJWT(futureSeconds, futureSeconds, futureSeconds);
         assertTrue(issuedAndExpiresInTheFuture.isExpired());
-        JWT issuedInTheFuture = customTimeJWT(futureSeconds, null);
+        JWT issuedInTheFuture = customTimeJWT(futureSeconds, null, null);
         assertTrue(issuedInTheFuture.isExpired());
 
-        JWT issuedAndExpiresInThePast = customTimeJWT(pastSeconds, pastSeconds);
+        JWT issuedAndExpiresInThePast = customTimeJWT(pastSeconds, pastSeconds, pastSeconds);
         assertTrue(issuedAndExpiresInThePast.isExpired());
-        JWT expiresInThePast = customTimeJWT(null, pastSeconds);
+        JWT expiresInThePast = customTimeJWT(null, pastSeconds, null);
         assertTrue(expiresInThePast.isExpired());
 
-        JWT issuedInTheFutureExpiresInThePast = customTimeJWT(futureSeconds, pastSeconds);
+        JWT issuedInTheFutureExpiresInThePast = customTimeJWT(futureSeconds, pastSeconds, pastSeconds);
         assertTrue(issuedInTheFutureExpiresInThePast.isExpired());
+
+        JWT notBeforeThePast = customTimeJWT(null, null, pastSeconds);
+        assertTrue(notBeforeThePast.isExpired());
     }
 
     @Test
-    @Ignore("Pending implementation")
     public void shouldNotBeExpired() throws Exception {
         long pastSeconds = System.currentTimeMillis() / 1000;
         long futureSeconds = (System.currentTimeMillis() + 10000) / 1000;
 
-        JWT missingDates = customTimeJWT(null, null);
+        JWT missingDates = customTimeJWT(null, null, null);
         assertFalse(missingDates.isExpired());
 
-        JWT issuedInThePastExpiresInTheFuture = customTimeJWT(pastSeconds, futureSeconds);
+        JWT issuedInThePastExpiresInTheFuture = customTimeJWT(pastSeconds, futureSeconds, futureSeconds);
         assertFalse(issuedInThePastExpiresInTheFuture.isExpired());
 
-        JWT issuedInThePast = customTimeJWT(pastSeconds, null);
+        JWT issuedInThePast = customTimeJWT(pastSeconds, null, null);
         assertFalse(issuedInThePast.isExpired());
 
-        JWT expiresInTheFuture = customTimeJWT(null, futureSeconds);
+        JWT expiresInTheFuture = customTimeJWT(null, futureSeconds, null);
         assertFalse(expiresInTheFuture.isExpired());
+
+        JWT notBeforeTheFuture = customTimeJWT(null, null, futureSeconds);
+        assertFalse(notBeforeTheFuture.isExpired());
     }
 
     //Private PublicClaims
@@ -241,17 +244,23 @@ public class JWTDecoderTest {
 
     //Helper Methods
 
-    private JWT customTimeJWT(Long iat, Long exp) {
+    private JWT customTimeJWT(Long iat, Long exp, Long nbf) {
         String header = base64Encode("{}");
         StringBuilder bodyBuilder = new StringBuilder("{");
         if (iat != null) {
-            bodyBuilder.append("\"iat\":\"").append(iat.longValue()).append("\"");
+            bodyBuilder.append("\"iat\":").append(iat.longValue());
         }
         if (exp != null) {
             if (iat != null) {
                 bodyBuilder.append(",");
             }
-            bodyBuilder.append("\"exp\":\"").append(exp.longValue()).append("\"");
+            bodyBuilder.append("\"exp\":").append(exp.longValue());
+        }
+        if (nbf != null) {
+            if (iat != null || exp != null) {
+                bodyBuilder.append(",");
+            }
+            bodyBuilder.append("\"nbf\":").append(nbf.longValue());
         }
         bodyBuilder.append("}");
         String body = base64Encode(bodyBuilder.toString());

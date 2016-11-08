@@ -112,7 +112,15 @@ final class JWTDecoder implements JWT {
 
     @Override
     public boolean isExpired() {
-        //TODO: Add advanced validation
-        return false;
+        final Date iat = getIssuedAt();
+        final Date nbf = getNotBefore();
+        final Date exp = getExpiresAt();
+        final Date today = new Date();
+
+        boolean issuedAtValid = iat == null || iat.before(today);
+        boolean notBeforeValid = nbf == null || nbf.after(today);
+        boolean expiresAtValid = exp == null || exp.after(today);
+
+        return !issuedAtValid || !notBeforeValid || !expiresAtValid;
     }
 }

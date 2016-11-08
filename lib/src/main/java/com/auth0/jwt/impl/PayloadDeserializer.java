@@ -64,7 +64,7 @@ class PayloadDeserializer extends StdDeserializer<Payload> {
         return arr;
     }
 
-    private Date getDate(Map<String, JsonNode> tree, String claimName) {
+    Date getDate(Map<String, JsonNode> tree, String claimName) {
         JsonNode node = tree.get(claimName);
         if (node == null || node.isNull() || !node.canConvertToLong()) {
             return null;
@@ -73,7 +73,7 @@ class PayloadDeserializer extends StdDeserializer<Payload> {
         return new Date(ms);
     }
 
-    private String getString(Map<String, JsonNode> tree, String claimName) {
+    String getString(Map<String, JsonNode> tree, String claimName) {
         JsonNode node = tree.get(claimName);
         if (node == null || node.isNull()) {
             return null;

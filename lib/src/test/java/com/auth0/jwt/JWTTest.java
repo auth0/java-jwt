@@ -284,4 +284,15 @@ public class JWTTest {
         assertThat(jwt, is(notNullValue()));
         assertThat(jwt.getType(), is("JWS"));
     }
+
+    @Test
+    public void shouldGetIfItsExpired() throws Exception {
+        String token = "eyJhbGciOiJIUzI1NiJ9.eyJleHAiOjE0NzY3MjcwODZ9.L9dcPHEDQew2u9MkDCORFkfDGcSOsgoPqNY-LUMLEHg";
+        JWT jwt = JWT.require(Algorithm.HMAC256("secret"))
+                .build()
+                .verify(token);
+
+        assertThat(jwt, is(notNullValue()));
+        assertThat(jwt.isExpired(), is(true));
+    }
 }
