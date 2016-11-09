@@ -1,5 +1,6 @@
 package com.auth0.jwt.algorithms;
 
+import com.auth0.jwt.exceptions.SignatureGenerationException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
 import org.apache.commons.codec.binary.Base64;
 
@@ -40,6 +41,15 @@ class HMACAlgorithm extends Algorithm {
             }
         } catch (IllegalStateException | InvalidKeyException | NoSuchAlgorithmException e) {
             throw new SignatureVerificationException(this, e);
+        }
+    }
+
+    @Override
+    public byte[] sign(byte[] headerAndPayloadBytes) throws SignatureGenerationException {
+        try {
+            return crypto.createMacFor(getDescription(), secret.getBytes(), headerAndPayloadBytes);
+        } catch (NoSuchAlgorithmException | InvalidKeyException e) {
+            throw new SignatureGenerationException(this, e);
         }
     }
 

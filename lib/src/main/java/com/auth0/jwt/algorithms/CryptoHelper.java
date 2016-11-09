@@ -7,10 +7,13 @@ import java.security.*;
 class CryptoHelper {
 
     boolean verifyMacFor(String algorithm, byte[] secretBytes, byte[] contentBytes, byte[] signatureBytes) throws NoSuchAlgorithmException, InvalidKeyException {
+        return MessageDigest.isEqual(createMacFor(algorithm, secretBytes, contentBytes), signatureBytes);
+    }
+
+    byte[] createMacFor(String algorithm, byte[] secretBytes, byte[] contentBytes) throws NoSuchAlgorithmException, InvalidKeyException {
         final Mac mac = Mac.getInstance(algorithm);
         mac.init(new SecretKeySpec(secretBytes, algorithm));
-        byte[] result = mac.doFinal(contentBytes);
-        return MessageDigest.isEqual(result, signatureBytes);
+        return mac.doFinal(contentBytes);
     }
 
     boolean verifySignatureFor(String algorithm, PublicKey publicKey, byte[] contentBytes, byte[] signatureBytes) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
@@ -18,5 +21,12 @@ class CryptoHelper {
         s.initVerify(publicKey);
         s.update(contentBytes);
         return s.verify(signatureBytes);
+    }
+
+    byte[] createSignatureFor(String algorithm, PrivateKey privateKey, byte[] contentBytes) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+        final Signature s = Signature.getInstance(algorithm);
+        s.initSign(privateKey);
+        s.update(contentBytes);
+        return s.sign();
     }
 }
