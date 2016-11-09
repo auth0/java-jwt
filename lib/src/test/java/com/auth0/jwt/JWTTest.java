@@ -301,6 +301,7 @@ public class JWTTest {
 
     // *********************************************** //
     // Creation / Signing
+    // *********************************************** //
 
     @Test
     public void shouldCreateAnEmptyHMAC256SignedToken() throws Exception {

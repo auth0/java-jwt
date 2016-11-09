@@ -7,11 +7,13 @@ import com.auth0.jwt.impl.PublicClaims;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * The JWTCreator class holds the sign method to generate a complete JWT (with Signature) from a given Header and Payload content.
+ */
 class JWTCreator {
 
     private final Algorithm algorithm;
@@ -20,7 +22,6 @@ class JWTCreator {
 
     private JWTCreator(Algorithm algorithm, Map<String, Object> headerClaims, Map<String, Object> payloadClaims) throws JWTCreationException {
         this.algorithm = algorithm;
-        headerClaims.put(PublicClaims.ALGORITHM, algorithm.getName());
         try {
             headerJson = toSafeJson(headerClaims);
             payloadJson = toSafeJson(payloadClaims);
@@ -42,7 +43,7 @@ class JWTCreator {
     }
 
     /**
-     * The Builder class holds the Claims required by a JWT to be valid.
+     * The Builder class holds the Claims that defines the JWT to be created.
      */
     static class Builder {
         private final Algorithm algorithm;
@@ -65,7 +66,7 @@ class JWTCreator {
          * @return this same Builder instance.
          */
         public Builder withHeader(Map<String, Object> headerClaims) {
-            this.headerClaims = Collections.unmodifiableMap(headerClaims);
+            this.headerClaims = new HashMap<>(headerClaims);
             return this;
         }
 
@@ -95,7 +96,12 @@ class JWTCreator {
          * @return this same Builder instance.
          */
         public Builder withAudience(String[] audience) {
-            addClaim(PublicClaims.AUDIENCE, audience);
+            //FIXME: Use a custom Serializer
+            if (audience.length == 1) {
+                addClaim(PublicClaims.AUDIENCE, audience[0]);
+            } else if (audience.length > 1) {
+                addClaim(PublicClaims.AUDIENCE, audience);
+            }
             return this;
         }
 
@@ -105,7 +111,7 @@ class JWTCreator {
          * @return this same Builder instance.
          */
         public Builder withExpiresAt(Date expiresAt) {
-            addClaim(PublicClaims.EXPIRES_AT, expiresAt);
+            addClaim(PublicClaims.EXPIRES_AT, dateToSeconds(expiresAt));
             return this;
         }
 
@@ -115,7 +121,7 @@ class JWTCreator {
          * @return this same Builder instance.
          */
         public Builder withNotBefore(Date notBefore) {
-            addClaim(PublicClaims.NOT_BEFORE, notBefore);
+            addClaim(PublicClaims.NOT_BEFORE, dateToSeconds(notBefore));
             return this;
         }
 
@@ -125,7 +131,7 @@ class JWTCreator {
          * @return this same Builder instance.
          */
         public Builder withIssuedAt(Date issuedAt) {
-            addClaim(PublicClaims.ISSUED_AT, issuedAt);
+            addClaim(PublicClaims.ISSUED_AT, dateToSeconds(issuedAt));
             return this;
         }
 
@@ -143,9 +149,16 @@ class JWTCreator {
          * Creates a new instance of the JWT with the specified payloadClaims.
          *
          * @return a new JWT instance.
+         * @throws JWTCreationException if the Claims coudln't be converted to a valid JSON or there was a problem with the signing key.
          */
         public String sign() throws JWTCreationException {
+            headerClaims.put(PublicClaims.ALGORITHM, algorithm.getName());
             return new JWTCreator(algorithm, headerClaims, payloadClaims).sign();
+        }
+
+        private int dateToSeconds(Date date) {
+            //FIXME: Use a custom Serializer
+            return (int) (date.getTime() / 1000);
         }
 
         private void addClaim(String name, Object value) {

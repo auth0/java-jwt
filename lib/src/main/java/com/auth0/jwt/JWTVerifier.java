@@ -9,7 +9,7 @@ import java.util.*;
 /**
  * The JWTVerifier class holds the verify method to assert that a given Token has not only a proper JWT format, but also it's signature matches.
  */
-class JWTVerifier {
+final class JWTVerifier {
     private final Algorithm algorithm;
     final Map<String, Object> claims;
     private final Clock clock;
