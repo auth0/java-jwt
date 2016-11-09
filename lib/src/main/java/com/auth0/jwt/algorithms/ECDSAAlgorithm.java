@@ -2,9 +2,11 @@ package com.auth0.jwt.algorithms;
 
 import com.auth0.jwt.exceptions.SignatureGenerationException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
-import org.apache.commons.codec.binary.Base64;
 
-import java.security.*;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.SignatureException;
 import java.security.interfaces.ECKey;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
@@ -34,17 +36,15 @@ class ECDSAAlgorithm extends Algorithm {
     }
 
     @Override
-    public void verify(String[] jwtParts) throws SignatureVerificationException {
+    public void verify(byte[] contentBytes, byte[] signatureBytes) throws SignatureVerificationException {
         if (!(key instanceof ECPublicKey)) {
             throw new IllegalArgumentException("The given ECKey is not an ECPublicKey.");
         }
         try {
-            String content = String.format("%s.%s", jwtParts[0], jwtParts[1]);
-            byte[] signature = Base64.decodeBase64(jwtParts[2]);
-            if (!isDERSignature(signature)) {
-                signature = JOSEToDER(signature);
+            if (!isDERSignature(signatureBytes)) {
+                signatureBytes = JOSEToDER(signatureBytes);
             }
-            boolean valid = crypto.verifySignatureFor(getDescription(), (ECPublicKey) key, content.getBytes(), signature);
+            boolean valid = crypto.verifySignatureFor(getDescription(), (ECPublicKey) key, contentBytes, signatureBytes);
 
             if (!valid) {
                 throw new SignatureVerificationException(this);
@@ -55,12 +55,12 @@ class ECDSAAlgorithm extends Algorithm {
     }
 
     @Override
-    public byte[] sign(byte[] headerAndPayloadBytes) throws SignatureGenerationException {
+    public byte[] sign(byte[] contentBytes) throws SignatureGenerationException {
         try {
             if (!(key instanceof ECPrivateKey)) {
                 throw new IllegalArgumentException("The given ECKey is not a ECPrivateKey.");
             }
-            return crypto.createSignatureFor(getDescription(), (PrivateKey) key, headerAndPayloadBytes);
+            return crypto.createSignatureFor(getDescription(), (PrivateKey) key, contentBytes);
         } catch (NoSuchAlgorithmException | SignatureException | InvalidKeyException | IllegalArgumentException e) {
             throw new SignatureGenerationException(this, e);
         }

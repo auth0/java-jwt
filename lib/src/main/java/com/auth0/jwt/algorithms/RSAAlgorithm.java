@@ -2,7 +2,6 @@ package com.auth0.jwt.algorithms;
 
 import com.auth0.jwt.exceptions.SignatureGenerationException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
-import org.apache.commons.codec.binary.Base64;
 
 import java.security.*;
 import java.security.interfaces.RSAKey;
@@ -32,14 +31,12 @@ class RSAAlgorithm extends Algorithm {
     }
 
     @Override
-    public void verify(String[] jwtParts) throws SignatureVerificationException {
+    public void verify(byte[] contentBytes, byte[] signatureBytes) throws SignatureVerificationException {
         if (!(key instanceof PublicKey)) {
             throw new IllegalArgumentException("The given RSAKey is not a RSAPublicKey.");
         }
         try {
-            String content = String.format("%s.%s", jwtParts[0], jwtParts[1]);
-            byte[] signature = Base64.decodeBase64(jwtParts[2]);
-            boolean valid = crypto.verifySignatureFor(getDescription(), (RSAPublicKey) key, content.getBytes(), signature);
+            boolean valid = crypto.verifySignatureFor(getDescription(), (RSAPublicKey) key, contentBytes, signatureBytes);
 
             if (!valid) {
                 throw new SignatureVerificationException(this);
@@ -50,12 +47,12 @@ class RSAAlgorithm extends Algorithm {
     }
 
     @Override
-    public byte[] sign(byte[] headerAndPayloadBytes) throws SignatureGenerationException {
+    public byte[] sign(byte[] contentBytes) throws SignatureGenerationException {
         try {
             if (!(key instanceof PrivateKey)) {
                 throw new IllegalArgumentException("The given RSAKey is not a RSAPrivateKey.");
             }
-            return crypto.createSignatureFor(getDescription(), (RSAPrivateKey) key, headerAndPayloadBytes);
+            return crypto.createSignatureFor(getDescription(), (RSAPrivateKey) key, contentBytes);
         } catch (NoSuchAlgorithmException | SignatureException | InvalidKeyException | IllegalArgumentException e) {
             throw new SignatureGenerationException(this, e);
         }

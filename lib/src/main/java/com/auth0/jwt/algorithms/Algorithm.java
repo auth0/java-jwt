@@ -137,12 +137,19 @@ public abstract class Algorithm {
     }
 
     /**
-     * Verify the given JWT parts using this Algorithm instance.
+     * Verify the given content using this Algorithm instance.
      *
-     * @param jwtParts a valid array of size 3 representing the JWT parts.
-     * @throws SignatureVerificationException if the Token's Signature is invalid.
+     * @param contentBytes   an array of bytes representing the base64 encoded content to be verified against the signature.
+     * @param signatureBytes an array of bytes representing the base64 encoded signature to compare the content against.
+     * @throws SignatureVerificationException if the Token's Signature is invalid, meaning that it doesn't match the signatureBytes, or if the Key is invalid.
      */
-    public abstract void verify(String[] jwtParts) throws SignatureVerificationException;
+    public abstract void verify(byte[] contentBytes, byte[] signatureBytes) throws SignatureVerificationException;
 
-    public abstract byte[] sign(byte[] headerAndPayloadBytes) throws SignatureGenerationException;
+    /**
+     * Sign the given content using this Algorithm instance.
+     *
+     * @param contentBytes an array of bytes representing the base64 encoded content to be verified against the signature.
+     * @throws SignatureGenerationException if the Key is invalid.
+     */
+    public abstract byte[] sign(byte[] contentBytes) throws SignatureGenerationException;
 }

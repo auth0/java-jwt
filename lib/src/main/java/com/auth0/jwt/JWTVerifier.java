@@ -3,6 +3,7 @@ package com.auth0.jwt;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.*;
 import com.auth0.jwt.impl.PublicClaims;
+import org.apache.commons.codec.binary.Base64;
 
 import java.util.*;
 
@@ -213,7 +214,9 @@ class JWTVerifier {
     }
 
     private void verifySignature(String[] parts) throws SignatureVerificationException {
-        algorithm.verify(parts);
+        byte[] content = String.format("%s.%s", parts[0], parts[1]).getBytes();
+        byte[] signature = Base64.decodeBase64(parts[2]);
+        algorithm.verify(content, signature);
     }
 
     private void verifyAlgorithm(JWT jwt, Algorithm expectedAlgorithm) throws AlgorithmMismatchException {
