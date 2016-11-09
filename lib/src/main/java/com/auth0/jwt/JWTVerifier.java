@@ -21,10 +21,10 @@ class JWTVerifier {
     }
 
     /**
-     * Initialize a JWTVerifier instance using a HS Algorithm.
+     * Initialize a JWTVerifier instance using the given Algorithm.
      *
      * @param algorithm the Algorithm to use on the JWT verification.
-     * @return a JWTVerifier instance to configure.
+     * @return a JWTVerifier.Verification instance to configure.
      * @throws IllegalArgumentException if the provided algorithm is null.
      */
     static JWTVerifier.Verification init(Algorithm algorithm) throws IllegalArgumentException {
