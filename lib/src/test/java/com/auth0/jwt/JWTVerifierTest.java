@@ -119,9 +119,9 @@ public class JWTVerifierTest {
                 .build();
 
         assertThat(verifier.claims, is(notNullValue()));
-        assertThat(verifier.claims, hasEntry("iat", 0L));
-        assertThat(verifier.claims, hasEntry("exp", 0L));
-        assertThat(verifier.claims, hasEntry("nbf", 0L));
+        assertThat(verifier.claims, hasEntry("iat", (Object) 0L));
+        assertThat(verifier.claims, hasEntry("exp", (Object) 0L));
+        assertThat(verifier.claims, hasEntry("nbf", (Object) 0L));
     }
 
     @Test
@@ -132,9 +132,9 @@ public class JWTVerifierTest {
                 .build();
 
         assertThat(verifier.claims, is(notNullValue()));
-        assertThat(verifier.claims, hasEntry("iat", 1234L));
-        assertThat(verifier.claims, hasEntry("exp", 1234L));
-        assertThat(verifier.claims, hasEntry("nbf", 1234L));
+        assertThat(verifier.claims, hasEntry("iat", (Object) 1234L));
+        assertThat(verifier.claims, hasEntry("exp", (Object) 1234L));
+        assertThat(verifier.claims, hasEntry("nbf", (Object) 1234L));
     }
 
     @Test
@@ -146,9 +146,9 @@ public class JWTVerifierTest {
                 .build();
 
         assertThat(verifier.claims, is(notNullValue()));
-        assertThat(verifier.claims, hasEntry("iat", 9999L));
-        assertThat(verifier.claims, hasEntry("exp", 1234L));
-        assertThat(verifier.claims, hasEntry("nbf", 1234L));
+        assertThat(verifier.claims, hasEntry("iat", (Object) 9999L));
+        assertThat(verifier.claims, hasEntry("exp", (Object) 1234L));
+        assertThat(verifier.claims, hasEntry("nbf", (Object) 1234L));
     }
 
     @Test
@@ -160,9 +160,9 @@ public class JWTVerifierTest {
                 .build();
 
         assertThat(verifier.claims, is(notNullValue()));
-        assertThat(verifier.claims, hasEntry("iat", 1234L));
-        assertThat(verifier.claims, hasEntry("exp", 9999L));
-        assertThat(verifier.claims, hasEntry("nbf", 1234L));
+        assertThat(verifier.claims, hasEntry("iat", (Object) 1234L));
+        assertThat(verifier.claims, hasEntry("exp", (Object) 9999L));
+        assertThat(verifier.claims, hasEntry("nbf", (Object) 1234L));
     }
 
     @Test
@@ -174,9 +174,9 @@ public class JWTVerifierTest {
                 .build();
 
         assertThat(verifier.claims, is(notNullValue()));
-        assertThat(verifier.claims, hasEntry("iat", 1234L));
-        assertThat(verifier.claims, hasEntry("exp", 1234L));
-        assertThat(verifier.claims, hasEntry("nbf", 9999L));
+        assertThat(verifier.claims, hasEntry("iat", (Object) 1234L));
+        assertThat(verifier.claims, hasEntry("exp", (Object) 1234L));
+        assertThat(verifier.claims, hasEntry("nbf", (Object) 9999L));
     }
 
     @Test
