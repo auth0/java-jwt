@@ -37,6 +37,15 @@ public final class JWT implements com.auth0.jwt.interfaces.JWT {
         return JWTVerifier.init(algorithm);
     }
 
+    /**
+     * Creates a Builder instance to configure and construct a Token using the given Algorithm.
+     *
+     * @return a Builder instance to configure.
+     */
+    public static JWTCreator.Builder create() {
+        return JWTCreator.init();
+    }
+
     @Override
     public String getSignature() {
         return jwt.getSignature();

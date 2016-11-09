@@ -4,7 +4,7 @@ package com.auth0.jwt.impl;
 public abstract class PublicClaims {
 
     //Header
-    static final String ALGORITHM = "alg";
+    public static final String ALGORITHM = "alg";
     static final String CONTENT_TYPE = "cty";
     static final String TYPE = "typ";
 

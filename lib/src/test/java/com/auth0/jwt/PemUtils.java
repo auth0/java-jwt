@@ -6,10 +6,12 @@ import org.bouncycastle.util.io.pem.PemReader;
 import java.io.*;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.interfaces.ECPublicKey;
 import java.security.spec.EncodedKeySpec;
 import java.security.spec.InvalidKeySpecException;
+import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 
 public class PemUtils {
@@ -38,9 +40,29 @@ public class PemUtils {
         return publicKey;
     }
 
+    private static PrivateKey getPrivateKey(byte[] keyBytes, String algorithm) {
+        PrivateKey privateKey = null;
+        try {
+            KeyFactory kf = KeyFactory.getInstance(algorithm);
+            EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(keyBytes);
+            privateKey = kf.generatePrivate(keySpec);
+        } catch (NoSuchAlgorithmException e) {
+            System.out.println("Could not reconstruct the private key, the given algorithm could not be found.");
+        } catch (InvalidKeySpecException e) {
+            System.out.println("Could not reconstruct the private key");
+        }
+
+        return privateKey;
+    }
+
     public static PublicKey readPublicKeyFromFile(String filepath, String algorithm) throws IOException {
         byte[] bytes = PemUtils.parsePEMFile(new File(filepath));
         return PemUtils.getPublicKey(bytes, algorithm);
+    }
+
+    public static PrivateKey readPrivateKeyFromFile(String filepath, String algorithm) throws IOException {
+        byte[] bytes = PemUtils.parsePEMFile(new File(filepath));
+        return PemUtils.getPrivateKey(bytes, algorithm);
     }
 
     public static ECPublicKey readPublicKeyFromRawString(String pemString, String algorithm) throws Exception {

@@ -12,9 +12,9 @@ public class NoneAlgorithmTest {
 
     @Test
     public void shouldPassNoneVerification() throws Exception {
-        String[] parts = new String[]{"eyJhbGciOiJub25lIiwiY3R5IjoiSldUIn0", "eyJpc3MiOiJhdXRoMCJ9", ""};
         Algorithm algorithm = Algorithm.none();
-        algorithm.verify(parts);
+        String jwt = "eyJhbGciOiJub25lIiwiY3R5IjoiSldUIn0.eyJpc3MiOiJhdXRoMCJ9";
+        AlgorithmUtils.verify(algorithm, jwt);
     }
 
     @Test
@@ -23,7 +23,7 @@ public class NoneAlgorithmTest {
         exception.expectMessage("The Token's Signature resulted invalid when verified using the Algorithm: none");
         String jwt = "eyJhbGciOiJub25lIiwiY3R5IjoiSldUIn0.eyJpc3MiOiJhdXRoMCJ9.Ox-WRXRaGAuWt2KfPvWiGcCrPqZtbp_4OnQzZXaTfss";
         Algorithm algorithm = Algorithm.none();
-        algorithm.verify(jwt.split("\\."));
+        AlgorithmUtils.verify(algorithm, jwt);
     }
 
 }

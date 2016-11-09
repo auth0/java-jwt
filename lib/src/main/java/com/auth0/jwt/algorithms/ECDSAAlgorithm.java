@@ -1,52 +1,68 @@
 package com.auth0.jwt.algorithms;
 
+import com.auth0.jwt.exceptions.SignatureGenerationException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
-import org.apache.commons.codec.binary.Base64;
 
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.security.PublicKey;
+import java.security.PrivateKey;
 import java.security.SignatureException;
+import java.security.interfaces.ECKey;
+import java.security.interfaces.ECPrivateKey;
+import java.security.interfaces.ECPublicKey;
 
 class ECDSAAlgorithm extends Algorithm {
 
     private final CryptoHelper crypto;
     private final int ecNumberSize;
-    private final PublicKey publicKey;
+    private final ECKey key;
 
-    ECDSAAlgorithm(CryptoHelper crypto, String id, String algorithm, int ecNumberSize, PublicKey publicKey) {
+    ECDSAAlgorithm(CryptoHelper crypto, String id, String algorithm, int ecNumberSize, ECKey key) {
         super(id, algorithm);
-        if (publicKey == null) {
-            throw new IllegalArgumentException("The PublicKey cannot be null");
+        if (key == null) {
+            throw new IllegalArgumentException("The ECKey cannot be null");
         }
         this.ecNumberSize = ecNumberSize;
-        this.publicKey = publicKey;
+        this.key = key;
         this.crypto = crypto;
     }
 
-    ECDSAAlgorithm(String id, String algorithm, int ecNumberSize, PublicKey publicKey) {
-        this(new CryptoHelper(), id, algorithm, ecNumberSize, publicKey);
+    ECDSAAlgorithm(String id, String algorithm, int ecNumberSize, ECKey key) {
+        this(new CryptoHelper(), id, algorithm, ecNumberSize, key);
     }
 
-    PublicKey getPublicKey() {
-        return publicKey;
+    ECKey getKey() {
+        return key;
     }
 
     @Override
-    public void verify(String[] jwtParts) throws SignatureVerificationException {
+    public void verify(byte[] contentBytes, byte[] signatureBytes) throws SignatureVerificationException {
         try {
-            String content = String.format("%s.%s", jwtParts[0], jwtParts[1]);
-            byte[] signature = Base64.decodeBase64(jwtParts[2]);
-            if (!isDERSignature(signature)) {
-                signature = JOSEToDER(signature);
+            if (!(key instanceof ECPublicKey)) {
+                throw new IllegalArgumentException("The given ECKey is not an ECPublicKey.");
             }
-            boolean valid = crypto.verifySignatureFor(getDescription(), publicKey, content.getBytes(), signature);
+            if (!isDERSignature(signatureBytes)) {
+                signatureBytes = JOSEToDER(signatureBytes);
+            }
+            boolean valid = crypto.verifySignatureFor(getDescription(), (ECPublicKey) key, contentBytes, signatureBytes);
 
             if (!valid) {
                 throw new SignatureVerificationException(this);
             }
         } catch (NoSuchAlgorithmException | SignatureException | InvalidKeyException e) {
             throw new SignatureVerificationException(this, e);
+        }
+    }
+
+    @Override
+    public byte[] sign(byte[] contentBytes) throws SignatureGenerationException {
+        try {
+            if (!(key instanceof ECPrivateKey)) {
+                throw new IllegalArgumentException("The given ECKey is not a ECPrivateKey.");
+            }
+            return crypto.createSignatureFor(getDescription(), (PrivateKey) key, contentBytes);
+        } catch (NoSuchAlgorithmException | SignatureException | InvalidKeyException | IllegalArgumentException e) {
+            throw new SignatureGenerationException(this, e);
         }
     }
 

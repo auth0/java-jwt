@@ -200,8 +200,8 @@ public class JWTDecoderTest {
     //Helper Methods
 
     private JWT customJWT(String jsonHeader, String jsonPayload, String signature) {
-        String header = base64Encode(jsonHeader);
-        String body = base64Encode(jsonPayload);
+        String header = base64Encode(jsonHeader.getBytes());
+        String body = base64Encode(jsonPayload.getBytes());
         return JWTDecoder.decode(String.format("%s.%s.%s", header, body, signature));
     }
 

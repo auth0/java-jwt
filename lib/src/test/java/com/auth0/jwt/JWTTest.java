@@ -5,7 +5,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import java.security.PublicKey;
+import java.security.interfaces.ECKey;
+import java.security.interfaces.RSAKey;
 import java.util.Date;
 
 import static org.hamcrest.Matchers.*;
@@ -16,10 +17,14 @@ import static org.mockito.Mockito.when;
 public class JWTTest {
 
     private static final String PUBLIC_KEY_FILE_RSA = "src/test/resources/rsa-public.pem";
+    private static final String PRIVATE_KEY_FILE_RSA = "src/test/resources/rsa-private.pem";
 
     private static final String PUBLIC_KEY_FILE_EC_256 = "src/test/resources/ec256-key-public.pem";
     private static final String PUBLIC_KEY_FILE_EC_384 = "src/test/resources/ec384-key-public.pem";
     private static final String PUBLIC_KEY_FILE_EC_512 = "src/test/resources/ec512-key-public.pem";
+    private static final String PRIVATE_KEY_FILE_EC_256 = "src/test/resources/ec256-key-private.pem";
+    private static final String PRIVATE_KEY_FILE_EC_384 = "src/test/resources/ec384-key-private.pem";
+    private static final String PRIVATE_KEY_FILE_EC_512 = "src/test/resources/ec512-key-private.pem";
 
 
     @Rule
@@ -71,7 +76,7 @@ public class JWTTest {
     @Test
     public void shouldAcceptRSA256Algorithm() throws Exception {
         String token = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhdXRoMCJ9.dxXF3MdsyW-AuvwJpaQtrZ33fAde9xWxpLIg9cO2tMLH2GSRNuLAe61KsJusZhqZB9Iy7DvflcmRz-9OZndm6cj_ThGeJH2LLc90K83UEvvRPo8l85RrQb8PcanxCgIs2RcZOLygERizB3pr5icGkzR7R2y6zgNCjKJ5_NJ6EiZsGN6_nc2PRK_DbyY-Wn0QDxIxKoA5YgQJ9qafe7IN980pXvQv2Z62c3XR8dYuaXBqhthBj-AbaFHEpZapN-V-TmuLNzR2MCB6Xr7BYMuCaqWf_XU8og4XNe8f_8w9Wv5vvgqMM1KhqVpG5VdMJv4o_L4NoCROHhtUQSLRh2M9cA";
-        PublicKey key = PemUtils.readPublicKeyFromFile(PUBLIC_KEY_FILE_RSA, "RSA");
+        RSAKey key = (RSAKey) PemUtils.readPublicKeyFromFile(PUBLIC_KEY_FILE_RSA, "RSA");
         JWT jwt = JWT.require(Algorithm.RSA256(key))
                 .build()
                 .verify(token);
@@ -83,7 +88,7 @@ public class JWTTest {
     @Test
     public void shouldAcceptRSA384Algorithm() throws Exception {
         String token = "eyJhbGciOiJSUzM4NCIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhdXRoMCJ9.TZlWjXObwGSQOiu2oMq8kiKz0_BR7bbBddNL6G8eZ_GoR82BXOZDqNrQr7lb_M-78XGBguWLWNIdYhzgxOUL9EoCJlrqVm9s9vo6G8T1sj1op-4TbjXZ61TwIvrJee9BvPLdKUJ9_fp1Js5kl6yXkst40Th8Auc5as4n49MLkipjpEhKDKaENKHpSubs1ripSz8SCQZSofeTM_EWVwSw7cpiM8Fy8jOPvWG8Xz4-e3ODFowvHVsDcONX_4FTMNbeRqDuHq2ZhCJnEfzcSJdrve_5VD5fM1LperBVslTrOxIgClOJ3RmM7-WnaizJrWP3D6Z9OLxPxLhM6-jx6tcxEw";
-        PublicKey key = PemUtils.readPublicKeyFromFile(PUBLIC_KEY_FILE_RSA, "RSA");
+        RSAKey key = (RSAKey) PemUtils.readPublicKeyFromFile(PUBLIC_KEY_FILE_RSA, "RSA");
         JWT jwt = JWT.require(Algorithm.RSA384(key))
                 .build()
                 .verify(token);
@@ -94,7 +99,7 @@ public class JWTTest {
     @Test
     public void shouldAcceptRSA512Algorithm() throws Exception {
         String token = "eyJhbGciOiJSUzUxMiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhdXRoMCJ9.mvL5LoMyIrWYjk5umEXZTmbyIrkbbcVPUkvdGZbu0qFBxGOf0nXP5PZBvPcOu084lvpwVox5n3VaD4iqzW-PsJyvKFgi5TnwmsbKchAp7JexQEsQOnTSGcfRqeUUiBZqRQdYsho71oAB3T4FnalDdFEpM-fztcZY9XqKyayqZLreTeBjqJm4jfOWH7KfGBHgZExQhe96NLq1UA9eUyQwdOA1Z0SgXe4Ja5PxZ6Fm37KnVDtDlNnY4JAAGFo6y74aGNnp_BKgpaVJCGFu1f1S5xCQ1HSvs8ZSdVWs5NgawW3wRd0kRt_GJ_Y3mIwiF4qUyHWGtsSHu_qjVdCTtbFyow";
-        PublicKey key = PemUtils.readPublicKeyFromFile(PUBLIC_KEY_FILE_RSA, "RSA");
+        RSAKey key = (RSAKey) PemUtils.readPublicKeyFromFile(PUBLIC_KEY_FILE_RSA, "RSA");
         JWT jwt = JWT.require(Algorithm.RSA512(key))
                 .build()
                 .verify(token);
@@ -106,7 +111,7 @@ public class JWTTest {
     @Test
     public void shouldAcceptECDSA256Algorithm() throws Exception {
         String token = "eyJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJhdXRoMCJ9.4iVk3-Y0v4RT4_9IaQlp-8dZ_4fsTzIylgrPTDLrEvTHBTyVS3tgPbr2_IZfLETtiKRqCg0aQ5sh9eIsTTwB1g";
-        PublicKey key = PemUtils.readPublicKeyFromFile(PUBLIC_KEY_FILE_EC_256, "EC");
+        ECKey key = (ECKey) PemUtils.readPublicKeyFromFile(PUBLIC_KEY_FILE_EC_256, "EC");
         JWT jwt = JWT.require(Algorithm.ECDSA256(key))
                 .build()
                 .verify(token);
@@ -117,7 +122,7 @@ public class JWTTest {
     @Test
     public void shouldAcceptECDSA384Algorithm() throws Exception {
         String token = "eyJhbGciOiJFUzM4NCJ9.eyJpc3MiOiJhdXRoMCJ9.50UU5VKNdF1wfykY8jQBKpvuHZoe6IZBJm5NvoB8bR-hnRg6ti-CHbmvoRtlLfnHfwITa_8cJMy6TenMC2g63GQHytc8rYoXqbwtS4R0Ko_AXbLFUmfxnGnMC6v4MS_z";
-        PublicKey key = PemUtils.readPublicKeyFromFile(PUBLIC_KEY_FILE_EC_384, "EC");
+        ECKey key = (ECKey) PemUtils.readPublicKeyFromFile(PUBLIC_KEY_FILE_EC_384, "EC");
         JWT jwt = JWT.require(Algorithm.ECDSA384(key))
                 .build()
                 .verify(token);
@@ -128,7 +133,7 @@ public class JWTTest {
     @Test
     public void shouldAcceptECDSA512Algorithm() throws Exception {
         String token = "eyJhbGciOiJFUzUxMiJ9.eyJpc3MiOiJhdXRoMCJ9.AeCJPDIsSHhwRSGZCY6rspi8zekOw0K9qYMNridP1Fu9uhrA1QrG-EUxXlE06yvmh2R7Rz0aE7kxBwrnq8L8aOBCAYAsqhzPeUvyp8fXjjgs0Eto5I0mndE2QHlgcMSFASyjHbU8wD2Rq7ZNzGQ5b2MZfpv030WGUajT-aZYWFUJHVg2";
-        PublicKey key = PemUtils.readPublicKeyFromFile(PUBLIC_KEY_FILE_EC_512, "EC");
+        ECKey key = (ECKey) PemUtils.readPublicKeyFromFile(PUBLIC_KEY_FILE_EC_512, "EC");
         JWT jwt = JWT.require(Algorithm.ECDSA512(key))
                 .build()
                 .verify(token);
@@ -291,5 +296,127 @@ public class JWTTest {
 
         assertThat(jwt, is(notNullValue()));
         assertThat(jwt.getType(), is("JWS"));
+    }
+
+
+    // *********************************************** //
+    // Creation / Signing
+    // *********************************************** //
+
+    @Test
+    public void shouldCreateAnEmptyHMAC256SignedToken() throws Exception {
+        String headerAndPayload = "eyJhbGciOiJIUzI1NiJ9.e30.";
+
+        String signed = JWT.create().sign(Algorithm.HMAC256("secret"));
+        assertThat(signed, is(notNullValue()));
+        assertThat(signed, startsWith(headerAndPayload));
+
+        JWTVerifier verified = JWT.require(Algorithm.HMAC256("secret"))
+                .build();
+        assertThat(verified, is(notNullValue()));
+    }
+
+    @Test
+    public void shouldCreateAnEmptyHMAC384SignedToken() throws Exception {
+        String headerAndPayload = "eyJhbGciOiJIUzM4NCJ9.e30.";
+
+        String signed = JWT.create().sign(Algorithm.HMAC384("secret"));
+        assertThat(signed, is(notNullValue()));
+        assertThat(signed, startsWith(headerAndPayload));
+
+        JWTVerifier verified = JWT.require(Algorithm.HMAC384("secret"))
+                .build();
+        assertThat(verified, is(notNullValue()));
+    }
+
+    @Test
+    public void shouldCreateAnEmptyHMAC512SignedToken() throws Exception {
+        String headerAndPayload = "eyJhbGciOiJIUzUxMiJ9.e30.";
+
+        String signed = JWT.create().sign(Algorithm.HMAC512("secret"));
+        assertThat(signed, is(notNullValue()));
+        assertThat(signed, startsWith(headerAndPayload));
+
+        JWTVerifier verified = JWT.require(Algorithm.HMAC512("secret"))
+                .build();
+        assertThat(verified, is(notNullValue()));
+    }
+
+    @Test
+    public void shouldCreateAnEmptyRSA256SignedToken() throws Exception {
+        String headerAndPayload = "eyJhbGciOiJSUzI1NiJ9.e30.";
+
+        String signed = JWT.create().sign(Algorithm.RSA256((RSAKey) PemUtils.readPrivateKeyFromFile(PRIVATE_KEY_FILE_RSA, "RSA")));
+        assertThat(signed, is(notNullValue()));
+        assertThat(signed, startsWith(headerAndPayload));
+
+        JWTVerifier verified = JWT.require(Algorithm.RSA256((RSAKey) PemUtils.readPublicKeyFromFile(PUBLIC_KEY_FILE_RSA, "RSA")))
+                .build();
+        assertThat(verified, is(notNullValue()));
+    }
+
+    @Test
+    public void shouldCreateAnEmptyRSA384SignedToken() throws Exception {
+        String headerAndPayload = "eyJhbGciOiJSUzM4NCJ9.e30.";
+
+        String signed = JWT.create().sign(Algorithm.RSA384((RSAKey) PemUtils.readPrivateKeyFromFile(PRIVATE_KEY_FILE_RSA, "RSA")));
+        assertThat(signed, is(notNullValue()));
+        assertThat(signed, startsWith(headerAndPayload));
+
+        JWTVerifier verified = JWT.require(Algorithm.RSA384((RSAKey) PemUtils.readPublicKeyFromFile(PUBLIC_KEY_FILE_RSA, "RSA")))
+                .build();
+        assertThat(verified, is(notNullValue()));
+    }
+
+    @Test
+    public void shouldCreateAnEmptyRSA512SignedToken() throws Exception {
+        String headerAndPayload = "eyJhbGciOiJSUzUxMiJ9.e30.";
+
+        String signed = JWT.create().sign(Algorithm.RSA512((RSAKey) PemUtils.readPrivateKeyFromFile(PRIVATE_KEY_FILE_RSA, "RSA")));
+        assertThat(signed, is(notNullValue()));
+        assertThat(signed, startsWith(headerAndPayload));
+
+        JWTVerifier verified = JWT.require(Algorithm.RSA512((RSAKey) PemUtils.readPublicKeyFromFile(PUBLIC_KEY_FILE_RSA, "RSA")))
+                .build();
+        assertThat(verified, is(notNullValue()));
+    }
+
+    @Test
+    public void shouldCreateAnEmptyECDSA256SignedToken() throws Exception {
+        String headerAndPayload = "eyJhbGciOiJFUzI1NiJ9.e30.";
+
+        String signed = JWT.create().sign(Algorithm.ECDSA256((ECKey) PemUtils.readPrivateKeyFromFile(PRIVATE_KEY_FILE_EC_256, "EC")));
+        assertThat(signed, is(notNullValue()));
+        assertThat(signed, startsWith(headerAndPayload));
+
+        JWTVerifier verified = JWT.require(Algorithm.ECDSA256((ECKey) PemUtils.readPublicKeyFromFile(PUBLIC_KEY_FILE_EC_256, "EC")))
+                .build();
+        assertThat(verified, is(notNullValue()));
+    }
+
+    @Test
+    public void shouldCreateAnEmptyECDSA384SignedToken() throws Exception {
+        String headerAndPayload = "eyJhbGciOiJFUzM4NCJ9.e30.";
+
+        String signed = JWT.create().sign(Algorithm.ECDSA384((ECKey) PemUtils.readPrivateKeyFromFile(PRIVATE_KEY_FILE_EC_384, "EC")));
+        assertThat(signed, is(notNullValue()));
+        assertThat(signed, startsWith(headerAndPayload));
+
+        JWTVerifier verified = JWT.require(Algorithm.ECDSA384((ECKey) PemUtils.readPublicKeyFromFile(PUBLIC_KEY_FILE_EC_384, "EC")))
+                .build();
+        assertThat(verified, is(notNullValue()));
+    }
+
+    @Test
+    public void shouldCreateAnEmptyECDSA512SignedToken() throws Exception {
+        String headerAndPayload = "eyJhbGciOiJFUzUxMiJ9.e30.";
+
+        String signed = JWT.create().sign(Algorithm.ECDSA512((ECKey) PemUtils.readPrivateKeyFromFile(PRIVATE_KEY_FILE_EC_512, "EC")));
+        assertThat(signed, is(notNullValue()));
+        assertThat(signed, startsWith(headerAndPayload));
+
+        JWTVerifier verified = JWT.require(Algorithm.ECDSA512((ECKey) PemUtils.readPublicKeyFromFile(PUBLIC_KEY_FILE_EC_512, "EC")))
+                .build();
+        assertThat(verified, is(notNullValue()));
     }
 }

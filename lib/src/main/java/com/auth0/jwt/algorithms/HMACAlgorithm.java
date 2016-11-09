@@ -1,7 +1,7 @@
 package com.auth0.jwt.algorithms;
 
+import com.auth0.jwt.exceptions.SignatureGenerationException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
-import org.apache.commons.codec.binary.Base64;
 
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -29,17 +29,23 @@ class HMACAlgorithm extends Algorithm {
     }
 
     @Override
-    public void verify(String[] jwtParts) throws SignatureVerificationException {
+    public void verify(byte[] contentBytes, byte[] signatureBytes) throws SignatureVerificationException {
         try {
-            String message = String.format("%s.%s", jwtParts[0], jwtParts[1]);
-            byte[] signature = Base64.decodeBase64(jwtParts[2]);
-            boolean valid = crypto.verifyMacFor(getDescription(), secret.getBytes(), message.getBytes(), signature);
-
+            boolean valid = crypto.verifySignatureFor(getDescription(), secret.getBytes(), contentBytes, signatureBytes);
             if (!valid) {
                 throw new SignatureVerificationException(this);
             }
         } catch (IllegalStateException | InvalidKeyException | NoSuchAlgorithmException e) {
             throw new SignatureVerificationException(this, e);
+        }
+    }
+
+    @Override
+    public byte[] sign(byte[] contentBytes) throws SignatureGenerationException {
+        try {
+            return crypto.createSignatureFor(getDescription(), secret.getBytes(), contentBytes);
+        } catch (NoSuchAlgorithmException | InvalidKeyException e) {
+            throw new SignatureGenerationException(this, e);
         }
     }
 

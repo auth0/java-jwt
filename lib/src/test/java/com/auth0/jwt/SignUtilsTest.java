@@ -1,6 +1,5 @@
 package com.auth0.jwt;
 
-import com.auth0.jwt.SignUtils;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import org.junit.Rule;
 import org.junit.Test;
@@ -57,16 +56,16 @@ public class SignUtilsTest {
     @Test
     public void shouldDecodeBase64() throws Exception {
         String source = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9";
-        String result = SignUtils.base64Decode(source);
+        byte[] result = SignUtils.base64Decode(source);
 
         assertThat(result, is(notNullValue()));
-        assertThat(result, is("{\"alg\":\"HS256\",\"typ\":\"JWT\"}"));
+        assertThat(result, is("{\"alg\":\"HS256\",\"typ\":\"JWT\"}".getBytes()));
     }
 
     @Test
     public void shouldEncodeBase64() throws Exception {
         String source = "{\"alg\":\"HS256\",\"typ\":\"JWT\"}";
-        String result = SignUtils.base64Encode(source);
+        String result = SignUtils.base64Encode(source.getBytes());
 
         assertThat(result, is(notNullValue()));
         assertThat(result, is("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"));

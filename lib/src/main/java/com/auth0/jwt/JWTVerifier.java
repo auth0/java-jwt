@@ -9,7 +9,7 @@ import java.util.*;
 /**
  * The JWTVerifier class holds the verify method to assert that a given Token has not only a proper JWT format, but also it's signature matches.
  */
-class JWTVerifier {
+final class JWTVerifier {
     private final Algorithm algorithm;
     final Map<String, Object> claims;
     private final Clock clock;
@@ -21,10 +21,10 @@ class JWTVerifier {
     }
 
     /**
-     * Initialize a JWTVerifier instance using a HS Algorithm.
+     * Initialize a JWTVerifier instance using the given Algorithm.
      *
      * @param algorithm the Algorithm to use on the JWT verification.
-     * @return a JWTVerifier instance to configure.
+     * @return a JWTVerifier.Verification instance to configure.
      * @throws IllegalArgumentException if the provided algorithm is null.
      */
     static JWTVerifier.Verification init(Algorithm algorithm) throws IllegalArgumentException {
@@ -213,7 +213,9 @@ class JWTVerifier {
     }
 
     private void verifySignature(String[] parts) throws SignatureVerificationException {
-        algorithm.verify(parts);
+        byte[] content = String.format("%s.%s", parts[0], parts[1]).getBytes();
+        byte[] signature = SignUtils.base64Decode(parts[2]);
+        algorithm.verify(content, signature);
     }
 
     private void verifyAlgorithm(JWT jwt, Algorithm expectedAlgorithm) throws AlgorithmMismatchException {

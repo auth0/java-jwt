@@ -10,7 +10,6 @@ import org.junit.rules.ExpectedException;
 
 import java.util.Date;
 
-import static com.auth0.jwt.SignUtils.base64Encode;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
@@ -380,38 +379,5 @@ public class JWTVerifierTest {
                 .verify(token);
 
         assertThat(jwt, is(notNullValue()));
-    }
-
-
-    //Helper Methods
-
-    private JWT customTimeJWT(Long iat, Long exp, Long nbf) {
-        String header = base64Encode("{}");
-        StringBuilder bodyBuilder = new StringBuilder("{");
-        if (iat != null) {
-            bodyBuilder.append("\"iat\":").append(iat.longValue());
-        }
-        if (exp != null) {
-            if (iat != null) {
-                bodyBuilder.append(",");
-            }
-            bodyBuilder.append("\"exp\":").append(exp.longValue());
-        }
-        if (nbf != null) {
-            if (iat != null || exp != null) {
-                bodyBuilder.append(",");
-            }
-            bodyBuilder.append("\"nbf\":").append(nbf.longValue());
-        }
-        bodyBuilder.append("}");
-        String body = base64Encode(bodyBuilder.toString());
-        String signature = "sign";
-        return JWTDecoder.decode(String.format("%s.%s.%s", header, body, signature));
-    }
-
-    private JWT customJWT(String jsonHeader, String jsonPayload, String signature) {
-        String header = base64Encode(jsonHeader);
-        String body = base64Encode(jsonPayload);
-        return JWTDecoder.decode(String.format("%s.%s.%s", header, body, signature));
     }
 }

@@ -16,6 +16,22 @@ An implementation of [JSON Web Tokens](http://self-issued.info/docs/draft-ietf-o
 compile 'com.auth0:java-jwt:3.0.+'
 ```
 
+## Available Algorithms
+
+The library implements JWT Verification and Signing using the following algorithms:
+
+| JWS | Algorithm | Description |
+| :-------------: | :-------------: | :----- |
+| HS256 | HMAC256 | HMAC with SHA-256 |
+| HS384 | HMAC384 | HMAC with SHA-384 |
+| HS512 | HMAC512 | HMAC with SHA-512 |
+| RS256 | RSA256 | RSASSA-PKCS1-v1_5 with SHA-256 |
+| RS384 | RSA384 | RSASSA-PKCS1-v1_5 with SHA-384 |
+| RS512 | RSA512 | RSASSA-PKCS1-v1_5 with SHA-512 |
+| ES256 | ECDSA256 | ECDSA with curve P-256 and SHA-256 |
+| ES384 | ECDSA384 | ECDSA with curve P-384 and SHA-384 |
+| ES512 | ECDSA512 | ECDSA with curve P-521 and SHA-512 |
+
 ## Usage
 
 ### Decode a Token
@@ -31,22 +47,40 @@ try {
 
 If the token has an invalid syntax or the header or payload are not JSONs, a `JWTDecodeException` will raise.
 
+
+### Create and Sign a Token
+
+You'll first need to create a `JWTCreator` instance by calling `JWT.create()`. Use the builder to define the custom Claims your token needs to have. Finally to get the String token call `sign()` and pass the Algorithm instance.
+
+* Example using `HS256`
+
+```java
+try {
+    String token = JWT.create()
+        .withIssuer("auth0")
+        .sign(Algorithm.HMAC256("secret"));
+} catch (JWTCreationException exception){
+    //Invalid Signing configuration / Couldn't convert Claims.
+}
+```
+
+* Example using `RS256`
+
+```java
+PrivateKey key = //Get the key instance
+try {
+    String token = JWT.create()
+        .withIssuer("auth0")
+        .sign(Algorithm.RSA256(key));
+} catch (JWTCreationException exception){
+    //Invalid Signing configuration / Couldn't convert Claims.
+}
+```
+
+If a Claim couldn't be converted to JSON or the Key used in the signing process was invalid a `JWTCreationException` will raise.
+
+
 ### Verify a Token
-
-
-The library implements JWT Verification using the following algorithms:
-
-| JWS | Algorithm | Description |
-| :-------------: | :-------------: | :----- |
-| HS256 | HMAC256 | HMAC with SHA-256 |
-| HS384 | HMAC384 | HMAC with SHA-384 |
-| HS512 | HMAC512 | HMAC with SHA-512 |
-| RS256 | RSA256 | RSASSA-PKCS1-v1_5 with SHA-256 |
-| RS384 | RSA384 | RSASSA-PKCS1-v1_5 with SHA-384 |
-| RS512 | RSA512 | RSASSA-PKCS1-v1_5 with SHA-512 |
-| ES256 | ECDSA256 | ECDSA with curve P-256 and SHA-256 |
-| ES384 | ECDSA384 | ECDSA with curve P-384 and SHA-384 |
-| ES512 | ECDSA512 | ECDSA with curve P-521 and SHA-512 |
 
 You'll first need to create a `JWTVerifier` instance by calling `JWT.require()` and passing the Algorithm instance. If you require the token to have specific Claim values, use the builder to define them. The instance returned by the method `build()` is reusable, so you can define it once and use it to verify different tokens. Finally call `verifier.verify()` passing the token.
 
