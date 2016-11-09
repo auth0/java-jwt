@@ -19,10 +19,11 @@ public class JWTCreatorTest {
     public ExpectedException exception = ExpectedException.none();
 
     @Test
-    public void shouldThrowWhenInitializedWithoutAlgorithm() throws Exception {
+    public void shouldThrowWhenRequestingSignWithoutAlgorithm() throws Exception {
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage("The Algorithm cannot be null");
-        JWTCreator.init(null);
+        JWTCreator.init()
+                .sign(null);
     }
 
     @SuppressWarnings("Convert2Diamond")
@@ -30,9 +31,9 @@ public class JWTCreatorTest {
     public void shouldAddHeader() throws Exception {
         Map<String, Object> header = new HashMap<String, Object>();
         header.put("asd", 123);
-        String signed = JWTCreator.init(Algorithm.HMAC256("secret"))
+        String signed = JWTCreator.init()
                 .withHeader(header)
-                .sign();
+                .sign(Algorithm.HMAC256("secret"));
 
         assertThat(signed, is(notNullValue()));
         assertThat(SignUtils.splitToken(signed)[0], is("eyJhbGciOiJIUzI1NiIsImFzZCI6MTIzfQ"));
@@ -40,9 +41,9 @@ public class JWTCreatorTest {
 
     @Test
     public void shouldAddIssuer() throws Exception {
-        String signed = JWTCreator.init(Algorithm.HMAC256("secret"))
+        String signed = JWTCreator.init()
                 .withIssuer("auth0")
-                .sign();
+                .sign(Algorithm.HMAC256("secret"));
 
         assertThat(signed, is(notNullValue()));
         assertThat(SignUtils.splitToken(signed)[1], is("eyJpc3MiOiJhdXRoMCJ9"));
@@ -50,9 +51,9 @@ public class JWTCreatorTest {
 
     @Test
     public void shouldAddSubject() throws Exception {
-        String signed = JWTCreator.init(Algorithm.HMAC256("secret"))
+        String signed = JWTCreator.init()
                 .withSubject("1234567890")
-                .sign();
+                .sign(Algorithm.HMAC256("secret"));
 
         assertThat(signed, is(notNullValue()));
         assertThat(SignUtils.splitToken(signed)[1], is("eyJzdWIiOiIxMjM0NTY3ODkwIn0"));
@@ -60,17 +61,17 @@ public class JWTCreatorTest {
 
     @Test
     public void shouldAddAudience() throws Exception {
-        String signed = JWTCreator.init(Algorithm.HMAC256("secret"))
+        String signed = JWTCreator.init()
                 .withAudience(new String[]{"Mark"})
-                .sign();
+                .sign(Algorithm.HMAC256("secret"));
 
         assertThat(signed, is(notNullValue()));
         assertThat(SignUtils.splitToken(signed)[1], is("eyJhdWQiOiJNYXJrIn0"));
 
 
-        String signedArr = JWTCreator.init(Algorithm.HMAC256("secret"))
+        String signedArr = JWTCreator.init()
                 .withAudience(new String[]{"Mark", "David"})
-                .sign();
+                .sign(Algorithm.HMAC256("secret"));
 
         assertThat(signedArr, is(notNullValue()));
         assertThat(SignUtils.splitToken(signedArr)[1], is("eyJhdWQiOlsiTWFyayIsIkRhdmlkIl19"));
@@ -78,9 +79,9 @@ public class JWTCreatorTest {
 
     @Test
     public void shouldAddExpiresAt() throws Exception {
-        String signed = JWTCreator.init(Algorithm.HMAC256("secret"))
+        String signed = JWTCreator.init()
                 .withExpiresAt(new Date(1477592000))
-                .sign();
+                .sign(Algorithm.HMAC256("secret"));
 
         assertThat(signed, is(notNullValue()));
         assertThat(SignUtils.splitToken(signed)[1], is("eyJleHAiOjE0Nzc1OTJ9"));
@@ -88,9 +89,9 @@ public class JWTCreatorTest {
 
     @Test
     public void shouldAddNotBefore() throws Exception {
-        String signed = JWTCreator.init(Algorithm.HMAC256("secret"))
+        String signed = JWTCreator.init()
                 .withNotBefore(new Date(1477592000))
-                .sign();
+                .sign(Algorithm.HMAC256("secret"));
 
         assertThat(signed, is(notNullValue()));
         assertThat(SignUtils.splitToken(signed)[1], is("eyJuYmYiOjE0Nzc1OTJ9"));
@@ -98,9 +99,9 @@ public class JWTCreatorTest {
 
     @Test
     public void shouldAddIssuedAt() throws Exception {
-        String signed = JWTCreator.init(Algorithm.HMAC256("secret"))
+        String signed = JWTCreator.init()
                 .withIssuedAt(new Date(1477592000))
-                .sign();
+                .sign(Algorithm.HMAC256("secret"));
 
         assertThat(signed, is(notNullValue()));
         assertThat(SignUtils.splitToken(signed)[1], is("eyJpYXQiOjE0Nzc1OTJ9"));
@@ -108,9 +109,9 @@ public class JWTCreatorTest {
 
     @Test
     public void shouldAddJWTId() throws Exception {
-        String signed = JWTCreator.init(Algorithm.HMAC256("secret"))
+        String signed = JWTCreator.init()
                 .withJWTId("jwt_id_123")
-                .sign();
+                .sign(Algorithm.HMAC256("secret"));
 
         assertThat(signed, is(notNullValue()));
         assertThat(SignUtils.splitToken(signed)[1], is("eyJqdGkiOiJqd3RfaWRfMTIzIn0"));
@@ -119,10 +120,10 @@ public class JWTCreatorTest {
 
     @Test
     public void shouldRemoveClaimWhenPassingNull() throws Exception {
-        String signed = JWTCreator.init(Algorithm.HMAC256("secret"))
+        String signed = JWTCreator.init()
                 .withIssuer("iss")
                 .withIssuer(null)
-                .sign();
+                .sign(Algorithm.HMAC256("secret"));
 
         assertThat(signed, is(notNullValue()));
         assertThat(SignUtils.splitToken(signed)[1], is("e30"));
@@ -130,8 +131,8 @@ public class JWTCreatorTest {
 
     @Test
     public void shouldSetCorrectAlgorithmInTheHeader() throws Exception {
-        String signed = JWTCreator.init(Algorithm.HMAC256("secret"))
-                .sign();
+        String signed = JWTCreator.init()
+                .sign(Algorithm.HMAC256("secret"));
 
         assertThat(signed, is(notNullValue()));
         assertThat(SignUtils.splitToken(signed)[0], is("eyJhbGciOiJIUzI1NiJ9"));
@@ -139,8 +140,8 @@ public class JWTCreatorTest {
 
     @Test
     public void shouldSetEmptySignatureIfAlgorithmIsNone() throws Exception {
-        String signed = JWTCreator.init(Algorithm.none())
-                .sign();
+        String signed = JWTCreator.init()
+                .sign(Algorithm.none());
         assertThat(signed, is(notNullValue()));
         assertThat(SignUtils.splitToken(signed)[2], is(""));
     }

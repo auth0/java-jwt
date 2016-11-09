@@ -40,12 +40,10 @@ public final class JWT implements com.auth0.jwt.interfaces.JWT {
     /**
      * Creates a Builder instance to configure and construct a Token using the given Algorithm.
      *
-     * @param algorithm the Algorithm to use in JWT signing.
      * @return a Builder instance to configure.
-     * @throws IllegalArgumentException if the provided algorithm is null.
      */
-    public static JWTCreator.Builder create(Algorithm algorithm) throws IllegalArgumentException {
-        return JWTCreator.init(algorithm);
+    public static JWTCreator.Builder create() {
+        return JWTCreator.init();
     }
 
     @Override

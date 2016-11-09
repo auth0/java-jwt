@@ -307,7 +307,7 @@ public class JWTTest {
     public void shouldCreateAnEmptyHMAC256SignedToken() throws Exception {
         String headerAndPayload = "eyJhbGciOiJIUzI1NiJ9.e30.";
 
-        String signed = JWT.create(Algorithm.HMAC256("secret")).sign();
+        String signed = JWT.create().sign(Algorithm.HMAC256("secret"));
         assertThat(signed, is(notNullValue()));
         assertThat(signed, startsWith(headerAndPayload));
 
@@ -320,7 +320,7 @@ public class JWTTest {
     public void shouldCreateAnEmptyHMAC384SignedToken() throws Exception {
         String headerAndPayload = "eyJhbGciOiJIUzM4NCJ9.e30.";
 
-        String signed = JWT.create(Algorithm.HMAC384("secret")).sign();
+        String signed = JWT.create().sign(Algorithm.HMAC384("secret"));
         assertThat(signed, is(notNullValue()));
         assertThat(signed, startsWith(headerAndPayload));
 
@@ -333,7 +333,7 @@ public class JWTTest {
     public void shouldCreateAnEmptyHMAC512SignedToken() throws Exception {
         String headerAndPayload = "eyJhbGciOiJIUzUxMiJ9.e30.";
 
-        String signed = JWT.create(Algorithm.HMAC512("secret")).sign();
+        String signed = JWT.create().sign(Algorithm.HMAC512("secret"));
         assertThat(signed, is(notNullValue()));
         assertThat(signed, startsWith(headerAndPayload));
 
@@ -346,7 +346,7 @@ public class JWTTest {
     public void shouldCreateAnEmptyRSA256SignedToken() throws Exception {
         String headerAndPayload = "eyJhbGciOiJSUzI1NiJ9.e30.";
 
-        String signed = JWT.create(Algorithm.RSA256((RSAKey) PemUtils.readPrivateKeyFromFile(PRIVATE_KEY_FILE_RSA, "RSA"))).sign();
+        String signed = JWT.create().sign(Algorithm.RSA256((RSAKey) PemUtils.readPrivateKeyFromFile(PRIVATE_KEY_FILE_RSA, "RSA")));
         assertThat(signed, is(notNullValue()));
         assertThat(signed, startsWith(headerAndPayload));
 
@@ -359,7 +359,7 @@ public class JWTTest {
     public void shouldCreateAnEmptyRSA384SignedToken() throws Exception {
         String headerAndPayload = "eyJhbGciOiJSUzM4NCJ9.e30.";
 
-        String signed = JWT.create(Algorithm.RSA384((RSAKey) PemUtils.readPrivateKeyFromFile(PRIVATE_KEY_FILE_RSA, "RSA"))).sign();
+        String signed = JWT.create().sign(Algorithm.RSA384((RSAKey) PemUtils.readPrivateKeyFromFile(PRIVATE_KEY_FILE_RSA, "RSA")));
         assertThat(signed, is(notNullValue()));
         assertThat(signed, startsWith(headerAndPayload));
 
@@ -372,7 +372,7 @@ public class JWTTest {
     public void shouldCreateAnEmptyRSA512SignedToken() throws Exception {
         String headerAndPayload = "eyJhbGciOiJSUzUxMiJ9.e30.";
 
-        String signed = JWT.create(Algorithm.RSA512((RSAKey) PemUtils.readPrivateKeyFromFile(PRIVATE_KEY_FILE_RSA, "RSA"))).sign();
+        String signed = JWT.create().sign(Algorithm.RSA512((RSAKey) PemUtils.readPrivateKeyFromFile(PRIVATE_KEY_FILE_RSA, "RSA")));
         assertThat(signed, is(notNullValue()));
         assertThat(signed, startsWith(headerAndPayload));
 
@@ -385,7 +385,7 @@ public class JWTTest {
     public void shouldCreateAnEmptyECDSA256SignedToken() throws Exception {
         String headerAndPayload = "eyJhbGciOiJFUzI1NiJ9.e30.";
 
-        String signed = JWT.create(Algorithm.ECDSA256((ECKey) PemUtils.readPrivateKeyFromFile(PRIVATE_KEY_FILE_EC_256, "EC"))).sign();
+        String signed = JWT.create().sign(Algorithm.ECDSA256((ECKey) PemUtils.readPrivateKeyFromFile(PRIVATE_KEY_FILE_EC_256, "EC")));
         assertThat(signed, is(notNullValue()));
         assertThat(signed, startsWith(headerAndPayload));
 
@@ -398,7 +398,7 @@ public class JWTTest {
     public void shouldCreateAnEmptyECDSA384SignedToken() throws Exception {
         String headerAndPayload = "eyJhbGciOiJFUzM4NCJ9.e30.";
 
-        String signed = JWT.create(Algorithm.ECDSA384((ECKey) PemUtils.readPrivateKeyFromFile(PRIVATE_KEY_FILE_EC_384, "EC"))).sign();
+        String signed = JWT.create().sign(Algorithm.ECDSA384((ECKey) PemUtils.readPrivateKeyFromFile(PRIVATE_KEY_FILE_EC_384, "EC")));
         assertThat(signed, is(notNullValue()));
         assertThat(signed, startsWith(headerAndPayload));
 
@@ -411,7 +411,7 @@ public class JWTTest {
     public void shouldCreateAnEmptyECDSA512SignedToken() throws Exception {
         String headerAndPayload = "eyJhbGciOiJFUzUxMiJ9.e30.";
 
-        String signed = JWT.create(Algorithm.ECDSA512((ECKey) PemUtils.readPrivateKeyFromFile(PRIVATE_KEY_FILE_EC_512, "EC"))).sign();
+        String signed = JWT.create().sign(Algorithm.ECDSA512((ECKey) PemUtils.readPrivateKeyFromFile(PRIVATE_KEY_FILE_EC_512, "EC")));
         assertThat(signed, is(notNullValue()));
         assertThat(signed, startsWith(headerAndPayload));
 

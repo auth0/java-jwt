@@ -32,30 +32,22 @@ class JWTCreator {
 
 
     /**
-     * Initialize a JWTCreator instance using the given Algorithm.
+     * Initialize a JWTCreator instance.
      *
-     * @param algorithm the Algorithm to use on the JWT signing.
      * @return a JWTCreator.Builder instance to configure.
-     * @throws IllegalArgumentException if the provided algorithm is null.
      */
-    static JWTCreator.Builder init(Algorithm algorithm) throws IllegalArgumentException {
-        return new Builder(algorithm);
+    static JWTCreator.Builder init() {
+        return new Builder();
     }
 
     /**
      * The Builder class holds the Claims that defines the JWT to be created.
      */
     static class Builder {
-        private final Algorithm algorithm;
         private final Map<String, Object> payloadClaims;
         private Map<String, Object> headerClaims;
 
-        Builder(Algorithm algorithm) throws IllegalArgumentException {
-            if (algorithm == null) {
-                throw new IllegalArgumentException("The Algorithm cannot be null.");
-            }
-
-            this.algorithm = algorithm;
+        Builder() {
             this.payloadClaims = new HashMap<>();
             this.headerClaims = new HashMap<>();
         }
@@ -148,10 +140,15 @@ class JWTCreator {
         /**
          * Creates a new instance of the JWT with the specified payloadClaims.
          *
+         * @param algorithm the Algorithm to use on the JWT signing.
          * @return a new JWT instance.
-         * @throws JWTCreationException if the Claims coudln't be converted to a valid JSON or there was a problem with the signing key.
+         * @throws IllegalArgumentException if the provided algorithm is null.
+         * @throws JWTCreationException     if the Claims coudln't be converted to a valid JSON or there was a problem with the signing key.
          */
-        public String sign() throws JWTCreationException {
+        public String sign(Algorithm algorithm) throws IllegalArgumentException, JWTCreationException {
+            if (algorithm == null) {
+                throw new IllegalArgumentException("The Algorithm cannot be null.");
+            }
             headerClaims.put(PublicClaims.ALGORITHM, algorithm.getName());
             return new JWTCreator(algorithm, headerClaims, payloadClaims).sign();
         }

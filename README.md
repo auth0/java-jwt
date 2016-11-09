@@ -50,15 +50,15 @@ If the token has an invalid syntax or the header or payload are not JSONs, a `JW
 
 ### Create and Sign a Token
 
-You'll first need to create a `JWTCreator` instance by calling `JWT.create()` and passing the Algorithm instance. Use the builder to define the custom Claims your token needs to have. Finally to get the String token call `sign()`.
+You'll first need to create a `JWTCreator` instance by calling `JWT.create()`. Use the builder to define the custom Claims your token needs to have. Finally to get the String token call `sign()` and pass the Algorithm instance.
 
 * Example using `HS256`
 
 ```java
 try {
-    String token = JWT.create(Algorithm.HMAC256("secret"))
+    String token = JWT.create()
         .withIssuer("auth0")
-        .sign();
+        .sign(Algorithm.HMAC256("secret"));
 } catch (JWTCreationException exception){
     //Invalid Signing configuration / Couldn't convert Claims.
 }
@@ -69,9 +69,9 @@ try {
 ```java
 PrivateKey key = //Get the key instance
 try {
-    String token = JWT.create(Algorithm.RSA256(key))
+    String token = JWT.create()
         .withIssuer("auth0")
-        .sign();
+        .sign(Algorithm.RSA256(key));
 } catch (JWTCreationException exception){
     //Invalid Signing configuration / Couldn't convert Claims.
 }
