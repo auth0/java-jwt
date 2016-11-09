@@ -11,7 +11,7 @@ import java.security.interfaces.RSAPublicKey;
 class RSAAlgorithm extends Algorithm {
 
     private final RSAKey key;
-    private CryptoHelper crypto;
+    private final CryptoHelper crypto;
 
     RSAAlgorithm(CryptoHelper crypto, String id, String algorithm, RSAKey key) {
         super(id, algorithm);
@@ -32,12 +32,11 @@ class RSAAlgorithm extends Algorithm {
 
     @Override
     public void verify(byte[] contentBytes, byte[] signatureBytes) throws SignatureVerificationException {
-        if (!(key instanceof PublicKey)) {
-            throw new IllegalArgumentException("The given RSAKey is not a RSAPublicKey.");
-        }
         try {
+            if (!(key instanceof PublicKey)) {
+                throw new IllegalArgumentException("The given RSAKey is not a RSAPublicKey.");
+            }
             boolean valid = crypto.verifySignatureFor(getDescription(), (RSAPublicKey) key, contentBytes, signatureBytes);
-
             if (!valid) {
                 throw new SignatureVerificationException(this);
             }

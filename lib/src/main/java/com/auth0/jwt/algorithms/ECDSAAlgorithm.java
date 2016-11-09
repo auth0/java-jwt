@@ -37,10 +37,10 @@ class ECDSAAlgorithm extends Algorithm {
 
     @Override
     public void verify(byte[] contentBytes, byte[] signatureBytes) throws SignatureVerificationException {
-        if (!(key instanceof ECPublicKey)) {
-            throw new IllegalArgumentException("The given ECKey is not an ECPublicKey.");
-        }
         try {
+            if (!(key instanceof ECPublicKey)) {
+                throw new IllegalArgumentException("The given ECKey is not an ECPublicKey.");
+            }
             if (!isDERSignature(signatureBytes)) {
                 signatureBytes = JOSEToDER(signatureBytes);
             }

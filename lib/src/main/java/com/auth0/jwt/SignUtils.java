@@ -7,27 +7,36 @@ import org.apache.commons.codec.binary.StringUtils;
 abstract class SignUtils {
 
     /**
-     * Decodes a given String from it's Base64 string representation into a UTF-8 String.
+     * Encodes the given bytes into a UTF-8 String representation.
      *
-     * @param source the source of the decode process.
-     * @return a UTF-8 String representing the Base64 decoded source.
+     * @param source the source of the .
+     * @return a UTF-8 String representing the source bytes.
      * @throws NullPointerException if the UTF-8 Charset isn't initialized.
      */
-    static String base64Decode(String source) throws NullPointerException {
-        return StringUtils.newStringUtf8(Base64.decodeBase64(source));
+    static String toUTF8String(byte[] source) throws NullPointerException {
+        return StringUtils.newStringUtf8(source);
     }
 
     /**
-     * Encodes a given String into it's Base64 string representation.
+     * Decodes a given String from it's Base64 String representation into an array of bytes.
      *
-     * @param source the source of the decode process.
-     * @return a UTF-8 String encoded into it's Base64 representation.
-     * @throws NullPointerException     if the UTF-8 Charset isn't initialized.
-     * @throws IllegalArgumentException if the source string is too long.
+     * @param source the source bytes to decode.
+     * @return an array of bytes representing the Base64 decoded source.
      */
-    static String base64Encode(String source) throws NullPointerException, IllegalArgumentException {
-        return StringUtils.newStringUtf8(Base64.encodeBase64(source.getBytes(), false, true));
+    static byte[] base64Decode(String source) {
+        return Base64.decodeBase64(source);
     }
+
+    /**
+     * Encodes a given String into it's Base64 String representation.
+     *
+     * @param source the source bytes to encode.
+     * @return a String containing Base64 characters.
+     */
+    static String base64Encode(byte[] source) {
+        return Base64.encodeBase64URLSafeString(source);
+    }
+
 
     /**
      * Splits the given token on the "." chars into a String array with 3 parts.

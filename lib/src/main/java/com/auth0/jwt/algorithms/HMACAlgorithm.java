@@ -31,8 +31,7 @@ class HMACAlgorithm extends Algorithm {
     @Override
     public void verify(byte[] contentBytes, byte[] signatureBytes) throws SignatureVerificationException {
         try {
-            boolean valid = crypto.verifyMacFor(getDescription(), secret.getBytes(), contentBytes, signatureBytes);
-
+            boolean valid = crypto.verifySignatureFor(getDescription(), secret.getBytes(), contentBytes, signatureBytes);
             if (!valid) {
                 throw new SignatureVerificationException(this);
             }
@@ -44,7 +43,7 @@ class HMACAlgorithm extends Algorithm {
     @Override
     public byte[] sign(byte[] contentBytes) throws SignatureGenerationException {
         try {
-            return crypto.createMacFor(getDescription(), secret.getBytes(), contentBytes);
+            return crypto.createSignatureFor(getDescription(), secret.getBytes(), contentBytes);
         } catch (NoSuchAlgorithmException | InvalidKeyException e) {
             throw new SignatureGenerationException(this, e);
         }

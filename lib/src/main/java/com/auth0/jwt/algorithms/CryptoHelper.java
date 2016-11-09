@@ -6,11 +6,11 @@ import java.security.*;
 
 class CryptoHelper {
 
-    boolean verifyMacFor(String algorithm, byte[] secretBytes, byte[] contentBytes, byte[] signatureBytes) throws NoSuchAlgorithmException, InvalidKeyException {
-        return MessageDigest.isEqual(createMacFor(algorithm, secretBytes, contentBytes), signatureBytes);
+    boolean verifySignatureFor(String algorithm, byte[] secretBytes, byte[] contentBytes, byte[] signatureBytes) throws NoSuchAlgorithmException, InvalidKeyException {
+        return MessageDigest.isEqual(createSignatureFor(algorithm, secretBytes, contentBytes), signatureBytes);
     }
 
-    byte[] createMacFor(String algorithm, byte[] secretBytes, byte[] contentBytes) throws NoSuchAlgorithmException, InvalidKeyException {
+    byte[] createSignatureFor(String algorithm, byte[] secretBytes, byte[] contentBytes) throws NoSuchAlgorithmException, InvalidKeyException {
         final Mac mac = Mac.getInstance(algorithm);
         mac.init(new SecretKeySpec(secretBytes, algorithm));
         return mac.doFinal(contentBytes);

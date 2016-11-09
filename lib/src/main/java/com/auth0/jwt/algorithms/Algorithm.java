@@ -149,6 +149,7 @@ public abstract class Algorithm {
      * Sign the given content using this Algorithm instance.
      *
      * @param contentBytes an array of bytes representing the base64 encoded content to be verified against the signature.
+     * @return the signature in a base64 encoded array of bytes
      * @throws SignatureGenerationException if the Key is invalid.
      */
     public abstract byte[] sign(byte[] contentBytes) throws SignatureGenerationException;

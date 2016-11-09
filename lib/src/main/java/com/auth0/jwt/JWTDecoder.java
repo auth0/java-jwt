@@ -40,8 +40,8 @@ final class JWTDecoder implements JWT {
         String headerJson;
         String payloadJson;
         try {
-            headerJson = SignUtils.base64Decode(parts[0]);
-            payloadJson = SignUtils.base64Decode(parts[1]);
+            headerJson = SignUtils.toUTF8String(SignUtils.base64Decode(parts[0]));
+            payloadJson = SignUtils.toUTF8String(SignUtils.base64Decode(parts[1]));
         } catch (NullPointerException e) {
             throw new JWTDecodeException("The UTF-8 Charset isn't initialized.", e);
         }

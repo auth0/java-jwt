@@ -74,7 +74,7 @@ public class HMACAlgorithmTest {
         exception.expectCause(isA(NoSuchAlgorithmException.class));
 
         CryptoHelper crypto = mock(CryptoHelper.class);
-        when(crypto.verifyMacFor(anyString(), any(byte[].class), any(byte[].class), any(byte[].class)))
+        when(crypto.verifySignatureFor(anyString(), any(byte[].class), any(byte[].class), any(byte[].class)))
                 .thenThrow(NoSuchAlgorithmException.class);
 
         Algorithm algorithm = new HMACAlgorithm(crypto, "some-alg", "some-algorithm", "secret");
@@ -89,7 +89,7 @@ public class HMACAlgorithmTest {
         exception.expectCause(isA(InvalidKeyException.class));
 
         CryptoHelper crypto = mock(CryptoHelper.class);
-        when(crypto.verifyMacFor(anyString(), any(byte[].class), any(byte[].class), any(byte[].class)))
+        when(crypto.verifySignatureFor(anyString(), any(byte[].class), any(byte[].class), any(byte[].class)))
                 .thenThrow(InvalidKeyException.class);
 
         Algorithm algorithm = new HMACAlgorithm(crypto, "some-alg", "some-algorithm", "secret");
