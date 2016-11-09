@@ -13,10 +13,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.collection.IsArrayContainingInOrder.arrayContaining;
@@ -124,6 +121,78 @@ public class PayloadDeserializerTest {
 
         String[] values = deserializer.getStringOrArray(tree, "key");
         assertThat(values, is(nullValue()));
+    }
+
+
+    @Test
+    public void shouldGetNullDateWhenParsingNullNode() throws Exception {
+        Map<String, JsonNode> tree = new HashMap<>();
+        NullNode node = NullNode.getInstance();
+        tree.put("key", node);
+
+        Date date = deserializer.getDate(tree, "key");
+        assertThat(date, is(nullValue()));
+    }
+
+    @Test
+    public void shouldGetNullDateWhenParsingNull() throws Exception {
+        Map<String, JsonNode> tree = new HashMap<>();
+        tree.put("key", null);
+
+        Date date = deserializer.getDate(tree, "key");
+        assertThat(date, is(nullValue()));
+    }
+
+    @Test
+    public void shouldGetNullDateWhenParsingNonNumericNode() throws Exception {
+        Map<String, JsonNode> tree = new HashMap<>();
+        TextNode node = new TextNode("123456789");
+        tree.put("key", node);
+
+        Date date = deserializer.getDate(tree, "key");
+        assertThat(date, is(nullValue()));
+    }
+
+    @Test
+    public void shouldGetDateWhenParsingNumericNode() throws Exception {
+        Map<String, JsonNode> tree = new HashMap<>();
+        long seconds = 1478627949 / 1000;
+        LongNode node = new LongNode(seconds);
+        tree.put("key", node);
+
+        Date date = deserializer.getDate(tree, "key");
+        assertThat(date, is(notNullValue()));
+        assertThat(date.getTime(), is(seconds * 1000));
+    }
+
+    @Test
+    public void shouldGetNullStringWhenParsingNullNode() throws Exception {
+        Map<String, JsonNode> tree = new HashMap<>();
+        NullNode node = NullNode.getInstance();
+        tree.put("key", node);
+
+        String text = deserializer.getString(tree, "key");
+        assertThat(text, is(nullValue()));
+    }
+
+    @Test
+    public void shouldGetNullStringWhenParsingNull() throws Exception {
+        Map<String, JsonNode> tree = new HashMap<>();
+        tree.put("key", null);
+
+        String text = deserializer.getString(tree, "key");
+        assertThat(text, is(nullValue()));
+    }
+
+    @Test
+    public void shouldGetStringWhenParsingTextNode() throws Exception {
+        Map<String, JsonNode> tree = new HashMap<>();
+        TextNode node = new TextNode("something here");
+        tree.put("key", node);
+
+        String text = deserializer.getString(tree, "key");
+        assertThat(text, is(notNullValue()));
+        assertThat(text, is("something here"));
     }
 
 }

@@ -10,6 +10,8 @@ import java.util.Date;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class JWTTest {
 
@@ -209,45 +211,51 @@ public class JWTTest {
 
     @Test
     public void shouldGetExpirationTime() throws Exception {
-        String token = "eyJhbGciOiJIUzI1NiJ9.eyJleHAiOjE0NzY3MjcwODZ9.L9dcPHEDQew2u9MkDCORFkfDGcSOsgoPqNY-LUMLEHg";
+        Date expectedDate = new Date(1477592 * 1000);
+        Clock clock = mock(Clock.class);
+        when(clock.getToday()).thenReturn(expectedDate);
+
+        String token = "eyJhbGciOiJIUzI1NiJ9.eyJleHAiOjE0Nzc1OTJ9.x_ZjkPkKYUV5tdvc0l8go6D_z2kez1MQcOxokXrDc3k";
         JWT jwt = JWT.require(Algorithm.HMAC256("secret"))
-                .build()
+                .build(clock)
                 .verify(token);
 
         assertThat(jwt, is(notNullValue()));
         assertThat(jwt.getExpiresAt(), is(instanceOf(Date.class)));
-        long ms = 1476727086L * 1000;
-        Date expectedDate = new Date(ms);
         assertThat(jwt.getExpiresAt(), is(notNullValue()));
         assertThat(jwt.getExpiresAt(), is(equalTo(expectedDate)));
     }
 
     @Test
     public void shouldGetNotBefore() throws Exception {
-        String token = "eyJhbGciOiJIUzI1NiJ9.eyJuYmYiOjE0NzY3MjcwODZ9.tkpD3iCPQPVqjnjpDVp2bJMBAgpVCG9ZjlBuMitass0";
+        Date expectedDate = new Date(1477592 * 1000);
+        Clock clock = mock(Clock.class);
+        when(clock.getToday()).thenReturn(expectedDate);
+
+        String token = "eyJhbGciOiJIUzI1NiJ9.eyJuYmYiOjE0Nzc1OTJ9.mWYSOPoNXstjKbZkKrqgkwPOQWEx3F3gMm6PMcfuJd8";
         JWT jwt = JWT.require(Algorithm.HMAC256("secret"))
-                .build()
+                .build(clock)
                 .verify(token);
 
         assertThat(jwt, is(notNullValue()));
         assertThat(jwt.getNotBefore(), is(instanceOf(Date.class)));
-        long ms = 1476727086L * 1000;
-        Date expectedDate = new Date(ms);
         assertThat(jwt.getNotBefore(), is(notNullValue()));
         assertThat(jwt.getNotBefore(), is(equalTo(expectedDate)));
     }
 
     @Test
     public void shouldGetIssuedAt() throws Exception {
-        String token = "eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE0NzY3MjcwODZ9.KPjGoW665E8V5_27Jugab8qSTxLk2cgquhPCBfAP0_w";
+        Date expectedDate = new Date(1477592 * 1000);
+        Clock clock = mock(Clock.class);
+        when(clock.getToday()).thenReturn(expectedDate);
+
+        String token = "eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE0Nzc1OTJ9.5o1CKlLFjKKcddZzoarQ37pq7qZqNPav3sdZ_bsZaD4";
         JWT jwt = JWT.require(Algorithm.HMAC256("secret"))
-                .build()
+                .build(clock)
                 .verify(token);
 
         assertThat(jwt, is(notNullValue()));
         assertThat(jwt.getIssuedAt(), is(instanceOf(Date.class)));
-        long ms = 1476727086L * 1000;
-        Date expectedDate = new Date(ms);
         assertThat(jwt.getIssuedAt(), is(notNullValue()));
         assertThat(jwt.getIssuedAt(), is(equalTo(expectedDate)));
     }

@@ -110,9 +110,4 @@ final class JWTDecoder implements JWT {
         return signature;
     }
 
-    @Override
-    public boolean isExpired() {
-        //TODO: Add advanced validation
-        return false;
-    }
 }
