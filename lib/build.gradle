@@ -11,6 +11,7 @@ dependencies {
     compile 'commons-codec:commons-codec:1.10'
     compile 'org.bouncycastle:bcprov-jdk15on:1.55'
     testCompile 'junit:junit:4.12'
+    testCompile 'net.jodah:concurrentunit:0.4.2'
     testCompile 'org.hamcrest:hamcrest-library:1.3'
     testCompile 'org.mockito:mockito-core:2.2.8'
 }
@@ -24,6 +25,6 @@ jacocoTestReport {
 
 test {
     testLogging {
-        events "skipped", "failed", "standardError"
+        events "passed", "skipped", "failed", "standardError"
     }
 }
