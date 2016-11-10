@@ -13,7 +13,7 @@ class RSAAlgorithm extends Algorithm {
     private final RSAKey key;
     private final CryptoHelper crypto;
 
-    RSAAlgorithm(CryptoHelper crypto, String id, String algorithm, RSAKey key) {
+    RSAAlgorithm(CryptoHelper crypto, String id, String algorithm, RSAKey key) throws IllegalArgumentException {
         super(id, algorithm);
         if (key == null) {
             throw new IllegalArgumentException("The RSAKey cannot be null");
@@ -22,7 +22,7 @@ class RSAAlgorithm extends Algorithm {
         this.crypto = crypto;
     }
 
-    RSAAlgorithm(String id, String algorithm, RSAKey key) {
+    RSAAlgorithm(String id, String algorithm, RSAKey key) throws IllegalArgumentException {
         this(new CryptoHelper(), id, algorithm, key);
     }
 
@@ -40,7 +40,7 @@ class RSAAlgorithm extends Algorithm {
             if (!valid) {
                 throw new SignatureVerificationException(this);
             }
-        } catch (NoSuchAlgorithmException | SignatureException | InvalidKeyException e) {
+        } catch (NoSuchAlgorithmException | SignatureException | InvalidKeyException | IllegalArgumentException e) {
             throw new SignatureVerificationException(this, e);
         }
     }

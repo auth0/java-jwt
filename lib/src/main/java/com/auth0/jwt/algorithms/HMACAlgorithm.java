@@ -11,7 +11,7 @@ class HMACAlgorithm extends Algorithm {
     private final CryptoHelper crypto;
     private final String secret;
 
-    HMACAlgorithm(CryptoHelper crypto, String id, String algorithm, String secret) {
+    HMACAlgorithm(CryptoHelper crypto, String id, String algorithm, String secret) throws IllegalArgumentException {
         super(id, algorithm);
         if (secret == null) {
             throw new IllegalArgumentException("The Secret cannot be null");
@@ -20,7 +20,7 @@ class HMACAlgorithm extends Algorithm {
         this.crypto = crypto;
     }
 
-    HMACAlgorithm(String id, String algorithm, String secret) {
+    HMACAlgorithm(String id, String algorithm, String secret) throws IllegalArgumentException {
         this(new CryptoHelper(), id, algorithm, secret);
     }
 
