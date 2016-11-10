@@ -4,6 +4,7 @@ import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.impl.BaseClaim;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.JWT;
+import org.apache.commons.codec.binary.Base64;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
@@ -11,7 +12,6 @@ import org.junit.rules.ExpectedException;
 
 import java.util.Date;
 
-import static com.auth0.jwt.SignUtils.base64Encode;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
@@ -200,8 +200,8 @@ public class JWTDecoderTest {
     //Helper Methods
 
     private JWT customJWT(String jsonHeader, String jsonPayload, String signature) {
-        String header = base64Encode(jsonHeader.getBytes());
-        String body = base64Encode(jsonPayload.getBytes());
+        String header = Base64.encodeBase64URLSafeString(jsonHeader.getBytes());
+        String body = Base64.encodeBase64URLSafeString(jsonPayload.getBytes());
         return JWTDecoder.decode(String.format("%s.%s.%s", header, body, signature));
     }
 

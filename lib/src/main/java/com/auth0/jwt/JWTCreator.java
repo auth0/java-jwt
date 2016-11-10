@@ -6,6 +6,7 @@ import com.auth0.jwt.exceptions.SignatureGenerationException;
 import com.auth0.jwt.impl.PublicClaims;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.codec.binary.Base64;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -173,12 +174,12 @@ class JWTCreator {
     }
 
     private String sign() throws SignatureGenerationException {
-        String header = SignUtils.base64Encode(headerJson.getBytes());
-        String payload = SignUtils.base64Encode(payloadJson.getBytes());
+        String header = Base64.encodeBase64URLSafeString((headerJson.getBytes()));
+        String payload = Base64.encodeBase64URLSafeString((payloadJson.getBytes()));
         String content = String.format("%s.%s", header, payload);
 
         byte[] signatureBytes = algorithm.sign(content.getBytes());
-        String signature = SignUtils.base64Encode(signatureBytes);
+        String signature = Base64.encodeBase64URLSafeString((signatureBytes));
 
         return String.format("%s.%s", content, signature);
     }
