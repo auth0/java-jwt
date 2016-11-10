@@ -17,7 +17,7 @@ class ECDSAAlgorithm extends Algorithm {
     private final int ecNumberSize;
     private final ECKey key;
 
-    ECDSAAlgorithm(CryptoHelper crypto, String id, String algorithm, int ecNumberSize, ECKey key) {
+    ECDSAAlgorithm(CryptoHelper crypto, String id, String algorithm, int ecNumberSize, ECKey key) throws IllegalArgumentException {
         super(id, algorithm);
         if (key == null) {
             throw new IllegalArgumentException("The ECKey cannot be null");
@@ -27,7 +27,7 @@ class ECDSAAlgorithm extends Algorithm {
         this.crypto = crypto;
     }
 
-    ECDSAAlgorithm(String id, String algorithm, int ecNumberSize, ECKey key) {
+    ECDSAAlgorithm(String id, String algorithm, int ecNumberSize, ECKey key) throws IllegalArgumentException {
         this(new CryptoHelper(), id, algorithm, ecNumberSize, key);
     }
 
@@ -49,7 +49,7 @@ class ECDSAAlgorithm extends Algorithm {
             if (!valid) {
                 throw new SignatureVerificationException(this);
             }
-        } catch (NoSuchAlgorithmException | SignatureException | InvalidKeyException e) {
+        } catch (NoSuchAlgorithmException | SignatureException | InvalidKeyException | IllegalArgumentException e) {
             throw new SignatureVerificationException(this, e);
         }
     }

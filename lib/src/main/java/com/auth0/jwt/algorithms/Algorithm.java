@@ -19,8 +19,9 @@ public abstract class Algorithm {
      *
      * @param key the key to use in the verify or signing instance.
      * @return a valid RSA256 Algorithm.
+     * @throws IllegalArgumentException if the provided Key is null.
      */
-    public static Algorithm RSA256(RSAKey key) {
+    public static Algorithm RSA256(RSAKey key) throws IllegalArgumentException {
         return new RSAAlgorithm("RS256", "SHA256withRSA", key);
     }
 
@@ -29,8 +30,9 @@ public abstract class Algorithm {
      *
      * @param key the key to use in the verify or signing instance.
      * @return a valid RSA384 Algorithm.
+     * @throws IllegalArgumentException if the provided Key is null.
      */
-    public static Algorithm RSA384(RSAKey key) {
+    public static Algorithm RSA384(RSAKey key) throws IllegalArgumentException {
         return new RSAAlgorithm("RS384", "SHA384withRSA", key);
     }
 
@@ -39,8 +41,9 @@ public abstract class Algorithm {
      *
      * @param key the key to use in the verify or signing instance.
      * @return a valid RSA512 Algorithm.
+     * @throws IllegalArgumentException if the provided Key is null.
      */
-    public static Algorithm RSA512(RSAKey key) {
+    public static Algorithm RSA512(RSAKey key) throws IllegalArgumentException {
         return new RSAAlgorithm("RS512", "SHA512withRSA", key);
     }
 
@@ -49,8 +52,9 @@ public abstract class Algorithm {
      *
      * @param secret the secret to use in the verify or signing instance.
      * @return a valid HMAC256 Algorithm.
+     * @throws IllegalArgumentException if the provided Secret is null.
      */
-    public static Algorithm HMAC256(String secret) {
+    public static Algorithm HMAC256(String secret) throws IllegalArgumentException {
         return new HMACAlgorithm("HS256", "HmacSHA256", secret);
     }
 
@@ -59,8 +63,9 @@ public abstract class Algorithm {
      *
      * @param secret the secret to use in the verify or signing instance.
      * @return a valid HMAC384 Algorithm.
+     * @throws IllegalArgumentException if the provided Secret is null.
      */
-    public static Algorithm HMAC384(String secret) {
+    public static Algorithm HMAC384(String secret) throws IllegalArgumentException {
         return new HMACAlgorithm("HS384", "HmacSHA384", secret);
     }
 
@@ -69,8 +74,9 @@ public abstract class Algorithm {
      *
      * @param secret the secret to use in the verify or signing instance.
      * @return a valid HMAC512 Algorithm.
+     * @throws IllegalArgumentException if the provided Secret is null.
      */
-    public static Algorithm HMAC512(String secret) {
+    public static Algorithm HMAC512(String secret) throws IllegalArgumentException {
         return new HMACAlgorithm("HS512", "HmacSHA512", secret);
     }
 
@@ -79,8 +85,9 @@ public abstract class Algorithm {
      *
      * @param key the key to use in the verify or signing instance.
      * @return a valid ECDSA256 Algorithm.
+     * @throws IllegalArgumentException if the provided Key is null.
      */
-    public static Algorithm ECDSA256(ECKey key) {
+    public static Algorithm ECDSA256(ECKey key) throws IllegalArgumentException {
         return new ECDSAAlgorithm("ES256", "SHA256withECDSA", 32, key);
     }
 
@@ -89,8 +96,9 @@ public abstract class Algorithm {
      *
      * @param key the key to use in the verify or signing instance.
      * @return a valid ECDSA384 Algorithm.
+     * @throws IllegalArgumentException if the provided Key is null.
      */
-    public static Algorithm ECDSA384(ECKey key) {
+    public static Algorithm ECDSA384(ECKey key) throws IllegalArgumentException {
         return new ECDSAAlgorithm("ES384", "SHA384withECDSA", 48, key);
     }
 
@@ -99,8 +107,9 @@ public abstract class Algorithm {
      *
      * @param key the key to use in the verify or signing instance.
      * @return a valid ECDSA512 Algorithm.
+     * @throws IllegalArgumentException if the provided Key is null.
      */
-    public static Algorithm ECDSA512(ECKey key) {
+    public static Algorithm ECDSA512(ECKey key) throws IllegalArgumentException {
         return new ECDSAAlgorithm("ES512", "SHA512withECDSA", 66, key);
     }
 

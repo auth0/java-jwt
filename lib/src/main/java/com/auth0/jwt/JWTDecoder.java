@@ -6,6 +6,8 @@ import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.Header;
 import com.auth0.jwt.interfaces.JWT;
 import com.auth0.jwt.interfaces.Payload;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.codec.binary.StringUtils;
 
 import java.util.Date;
 
@@ -35,13 +37,13 @@ final class JWTDecoder implements JWT {
     }
 
     private void parseToken(String token) throws JWTDecodeException {
-        final String[] parts = SignUtils.splitToken(token);
+        final String[] parts = TokenUtils.splitToken(token);
         final JWTParser converter = new JWTParser();
         String headerJson;
         String payloadJson;
         try {
-            headerJson = SignUtils.toUTF8String(SignUtils.base64Decode(parts[0]));
-            payloadJson = SignUtils.toUTF8String(SignUtils.base64Decode(parts[1]));
+            headerJson = StringUtils.newStringUtf8(Base64.decodeBase64(parts[0]));
+            payloadJson = StringUtils.newStringUtf8(Base64.decodeBase64(parts[1]));
         } catch (NullPointerException e) {
             throw new JWTDecodeException("The UTF-8 Charset isn't initialized.", e);
         }

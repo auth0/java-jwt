@@ -36,7 +36,7 @@ public class JWTCreatorTest {
                 .sign(Algorithm.HMAC256("secret"));
 
         assertThat(signed, is(notNullValue()));
-        assertThat(SignUtils.splitToken(signed)[0], is("eyJhbGciOiJIUzI1NiIsImFzZCI6MTIzfQ"));
+        assertThat(TokenUtils.splitToken(signed)[0], is("eyJhbGciOiJIUzI1NiIsImFzZCI6MTIzfQ"));
     }
 
     @Test
@@ -46,7 +46,7 @@ public class JWTCreatorTest {
                 .sign(Algorithm.HMAC256("secret"));
 
         assertThat(signed, is(notNullValue()));
-        assertThat(SignUtils.splitToken(signed)[1], is("eyJpc3MiOiJhdXRoMCJ9"));
+        assertThat(TokenUtils.splitToken(signed)[1], is("eyJpc3MiOiJhdXRoMCJ9"));
     }
 
     @Test
@@ -56,7 +56,7 @@ public class JWTCreatorTest {
                 .sign(Algorithm.HMAC256("secret"));
 
         assertThat(signed, is(notNullValue()));
-        assertThat(SignUtils.splitToken(signed)[1], is("eyJzdWIiOiIxMjM0NTY3ODkwIn0"));
+        assertThat(TokenUtils.splitToken(signed)[1], is("eyJzdWIiOiIxMjM0NTY3ODkwIn0"));
     }
 
     @Test
@@ -66,7 +66,7 @@ public class JWTCreatorTest {
                 .sign(Algorithm.HMAC256("secret"));
 
         assertThat(signed, is(notNullValue()));
-        assertThat(SignUtils.splitToken(signed)[1], is("eyJhdWQiOiJNYXJrIn0"));
+        assertThat(TokenUtils.splitToken(signed)[1], is("eyJhdWQiOiJNYXJrIn0"));
 
 
         String signedArr = JWTCreator.init()
@@ -74,7 +74,7 @@ public class JWTCreatorTest {
                 .sign(Algorithm.HMAC256("secret"));
 
         assertThat(signedArr, is(notNullValue()));
-        assertThat(SignUtils.splitToken(signedArr)[1], is("eyJhdWQiOlsiTWFyayIsIkRhdmlkIl19"));
+        assertThat(TokenUtils.splitToken(signedArr)[1], is("eyJhdWQiOlsiTWFyayIsIkRhdmlkIl19"));
     }
 
     @Test
@@ -84,7 +84,7 @@ public class JWTCreatorTest {
                 .sign(Algorithm.HMAC256("secret"));
 
         assertThat(signed, is(notNullValue()));
-        assertThat(SignUtils.splitToken(signed)[1], is("eyJleHAiOjE0Nzc1OTJ9"));
+        assertThat(TokenUtils.splitToken(signed)[1], is("eyJleHAiOjE0Nzc1OTJ9"));
     }
 
     @Test
@@ -94,7 +94,7 @@ public class JWTCreatorTest {
                 .sign(Algorithm.HMAC256("secret"));
 
         assertThat(signed, is(notNullValue()));
-        assertThat(SignUtils.splitToken(signed)[1], is("eyJuYmYiOjE0Nzc1OTJ9"));
+        assertThat(TokenUtils.splitToken(signed)[1], is("eyJuYmYiOjE0Nzc1OTJ9"));
     }
 
     @Test
@@ -104,7 +104,7 @@ public class JWTCreatorTest {
                 .sign(Algorithm.HMAC256("secret"));
 
         assertThat(signed, is(notNullValue()));
-        assertThat(SignUtils.splitToken(signed)[1], is("eyJpYXQiOjE0Nzc1OTJ9"));
+        assertThat(TokenUtils.splitToken(signed)[1], is("eyJpYXQiOjE0Nzc1OTJ9"));
     }
 
     @Test
@@ -114,7 +114,7 @@ public class JWTCreatorTest {
                 .sign(Algorithm.HMAC256("secret"));
 
         assertThat(signed, is(notNullValue()));
-        assertThat(SignUtils.splitToken(signed)[1], is("eyJqdGkiOiJqd3RfaWRfMTIzIn0"));
+        assertThat(TokenUtils.splitToken(signed)[1], is("eyJqdGkiOiJqd3RfaWRfMTIzIn0"));
     }
 
 
@@ -126,7 +126,7 @@ public class JWTCreatorTest {
                 .sign(Algorithm.HMAC256("secret"));
 
         assertThat(signed, is(notNullValue()));
-        assertThat(SignUtils.splitToken(signed)[1], is("e30"));
+        assertThat(TokenUtils.splitToken(signed)[1], is("e30"));
     }
 
     @Test
@@ -135,7 +135,7 @@ public class JWTCreatorTest {
                 .sign(Algorithm.HMAC256("secret"));
 
         assertThat(signed, is(notNullValue()));
-        assertThat(SignUtils.splitToken(signed)[0], is("eyJhbGciOiJIUzI1NiJ9"));
+        assertThat(TokenUtils.splitToken(signed)[0], is("eyJhbGciOiJIUzI1NiJ9"));
     }
 
     @Test
@@ -143,7 +143,7 @@ public class JWTCreatorTest {
         String signed = JWTCreator.init()
                 .sign(Algorithm.none());
         assertThat(signed, is(notNullValue()));
-        assertThat(SignUtils.splitToken(signed)[2], is(""));
+        assertThat(TokenUtils.splitToken(signed)[2], is(""));
     }
 
 }

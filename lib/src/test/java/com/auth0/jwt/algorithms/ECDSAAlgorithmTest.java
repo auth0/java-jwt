@@ -1,19 +1,22 @@
 package com.auth0.jwt.algorithms;
 
+import com.auth0.jwt.exceptions.SignatureGenerationException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
 import org.apache.commons.codec.binary.Base64;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import java.io.UnsupportedEncodingException;
 import java.security.*;
 import java.security.interfaces.ECKey;
+import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
 
+import static com.auth0.jwt.PemUtils.readPrivateKeyFromFile;
 import static com.auth0.jwt.PemUtils.readPublicKeyFromFile;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.hamcrest.Matchers.isA;
+import static org.junit.Assert.assertThat;
 import static org.junit.internal.matchers.ThrowableMessageMatcher.hasMessage;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -21,12 +24,15 @@ import static org.mockito.Mockito.*;
 
 public class ECDSAAlgorithmTest {
 
+    private static final String PRIVATE_KEY_FILE_256 = "src/test/resources/ec256-key-private.pem";
     private static final String PUBLIC_KEY_FILE_256 = "src/test/resources/ec256-key-public.pem";
     private static final String INVALID_PUBLIC_KEY_FILE_256 = "src/test/resources/ec256-key-public-invalid.pem";
 
+    private static final String PRIVATE_KEY_FILE_384 = "src/test/resources/ec384-key-private.pem";
     private static final String PUBLIC_KEY_FILE_384 = "src/test/resources/ec384-key-public.pem";
     private static final String INVALID_PUBLIC_KEY_FILE_384 = "src/test/resources/ec384-key-public-invalid.pem";
 
+    private static final String PRIVATE_KEY_FILE_512 = "src/test/resources/ec512-key-private.pem";
     private static final String PUBLIC_KEY_FILE_512 = "src/test/resources/ec512-key-public.pem";
     private static final String INVALID_PUBLIC_KEY_FILE_512 = "src/test/resources/ec512-key-public-invalid.pem";
 
@@ -35,6 +41,8 @@ public class ECDSAAlgorithmTest {
 
     //JOSE Signatures obtained using Node 'jwa' lib: https://github.com/brianloveswords/node-jwa
     //DER Signatures obtained from source JOSE signature using 'ecdsa-sig-formatter' lib: https://github.com/Brightspace/node-ecdsa-sig-formatter
+
+    // Verify
 
     @Test
     public void shouldPassECDSA256VerificationWithJOSESignature() throws Exception {
@@ -62,6 +70,17 @@ public class ECDSAAlgorithmTest {
     }
 
     @Test
+    public void shouldFailECDSA256VerificationWhenUsingPrivateKey() throws Exception {
+        exception.expect(SignatureVerificationException.class);
+        exception.expectMessage("The Token's Signature resulted invalid when verified using the Algorithm: SHA256withECDSA");
+        exception.expectCause(isA(IllegalArgumentException.class));
+        exception.expectCause(hasMessage(is("The given ECKey is not an ECPublicKey.")));
+        String jwt = "eyJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJhdXRoMCJ9.W9qfN1b80B9hnMo49WL8THrOsf1vEjOhapeFemPMGySzxTcgfyudS5esgeBTO908X5SLdAr5jMwPUPBs9b6nNg";
+        Algorithm algorithm = Algorithm.ECDSA256((ECKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_256, "EC"));
+        AlgorithmUtils.verify(algorithm, jwt);
+    }
+
+    @Test
     public void shouldFailECDSA256VerificationOnInvalidSignatureLength() throws Exception {
         exception.expect(SignatureVerificationException.class);
         exception.expectMessage("The Token's Signature resulted invalid when verified using the Algorithm: SHA256withECDSA");
@@ -70,7 +89,7 @@ public class ECDSAAlgorithmTest {
 
         byte[] bytes = new byte[63];
         new SecureRandom().nextBytes(bytes);
-        String signature = toBase64(bytes);
+        String signature = Base64.encodeBase64URLSafeString(bytes);
         String jwt = "eyJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJhdXRoMCJ9." + signature;
         Algorithm algorithm = Algorithm.ECDSA256((ECKey) readPublicKeyFromFile(INVALID_PUBLIC_KEY_FILE_256, "EC"));
         AlgorithmUtils.verify(algorithm, jwt);
@@ -83,7 +102,7 @@ public class ECDSAAlgorithmTest {
 
         byte[] bytes = new byte[64];
         new SecureRandom().nextBytes(bytes);
-        String signature = toBase64(bytes);
+        String signature = Base64.encodeBase64URLSafeString(bytes);
         String jwt = "eyJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJhdXRoMCJ9." + signature;
         Algorithm algorithm = Algorithm.ECDSA256((ECKey) readPublicKeyFromFile(INVALID_PUBLIC_KEY_FILE_256, "EC"));
         AlgorithmUtils.verify(algorithm, jwt);
@@ -97,7 +116,7 @@ public class ECDSAAlgorithmTest {
         byte[] bytes = new byte[64];
         bytes[0] = 0x30;
         new SecureRandom().nextBytes(bytes);
-        String signature = toBase64(bytes);
+        String signature = Base64.encodeBase64URLSafeString(bytes);
         String jwt = "eyJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJhdXRoMCJ9." + signature;
         Algorithm algorithm = Algorithm.ECDSA256((ECKey) readPublicKeyFromFile(INVALID_PUBLIC_KEY_FILE_256, "EC"));
         AlgorithmUtils.verify(algorithm, jwt);
@@ -129,6 +148,17 @@ public class ECDSAAlgorithmTest {
     }
 
     @Test
+    public void shouldFailECDSA384VerificationWhenUsingPrivateKey() throws Exception {
+        exception.expect(SignatureVerificationException.class);
+        exception.expectMessage("The Token's Signature resulted invalid when verified using the Algorithm: SHA384withECDSA");
+        exception.expectCause(isA(IllegalArgumentException.class));
+        exception.expectCause(hasMessage(is("The given ECKey is not an ECPublicKey.")));
+        String jwt = "eyJhbGciOiJFUzM4NCJ9.eyJpc3MiOiJhdXRoMCJ9._k5h1KyO-NE0R2_HAw0-XEc0bGT5atv29SxHhOGC9JDqUHeUdptfCK_ljQ01nLVt2OQWT2SwGs-TuyHDFmhPmPGFZ9wboxvq_ieopmYqhQilNAu-WF-frioiRz9733fU";
+        Algorithm algorithm = Algorithm.ECDSA384((ECKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_384, "EC"));
+        AlgorithmUtils.verify(algorithm, jwt);
+    }
+
+    @Test
     public void shouldFailECDSA384VerificationOnInvalidSignatureLength() throws Exception {
         exception.expect(SignatureVerificationException.class);
         exception.expectMessage("The Token's Signature resulted invalid when verified using the Algorithm: SHA384withECDSA");
@@ -137,7 +167,7 @@ public class ECDSAAlgorithmTest {
 
         byte[] bytes = new byte[95];
         new SecureRandom().nextBytes(bytes);
-        String signature = toBase64(bytes);
+        String signature = Base64.encodeBase64URLSafeString(bytes);
         String jwt = "eyJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJhdXRoMCJ9." + signature;
         Algorithm algorithm = Algorithm.ECDSA384((ECKey) readPublicKeyFromFile(INVALID_PUBLIC_KEY_FILE_384, "EC"));
         AlgorithmUtils.verify(algorithm, jwt);
@@ -150,7 +180,7 @@ public class ECDSAAlgorithmTest {
 
         byte[] bytes = new byte[96];
         new SecureRandom().nextBytes(bytes);
-        String signature = toBase64(bytes);
+        String signature = Base64.encodeBase64URLSafeString(bytes);
         String jwt = "eyJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJhdXRoMCJ9." + signature;
         Algorithm algorithm = Algorithm.ECDSA384((ECKey) readPublicKeyFromFile(INVALID_PUBLIC_KEY_FILE_384, "EC"));
         AlgorithmUtils.verify(algorithm, jwt);
@@ -164,7 +194,7 @@ public class ECDSAAlgorithmTest {
         byte[] bytes = new byte[96];
         new SecureRandom().nextBytes(bytes);
         bytes[0] = 0x30;
-        String signature = toBase64(bytes);
+        String signature = Base64.encodeBase64URLSafeString(bytes);
         String jwt = "eyJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJhdXRoMCJ9." + signature;
         Algorithm algorithm = Algorithm.ECDSA384((ECKey) readPublicKeyFromFile(INVALID_PUBLIC_KEY_FILE_384, "EC"));
         AlgorithmUtils.verify(algorithm, jwt);
@@ -196,6 +226,17 @@ public class ECDSAAlgorithmTest {
     }
 
     @Test
+    public void shouldFailECDSA512VerificationWhenUsingPrivateKey() throws Exception {
+        exception.expect(SignatureVerificationException.class);
+        exception.expectMessage("The Token's Signature resulted invalid when verified using the Algorithm: SHA512withECDSA");
+        exception.expectCause(isA(IllegalArgumentException.class));
+        exception.expectCause(hasMessage(is("The given ECKey is not an ECPublicKey.")));
+        String jwt = "eyJhbGciOiJFUzUxMiJ9.eyJpc3MiOiJhdXRoMCJ9.AZgdopFFsN0amCSs2kOucXdpylD31DEm5ChK1PG0_gq5Mf47MrvVph8zHSVuvcrXzcE1U3VxeCg89mYW1H33Y-8iAF0QFkdfTUQIWKNObH543WNMYYssv3OtOj0znPv8atDbaF8DMYAtcT1qdmaSJRhx-egRE9HGZkinPh9CfLLLt58X";
+        Algorithm algorithm = Algorithm.ECDSA512((ECKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_512, "EC"));
+        AlgorithmUtils.verify(algorithm, jwt);
+    }
+
+    @Test
     public void shouldFailECDSA512VerificationOnInvalidSignatureLength() throws Exception {
         exception.expect(SignatureVerificationException.class);
         exception.expectMessage("The Token's Signature resulted invalid when verified using the Algorithm: SHA512withECDSA");
@@ -204,7 +245,7 @@ public class ECDSAAlgorithmTest {
 
         byte[] bytes = new byte[131];
         new SecureRandom().nextBytes(bytes);
-        String signature = toBase64(bytes);
+        String signature = Base64.encodeBase64URLSafeString(bytes);
         String jwt = "eyJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJhdXRoMCJ9." + signature;
         Algorithm algorithm = Algorithm.ECDSA512((ECKey) readPublicKeyFromFile(INVALID_PUBLIC_KEY_FILE_512, "EC"));
         AlgorithmUtils.verify(algorithm, jwt);
@@ -217,7 +258,7 @@ public class ECDSAAlgorithmTest {
 
         byte[] bytes = new byte[132];
         new SecureRandom().nextBytes(bytes);
-        String signature = toBase64(bytes);
+        String signature = Base64.encodeBase64URLSafeString(bytes);
         String jwt = "eyJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJhdXRoMCJ9." + signature;
         Algorithm algorithm = Algorithm.ECDSA512((ECKey) readPublicKeyFromFile(INVALID_PUBLIC_KEY_FILE_512, "EC"));
         AlgorithmUtils.verify(algorithm, jwt);
@@ -231,7 +272,7 @@ public class ECDSAAlgorithmTest {
         byte[] bytes = new byte[132];
         new SecureRandom().nextBytes(bytes);
         bytes[0] = 0x30;
-        String signature = toBase64(bytes);
+        String signature = Base64.encodeBase64URLSafeString(bytes);
         String jwt = "eyJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJhdXRoMCJ9." + signature;
         Algorithm algorithm = Algorithm.ECDSA512((ECKey) readPublicKeyFromFile(INVALID_PUBLIC_KEY_FILE_512, "EC"));
         AlgorithmUtils.verify(algorithm, jwt);
@@ -246,7 +287,7 @@ public class ECDSAAlgorithmTest {
 
         byte[] bytes = new byte[256];
         new SecureRandom().nextBytes(bytes);
-        String signature = toBase64(bytes);
+        String signature = Base64.encodeBase64URLSafeString(bytes);
         String jwt = "eyJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJhdXRoMCJ9." + signature;
 
         Algorithm algorithm = new ECDSAAlgorithm("ES256", "SHA256withECDSA", 128, (ECKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC"));
@@ -254,7 +295,7 @@ public class ECDSAAlgorithmTest {
     }
 
     @Test
-    public void shouldThrowWhenSignatureAlgorithmDoesNotExists() throws Exception {
+    public void shouldThrowOnVerifyWhenSignatureAlgorithmDoesNotExists() throws Exception {
         exception.expect(SignatureVerificationException.class);
         exception.expectMessage("The Token's Signature resulted invalid when verified using the Algorithm: some-alg");
         exception.expectCause(isA(NoSuchAlgorithmException.class));
@@ -270,7 +311,7 @@ public class ECDSAAlgorithmTest {
     }
 
     @Test
-    public void shouldThrowWhenThePublicKeyIsInvalid() throws Exception {
+    public void shouldThrowOnVerifyWhenThePublicKeyIsInvalid() throws Exception {
         exception.expect(SignatureVerificationException.class);
         exception.expectMessage("The Token's Signature resulted invalid when verified using the Algorithm: some-alg");
         exception.expectCause(isA(InvalidKeyException.class));
@@ -286,7 +327,7 @@ public class ECDSAAlgorithmTest {
     }
 
     @Test
-    public void shouldThrowWhenTheSignatureIsNotPrepared() throws Exception {
+    public void shouldThrowOnVerifyWhenTheSignatureIsNotPrepared() throws Exception {
         exception.expect(SignatureVerificationException.class);
         exception.expectMessage("The Token's Signature resulted invalid when verified using the Algorithm: some-alg");
         exception.expectCause(isA(SignatureException.class));
@@ -301,13 +342,136 @@ public class ECDSAAlgorithmTest {
         AlgorithmUtils.verify(algorithm, jwt);
     }
 
-    private String toBase64(byte[] bytes) {
-        String res = null;
-        try {
-            res = new String(Base64.encodeBase64(bytes, false, true), "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        return res;
+    //Sign
+    private static final String ES256Header = "eyJhbGciOiJFUzI1NiJ9";
+    private static final String ES384Header = "eyJhbGciOiJFUzM4NCJ9";
+    private static final String ES512Header = "eyJhbGciOiJFUzUxMiJ9";
+    private static final String auth0IssPayload = "eyJpc3MiOiJhdXRoMCJ9";
+
+    @Test
+    public void shouldDoECDSA256Signing() throws Exception {
+        Algorithm algorithmSign = Algorithm.ECDSA256((ECKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_256, "EC"));
+        Algorithm algorithmVerify = Algorithm.ECDSA256((ECKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC"));
+        byte[] contentBytes = String.format("%s.%s", ES256Header, auth0IssPayload).getBytes();
+        byte[] signatureBytes = algorithmSign.sign(contentBytes);
+
+        assertThat(signatureBytes, is(notNullValue()));
+        algorithmVerify.verify(contentBytes, signatureBytes);
+    }
+
+    @Test
+    public void shouldFailOnECDSA256SigningWhenUsingPublicKey() throws Exception {
+        exception.expect(SignatureGenerationException.class);
+        exception.expectMessage("The Token's Signature couldn't be generated when signing using the Algorithm: SHA256withECDSA");
+        exception.expectCause(isA(IllegalArgumentException.class));
+        exception.expectCause(hasMessage(is("The given ECKey is not a ECPrivateKey.")));
+
+        Algorithm algorithm = Algorithm.ECDSA256((ECKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC"));
+        algorithm.sign(new byte[0]);
+    }
+
+    @Test
+    public void shouldDoECDSA384Signing() throws Exception {
+        Algorithm algorithmSign = Algorithm.ECDSA384((ECKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_384, "EC"));
+        Algorithm algorithmVerify = Algorithm.ECDSA384((ECKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_384, "EC"));
+        byte[] contentBytes = String.format("%s.%s", ES384Header, auth0IssPayload).getBytes();
+        byte[] signatureBytes = algorithmSign.sign(contentBytes);
+
+        assertThat(signatureBytes, is(notNullValue()));
+        algorithmVerify.verify(contentBytes, signatureBytes);
+    }
+
+    @Test
+    public void shouldFailOnECDSA384SigningWhenUsingPublicKey() throws Exception {
+        exception.expect(SignatureGenerationException.class);
+        exception.expectMessage("The Token's Signature couldn't be generated when signing using the Algorithm: SHA384withECDSA");
+        exception.expectCause(isA(IllegalArgumentException.class));
+        exception.expectCause(hasMessage(is("The given ECKey is not a ECPrivateKey.")));
+
+        Algorithm algorithm = Algorithm.ECDSA384((ECKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_384, "EC"));
+        algorithm.sign(new byte[0]);
+    }
+
+    @Test
+    public void shouldDoECDSA512Signing() throws Exception {
+        Algorithm algorithmSign = Algorithm.ECDSA512((ECKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_512, "EC"));
+        Algorithm algorithmVerify = Algorithm.ECDSA512((ECKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_512, "EC"));
+        byte[] contentBytes = String.format("%s.%s", ES512Header, auth0IssPayload).getBytes();
+        byte[] signatureBytes = algorithmSign.sign(contentBytes);
+
+        assertThat(signatureBytes, is(notNullValue()));
+        algorithmVerify.verify(contentBytes, signatureBytes);
+    }
+
+    @Test
+    public void shouldFailOnECDSA512SigningWhenUsingPublicKey() throws Exception {
+        exception.expect(SignatureGenerationException.class);
+        exception.expectMessage("The Token's Signature couldn't be generated when signing using the Algorithm: SHA512withECDSA");
+        exception.expectCause(isA(IllegalArgumentException.class));
+        exception.expectCause(hasMessage(is("The given ECKey is not a ECPrivateKey.")));
+
+        Algorithm algorithm = Algorithm.ECDSA512((ECKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_512, "EC"));
+        algorithm.sign(new byte[0]);
+    }
+
+    @Test
+    public void shouldThrowOnSignWhenSignatureAlgorithmDoesNotExists() throws Exception {
+        exception.expect(SignatureGenerationException.class);
+        exception.expectMessage("The Token's Signature couldn't be generated when signing using the Algorithm: some-algorithm");
+        exception.expectCause(isA(NoSuchAlgorithmException.class));
+
+        CryptoHelper crypto = mock(CryptoHelper.class);
+        when(crypto.createSignatureFor(anyString(), any(PrivateKey.class), any(byte[].class)))
+                .thenThrow(NoSuchAlgorithmException.class);
+
+        ECKey key = mock(ECKey.class, withSettings().extraInterfaces(ECPrivateKey.class));
+        Algorithm algorithm = new ECDSAAlgorithm(crypto, "some-alg", "some-algorithm", 32, key);
+        algorithm.sign(ES256Header.getBytes());
+    }
+
+    @Test
+    public void shouldThrowOnSignWhenThePrivateKeyIsInvalid() throws Exception {
+        exception.expect(SignatureGenerationException.class);
+        exception.expectMessage("The Token's Signature couldn't be generated when signing using the Algorithm: some-algorithm");
+        exception.expectCause(isA(InvalidKeyException.class));
+
+        CryptoHelper crypto = mock(CryptoHelper.class);
+        when(crypto.createSignatureFor(anyString(), any(PrivateKey.class), any(byte[].class)))
+                .thenThrow(InvalidKeyException.class);
+
+        ECKey key = mock(ECKey.class, withSettings().extraInterfaces(ECPrivateKey.class));
+        Algorithm algorithm = new ECDSAAlgorithm(crypto, "some-alg", "some-algorithm", 32, key);
+        algorithm.sign(ES256Header.getBytes());
+    }
+
+    @Test
+    public void shouldThrowOnSignWhenUsingPublicKey() throws Exception {
+        exception.expect(SignatureGenerationException.class);
+        exception.expectMessage("The Token's Signature couldn't be generated when signing using the Algorithm: some-algorithm");
+        exception.expectCause(isA(IllegalArgumentException.class));
+        exception.expectCause(hasMessage(is("The given ECKey is not a ECPrivateKey.")));
+
+        CryptoHelper crypto = mock(CryptoHelper.class);
+        when(crypto.createSignatureFor(anyString(), any(PrivateKey.class), any(byte[].class)))
+                .thenThrow(InvalidKeyException.class);
+
+        ECKey key = mock(ECKey.class, withSettings().extraInterfaces(ECPublicKey.class));
+        Algorithm algorithm = new ECDSAAlgorithm(crypto, "some-alg", "some-algorithm", 32, key);
+        algorithm.sign(ES256Header.getBytes());
+    }
+
+    @Test
+    public void shouldThrowOnSignWhenTheSignatureIsNotPrepared() throws Exception {
+        exception.expect(SignatureGenerationException.class);
+        exception.expectMessage("The Token's Signature couldn't be generated when signing using the Algorithm: some-algorithm");
+        exception.expectCause(isA(SignatureException.class));
+
+        CryptoHelper crypto = mock(CryptoHelper.class);
+        when(crypto.createSignatureFor(anyString(), any(PrivateKey.class), any(byte[].class)))
+                .thenThrow(SignatureException.class);
+
+        ECKey key = mock(ECKey.class, withSettings().extraInterfaces(ECPrivateKey.class));
+        Algorithm algorithm = new ECDSAAlgorithm(crypto, "some-alg", "some-algorithm", 32, key);
+        algorithm.sign(ES256Header.getBytes());
     }
 }

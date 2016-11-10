@@ -30,7 +30,18 @@ public class JWTTest {
     @Rule
     public ExpectedException exception = ExpectedException.none();
 
-    // Initiate with diff Algorithms
+    // Decode
+
+    @Test
+    public void shouldDecodeAStringToken() throws Exception {
+        String token = "eyJhbGciOiJIUzI1NiIsImN0eSI6IkpXVCJ9.eyJpc3MiOiJhdXRoMCJ9.mZ0m_N1J4PgeqWmi903JuUoDRZDBPB7HwkS4nVyWH1M";
+        JWT jwt = JWT.decode(token);
+
+        assertThat(jwt, is(notNullValue()));
+    }
+
+
+    // Verify
 
     @Test
     public void shouldAcceptNoneAlgorithm() throws Exception {
@@ -166,8 +177,6 @@ public class JWTTest {
         assertThat(jwt.getSignature(), is("XmNK3GpH3Ys_7wsYBfq4C3M6goz71I7dTgUkuIa5lyQ"));
     }
 
-    // Public PublicClaims
-
     @Test
     public void shouldGetIssuer() throws Exception {
         String token = "eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJKb2huIERvZSJ9.SgXosfRR_IwCgHq5lF3tlM-JHtpucWCRSaVuoHTbWbQ";
@@ -299,9 +308,7 @@ public class JWTTest {
     }
 
 
-    // *********************************************** //
-    // Creation / Signing
-    // *********************************************** //
+    // Sign
 
     @Test
     public void shouldCreateAnEmptyHMAC256SignedToken() throws Exception {

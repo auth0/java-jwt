@@ -16,6 +16,7 @@ import java.util.concurrent.TimeoutException;
 
 import static com.auth0.jwt.PemUtils.readPublicKeyFromFile;
 
+//@Ignore("Skipping concurrency tests")
 public class ConcurrentVerifyTest {
 
     private static final long TIMEOUT = 60 * 1000 * 1000; //1 min
