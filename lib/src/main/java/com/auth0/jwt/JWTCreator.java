@@ -3,9 +3,12 @@ package com.auth0.jwt;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.SignatureGenerationException;
+import com.auth0.jwt.impl.ClaimsHolder;
+import com.auth0.jwt.impl.PayloadSerializer;
 import com.auth0.jwt.impl.PublicClaims;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.apache.commons.codec.binary.Base64;
 
 import java.util.Date;
@@ -24,8 +27,12 @@ class JWTCreator {
     private JWTCreator(Algorithm algorithm, Map<String, Object> headerClaims, Map<String, Object> payloadClaims) throws JWTCreationException {
         this.algorithm = algorithm;
         try {
-            headerJson = toSafeJson(headerClaims);
-            payloadJson = toSafeJson(payloadClaims);
+            ObjectMapper mapper = new ObjectMapper();
+            SimpleModule module = new SimpleModule();
+            module.addSerializer(ClaimsHolder.class, new PayloadSerializer());
+            mapper.registerModule(module);
+            headerJson = mapper.writeValueAsString(headerClaims);
+            payloadJson = mapper.writeValueAsString(new ClaimsHolder(payloadClaims));
         } catch (JsonProcessingException e) {
             throw new JWTCreationException("Some of the Claims couldn't be converted to a valid JSON format.", e);
         }
@@ -89,12 +96,7 @@ class JWTCreator {
          * @return this same Builder instance.
          */
         public Builder withAudience(String[] audience) {
-            //FIXME: Use a custom Serializer
-            if (audience.length == 1) {
-                addClaim(PublicClaims.AUDIENCE, audience[0]);
-            } else if (audience.length > 1) {
-                addClaim(PublicClaims.AUDIENCE, audience);
-            }
+            addClaim(PublicClaims.AUDIENCE, audience);
             return this;
         }
 
@@ -104,7 +106,7 @@ class JWTCreator {
          * @return this same Builder instance.
          */
         public Builder withExpiresAt(Date expiresAt) {
-            addClaim(PublicClaims.EXPIRES_AT, dateToSeconds(expiresAt));
+            addClaim(PublicClaims.EXPIRES_AT, expiresAt);
             return this;
         }
 
@@ -114,7 +116,7 @@ class JWTCreator {
          * @return this same Builder instance.
          */
         public Builder withNotBefore(Date notBefore) {
-            addClaim(PublicClaims.NOT_BEFORE, dateToSeconds(notBefore));
+            addClaim(PublicClaims.NOT_BEFORE, notBefore);
             return this;
         }
 
@@ -124,7 +126,7 @@ class JWTCreator {
          * @return this same Builder instance.
          */
         public Builder withIssuedAt(Date issuedAt) {
-            addClaim(PublicClaims.ISSUED_AT, dateToSeconds(issuedAt));
+            addClaim(PublicClaims.ISSUED_AT, issuedAt);
             return this;
         }
 
@@ -135,6 +137,28 @@ class JWTCreator {
          */
         public Builder withJWTId(String jwtId) {
             addClaim(PublicClaims.JWT_ID, jwtId);
+            return this;
+        }
+
+        /**
+         * Add a custom Claim value.
+         *
+         * @param name  the Claim's name
+         * @param value the Claim's value. Must be an instance of Integer, Double, Boolean, Date or String class.
+         * @return this same Builder instance.
+         * @throws IllegalArgumentException if the name is null or the value class is not allowed.
+         */
+        public Builder withClaim(String name, Object value) throws IllegalArgumentException {
+            final boolean validValue = value instanceof Integer || value instanceof Double ||
+                    value instanceof Boolean || value instanceof Date || value instanceof String;
+            if (name == null) {
+                throw new IllegalArgumentException("The Custom Claim's name can't be null.");
+            }
+            if (!validValue) {
+                throw new IllegalArgumentException("The Custom Claim's value class must be an instance of Integer, Double, Boolean, Date or String.");
+            }
+
+            addClaim(name, value);
             return this;
         }
 
@@ -154,11 +178,6 @@ class JWTCreator {
             return new JWTCreator(algorithm, headerClaims, payloadClaims).sign();
         }
 
-        private int dateToSeconds(Date date) {
-            //FIXME: Use a custom Serializer
-            return (int) (date.getTime() / 1000);
-        }
-
         private void addClaim(String name, Object value) {
             if (value == null) {
                 payloadClaims.remove(name);
@@ -166,11 +185,6 @@ class JWTCreator {
             }
             payloadClaims.put(name, value);
         }
-    }
-
-    private String toSafeJson(Map<String, Object> claims) throws JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper();
-        return mapper.writeValueAsString(claims);
     }
 
     private String sign() throws SignatureGenerationException {

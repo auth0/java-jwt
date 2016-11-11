@@ -208,11 +208,31 @@ String id = jwt.getId();
 
 ### Private Claims
 
-Additional Claims defined in the token can be obtained by calling `getClaim()` and passing the Claim name. A Claim will always be returned, even if it can't be found.
+Additional Claims defined in the token can be obtained by calling `getClaim()` and passing the Claim name. A Claim will always be returned, even if it can't be found. You should always check for null values.
 
 ```java
 Claim claim = jwt.getClaim("isAdmin");
 ```
+
+When creating a Token with the `JWT.create()` you can specify a custom Claim by calling `withClaim()` and passing both the name and the value.
+
+```java
+JWT.create()
+    .withClaim("name", 123)
+    .sign(Algorithm.HMAC256("secret"));
+```
+
+You can also verify custom Claims on the `JWT.require()` by calling `withClaim()` and passing both the name and the required value.
+
+```java
+JWT.require(Algorithm.HMAC256("secret"))
+    .withClaim("name", 123)
+    .build()
+    .verify("my.jwt.token");
+```
+
+> The value of the custom Claim in all the cases must be of a `Integer`, `Double`, `Date`, `String`, or `Boolean` class.
+
 
 ### Claim Class
 The Claim class is a wrapper for the Claim values. It allows you to get the Claim as different class types. The available helpers are:
@@ -222,7 +242,7 @@ The Claim class is a wrapper for the Claim values. It allows you to get the Clai
 * **asInt()**: Returns the Integer value or null if it can't be converted.
 * **asDouble()**: Returns the Double value or null if it can't be converted.
 * **asString()**: Returns the String value or null if it can't be converted.
-* **asDate()**: Returns the Date value or null if it can't be converted. Note that the [JWT Standard](https://tools.ietf.org/html/rfc7519#section-2) specified that all the *NumericDate* values must be in seconds.
+* **asDate()**: Returns the Date value or null if it can't be converted. This must be a NumericDate (Unix Epoch/Timestamp). Note that the [JWT Standard](https://tools.ietf.org/html/rfc7519#section-2) specified that all the *NumericDate* values must be in seconds.
 
 #### Collections
 To obtain a Claim as a Collection you'll need to provide the **Class Type** of the contents to convert from.

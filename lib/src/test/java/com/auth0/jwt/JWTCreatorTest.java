@@ -117,7 +117,6 @@ public class JWTCreatorTest {
         assertThat(TokenUtils.splitToken(signed)[1], is("eyJqdGkiOiJqd3RfaWRfMTIzIn0"));
     }
 
-
     @Test
     public void shouldRemoveClaimWhenPassingNull() throws Exception {
         String signed = JWTCreator.init()
@@ -144,6 +143,78 @@ public class JWTCreatorTest {
                 .sign(Algorithm.none());
         assertThat(signed, is(notNullValue()));
         assertThat(TokenUtils.splitToken(signed)[2], is(""));
+    }
+
+    @Test
+    public void shouldThrowOnNullCustomClaimName() throws Exception {
+        exception.expect(IllegalArgumentException.class);
+        exception.expectMessage("The Custom Claim's name can't be null.");
+        JWTCreator.init()
+                .withClaim(null, "value");
+    }
+
+    @Test
+    public void shouldThrowOnIllegalCustomClaimValueClass() throws Exception {
+        exception.expect(IllegalArgumentException.class);
+        exception.expectMessage("The Custom Claim's value class must be an instance of Integer, Double, Boolean, Date or String.");
+        JWTCreator.init()
+                .withClaim("name", new Object());
+    }
+
+    @Test
+    public void shouldAcceptCustomClaimOfTypeString() throws Exception {
+        String jwt = JWTCreator.init()
+                .withClaim("name", "value")
+                .sign(Algorithm.HMAC256("secret"));
+        String token = "eyJhbGciOiJIUzI1NiJ9.eyJuYW1lIjoidmFsdWUifQ.4qDWJcNQHDVDW1iAcIgZNiu-qqJQ0RIq8X3ETijBx5k";
+
+        assertThat(jwt, is(notNullValue()));
+        assertThat(jwt, is(token));
+    }
+
+    @Test
+    public void shouldAcceptCustomClaimOfTypeInteger() throws Exception {
+        String jwt = JWTCreator.init()
+                .withClaim("name", 123)
+                .sign(Algorithm.HMAC256("secret"));
+        String token = "eyJhbGciOiJIUzI1NiJ9.eyJuYW1lIjoxMjN9.5i6ga8YMteicIeZrFZgJyW4OnI_2jpMaUXcDt-_jme4";
+
+        assertThat(jwt, is(notNullValue()));
+        assertThat(jwt, is(token));
+    }
+
+    @Test
+    public void shouldAcceptCustomClaimOfTypeDouble() throws Exception {
+        String jwt = JWTCreator.init()
+                .withClaim("name", 23.45)
+                .sign(Algorithm.HMAC256("secret"));
+        String token = "eyJhbGciOiJIUzI1NiJ9.eyJuYW1lIjoyMy40NX0.aFNlMk3WiikukJq1jo4Tf8ztR180wjTfSpqec0xKKqU";
+
+        assertThat(jwt, is(notNullValue()));
+        assertThat(jwt, is(token));
+    }
+
+    @Test
+    public void shouldAcceptCustomClaimOfTypeBoolean() throws Exception {
+        String jwt = JWTCreator.init()
+                .withClaim("name", true)
+                .sign(Algorithm.HMAC256("secret"));
+        String token = "eyJhbGciOiJIUzI1NiJ9.eyJuYW1lIjp0cnVlfQ.jseAYuhVmT1boYrHQfn9wXmomWq_tdGfphLtG_2tj_M";
+
+        assertThat(jwt, is(notNullValue()));
+        assertThat(jwt, is(token));
+    }
+
+    @Test
+    public void shouldAcceptCustomClaimOfTypeDate() throws Exception {
+        Date date = new Date(1478891521000L);
+        String jwt = JWTCreator.init()
+                .withClaim("name", date)
+                .sign(Algorithm.HMAC256("secret"));
+        String token = "eyJhbGciOiJIUzI1NiJ9.eyJuYW1lIjoxNDc4ODkxNTIxfQ.ZU1B1pDLYoJZhWD8h3_QsK5dViolxvL5Q43Yz9QIxL4";
+
+        assertThat(jwt, is(notNullValue()));
+        assertThat(jwt, is(token));
     }
 
 }

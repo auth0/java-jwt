@@ -3,6 +3,7 @@ package com.auth0.jwt;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.*;
 import com.auth0.jwt.impl.PublicClaims;
+import com.auth0.jwt.interfaces.Claim;
 import org.apache.commons.codec.binary.Base64;
 
 import java.util.*;
@@ -15,7 +16,7 @@ final class JWTVerifier {
     final Map<String, Object> claims;
     private final Clock clock;
 
-    private JWTVerifier(Algorithm algorithm, Map<String, Object> claims, Clock clock) {
+    JWTVerifier(Algorithm algorithm, Map<String, Object> claims, Clock clock) {
         this.algorithm = algorithm;
         this.claims = Collections.unmodifiableMap(claims);
         this.clock = clock;
@@ -53,6 +54,7 @@ final class JWTVerifier {
         /**
          * Require a specific Issuer ("iss") claim.
          *
+         * @param issuer the required Issuer value
          * @return this same Verification instance.
          */
         public Verification withIssuer(String issuer) {
@@ -63,6 +65,7 @@ final class JWTVerifier {
         /**
          * Require a specific Subject ("sub") claim.
          *
+         * @param subject the required Subject value
          * @return this same Verification instance.
          */
         public Verification withSubject(String subject) {
@@ -73,6 +76,7 @@ final class JWTVerifier {
         /**
          * Require a specific Audience ("aud") claim.
          *
+         * @param audience the required Audience value
          * @return this same Verification instance.
          */
         public Verification withAudience(String[] audience) {
@@ -147,10 +151,33 @@ final class JWTVerifier {
         /**
          * Require a specific JWT Id ("jti") claim.
          *
+         * @param jwtId the required Id value
          * @return this same Verification instance.
          */
         public Verification withJWTId(String jwtId) {
             requireClaim(PublicClaims.JWT_ID, jwtId);
+            return this;
+        }
+
+        /**
+         * Require a specific Claim value.
+         *
+         * @param name the Claim's name
+         * @param value the Claim's value. Must be an instance of Integer, Double, Boolean, Date or String class.
+         * @return this same Verification instance.
+         * @throws IllegalArgumentException if the name is null or the value class is not allowed.
+         */
+        public Verification withClaim(String name, Object value) throws IllegalArgumentException {
+            final boolean validValue = value instanceof Integer || value instanceof Double ||
+                    value instanceof Boolean || value instanceof Date || value instanceof String;
+            if (name == null) {
+                throw new IllegalArgumentException("The Custom Claim's name can't be null.");
+            }
+            if (!validValue) {
+                throw new IllegalArgumentException("The Custom Claim's value class must be an instance of Integer, Double, Boolean, Date or String.");
+            }
+
+            requireClaim(name, value);
             return this;
         }
 
@@ -227,35 +254,81 @@ final class JWTVerifier {
 
     private void verifyClaims(JWT jwt, Map<String, Object> claims) {
         for (Map.Entry<String, Object> entry : claims.entrySet()) {
-            assertValidClaim(jwt, entry.getKey(), entry.getValue());
+            switch (entry.getKey()) {
+                case PublicClaims.AUDIENCE:
+                    assertValidAudienceClaim(jwt.getAudience(), (String[]) entry.getValue());
+                    break;
+                case PublicClaims.EXPIRES_AT:
+                    assertValidDateClaim(jwt.getExpiresAt(), (Long) entry.getValue(), true);
+                    break;
+                case PublicClaims.ISSUED_AT:
+                    assertValidDateClaim(jwt.getIssuedAt(), (Long) entry.getValue(), false);
+                    break;
+                case PublicClaims.NOT_BEFORE:
+                    assertValidDateClaim(jwt.getNotBefore(), (Long) entry.getValue(), false);
+                    break;
+                case PublicClaims.ISSUER:
+                    assertValidStringClaim(entry.getKey(), jwt.getIssuer(), (String) entry.getValue());
+                    break;
+                case PublicClaims.JWT_ID:
+                    assertValidStringClaim(entry.getKey(), jwt.getId(), (String) entry.getValue());
+                    break;
+                case PublicClaims.SUBJECT:
+                    assertValidStringClaim(entry.getKey(), jwt.getSubject(), (String) entry.getValue());
+                    break;
+                default:
+                    assertValidClaim(jwt.getClaim(entry.getKey()), entry.getKey(), entry.getValue());
+                    break;
+            }
         }
     }
 
-    private void assertValidClaim(JWT jwt, String claimName, Object expectedValue) throws InvalidClaimException {
-        String errMessage = String.format("The Claim '%s' value doesn't match the required one.", claimName);
-        boolean isValid;
-        if (PublicClaims.AUDIENCE.equals(claimName)) {
-            isValid = Arrays.equals(jwt.getAudience(), (String[]) expectedValue);
-        } else if (PublicClaims.NOT_BEFORE.equals(claimName) || PublicClaims.EXPIRES_AT.equals(claimName) || PublicClaims.ISSUED_AT.equals(claimName)) {
-            long deltaValue = (long) expectedValue;
-            Date today = clock.getToday();
-            Date date = jwt.getClaim(claimName).asDate();
-            if (PublicClaims.EXPIRES_AT.equals(claimName)) {
-                today.setTime(today.getTime() - deltaValue);
-                isValid = date == null || !today.after(date);
-                errMessage = String.format("The Token has expired on %s.", date);
-            } else {
-                today.setTime(today.getTime() + deltaValue);
-                isValid = date == null || !today.before(date);
-                errMessage = String.format("The Token can't be used before %s.", date);
-            }
-        } else {
-            String stringValue = (String) expectedValue;
-            isValid = stringValue.equals(jwt.getClaim(claimName).asString());
+    private void assertValidClaim(Claim claim, String claimName, Object value) {
+        boolean isValid = false;
+        if (value instanceof String) {
+            isValid = value.equals(claim.asString());
+        } else if (value instanceof Integer) {
+            isValid = value.equals(claim.asInt());
+        } else if (value instanceof Boolean) {
+            isValid = value.equals(claim.asBoolean());
+        } else if (value instanceof Double) {
+            isValid = value.equals(claim.asDouble());
+        } else if (value instanceof Date) {
+            isValid = value.equals(claim.asDate());
         }
 
         if (!isValid) {
+            throw new InvalidClaimException(String.format("The Claim '%s' value doesn't match the required one.", claimName));
+        }
+    }
+
+    private void assertValidStringClaim(String claimName, String value, String expectedValue) {
+        if (!expectedValue.equals(value)) {
+            throw new InvalidClaimException(String.format("The Claim '%s' value doesn't match the required one.", claimName));
+        }
+    }
+
+    private void assertValidDateClaim(Date date, long delta, boolean shouldBeFuture) {
+        Date today = clock.getToday();
+        boolean isValid;
+        String errMessage;
+        if (shouldBeFuture) {
+            today.setTime(today.getTime() - delta);
+            isValid = date == null || !today.after(date);
+            errMessage = String.format("The Token has expired on %s.", date);
+        } else {
+            today.setTime(today.getTime() + delta);
+            isValid = date == null || !today.before(date);
+            errMessage = String.format("The Token can't be used before %s.", date);
+        }
+        if (!isValid) {
             throw new InvalidClaimException(errMessage);
+        }
+    }
+
+    private void assertValidAudienceClaim(String[] audience, String[] value) {
+        if (!Arrays.equals(audience, value)) {
+            throw new InvalidClaimException("The Claim 'aud' value doesn't match the required one.");
         }
     }
 }
