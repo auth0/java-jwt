@@ -1,7 +1,9 @@
 package com.auth0.jwt.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.TextNode;
+import org.hamcrest.collection.IsMapContaining;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -18,10 +20,28 @@ public class HeaderImplTest {
 
     @SuppressWarnings("Convert2Diamond")
     @Test
-    public void shouldHaveUnmodifiableTree() throws Exception {
+    public void shouldHaveUnmodifiableTreeWhenInstantiatedWithNonNullTree() throws Exception {
         exception.expect(UnsupportedOperationException.class);
         HeaderImpl header = new HeaderImpl(new HashMap<String, JsonNode>());
         header.getTree().put("something", null);
+    }
+
+    @Test
+    public void shouldHaveUnmodifiableTreeWhenInstantiatedWithNullTree() throws Exception {
+        exception.expect(UnsupportedOperationException.class);
+        HeaderImpl header = new HeaderImpl(null);
+        header.getTree().put("something", null);
+    }
+
+    @Test
+    public void shouldHaveTree() throws Exception {
+        HashMap<String, JsonNode> map = new HashMap<>();
+        JsonNode node = NullNode.getInstance();
+        map.put("key", node);
+        HeaderImpl header = new HeaderImpl(map);
+
+        assertThat(header.getTree(), is(notNullValue()));
+        assertThat(header.getTree(), is(IsMapContaining.hasEntry("key", node)));
     }
 
     @Test

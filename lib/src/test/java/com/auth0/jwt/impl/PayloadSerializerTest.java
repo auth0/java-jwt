@@ -73,6 +73,15 @@ public class PayloadSerializerTest {
     }
 
     @Test
+    public void shouldSkipSerializationOnEmptyAudience() throws Exception {
+        ClaimsHolder holder = holderFor("aud", new String[0]);
+        serializer.serialize(holder, jsonGenerator, serializerProvider);
+        jsonGenerator.flush();
+
+        assertThat(writer.toString(), is(equalTo("{}")));
+    }
+
+    @Test
     public void shouldSerializeNotBeforeDateInSeconds() throws Exception {
         ClaimsHolder holder = holderFor("nbf", new Date(1478874000));
         serializer.serialize(holder, jsonGenerator, serializerProvider);

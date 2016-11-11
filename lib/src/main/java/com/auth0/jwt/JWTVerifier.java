@@ -16,7 +16,7 @@ final class JWTVerifier {
     final Map<String, Object> claims;
     private final Clock clock;
 
-    private JWTVerifier(Algorithm algorithm, Map<String, Object> claims, Clock clock) {
+    JWTVerifier(Algorithm algorithm, Map<String, Object> claims, Clock clock) {
         this.algorithm = algorithm;
         this.claims = Collections.unmodifiableMap(claims);
         this.clock = clock;

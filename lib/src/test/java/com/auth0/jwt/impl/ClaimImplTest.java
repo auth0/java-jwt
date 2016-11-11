@@ -5,6 +5,8 @@ import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.interfaces.Claim;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.MissingNode;
+import com.fasterxml.jackson.databind.node.NullNode;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -200,6 +202,26 @@ public class ClaimImplTest {
 
         exception.expect(JWTDecodeException.class);
         claim.asList(UserPojo.class);
+    }
+
+    @Test
+    public void shouldReturnBaseClaimWhenParsingMissingNode() throws Exception {
+        JsonNode value = MissingNode.getInstance();
+        Claim claim = claimFromNode(value);
+
+        assertThat(claim, is(notNullValue()));
+        assertThat(claim, is(instanceOf(BaseClaim.class)));
+        assertThat(claim.isNull(), is(true));
+    }
+
+    @Test
+    public void shouldReturnBaseClaimWhenParsingNullNode() throws Exception {
+        JsonNode value = NullNode.getInstance();
+        Claim claim = claimFromNode(value);
+
+        assertThat(claim, is(notNullValue()));
+        assertThat(claim, is(instanceOf(BaseClaim.class)));
+        assertThat(claim.isNull(), is(true));
     }
 
     @Test

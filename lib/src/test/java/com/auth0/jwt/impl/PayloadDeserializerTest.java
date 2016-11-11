@@ -138,6 +138,17 @@ public class PayloadDeserializerTest {
     }
 
     @Test
+    public void shouldGetEmptyStringArrayWhenParsingEmptyTextNode() throws Exception {
+        Map<String, JsonNode> tree = new HashMap<>();
+        TextNode textNode = new TextNode("");
+        tree.put("key", textNode);
+
+        String[] values = deserializer.getStringOrArray(tree, "key");
+        assertThat(values, is(notNullValue()));
+        assertThat(values, is(arrayWithSize(0)));
+    }
+
+    @Test
     public void shouldGetNullArrayWhenParsingNullNode() throws Exception {
         Map<String, JsonNode> tree = new HashMap<>();
         NullNode node = NullNode.getInstance();

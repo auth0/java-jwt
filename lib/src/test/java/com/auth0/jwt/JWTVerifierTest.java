@@ -9,6 +9,8 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
@@ -170,6 +172,7 @@ public class JWTVerifierTest {
                 .verify(token);
     }
 
+
     @Test
     public void shouldThrowOnInvalidCustomClaimValueOfTypeDate() throws Exception {
         exception.expect(InvalidClaimException.class);
@@ -179,6 +182,17 @@ public class JWTVerifierTest {
                 .withClaim("name", new Date())
                 .build()
                 .verify(token);
+    }
+
+    @Test
+    public void shouldThrowOnInvalidCustomClaimValue() throws Exception {
+        exception.expect(InvalidClaimException.class);
+        exception.expectMessage("The Claim 'name' value doesn't match the required one.");
+        String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjpbInNvbWV0aGluZyJdfQ.3ENLez6tU_fG0SVFrGmISltZPiXLSHaz_dyn-XFTEGQ";
+        Map<String, Object> map = new HashMap<>();
+        map.put("name", new Object());
+        JWTVerifier verifier = new JWTVerifier(Algorithm.HMAC256("secret"), map, new Clock());
+        verifier.verify(token);
     }
 
     @Test
@@ -239,6 +253,7 @@ public class JWTVerifierTest {
 
 
     // Generic Delta
+    @SuppressWarnings("RedundantCast")
     @Test
     public void shouldAddDefaultTimeDeltaToDateClaims() throws Exception {
         Algorithm algorithm = mock(Algorithm.class);
@@ -251,6 +266,7 @@ public class JWTVerifierTest {
         assertThat(verifier.claims, hasEntry("nbf", (Object) 0L));
     }
 
+    @SuppressWarnings("RedundantCast")
     @Test
     public void shouldAddCustomTimeDeltaToDateClaims() throws Exception {
         Algorithm algorithm = mock(Algorithm.class);
@@ -264,6 +280,7 @@ public class JWTVerifierTest {
         assertThat(verifier.claims, hasEntry("nbf", (Object) 1234L));
     }
 
+    @SuppressWarnings("RedundantCast")
     @Test
     public void shouldOverrideDefaultIssuedAtTimeDelta() throws Exception {
         Algorithm algorithm = mock(Algorithm.class);
@@ -278,6 +295,7 @@ public class JWTVerifierTest {
         assertThat(verifier.claims, hasEntry("nbf", (Object) 1234L));
     }
 
+    @SuppressWarnings("RedundantCast")
     @Test
     public void shouldOverrideDefaultExpiresAtTimeDelta() throws Exception {
         Algorithm algorithm = mock(Algorithm.class);
@@ -292,6 +310,7 @@ public class JWTVerifierTest {
         assertThat(verifier.claims, hasEntry("nbf", (Object) 1234L));
     }
 
+    @SuppressWarnings("RedundantCast")
     @Test
     public void shouldOverrideDefaultNotBeforeTimeDelta() throws Exception {
         Algorithm algorithm = mock(Algorithm.class);
