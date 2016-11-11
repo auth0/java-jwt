@@ -35,9 +35,10 @@ public class PayloadSerializerTest {
         serializerProvider = mapper.getSerializerProvider();
     }
 
+    @SuppressWarnings("Convert2Diamond")
     @Test
     public void shouldSerializeEmptyMap() throws Exception {
-        ClaimsHolder holder = new ClaimsHolder(new HashMap<>());
+        ClaimsHolder holder = new ClaimsHolder(new HashMap<String, Object>());
         serializer.serialize(holder, jsonGenerator, serializerProvider);
         jsonGenerator.flush();
 
@@ -99,12 +100,12 @@ public class PayloadSerializerTest {
     }
 
     @Test
-    public void shouldSerializeCustomDateInMillis() throws Exception {
+    public void shouldSerializeCustomDateInSeconds() throws Exception {
         ClaimsHolder holder = holderFor("birthdate", new Date(1478874000));
         serializer.serialize(holder, jsonGenerator, serializerProvider);
         jsonGenerator.flush();
 
-        assertThat(writer.toString(), is(equalTo("{\"birthdate\":1478874000}")));
+        assertThat(writer.toString(), is(equalTo("{\"birthdate\":1478874}")));
     }
 
     @Test

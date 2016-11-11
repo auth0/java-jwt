@@ -39,16 +39,22 @@ public class PayloadSerializer extends StdSerializer<ClaimsHolder> {
                 case PublicClaims.EXPIRES_AT:
                 case PublicClaims.ISSUED_AT:
                 case PublicClaims.NOT_BEFORE:
-                    Date date = (Date) e.getValue();
-                    int seconds = (int) (date.getTime() / 1000);
-                    safePayload.put(e.getKey(), seconds);
+                    safePayload.put(e.getKey(), dateToSeconds((Date) e.getValue()));
                     break;
                 default:
-                    safePayload.put(e.getKey(), e.getValue());
+                    if (e.getValue() instanceof Date) {
+                        safePayload.put(e.getKey(), dateToSeconds((Date) e.getValue()));
+                    } else {
+                        safePayload.put(e.getKey(), e.getValue());
+                    }
                     break;
             }
         }
 
         gen.writeObject(safePayload);
+    }
+
+    private int dateToSeconds(Date date) {
+        return (int) (date.getTime() / 1000);
     }
 }

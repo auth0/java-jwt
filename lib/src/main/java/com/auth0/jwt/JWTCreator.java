@@ -141,6 +141,28 @@ class JWTCreator {
         }
 
         /**
+         * Add a custom Claim value.
+         *
+         * @param name  the Claim's name
+         * @param value the Claim's value. Must be an instance of Integer, Double, Boolean, Date or String class.
+         * @return this same Builder instance.
+         * @throws IllegalArgumentException if the name is null or the value class is not allowed.
+         */
+        public Builder withClaim(String name, Object value) throws IllegalArgumentException {
+            final boolean validValue = value instanceof Integer || value instanceof Double ||
+                    value instanceof Boolean || value instanceof Date || value instanceof String;
+            if (name == null) {
+                throw new IllegalArgumentException("The Custom Claim's name can't be null.");
+            }
+            if (!validValue) {
+                throw new IllegalArgumentException("The Custom Claim's value class must be an instance of Integer, Double, Boolean, Date or String.");
+            }
+
+            addClaim(name, value);
+            return this;
+        }
+
+        /**
          * Creates a new instance of the JWT with the specified payloadClaims.
          *
          * @param algorithm the Algorithm to use on the JWT signing.
