@@ -35,16 +35,16 @@ class PayloadDeserializer extends StdDeserializer<Payload> {
         String issuer = getString(tree, PublicClaims.ISSUER);
         String subject = getString(tree, PublicClaims.SUBJECT);
         String[] audience = getStringOrArray(tree, PublicClaims.AUDIENCE);
-        Date expiresAt = getDate(tree, PublicClaims.EXPIRES_AT);
-        Date notBefore = getDate(tree, PublicClaims.NOT_BEFORE);
-        Date issuedAt = getDate(tree, PublicClaims.ISSUED_AT);
+        Date expiresAt = getDateFromSeconds(tree, PublicClaims.EXPIRES_AT);
+        Date notBefore = getDateFromSeconds(tree, PublicClaims.NOT_BEFORE);
+        Date issuedAt = getDateFromSeconds(tree, PublicClaims.ISSUED_AT);
         String jwtId = getString(tree, PublicClaims.JWT_ID);
 
         return new PayloadImpl(issuer, subject, audience, expiresAt, notBefore, issuedAt, jwtId, tree);
     }
 
     String[] getStringOrArray(Map<String, JsonNode> tree, String claimName) throws JWTDecodeException {
-        JsonNode node = tree.get(claimName);
+        JsonNode node = tree.remove(claimName);
         if (node == null || node.isNull() || !(node.isArray() || node.isTextual())) {
             return null;
         }
@@ -64,8 +64,8 @@ class PayloadDeserializer extends StdDeserializer<Payload> {
         return arr;
     }
 
-    Date getDate(Map<String, JsonNode> tree, String claimName) {
-        JsonNode node = tree.get(claimName);
+    Date getDateFromSeconds(Map<String, JsonNode> tree, String claimName) {
+        JsonNode node = tree.remove(claimName);
         if (node == null || node.isNull() || !node.canConvertToLong()) {
             return null;
         }
@@ -74,7 +74,7 @@ class PayloadDeserializer extends StdDeserializer<Payload> {
     }
 
     String getString(Map<String, JsonNode> tree, String claimName) {
-        JsonNode node = tree.get(claimName);
+        JsonNode node = tree.remove(claimName);
         if (node == null || node.isNull()) {
             return null;
         }

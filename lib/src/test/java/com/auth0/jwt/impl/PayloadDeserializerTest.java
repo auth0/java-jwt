@@ -1,6 +1,8 @@
 package com.auth0.jwt.impl;
 
 import com.auth0.jwt.exceptions.JWTDecodeException;
+import com.auth0.jwt.interfaces.Payload;
+import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.ObjectCodec;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -8,11 +10,13 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.*;
+import org.hamcrest.collection.IsArrayContaining;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import java.io.StringReader;
 import java.util.*;
 
 import static org.hamcrest.Matchers.*;
@@ -54,7 +58,7 @@ public class PayloadDeserializerTest {
         exception.expect(JWTDecodeException.class);
         exception.expectMessage("Couldn't map the Claim's array contents to String");
 
-        ObjectMapper mapper = new ObjectMapper();//mock(ObjectMapper.class);
+        ObjectMapper mapper = new ObjectMapper();
         JsonNode jsonNode = mapper.readTree("{\"some\" : \"random\", \"properties\" : \"inside\"}");
         Map<String, JsonNode> tree = new HashMap<>();
         List<JsonNode> subNodes = new ArrayList<>();
@@ -63,6 +67,45 @@ public class PayloadDeserializerTest {
         tree.put("key", arrNode);
 
         deserializer.getStringOrArray(tree, "key");
+    }
+
+    @Test
+    public void shouldRemoveKnownPublicClaimsFromTree() throws Exception {
+        String payloadJSON = "{\n" +
+                "  \"iss\": \"auth0\",\n" +
+                "  \"sub\": \"emails\",\n" +
+                "  \"aud\": \"users\",\n" +
+                "  \"iat\": 10101010,\n" +
+                "  \"exp\": 11111111,\n" +
+                "  \"nbf\": 10101011,\n" +
+                "  \"jti\": \"idid\",\n" +
+                "  \"roles\":\"admin\" \n" +
+                "}";
+        StringReader reader = new StringReader(payloadJSON);
+        JsonParser jsonParser = new JsonFactory().createParser(reader);
+        ObjectMapper mapper = new ObjectMapper();
+        jsonParser.setCodec(mapper);
+
+        Payload payload = deserializer.deserialize(jsonParser, mapper.getDeserializationContext());
+
+        assertThat(payload, is(notNullValue()));
+        assertThat(payload.getIssuer(), is("auth0"));
+        assertThat(payload.getSubject(), is("emails"));
+        assertThat(payload.getAudience(), is(IsArrayContaining.hasItemInArray("users")));
+        assertThat(payload.getIssuedAt().getTime(), is(10101010L * 1000));
+        assertThat(payload.getExpiresAt().getTime(), is(11111111L * 1000));
+        assertThat(payload.getNotBefore().getTime(), is(10101011L * 1000));
+        assertThat(payload.getId(), is("idid"));
+
+        assertThat(payload.getClaim("roles").asString(), is("admin"));
+        assertThat(payload.getClaim("iss").isNull(), is(true));
+        assertThat(payload.getClaim("sub").isNull(), is(true));
+        assertThat(payload.getClaim("aud").isNull(), is(true));
+        assertThat(payload.getClaim("iat").isNull(), is(true));
+        assertThat(payload.getClaim("exp").isNull(), is(true));
+        assertThat(payload.getClaim("nbf").isNull(), is(true));
+        assertThat(payload.getClaim("jti").isNull(), is(true));
+
     }
 
     @Test
@@ -130,7 +173,7 @@ public class PayloadDeserializerTest {
         NullNode node = NullNode.getInstance();
         tree.put("key", node);
 
-        Date date = deserializer.getDate(tree, "key");
+        Date date = deserializer.getDateFromSeconds(tree, "key");
         assertThat(date, is(nullValue()));
     }
 
@@ -139,7 +182,7 @@ public class PayloadDeserializerTest {
         Map<String, JsonNode> tree = new HashMap<>();
         tree.put("key", null);
 
-        Date date = deserializer.getDate(tree, "key");
+        Date date = deserializer.getDateFromSeconds(tree, "key");
         assertThat(date, is(nullValue()));
     }
 
@@ -149,7 +192,7 @@ public class PayloadDeserializerTest {
         TextNode node = new TextNode("123456789");
         tree.put("key", node);
 
-        Date date = deserializer.getDate(tree, "key");
+        Date date = deserializer.getDateFromSeconds(tree, "key");
         assertThat(date, is(nullValue()));
     }
 
@@ -160,7 +203,7 @@ public class PayloadDeserializerTest {
         LongNode node = new LongNode(seconds);
         tree.put("key", node);
 
-        Date date = deserializer.getDate(tree, "key");
+        Date date = deserializer.getDateFromSeconds(tree, "key");
         assertThat(date, is(notNullValue()));
         assertThat(date.getTime(), is(seconds * 1000));
     }

@@ -110,6 +110,134 @@ public class JWTVerifierTest {
                 .verify(token);
     }
 
+    @Test
+    public void shouldThrowOnNullCustomClaimName() throws Exception {
+        exception.expect(IllegalArgumentException.class);
+        exception.expectMessage("The Custom Claim's name can't be null.");
+        JWTVerifier.init(Algorithm.HMAC256("secret"))
+                .withClaim(null, "value");
+    }
+
+    @Test
+    public void shouldThrowOnIllegalCustomClaimValueClass() throws Exception {
+        exception.expect(IllegalArgumentException.class);
+        exception.expectMessage("The Custom Claim's value class must be an instance of Integer, Double, Boolean, Date or String.");
+        JWTVerifier.init(Algorithm.HMAC256("secret"))
+                .withClaim("name", new Object());
+    }
+
+    @Test
+    public void shouldThrowOnInvalidCustomClaimValueOfTypeString() throws Exception {
+        exception.expect(InvalidClaimException.class);
+        exception.expectMessage("The Claim 'name' value doesn't match the required one.");
+        String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjpbInNvbWV0aGluZyJdfQ.3ENLez6tU_fG0SVFrGmISltZPiXLSHaz_dyn-XFTEGQ";
+        JWTVerifier.init(Algorithm.HMAC256("secret"))
+                .withClaim("name", "value")
+                .build()
+                .verify(token);
+    }
+
+    @Test
+    public void shouldThrowOnInvalidCustomClaimValueOfTypeInteger() throws Exception {
+        exception.expect(InvalidClaimException.class);
+        exception.expectMessage("The Claim 'name' value doesn't match the required one.");
+        String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjpbInNvbWV0aGluZyJdfQ.3ENLez6tU_fG0SVFrGmISltZPiXLSHaz_dyn-XFTEGQ";
+        JWTVerifier.init(Algorithm.HMAC256("secret"))
+                .withClaim("name", 123)
+                .build()
+                .verify(token);
+    }
+
+    @Test
+    public void shouldThrowOnInvalidCustomClaimValueOfTypeDouble() throws Exception {
+        exception.expect(InvalidClaimException.class);
+        exception.expectMessage("The Claim 'name' value doesn't match the required one.");
+        String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjpbInNvbWV0aGluZyJdfQ.3ENLez6tU_fG0SVFrGmISltZPiXLSHaz_dyn-XFTEGQ";
+        JWTVerifier.init(Algorithm.HMAC256("secret"))
+                .withClaim("name", 23.45)
+                .build()
+                .verify(token);
+    }
+
+    @Test
+    public void shouldThrowOnInvalidCustomClaimValueOfTypeBoolean() throws Exception {
+        exception.expect(InvalidClaimException.class);
+        exception.expectMessage("The Claim 'name' value doesn't match the required one.");
+        String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjpbInNvbWV0aGluZyJdfQ.3ENLez6tU_fG0SVFrGmISltZPiXLSHaz_dyn-XFTEGQ";
+        JWTVerifier.init(Algorithm.HMAC256("secret"))
+                .withClaim("name", true)
+                .build()
+                .verify(token);
+    }
+
+    @Test
+    public void shouldThrowOnInvalidCustomClaimValueOfTypeDate() throws Exception {
+        exception.expect(InvalidClaimException.class);
+        exception.expectMessage("The Claim 'name' value doesn't match the required one.");
+        String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjpbInNvbWV0aGluZyJdfQ.3ENLez6tU_fG0SVFrGmISltZPiXLSHaz_dyn-XFTEGQ";
+        JWTVerifier.init(Algorithm.HMAC256("secret"))
+                .withClaim("name", new Date())
+                .build()
+                .verify(token);
+    }
+
+    @Test
+    public void shouldValidateCustomClaimOfTypeString() throws Exception {
+        String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoidmFsdWUifQ.Jki8pvw6KGbxpMinufrgo6RDL1cu7AtNMJYVh6t-_cE";
+        JWT jwt = JWTVerifier.init(Algorithm.HMAC256("secret"))
+                .withClaim("name", "value")
+                .build()
+                .verify(token);
+
+        assertThat(jwt, is(notNullValue()));
+    }
+
+    @Test
+    public void shouldValidateCustomClaimOfTypeInteger() throws Exception {
+        String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoxMjN9.XZAudnA7h3_Al5kJydzLjw6RzZC3Q6OvnLEYlhNW7HA";
+        JWT jwt = JWTVerifier.init(Algorithm.HMAC256("secret"))
+                .withClaim("name", 123)
+                .build()
+                .verify(token);
+
+        assertThat(jwt, is(notNullValue()));
+    }
+
+    @Test
+    public void shouldValidateCustomClaimOfTypeDouble() throws Exception {
+        String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoyMy40NX0.7pyX2OmEGaU9q15T8bGFqRm-d3RVTYnqmZNZtxMKSlA";
+        JWT jwt = JWTVerifier.init(Algorithm.HMAC256("secret"))
+                .withClaim("name", 23.45)
+                .build()
+                .verify(token);
+
+        assertThat(jwt, is(notNullValue()));
+    }
+
+    @Test
+    public void shouldValidateCustomClaimOfTypeBoolean() throws Exception {
+        String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjp0cnVlfQ.FwQ8VfsZNRqBa9PXMinSIQplfLU4-rkCLfIlTLg_MV0";
+        JWT jwt = JWTVerifier.init(Algorithm.HMAC256("secret"))
+                .withClaim("name", true)
+                .build()
+                .verify(token);
+
+        assertThat(jwt, is(notNullValue()));
+    }
+
+    @Test
+    public void shouldValidateCustomClaimOfTypeDate() throws Exception {
+        String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoxNDc4ODkxNTIxfQ.mhioumeok8fghQEhTKF3QtQAksSvZ_9wIhJmgZLhJ6c";
+        Date date = new Date(1478891521000L);
+        JWT jwt = JWTVerifier.init(Algorithm.HMAC256("secret"))
+                .withClaim("name", date)
+                .build()
+                .verify(token);
+
+        assertThat(jwt, is(notNullValue()));
+    }
+
+
     // Generic Delta
     @Test
     public void shouldAddDefaultTimeDeltaToDateClaims() throws Exception {
