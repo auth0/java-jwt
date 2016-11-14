@@ -86,7 +86,7 @@ public class JWTVerifierTest {
     public void shouldValidateAudience() throws Exception {
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJNYXJrIn0.xWB6czYI0XObbVhLAxe55TwChWZg7zO08RxONWU2iY4";
         JWT jwt = JWTVerifier.init(Algorithm.HMAC256("secret"))
-                .withAudience(new String[]{"Mark"})
+                .withAudience("Mark")
                 .build()
                 .verify(token);
 
@@ -94,7 +94,7 @@ public class JWTVerifierTest {
 
         String tokenArr = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOlsiTWFyayIsIkRhdmlkIl19.6WfbIt8m61f9WlCYIQn5CThvw4UNyC66qrPaoinfssw";
         JWT jwtArr = JWTVerifier.init(Algorithm.HMAC256("secret"))
-                .withAudience(new String[]{"Mark", "David"})
+                .withAudience("Mark", "David")
                 .build()
                 .verify(tokenArr);
 
@@ -107,7 +107,7 @@ public class JWTVerifierTest {
         exception.expectMessage("The Claim 'aud' value doesn't match the required one.");
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.Rq8IxqeX7eA6GgYxlcHdPFVRNFFZc5rEI3MQTZZbK3I";
         JWTVerifier.init(Algorithm.HMAC256("secret"))
-                .withAudience(new String[]{"nope"})
+                .withAudience("nope")
                 .build()
                 .verify(token);
     }

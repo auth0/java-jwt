@@ -79,7 +79,7 @@ final class JWTVerifier {
          * @param audience the required Audience value
          * @return this same Verification instance.
          */
-        public Verification withAudience(String[] audience) {
+        public Verification withAudience(String... audience) {
             requireClaim(PublicClaims.AUDIENCE, audience);
             return this;
         }
