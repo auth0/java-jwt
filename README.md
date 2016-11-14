@@ -93,8 +93,6 @@ try {
         .withIssuer("auth0")
         .build(); //Reusable verifier instance
     JWT jwt = verifier.verify(token);
-} catch (JWTDecodeException exception){
-    //Invalid token
 } catch (JWTVerificationException exception){
     //Invalid signature/claims
 }
@@ -110,14 +108,11 @@ try {
         .withIssuer("auth0")
         .build(); //Reusable verifier instance
     JWT jwt = verifier.verify(token);
-} catch (JWTDecodeException exception){
-    //Invalid token
 } catch (JWTVerificationException exception){
     //Invalid signature/claims
 }
 ```
 
-If the token has an invalid syntax or the header or payload are not JSONs, a `JWTDecodeException` will raise.
 If the token has an invalid signature or the Claim requirement is not met, a `JWTVerificationException` will raise.
 
 
