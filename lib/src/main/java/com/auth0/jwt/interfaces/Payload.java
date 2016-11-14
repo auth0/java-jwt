@@ -52,7 +52,7 @@ public interface Payload {
     /**
      * Get the value of the "jti" claim, or null if it's not available.
      *
-     * @return the Payload ID value or null.
+     * @return the JWT ID value or null.
      */
     String getId();
 

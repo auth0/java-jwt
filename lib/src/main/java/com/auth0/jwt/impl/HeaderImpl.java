@@ -1,5 +1,6 @@
 package com.auth0.jwt.impl;
 
+import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.Header;
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -37,5 +38,15 @@ class HeaderImpl implements Header {
     @Override
     public String getContentType() {
         return extractClaim(CONTENT_TYPE, tree).asString();
+    }
+
+    @Override
+    public String getKeyId() {
+        return extractClaim(KEY_ID, tree).asString();
+    }
+
+    @Override
+    public Claim getHeaderClaim(String name) {
+        return extractClaim(name, tree);
     }
 }

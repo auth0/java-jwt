@@ -68,6 +68,16 @@ final class JWTDecoder implements JWT {
     }
 
     @Override
+    public String getKeyId() {
+        return header.getKeyId();
+    }
+
+    @Override
+    public Claim getHeaderClaim(String name) {
+        return header.getHeaderClaim(name);
+    }
+
+    @Override
     public String getIssuer() {
         return payload.getIssuer();
     }

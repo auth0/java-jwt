@@ -7,6 +7,7 @@ public abstract class PublicClaims {
     public static final String ALGORITHM = "alg";
     static final String CONTENT_TYPE = "cty";
     static final String TYPE = "typ";
+    static final String KEY_ID = "kid";
 
     //Payload
     public static final String ISSUER = "iss";

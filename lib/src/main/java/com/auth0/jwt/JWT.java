@@ -92,6 +92,11 @@ public final class JWT implements com.auth0.jwt.interfaces.JWT {
     }
 
     @Override
+    public Claim getHeaderClaim(String name) {
+        return jwt.getHeaderClaim(name);
+    }
+
+    @Override
     public String getAlgorithm() {
         return jwt.getAlgorithm();
     }
@@ -104,5 +109,10 @@ public final class JWT implements com.auth0.jwt.interfaces.JWT {
     @Override
     public String getContentType() {
         return jwt.getContentType();
+    }
+
+    @Override
+    public String getKeyId() {
+        return jwt.getKeyId();
     }
 }
