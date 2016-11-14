@@ -63,6 +63,7 @@ class JWTCreator {
         /**
          * Add specific Claims to set as the Header.
          *
+         * @param headerClaims the values to use as Claims in the token's Header.
          * @return this same Builder instance.
          */
         public Builder withHeader(Map<String, Object> headerClaims) {
@@ -73,6 +74,7 @@ class JWTCreator {
         /**
          * Add a specific Issuer ("iss") claim.
          *
+         * @param issuer the Issuer value.
          * @return this same Builder instance.
          */
         public Builder withIssuer(String issuer) {
@@ -83,6 +85,7 @@ class JWTCreator {
         /**
          * Add a specific Subject ("sub") claim.
          *
+         * @param subject the Subject value.
          * @return this same Builder instance.
          */
         public Builder withSubject(String subject) {
@@ -93,9 +96,10 @@ class JWTCreator {
         /**
          * Add a specific Audience ("aud") claim.
          *
+         * @param audience the Audience value.
          * @return this same Builder instance.
          */
-        public Builder withAudience(String[] audience) {
+        public Builder withAudience(String... audience) {
             addClaim(PublicClaims.AUDIENCE, audience);
             return this;
         }
@@ -103,6 +107,7 @@ class JWTCreator {
         /**
          * Add a specific Expires At ("exp") claim.
          *
+         * @param expiresAt the Expires At value.
          * @return this same Builder instance.
          */
         public Builder withExpiresAt(Date expiresAt) {
@@ -113,6 +118,7 @@ class JWTCreator {
         /**
          * Add a specific Not Before ("nbf") claim.
          *
+         * @param notBefore the Not Before value.
          * @return this same Builder instance.
          */
         public Builder withNotBefore(Date notBefore) {
@@ -123,6 +129,7 @@ class JWTCreator {
         /**
          * Add a specific Issued At ("iat") claim.
          *
+         * @param issuedAt the Issued At value.
          * @return this same Builder instance.
          */
         public Builder withIssuedAt(Date issuedAt) {
@@ -133,6 +140,7 @@ class JWTCreator {
         /**
          * Add a specific JWT Id ("jti") claim.
          *
+         * @param jwtId the Token Id value.
          * @return this same Builder instance.
          */
         public Builder withJWTId(String jwtId) {

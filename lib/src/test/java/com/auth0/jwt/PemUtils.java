@@ -65,10 +65,4 @@ public class PemUtils {
         return PemUtils.getPrivateKey(bytes, algorithm);
     }
 
-    public static ECPublicKey readPublicKeyFromRawString(String pemString, String algorithm) throws Exception {
-        PemReader reader = new PemReader(new StringReader(pemString));
-        PemObject pemObject = reader.readPemObject();
-        return (ECPublicKey) PemUtils.getPublicKey(pemObject.getContent(), algorithm);
-    }
-
 }

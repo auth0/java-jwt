@@ -62,7 +62,7 @@ public class JWTCreatorTest {
     @Test
     public void shouldAddAudience() throws Exception {
         String signed = JWTCreator.init()
-                .withAudience(new String[]{"Mark"})
+                .withAudience("Mark")
                 .sign(Algorithm.HMAC256("secret"));
 
         assertThat(signed, is(notNullValue()));
@@ -70,7 +70,7 @@ public class JWTCreatorTest {
 
 
         String signedArr = JWTCreator.init()
-                .withAudience(new String[]{"Mark", "David"})
+                .withAudience("Mark", "David")
                 .sign(Algorithm.HMAC256("secret"));
 
         assertThat(signedArr, is(notNullValue()));
