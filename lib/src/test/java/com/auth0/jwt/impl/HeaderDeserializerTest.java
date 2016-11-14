@@ -1,15 +1,28 @@
 package com.auth0.jwt.impl;
 
 import com.auth0.jwt.exceptions.JWTDecodeException;
+import com.auth0.jwt.interfaces.Header;
+import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.ObjectCodec;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.NullNode;
+import com.fasterxml.jackson.databind.node.TextNode;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import java.io.StringReader;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -19,6 +32,13 @@ public class HeaderDeserializerTest {
 
     @Rule
     public ExpectedException exception = ExpectedException.none();
+    private HeaderDeserializer deserializer;
+
+
+    @Before
+    public void setUp() throws Exception {
+        deserializer = new HeaderDeserializer();
+    }
 
     @Test
     public void shouldThrowOnNullTree() throws Exception {
@@ -36,4 +56,63 @@ public class HeaderDeserializerTest {
         deserializer.deserialize(parser, context);
     }
 
+
+    @Test
+    public void shouldRemoveKnownPublicClaimsFromTree() throws Exception {
+        String headerJSON = "{\n" +
+                "  \"alg\": \"HS256\",\n" +
+                "  \"typ\": \"jws\",\n" +
+                "  \"cty\": \"content\",\n" +
+                "  \"kid\": \"key\",\n" +
+                "  \"roles\": \"admin\"\n" +
+                "}";
+        StringReader reader = new StringReader(headerJSON);
+        JsonParser jsonParser = new JsonFactory().createParser(reader);
+        ObjectMapper mapper = new ObjectMapper();
+        jsonParser.setCodec(mapper);
+
+        Header header = deserializer.deserialize(jsonParser, mapper.getDeserializationContext());
+
+        assertThat(header, is(notNullValue()));
+        assertThat(header.getAlgorithm(), is("HS256"));
+        assertThat(header.getType(), is("jws"));
+        assertThat(header.getContentType(), is("content"));
+        assertThat(header.getKeyId(), is("key"));
+
+        assertThat(header.getHeaderClaim("roles").asString(), is("admin"));
+        assertThat(header.getHeaderClaim("alg").isNull(), is(true));
+        assertThat(header.getHeaderClaim("typ").isNull(), is(true));
+        assertThat(header.getHeaderClaim("cty").isNull(), is(true));
+        assertThat(header.getHeaderClaim("kid").isNull(), is(true));
+    }
+
+    @Test
+    public void shouldGetNullStringWhenParsingNullNode() throws Exception {
+        Map<String, JsonNode> tree = new HashMap<>();
+        NullNode node = NullNode.getInstance();
+        tree.put("key", node);
+
+        String text = deserializer.getString(tree, "key");
+        assertThat(text, is(nullValue()));
+    }
+
+    @Test
+    public void shouldGetNullStringWhenParsingNull() throws Exception {
+        Map<String, JsonNode> tree = new HashMap<>();
+        tree.put("key", null);
+
+        String text = deserializer.getString(tree, "key");
+        assertThat(text, is(nullValue()));
+    }
+
+    @Test
+    public void shouldGetStringWhenParsingTextNode() throws Exception {
+        Map<String, JsonNode> tree = new HashMap<>();
+        TextNode node = new TextNode("something here");
+        tree.put("key", node);
+
+        String text = deserializer.getString(tree, "key");
+        assertThat(text, is(notNullValue()));
+        assertThat(text, is("something here"));
+    }
 }

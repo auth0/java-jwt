@@ -27,6 +27,19 @@ class HeaderDeserializer extends StdDeserializer<HeaderImpl> {
         if (tree == null) {
             throw new JWTDecodeException("Parsing the Header's JSON resulted on a Null map");
         }
-        return new HeaderImpl(tree);
+
+        String algorithm = getString(tree, PublicClaims.ALGORITHM);
+        String type = getString(tree, PublicClaims.TYPE);
+        String contentType = getString(tree, PublicClaims.CONTENT_TYPE);
+        String keyId = getString(tree, PublicClaims.KEY_ID);
+        return new HeaderImpl(algorithm, type, contentType, keyId, tree);
+    }
+
+    String getString(Map<String, JsonNode> tree, String claimName) {
+        JsonNode node = tree.remove(claimName);
+        if (node == null || node.isNull()) {
+            return null;
+        }
+        return node.asText(null);
     }
 }

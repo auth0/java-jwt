@@ -9,15 +9,22 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.auth0.jwt.impl.ClaimImpl.extractClaim;
-import static com.auth0.jwt.impl.PublicClaims.*;
 
 /**
  * The HeaderImpl class implements the Header interface.
  */
 class HeaderImpl implements Header {
+    private final String algorithm;
+    private final String type;
+    private final String contentType;
+    private final String keyId;
     private final Map<String, JsonNode> tree;
 
-    HeaderImpl(Map<String, JsonNode> tree) {
+    HeaderImpl(String algorithm, String type, String contentType, String keyId, Map<String, JsonNode> tree) {
+        this.algorithm = algorithm;
+        this.type = type;
+        this.contentType = contentType;
+        this.keyId = keyId;
         this.tree = Collections.unmodifiableMap(tree == null ? new HashMap<String, JsonNode>() : tree);
     }
 
@@ -27,22 +34,22 @@ class HeaderImpl implements Header {
 
     @Override
     public String getAlgorithm() {
-        return extractClaim(ALGORITHM, tree).asString();
+        return algorithm;
     }
 
     @Override
     public String getType() {
-        return extractClaim(TYPE, tree).asString();
+        return type;
     }
 
     @Override
     public String getContentType() {
-        return extractClaim(CONTENT_TYPE, tree).asString();
+        return contentType;
     }
 
     @Override
     public String getKeyId() {
-        return extractClaim(KEY_ID, tree).asString();
+        return keyId;
     }
 
     @Override
