@@ -162,7 +162,7 @@ final class JWTVerifier {
         /**
          * Require a specific Claim value.
          *
-         * @param name the Claim's name
+         * @param name  the Claim's name
          * @param value the Claim's value. Must be an instance of Integer, Double, Boolean, Date or String class.
          * @return this same Verification instance.
          * @throws IllegalArgumentException if the name is null or the value class is not allowed.
@@ -229,10 +229,9 @@ final class JWTVerifier {
      *
      * @param token the String representation of the JWT.
      * @return a verified JWT.
-     * @throws JWTDecodeException       if any part of the Token contained an invalid JWT or JSON format.
      * @throws JWTVerificationException if any of the required contents inside the JWT is invalid.
      */
-    public JWT verify(String token) throws JWTDecodeException, JWTVerificationException {
+    public JWT verify(String token) throws JWTVerificationException {
         JWT jwt = new JWT(JWTDecoder.decode(token));
         verifyAlgorithm(jwt, algorithm);
         verifySignature(TokenUtils.splitToken(token));

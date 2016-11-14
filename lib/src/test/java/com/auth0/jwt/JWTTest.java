@@ -307,6 +307,30 @@ public class JWTTest {
         assertThat(jwt.getType(), is("JWS"));
     }
 
+    @Test
+    public void shouldGetKeyId() throws Exception {
+        String token = "eyJhbGciOiJIUzI1NiIsImtpZCI6ImtleSJ9.e30.von1Vt9tq9cn5ZYdX1f4cf2EE7fUvb5BCBlKOTm9YWs";
+        JWT jwt = JWT.require(Algorithm.HMAC256("secret"))
+                .build()
+                .verify(token);
+
+        assertThat(jwt, is(notNullValue()));
+        assertThat(jwt.getKeyId(), is("key"));
+    }
+
+    @Test
+    public void shouldGetCustomClaims() throws Exception {
+        String token = "eyJhbGciOiJIUzI1NiIsImlzQWRtaW4iOnRydWV9.eyJpc0FkbWluIjoibm9wZSJ9.YDKBAgUDbh0PkhioDcLNzdQ8c2Gdf_yS6zdEtJQS3F0";
+        JWT jwt = JWT.require(Algorithm.HMAC256("secret"))
+                .build()
+                .verify(token);
+
+        assertThat(jwt, is(notNullValue()));
+        assertThat(jwt.getHeaderClaim("isAdmin"), notNullValue());
+        assertThat(jwt.getHeaderClaim("isAdmin").asBoolean(), is(true));
+        assertThat(jwt.getClaim("isAdmin"), notNullValue());
+        assertThat(jwt.getClaim("isAdmin").asString(), is("nope"));
+    }
 
     // Sign
 

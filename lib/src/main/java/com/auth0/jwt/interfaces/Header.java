@@ -26,4 +26,19 @@ public interface Header {
      */
     String getContentType();
 
+
+    /**
+     * Get the value of the "kid" claim, or null if it's not available.
+     *
+     * @return the Key ID value or null.
+     */
+    String getKeyId();
+
+    /**
+     * Get a Private Claim given it's name. If the Claim wasn't specified in the Header, a BaseClaim will be returned.
+     *
+     * @param name the name of the Claim to retrieve.
+     * @return a non-null Claim.
+     */
+    Claim getHeaderClaim(String name);
 }

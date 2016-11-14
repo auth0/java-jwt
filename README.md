@@ -93,8 +93,6 @@ try {
         .withIssuer("auth0")
         .build(); //Reusable verifier instance
     JWT jwt = verifier.verify(token);
-} catch (JWTDecodeException exception){
-    //Invalid token
 } catch (JWTVerificationException exception){
     //Invalid signature/claims
 }
@@ -110,14 +108,11 @@ try {
         .withIssuer("auth0")
         .build(); //Reusable verifier instance
     JWT jwt = verifier.verify(token);
-} catch (JWTDecodeException exception){
-    //Invalid token
 } catch (JWTVerificationException exception){
     //Invalid signature/claims
 }
 ```
 
-If the token has an invalid syntax or the header or payload are not JSONs, a `JWTDecodeException` will raise.
 If the token has an invalid signature or the Claim requirement is not met, a `JWTVerificationException` will raise.
 
 
@@ -148,11 +143,54 @@ JWTVerifier verifier = JWT.require(Algorithm.RSA256(key))
 ```
 
 
-### Registered Claims
+### Header Claims
+
+#### Algorithm ("alg")
+
+Returns the Algorithm value or null if it's not defined in the Header.
+
+```java
+String algorithm = jwt.getAlgorithm();
+```
+
+#### Type ("typ")
+
+Returns the Type value or null if it's not defined in the Header.
+
+```java
+String type = jwt.getType();
+```
+
+#### Content Type ("cty")
+
+Returns the Content Type value or null if it's not defined in the Header.
+
+```java
+String contentType = jwt.getContentType();
+```
+
+#### Key Id ("kid")
+
+Returns the Key Id value or null if it's not defined in the Header.
+
+```java
+String keyId = jwt.getKeyId();
+```
+
+#### Private Claims
+
+Additional Claims defined in the token's Header can be obtained by calling `getHeaderClaim()` and passing the Claim name. A Claim will always be returned, even if it can't be found. You should always check for null values.
+
+```java
+Claim claim = jwt.getHeaderClaim("owner");
+```
+
+
+### Payload Claims
 
 #### Issuer ("iss")
 
-Returns the Issuer value or null if it's not defined.
+Returns the Issuer value or null if it's not defined in the Payload.
 
 ```java
 String issuer = jwt.getIssuer();
@@ -160,7 +198,7 @@ String issuer = jwt.getIssuer();
 
 #### Subject ("sub")
 
-Returns the Subject value or null if it's not defined.
+Returns the Subject value or null if it's not defined in the Payload.
 
 ```java
 String subject = jwt.getSubject();
@@ -168,7 +206,7 @@ String subject = jwt.getSubject();
 
 #### Audience ("aud")
 
-Returns the Audience value in or null if it's not defined.
+Returns the Audience value in or null if it's not defined in the Payload.
 
 ```java
 String[] audience = jwt.getAudience();
@@ -176,7 +214,7 @@ String[] audience = jwt.getAudience();
 
 #### Expiration Time ("exp")
 
-Returns the Expiration Time value or null if it's not defined.
+Returns the Expiration Time value or null if it's not defined in the Payload.
 
 ```java
 Date expiresAt = jwt.getExpiresAt();
@@ -184,7 +222,7 @@ Date expiresAt = jwt.getExpiresAt();
 
 #### Not Before ("nbf")
 
-Returns the Not Before value or null if it's not defined.
+Returns the Not Before value or null if it's not defined in the Payload.
 
 ```java
 Date notBefore = jwt.getNotBefore();
@@ -192,7 +230,7 @@ Date notBefore = jwt.getNotBefore();
 
 #### Issued At ("iat")
 
-Returns the Issued At value or null if it's not defined.
+Returns the Issued At value or null if it's not defined in the Payload.
 
 ```java
 Date issuedAt = jwt.getIssuedAt();
@@ -200,15 +238,15 @@ Date issuedAt = jwt.getIssuedAt();
 
 #### JWT ID ("jti")
 
-Returns the JWT ID value or null if it's not defined.
+Returns the JWT ID value or null if it's not defined in the Payload.
 
 ```java
 String id = jwt.getId();
 ```
 
-### Private Claims
+#### Private Claims
 
-Additional Claims defined in the token can be obtained by calling `getClaim()` and passing the Claim name. A Claim will always be returned, even if it can't be found. You should always check for null values.
+Additional Claims defined in the token's Payload can be obtained by calling `getClaim()` and passing the Claim name. A Claim will always be returned, even if it can't be found. You should always check for null values.
 
 ```java
 Claim claim = jwt.getClaim("isAdmin");

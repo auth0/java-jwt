@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -177,5 +178,47 @@ public class HeaderImplTest {
 
         assertThat(header, is(notNullValue()));
         assertThat(header.getContentType(), is(nullValue()));
+    }
+
+    @Test
+    public void shouldGetKeyId() throws Exception {
+        JsonNode kidNode = new TextNode("key");
+        HashMap<String, JsonNode> tree = new HashMap<>();
+        tree.put("kid", kidNode);
+        HeaderImpl header = new HeaderImpl(tree);
+
+        assertThat(header, is(notNullValue()));
+        assertThat(header.getKeyId(), is(notNullValue()));
+        assertThat(header.getKeyId(), is("key"));
+    }
+
+    @Test
+    public void shouldGetNullKeyIdIfMissing() throws Exception {
+        HashMap<String, JsonNode> tree = new HashMap<>();
+        HeaderImpl header = new HeaderImpl(tree);
+
+        assertThat(header, is(notNullValue()));
+        assertThat(header.getKeyId(), is(nullValue()));
+    }
+
+    @Test
+    public void shouldGetExtraClaim() throws Exception {
+        Map<String, JsonNode> tree = new HashMap<>();
+        tree.put("extraClaim", new TextNode("extraValue"));
+        HeaderImpl header = new HeaderImpl(tree);
+
+        assertThat(header, is(notNullValue()));
+        assertThat(header.getHeaderClaim("extraClaim"), is(instanceOf(ClaimImpl.class)));
+        assertThat(header.getHeaderClaim("extraClaim").asString(), is("extraValue"));
+    }
+
+    @Test
+    public void shouldGetNotNullExtraClaimIfMissing() throws Exception {
+        Map<String, JsonNode> tree = new HashMap<>();
+        HeaderImpl header = new HeaderImpl(tree);
+
+        assertThat(header, is(notNullValue()));
+        assertThat(header.getHeaderClaim("missing"), is(notNullValue()));
+        assertThat(header.getHeaderClaim("missing"), is(instanceOf(BaseClaim.class)));
     }
 }
