@@ -255,7 +255,7 @@ public class JWTVerifierTest {
     // Generic Delta
     @SuppressWarnings("RedundantCast")
     @Test
-    public void shouldAddDefaultTimeDeltaToDateClaims() throws Exception {
+    public void shouldAddDefaultLeewayToDateClaims() throws Exception {
         Algorithm algorithm = mock(Algorithm.class);
         JWTVerifier verifier = JWTVerifier.init(algorithm)
                 .build();
@@ -268,10 +268,10 @@ public class JWTVerifierTest {
 
     @SuppressWarnings("RedundantCast")
     @Test
-    public void shouldAddCustomTimeDeltaToDateClaims() throws Exception {
+    public void shouldAddCustomLeewayToDateClaims() throws Exception {
         Algorithm algorithm = mock(Algorithm.class);
         JWTVerifier verifier = JWTVerifier.init(algorithm)
-                .acceptTimeDelta(1234L)
+                .acceptLeeway(1234L)
                 .build();
 
         assertThat(verifier.claims, is(notNullValue()));
@@ -282,10 +282,10 @@ public class JWTVerifierTest {
 
     @SuppressWarnings("RedundantCast")
     @Test
-    public void shouldOverrideDefaultIssuedAtTimeDelta() throws Exception {
+    public void shouldOverrideDefaultIssuedAtLeeway() throws Exception {
         Algorithm algorithm = mock(Algorithm.class);
         JWTVerifier verifier = JWTVerifier.init(algorithm)
-                .acceptTimeDelta(1234L)
+                .acceptLeeway(1234L)
                 .acceptIssuedAt(9999L)
                 .build();
 
@@ -297,10 +297,10 @@ public class JWTVerifierTest {
 
     @SuppressWarnings("RedundantCast")
     @Test
-    public void shouldOverrideDefaultExpiresAtTimeDelta() throws Exception {
+    public void shouldOverrideDefaultExpiresAtLeeway() throws Exception {
         Algorithm algorithm = mock(Algorithm.class);
         JWTVerifier verifier = JWTVerifier.init(algorithm)
-                .acceptTimeDelta(1234L)
+                .acceptLeeway(1234L)
                 .acceptExpiresAt(9999L)
                 .build();
 
@@ -312,10 +312,10 @@ public class JWTVerifierTest {
 
     @SuppressWarnings("RedundantCast")
     @Test
-    public void shouldOverrideDefaultNotBeforeTimeDelta() throws Exception {
+    public void shouldOverrideDefaultNotBeforeLeeway() throws Exception {
         Algorithm algorithm = mock(Algorithm.class);
         JWTVerifier verifier = JWTVerifier.init(algorithm)
-                .acceptTimeDelta(1234L)
+                .acceptLeeway(1234L)
                 .acceptNotBefore(9999L)
                 .build();
 
@@ -326,17 +326,17 @@ public class JWTVerifierTest {
     }
 
     @Test
-    public void shouldThrowOnNegativeCustomTimeDelta() throws Exception {
+    public void shouldThrowOnNegativeCustomLeeway() throws Exception {
         exception.expect(IllegalArgumentException.class);
-        exception.expectMessage("Delta value can't be negative.");
+        exception.expectMessage("Leeway value can't be negative.");
         Algorithm algorithm = mock(Algorithm.class);
         JWTVerifier.init(algorithm)
-                .acceptTimeDelta(-1);
+                .acceptLeeway(-1);
     }
 
     // Expires At
     @Test
-    public void shouldValidateExpiresAtWithDelta() throws Exception {
+    public void shouldValidateExpiresAtWithLeeway() throws Exception {
         Clock clock = mock(Clock.class);
         when(clock.getToday()).thenReturn(new Date(DATE_TOKEN_MS_VALUE + 299));
 
@@ -376,9 +376,9 @@ public class JWTVerifierTest {
     }
 
     @Test
-    public void shouldThrowOnNegativeExpiresAtDelta() throws Exception {
+    public void shouldThrowOnNegativeExpiresAtLeeway() throws Exception {
         exception.expect(IllegalArgumentException.class);
-        exception.expectMessage("Delta value can't be negative.");
+        exception.expectMessage("Leeway value can't be negative.");
         Algorithm algorithm = mock(Algorithm.class);
         JWTVerifier.init(algorithm)
                 .acceptExpiresAt(-1);
@@ -386,7 +386,7 @@ public class JWTVerifierTest {
 
     // Not before
     @Test
-    public void shouldValidateNotBeforeWithDelta() throws Exception {
+    public void shouldValidateNotBeforeWithLeeway() throws Exception {
         Clock clock = mock(Clock.class);
         when(clock.getToday()).thenReturn(new Date(DATE_TOKEN_MS_VALUE - 299));
 
@@ -426,9 +426,9 @@ public class JWTVerifierTest {
     }
 
     @Test
-    public void shouldThrowOnNegativeNotBeforeDelta() throws Exception {
+    public void shouldThrowOnNegativeNotBeforeLeeway() throws Exception {
         exception.expect(IllegalArgumentException.class);
-        exception.expectMessage("Delta value can't be negative.");
+        exception.expectMessage("Leeway value can't be negative.");
         Algorithm algorithm = mock(Algorithm.class);
         JWTVerifier.init(algorithm)
                 .acceptNotBefore(-1);
@@ -436,7 +436,7 @@ public class JWTVerifierTest {
 
     // Issued At
     @Test
-    public void shouldValidateIssuedAtWithDelta() throws Exception {
+    public void shouldValidateIssuedAtWithLeeway() throws Exception {
         Clock clock = mock(Clock.class);
         when(clock.getToday()).thenReturn(new Date(DATE_TOKEN_MS_VALUE - 299));
 
@@ -476,9 +476,9 @@ public class JWTVerifierTest {
     }
 
     @Test
-    public void shouldThrowOnNegativeIssuedAtDelta() throws Exception {
+    public void shouldThrowOnNegativeIssuedAtLeeway() throws Exception {
         exception.expect(IllegalArgumentException.class);
-        exception.expectMessage("Delta value can't be negative.");
+        exception.expectMessage("Leeway value can't be negative.");
         Algorithm algorithm = mock(Algorithm.class);
         JWTVerifier.init(algorithm)
                 .acceptIssuedAt(-1);
