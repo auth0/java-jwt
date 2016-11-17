@@ -1,7 +1,10 @@
 package com.auth0.jwt;
 
 import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.exceptions.*;
+import com.auth0.jwt.exceptions.AlgorithmMismatchException;
+import com.auth0.jwt.exceptions.InvalidClaimException;
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.impl.PublicClaims;
 import com.auth0.jwt.interfaces.Claim;
 import org.apache.commons.codec.binary.Base64;
@@ -39,7 +42,7 @@ final class JWTVerifier {
     static class Verification {
         private final Algorithm algorithm;
         private final Map<String, Object> claims;
-        private long defaultDelta;
+        private long defaultLeeway;
 
         Verification(Algorithm algorithm) throws IllegalArgumentException {
             if (algorithm == null) {
@@ -48,7 +51,7 @@ final class JWTVerifier {
 
             this.algorithm = algorithm;
             this.claims = new HashMap<>();
-            this.defaultDelta = 0;
+            this.defaultLeeway = 0;
         }
 
         /**
@@ -86,65 +89,65 @@ final class JWTVerifier {
 
         /**
          * Define the default window in milliseconds in which the Not Before, Issued At and Expires At Claims will still be valid.
-         * Setting a specific delta value on a given Claim will override this value for that Claim.
+         * Setting a specific leeway value on a given Claim will override this value for that Claim.
          *
-         * @param delta the window in milliseconds in which the Not Before, Issued At and Expires At Claims will still be valid.
+         * @param leeway the window in milliseconds in which the Not Before, Issued At and Expires At Claims will still be valid.
          * @return this same Verification instance.
-         * @throws IllegalArgumentException if delta is negative.
+         * @throws IllegalArgumentException if leeway is negative.
          */
-        public Verification acceptTimeDelta(long delta) throws IllegalArgumentException {
-            if (delta < 0) {
-                throw new IllegalArgumentException("Delta value can't be negative.");
+        public Verification acceptLeeway(long leeway) throws IllegalArgumentException {
+            if (leeway < 0) {
+                throw new IllegalArgumentException("Leeway value can't be negative.");
             }
-            this.defaultDelta = delta;
+            this.defaultLeeway = leeway;
             return this;
         }
 
         /**
-         * Set a specific delta window in milliseconds in which the Expires At ("exp") Claim will still be valid.
-         * Expiration Date is always verified when the value is present. This method overrides the value set with acceptTimeDelta
+         * Set a specific leeway window in milliseconds in which the Expires At ("exp") Claim will still be valid.
+         * Expiration Date is always verified when the value is present. This method overrides the value set with acceptLeeway
          *
-         * @param delta the window in milliseconds in which the Expires At Claim will still be valid.
+         * @param leeway the window in milliseconds in which the Expires At Claim will still be valid.
          * @return this same Verification instance.
-         * @throws IllegalArgumentException if delta is negative.
+         * @throws IllegalArgumentException if leeway is negative.
          */
-        public Verification acceptExpiresAt(long delta) throws IllegalArgumentException {
-            if (delta < 0) {
-                throw new IllegalArgumentException("Delta value can't be negative.");
+        public Verification acceptExpiresAt(long leeway) throws IllegalArgumentException {
+            if (leeway < 0) {
+                throw new IllegalArgumentException("Leeway value can't be negative.");
             }
-            requireClaim(PublicClaims.EXPIRES_AT, delta);
+            requireClaim(PublicClaims.EXPIRES_AT, leeway);
             return this;
         }
 
         /**
-         * Set a specific delta window in milliseconds in which the Not Before ("nbf") Claim will still be valid.
-         * Not Before Date is always verified when the value is present. This method overrides the value set with acceptTimeDelta
+         * Set a specific leeway window in milliseconds in which the Not Before ("nbf") Claim will still be valid.
+         * Not Before Date is always verified when the value is present. This method overrides the value set with acceptLeeway
          *
-         * @param delta the window in milliseconds in which the Not Before Claim will still be valid.
+         * @param leeway the window in milliseconds in which the Not Before Claim will still be valid.
          * @return this same Verification instance.
-         * @throws IllegalArgumentException if delta is negative.
+         * @throws IllegalArgumentException if leeway is negative.
          */
-        public Verification acceptNotBefore(long delta) throws IllegalArgumentException {
-            if (delta < 0) {
-                throw new IllegalArgumentException("Delta value can't be negative.");
+        public Verification acceptNotBefore(long leeway) throws IllegalArgumentException {
+            if (leeway < 0) {
+                throw new IllegalArgumentException("Leeway value can't be negative.");
             }
-            requireClaim(PublicClaims.NOT_BEFORE, delta);
+            requireClaim(PublicClaims.NOT_BEFORE, leeway);
             return this;
         }
 
         /**
-         * Set a specific delta window in milliseconds in which the Issued At ("iat") Claim will still be valid.
-         * Issued At Date is always verified when the value is present. This method overrides the value set with acceptTimeDelta
+         * Set a specific leeway window in milliseconds in which the Issued At ("iat") Claim will still be valid.
+         * Issued At Date is always verified when the value is present. This method overrides the value set with acceptLeeway
          *
-         * @param delta the window in milliseconds in which the Issued At Claim will still be valid.
+         * @param leeway the window in milliseconds in which the Issued At Claim will still be valid.
          * @return this same Verification instance.
-         * @throws IllegalArgumentException if delta is negative.
+         * @throws IllegalArgumentException if leeway is negative.
          */
-        public Verification acceptIssuedAt(long delta) throws IllegalArgumentException {
-            if (delta < 0) {
-                throw new IllegalArgumentException("Delta value can't be negative.");
+        public Verification acceptIssuedAt(long leeway) throws IllegalArgumentException {
+            if (leeway < 0) {
+                throw new IllegalArgumentException("Leeway value can't be negative.");
             }
-            requireClaim(PublicClaims.ISSUED_AT, delta);
+            requireClaim(PublicClaims.ISSUED_AT, leeway);
             return this;
         }
 
@@ -204,13 +207,13 @@ final class JWTVerifier {
 
         private void addDeltaToDateClaims() {
             if (!claims.containsKey(PublicClaims.EXPIRES_AT)) {
-                claims.put(PublicClaims.EXPIRES_AT, defaultDelta);
+                claims.put(PublicClaims.EXPIRES_AT, defaultLeeway);
             }
             if (!claims.containsKey(PublicClaims.NOT_BEFORE)) {
-                claims.put(PublicClaims.NOT_BEFORE, defaultDelta);
+                claims.put(PublicClaims.NOT_BEFORE, defaultLeeway);
             }
             if (!claims.containsKey(PublicClaims.ISSUED_AT)) {
-                claims.put(PublicClaims.ISSUED_AT, defaultDelta);
+                claims.put(PublicClaims.ISSUED_AT, defaultLeeway);
             }
         }
 
@@ -307,16 +310,16 @@ final class JWTVerifier {
         }
     }
 
-    private void assertValidDateClaim(Date date, long delta, boolean shouldBeFuture) {
+    private void assertValidDateClaim(Date date, long leeway, boolean shouldBeFuture) {
         Date today = clock.getToday();
         boolean isValid;
         String errMessage;
         if (shouldBeFuture) {
-            today.setTime(today.getTime() - delta);
+            today.setTime(today.getTime() - leeway);
             isValid = date == null || !today.after(date);
             errMessage = String.format("The Token has expired on %s.", date);
         } else {
-            today.setTime(today.getTime() + delta);
+            today.setTime(today.getTime() + leeway);
             isValid = date == null || !today.before(date);
             errMessage = String.format("The Token can't be used before %s.", date);
         }
