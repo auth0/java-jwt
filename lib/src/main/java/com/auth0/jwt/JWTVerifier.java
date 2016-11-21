@@ -83,7 +83,7 @@ final class JWTVerifier {
          * @return this same Verification instance.
          */
         public Verification withAudience(String... audience) {
-            requireClaim(PublicClaims.AUDIENCE, audience);
+            requireClaim(PublicClaims.AUDIENCE, Arrays.asList(audience));
             return this;
         }
 
@@ -258,7 +258,7 @@ final class JWTVerifier {
         for (Map.Entry<String, Object> entry : claims.entrySet()) {
             switch (entry.getKey()) {
                 case PublicClaims.AUDIENCE:
-                    assertValidAudienceClaim(jwt.getAudience(), (String[]) entry.getValue());
+                    assertValidAudienceClaim(jwt.getAudience(), (List<String>) entry.getValue());
                     break;
                 case PublicClaims.EXPIRES_AT:
                     assertValidDateClaim(jwt.getExpiresAt(), (Long) entry.getValue(), true);
@@ -329,9 +329,9 @@ final class JWTVerifier {
         }
     }
 
-    private void assertValidAudienceClaim(String[] audience, String[] value) {
-        if (!Arrays.equals(audience, value)) {
-            throw new InvalidClaimException("The Claim 'aud' value doesn't match the required one.");
+    private void assertValidAudienceClaim(List<String> audience, List<String> value) {
+        if (audience == null || !audience.containsAll(value)) {
+            throw new InvalidClaimException("The Claim 'aud' value doesn't contain the required audience.");
         }
     }
 }

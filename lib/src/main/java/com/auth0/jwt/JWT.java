@@ -5,6 +5,7 @@ import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.interfaces.Claim;
 
 import java.util.Date;
+import java.util.List;
 
 public final class JWT implements com.auth0.jwt.interfaces.JWT {
 
@@ -62,7 +63,7 @@ public final class JWT implements com.auth0.jwt.interfaces.JWT {
     }
 
     @Override
-    public String[] getAudience() {
+    public List<String> getAudience() {
         return jwt.getAudience();
     }
 

@@ -1,6 +1,7 @@
 package com.auth0.jwt.interfaces;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * The Payload class represents the 2nd part of the JWT, where the Payload value is hold.
@@ -26,7 +27,7 @@ public interface Payload {
      *
      * @return the Audience value or null.
      */
-    String[] getAudience();
+    List<String> getAudience();
 
     /**
      * Get the value of the "exp" claim, or null if it's not available.

@@ -4,10 +4,7 @@ import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.Payload;
 import com.fasterxml.jackson.databind.JsonNode;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static com.auth0.jwt.impl.ClaimImpl.extractClaim;
 
@@ -17,14 +14,14 @@ import static com.auth0.jwt.impl.ClaimImpl.extractClaim;
 class PayloadImpl implements Payload {
     private final String issuer;
     private final String subject;
-    private final String[] audience;
+    private final List<String> audience;
     private final Date expiresAt;
     private final Date notBefore;
     private final Date issuedAt;
     private final String jwtId;
     private final Map<String, JsonNode> tree;
 
-    PayloadImpl(String issuer, String subject, String[] audience, Date expiresAt, Date notBefore, Date issuedAt, String jwtId, Map<String, JsonNode> tree) {
+    PayloadImpl(String issuer, String subject, List<String> audience, Date expiresAt, Date notBefore, Date issuedAt, String jwtId, Map<String, JsonNode> tree) {
         this.issuer = issuer;
         this.subject = subject;
         this.audience = audience;
@@ -50,7 +47,7 @@ class PayloadImpl implements Payload {
     }
 
     @Override
-    public String[] getAudience() {
+    public List<String> getAudience() {
         return audience;
     }
 

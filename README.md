@@ -10,6 +10,16 @@ An implementation of [JSON Web Tokens](http://self-issued.info/docs/draft-ietf-o
 
 ## Installation
 
+### Maven
+
+```xml
+<dependency>
+    <groupId>com.auth0</groupId>
+    <artifactId>java-jwt</artifactId>
+    <version>3.0.+</version>
+</dependency>
+```
+
 ### Gradle
 
 ```gradle
@@ -206,10 +216,10 @@ String subject = jwt.getSubject();
 
 #### Audience ("aud")
 
-Returns the Audience value in or null if it's not defined in the Payload.
+Returns the Audience value or null if it's not defined in the Payload.
 
 ```java
-String[] audience = jwt.getAudience();
+List<String> audience = jwt.getAudience();
 ```
 
 #### Expiration Time ("exp")

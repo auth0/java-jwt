@@ -5,6 +5,8 @@ import com.auth0.jwt.impl.BaseClaim;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.JWT;
 import org.apache.commons.codec.binary.Base64;
+import org.hamcrest.collection.IsCollectionWithSize;
+import org.hamcrest.core.IsCollectionContaining;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
@@ -105,16 +107,16 @@ public class JWTDecoderTest {
     public void shouldGetArrayAudience() throws Exception {
         JWT jwt = JWTDecoder.decode("eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOlsiSG9wZSIsIlRyYXZpcyIsIlNvbG9tb24iXX0.Tm4W8WnfPjlmHSmKFakdij0on2rWPETpoM7Sh0u6-S4");
         assertThat(jwt, is(notNullValue()));
-        assertThat(jwt.getAudience(), is(arrayWithSize(3)));
-        assertThat(jwt.getAudience(), is(arrayContaining("Hope", "Travis", "Solomon")));
+        assertThat(jwt.getAudience(), is(IsCollectionWithSize.hasSize(3)));
+        assertThat(jwt.getAudience(), is(IsCollectionContaining.hasItems("Hope", "Travis", "Solomon")));
     }
 
     @Test
     public void shouldGetStringAudience() throws Exception {
         JWT jwt = JWTDecoder.decode("eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJKYWNrIFJleWVzIn0.a4I9BBhPt1OB1GW67g2P1bEHgi6zgOjGUL4LvhE9Dgc");
         assertThat(jwt, is(notNullValue()));
-        assertThat(jwt.getAudience(), is(arrayWithSize(1)));
-        assertThat(jwt.getAudience(), is(arrayContaining("Jack Reyes")));
+        assertThat(jwt.getAudience(), is(IsCollectionWithSize.hasSize(1)));
+        assertThat(jwt.getAudience(), is(IsCollectionContaining.hasItems("Jack Reyes")));
     }
 
     @Test

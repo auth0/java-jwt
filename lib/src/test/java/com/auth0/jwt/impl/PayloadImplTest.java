@@ -2,13 +2,15 @@ package com.auth0.jwt.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.TextNode;
-import org.hamcrest.collection.IsArrayContaining;
+import org.hamcrest.collection.IsCollectionWithSize;
+import org.hamcrest.core.IsCollectionContaining;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.Mockito;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -33,7 +35,7 @@ public class PayloadImplTest {
         issuedAt = Mockito.mock(Date.class);
         Map<String, JsonNode> tree = new HashMap<>();
         tree.put("extraClaim", new TextNode("extraValue"));
-        payload = new PayloadImpl("issuer", "subject", new String[]{"audience"}, expiresAt, notBefore, issuedAt, "jwtId", tree);
+        payload = new PayloadImpl("issuer", "subject", Collections.singletonList("audience"), expiresAt, notBefore, issuedAt, "jwtId", tree);
     }
 
     @SuppressWarnings("Convert2Diamond")
@@ -73,7 +75,9 @@ public class PayloadImplTest {
     @Test
     public void shouldGetAudience() throws Exception {
         assertThat(payload, is(notNullValue()));
-        assertThat(payload.getAudience(), is(IsArrayContaining.hasItemInArray("audience")));
+
+        assertThat(payload.getAudience(), is(IsCollectionWithSize.hasSize(1)));
+        assertThat(payload.getAudience(), is(IsCollectionContaining.hasItems("audience")));
     }
 
     @Test

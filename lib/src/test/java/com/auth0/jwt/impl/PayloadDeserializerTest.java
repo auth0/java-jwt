@@ -10,7 +10,9 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.*;
-import org.hamcrest.collection.IsArrayContaining;
+import org.hamcrest.collection.IsCollectionWithSize;
+import org.hamcrest.collection.IsEmptyCollection;
+import org.hamcrest.core.IsCollectionContaining;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -20,7 +22,6 @@ import java.io.StringReader;
 import java.util.*;
 
 import static org.hamcrest.Matchers.*;
-import static org.hamcrest.collection.IsArrayContainingInOrder.arrayContaining;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -91,7 +92,7 @@ public class PayloadDeserializerTest {
         assertThat(payload, is(notNullValue()));
         assertThat(payload.getIssuer(), is("auth0"));
         assertThat(payload.getSubject(), is("emails"));
-        assertThat(payload.getAudience(), is(IsArrayContaining.hasItemInArray("users")));
+        assertThat(payload.getAudience(), is(IsCollectionContaining.hasItem("users")));
         assertThat(payload.getIssuedAt().getTime(), is(10101010L * 1000));
         assertThat(payload.getExpiresAt().getTime(), is(11111111L * 1000));
         assertThat(payload.getNotBefore().getTime(), is(10101011L * 1000));
@@ -119,10 +120,10 @@ public class PayloadDeserializerTest {
         ArrayNode arrNode = new ArrayNode(JsonNodeFactory.instance, subNodes);
         tree.put("key", arrNode);
 
-        String[] values = deserializer.getStringOrArray(tree, "key");
+        List<String> values = deserializer.getStringOrArray(tree, "key");
         assertThat(values, is(notNullValue()));
-        assertThat(values, is(arrayWithSize(2)));
-        assertThat(values, is(arrayContaining("one", "two")));
+        assertThat(values, is(IsCollectionWithSize.hasSize(2)));
+        assertThat(values, is(IsCollectionContaining.hasItems("one", "two")));
     }
 
     @Test
@@ -131,10 +132,10 @@ public class PayloadDeserializerTest {
         TextNode textNode = new TextNode("something");
         tree.put("key", textNode);
 
-        String[] values = deserializer.getStringOrArray(tree, "key");
+        List<String> values = deserializer.getStringOrArray(tree, "key");
         assertThat(values, is(notNullValue()));
-        assertThat(values, is(arrayWithSize(1)));
-        assertThat(values, is(arrayContaining("something")));
+        assertThat(values, is(IsCollectionWithSize.hasSize(1)));
+        assertThat(values, is(IsCollectionContaining.hasItems("something")));
     }
 
     @Test
@@ -143,9 +144,9 @@ public class PayloadDeserializerTest {
         TextNode textNode = new TextNode("");
         tree.put("key", textNode);
 
-        String[] values = deserializer.getStringOrArray(tree, "key");
+        List<String> values = deserializer.getStringOrArray(tree, "key");
         assertThat(values, is(notNullValue()));
-        assertThat(values, is(arrayWithSize(0)));
+        assertThat(values, is(IsEmptyCollection.empty()));
     }
 
     @Test
@@ -154,7 +155,7 @@ public class PayloadDeserializerTest {
         NullNode node = NullNode.getInstance();
         tree.put("key", node);
 
-        String[] values = deserializer.getStringOrArray(tree, "key");
+        List<String> values = deserializer.getStringOrArray(tree, "key");
         assertThat(values, is(nullValue()));
     }
 
@@ -163,7 +164,7 @@ public class PayloadDeserializerTest {
         Map<String, JsonNode> tree = new HashMap<>();
         tree.put("key", null);
 
-        String[] values = deserializer.getStringOrArray(tree, "key");
+        List<String> values = deserializer.getStringOrArray(tree, "key");
         assertThat(values, is(nullValue()));
     }
 
@@ -173,7 +174,7 @@ public class PayloadDeserializerTest {
         IntNode node = new IntNode(456789);
         tree.put("key", node);
 
-        String[] values = deserializer.getStringOrArray(tree, "key");
+        List<String> values = deserializer.getStringOrArray(tree, "key");
         assertThat(values, is(nullValue()));
     }
 

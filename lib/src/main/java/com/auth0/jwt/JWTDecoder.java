@@ -10,6 +10,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.StringUtils;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * The JWTDecoder class holds the decode method to parse a given Token into it's JWT representation.
@@ -88,7 +89,7 @@ final class JWTDecoder implements JWT {
     }
 
     @Override
-    public String[] getAudience() {
+    public List<String> getAudience() {
         return payload.getAudience();
     }
 
