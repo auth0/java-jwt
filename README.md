@@ -10,6 +10,16 @@ An implementation of [JSON Web Tokens](http://self-issued.info/docs/draft-ietf-o
 
 ## Installation
 
+### Maven
+
+```xml
+<dependency>
+    <groupId>com.auth0</groupId>
+    <artifactId>java-jwt</artifactId>
+    <version>3.0.+</version>
+</dependency>
+```
+
 ### Gradle
 
 ```gradle
