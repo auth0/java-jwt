@@ -91,7 +91,7 @@ final class JWTVerifier {
          * Define the default window in milliseconds in which the Not Before, Issued At and Expires At Claims will still be valid.
          * Setting a specific leeway value on a given Claim will override this value for that Claim.
          *
-         * @param leeway the window in milliseconds in which the Not Before, Issued At and Expires At Claims will still be valid.
+         * @param leeway the window in seconds in which the Not Before, Issued At and Expires At Claims will still be valid.
          * @return this same Verification instance.
          * @throws IllegalArgumentException if leeway is negative.
          */
@@ -104,10 +104,10 @@ final class JWTVerifier {
         }
 
         /**
-         * Set a specific leeway window in milliseconds in which the Expires At ("exp") Claim will still be valid.
+         * Set a specific leeway window in seconds in which the Expires At ("exp") Claim will still be valid.
          * Expiration Date is always verified when the value is present. This method overrides the value set with acceptLeeway
          *
-         * @param leeway the window in milliseconds in which the Expires At Claim will still be valid.
+         * @param leeway the window in seconds in which the Expires At Claim will still be valid.
          * @return this same Verification instance.
          * @throws IllegalArgumentException if leeway is negative.
          */
@@ -120,10 +120,10 @@ final class JWTVerifier {
         }
 
         /**
-         * Set a specific leeway window in milliseconds in which the Not Before ("nbf") Claim will still be valid.
+         * Set a specific leeway window in seconds in which the Not Before ("nbf") Claim will still be valid.
          * Not Before Date is always verified when the value is present. This method overrides the value set with acceptLeeway
          *
-         * @param leeway the window in milliseconds in which the Not Before Claim will still be valid.
+         * @param leeway the window in seconds in which the Not Before Claim will still be valid.
          * @return this same Verification instance.
          * @throws IllegalArgumentException if leeway is negative.
          */
@@ -136,10 +136,10 @@ final class JWTVerifier {
         }
 
         /**
-         * Set a specific leeway window in milliseconds in which the Issued At ("iat") Claim will still be valid.
+         * Set a specific leeway window in seconds in which the Issued At ("iat") Claim will still be valid.
          * Issued At Date is always verified when the value is present. This method overrides the value set with acceptLeeway
          *
-         * @param leeway the window in milliseconds in which the Issued At Claim will still be valid.
+         * @param leeway the window in seconds in which the Issued At Claim will still be valid.
          * @return this same Verification instance.
          * @throws IllegalArgumentException if leeway is negative.
          */
@@ -201,11 +201,11 @@ final class JWTVerifier {
          * @return a new JWTVerifier instance with a custom Clock.
          */
         JWTVerifier build(Clock clock) {
-            addDeltaToDateClaims();
+            addLeewayToDateClaims();
             return new JWTVerifier(algorithm, claims, clock);
         }
 
-        private void addDeltaToDateClaims() {
+        private void addLeewayToDateClaims() {
             if (!claims.containsKey(PublicClaims.EXPIRES_AT)) {
                 claims.put(PublicClaims.EXPIRES_AT, defaultLeeway);
             }
@@ -312,14 +312,15 @@ final class JWTVerifier {
 
     private void assertValidDateClaim(Date date, long leeway, boolean shouldBeFuture) {
         Date today = clock.getToday();
+        today.setTime((long) Math.floor((today.getTime() / 1000) * 1000)); //truncate millis
         boolean isValid;
         String errMessage;
         if (shouldBeFuture) {
-            today.setTime(today.getTime() - leeway);
+            today.setTime(today.getTime() - leeway * 1000);
             isValid = date == null || !today.after(date);
             errMessage = String.format("The Token has expired on %s.", date);
         } else {
-            today.setTime(today.getTime() + leeway);
+            today.setTime(today.getTime() + leeway * 1000);
             isValid = date == null || !today.before(date);
             errMessage = String.format("The Token can't be used before %s.", date);
         }

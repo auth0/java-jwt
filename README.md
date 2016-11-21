@@ -125,11 +125,11 @@ The JWT token may include DateNumber fields that can be used to validate that:
 
 When verifying a token the time validation occurs automatically, resulting in a `JWTVerificationException` being throw when the values are invalid. If any of the previous fields are missing they won't be considered in this validation.
 
-To specify a **leeway window** in which the Token should still be considered valid, use the `acceptLeeway()` method in the `JWTVerifier` builder and pass a positive milliseconds value. This applies to every item listed above.
+To specify a **leeway window** in which the Token should still be considered valid, use the `acceptLeeway()` method in the `JWTVerifier` builder and pass a positive seconds value. This applies to every item listed above.
 
 ```java
 JWTVerifier verifier = JWT.require(Algorithm.RSA256(key))
-    .acceptLeeway(100) //nbf, iat and exp
+    .acceptLeeway(1) // 1 sec for nbf, iat and exp
     .build();
 ```
 
@@ -137,8 +137,8 @@ You can also specify a custom value for a given Date claim and override the defa
 
 ```java
 JWTVerifier verifier = JWT.require(Algorithm.RSA256(key))
-    .acceptLeeway(100)   //nbf and iat
-    .acceptExpiresAt(500)   //exp
+    .acceptLeeway(1)   //1 sec for nbf and iat
+    .acceptExpiresAt(5)   //5 secs for exp
     .build();
 ```
 
