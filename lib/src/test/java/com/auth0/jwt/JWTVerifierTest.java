@@ -338,11 +338,11 @@ public class JWTVerifierTest {
     @Test
     public void shouldValidateExpiresAtWithLeeway() throws Exception {
         Clock clock = mock(Clock.class);
-        when(clock.getToday()).thenReturn(new Date(DATE_TOKEN_MS_VALUE + 299));
+        when(clock.getToday()).thenReturn(new Date(DATE_TOKEN_MS_VALUE + 1000));
 
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE0Nzc1OTJ9.isvT0Pqx0yjnZk53mUFSeYFJLDs-Ls9IsNAm86gIdZo";
         JWT jwt = JWTVerifier.init(Algorithm.HMAC256("secret"))
-                .acceptExpiresAt(300)
+                .acceptExpiresAt(2)
                 .build(clock)
                 .verify(token);
 
@@ -367,7 +367,7 @@ public class JWTVerifierTest {
         exception.expect(InvalidClaimException.class);
         exception.expectMessage(startsWith("The Token has expired on"));
         Clock clock = mock(Clock.class);
-        when(clock.getToday()).thenReturn(new Date(DATE_TOKEN_MS_VALUE + 10));
+        when(clock.getToday()).thenReturn(new Date(DATE_TOKEN_MS_VALUE + 1000));
 
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE0Nzc1OTJ9.isvT0Pqx0yjnZk53mUFSeYFJLDs-Ls9IsNAm86gIdZo";
         JWTVerifier.init(Algorithm.HMAC256("secret"))
@@ -388,11 +388,11 @@ public class JWTVerifierTest {
     @Test
     public void shouldValidateNotBeforeWithLeeway() throws Exception {
         Clock clock = mock(Clock.class);
-        when(clock.getToday()).thenReturn(new Date(DATE_TOKEN_MS_VALUE - 299));
+        when(clock.getToday()).thenReturn(new Date(DATE_TOKEN_MS_VALUE - 1000));
 
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYmYiOjE0Nzc1OTJ9.wq4ZmnSF2VOxcQBxPLfeh1J2Ozy1Tj5iUaERm3FKaw8";
         JWT jwt = JWTVerifier.init(Algorithm.HMAC256("secret"))
-                .acceptNotBefore(300)
+                .acceptNotBefore(2)
                 .build(clock)
                 .verify(token);
 
@@ -404,7 +404,7 @@ public class JWTVerifierTest {
         exception.expect(InvalidClaimException.class);
         exception.expectMessage(startsWith("The Token can't be used before"));
         Clock clock = mock(Clock.class);
-        when(clock.getToday()).thenReturn(new Date(DATE_TOKEN_MS_VALUE - 10));
+        when(clock.getToday()).thenReturn(new Date(DATE_TOKEN_MS_VALUE - 1000));
 
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYmYiOjE0Nzc1OTJ9.wq4ZmnSF2VOxcQBxPLfeh1J2Ozy1Tj5iUaERm3FKaw8";
         JWTVerifier.init(Algorithm.HMAC256("secret"))
@@ -438,11 +438,11 @@ public class JWTVerifierTest {
     @Test
     public void shouldValidateIssuedAtWithLeeway() throws Exception {
         Clock clock = mock(Clock.class);
-        when(clock.getToday()).thenReturn(new Date(DATE_TOKEN_MS_VALUE - 299));
+        when(clock.getToday()).thenReturn(new Date(DATE_TOKEN_MS_VALUE - 1000));
 
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE0Nzc1OTJ9.0WJky9eLN7kuxLyZlmbcXRL3Wy8hLoNCEk5CCl2M4lo";
         JWT jwt = JWTVerifier.init(Algorithm.HMAC256("secret"))
-                .acceptIssuedAt(300)
+                .acceptIssuedAt(2)
                 .build(clock)
                 .verify(token);
 
@@ -454,7 +454,7 @@ public class JWTVerifierTest {
         exception.expect(InvalidClaimException.class);
         exception.expectMessage(startsWith("The Token can't be used before"));
         Clock clock = mock(Clock.class);
-        when(clock.getToday()).thenReturn(new Date(DATE_TOKEN_MS_VALUE - 10));
+        when(clock.getToday()).thenReturn(new Date(DATE_TOKEN_MS_VALUE - 1000));
 
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE0Nzc1OTJ9.0WJky9eLN7kuxLyZlmbcXRL3Wy8hLoNCEk5CCl2M4lo";
         JWTVerifier.init(Algorithm.HMAC256("secret"))
