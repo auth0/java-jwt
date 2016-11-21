@@ -1,6 +1,8 @@
 package com.auth0.jwt;
 
 import com.auth0.jwt.algorithms.Algorithm;
+import org.hamcrest.collection.IsCollectionWithSize;
+import org.hamcrest.core.IsCollectionContaining;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -207,8 +209,8 @@ public class JWTTest {
                 .verify(token);
 
         assertThat(jwt, is(notNullValue()));
-        assertThat(jwt.getAudience(), is(arrayWithSize(3)));
-        assertThat(jwt.getAudience(), is(arrayContaining("Hope", "Travis", "Solomon")));
+        assertThat(jwt.getAudience(), is(IsCollectionWithSize.hasSize(3)));
+        assertThat(jwt.getAudience(), is(IsCollectionContaining.hasItems("Hope", "Travis", "Solomon")));
     }
 
     @Test
@@ -219,8 +221,8 @@ public class JWTTest {
                 .verify(token);
 
         assertThat(jwt, is(notNullValue()));
-        assertThat(jwt.getAudience(), is(arrayWithSize(1)));
-        assertThat(jwt.getAudience(), is(arrayContaining("Jack Reyes")));
+        assertThat(jwt.getAudience(), is(IsCollectionWithSize.hasSize(1)));
+        assertThat(jwt.getAudience(), is(IsCollectionContaining.hasItems("Jack Reyes")));
     }
 
     @Test

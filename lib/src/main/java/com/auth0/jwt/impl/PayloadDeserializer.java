@@ -11,8 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 
 import java.io.IOException;
-import java.util.Date;
-import java.util.Map;
+import java.util.*;
 
 class PayloadDeserializer extends StdDeserializer<Payload> {
 
@@ -34,7 +33,7 @@ class PayloadDeserializer extends StdDeserializer<Payload> {
 
         String issuer = getString(tree, PublicClaims.ISSUER);
         String subject = getString(tree, PublicClaims.SUBJECT);
-        String[] audience = getStringOrArray(tree, PublicClaims.AUDIENCE);
+        List<String> audience = getStringOrArray(tree, PublicClaims.AUDIENCE);
         Date expiresAt = getDateFromSeconds(tree, PublicClaims.EXPIRES_AT);
         Date notBefore = getDateFromSeconds(tree, PublicClaims.NOT_BEFORE);
         Date issuedAt = getDateFromSeconds(tree, PublicClaims.ISSUED_AT);
@@ -43,25 +42,25 @@ class PayloadDeserializer extends StdDeserializer<Payload> {
         return new PayloadImpl(issuer, subject, audience, expiresAt, notBefore, issuedAt, jwtId, tree);
     }
 
-    String[] getStringOrArray(Map<String, JsonNode> tree, String claimName) throws JWTDecodeException {
+    List<String> getStringOrArray(Map<String, JsonNode> tree, String claimName) throws JWTDecodeException {
         JsonNode node = tree.remove(claimName);
         if (node == null || node.isNull() || !(node.isArray() || node.isTextual())) {
             return null;
         }
         if (node.isTextual() && !node.asText().isEmpty()) {
-            return new String[]{node.asText()};
+            return Collections.singletonList(node.asText());
         }
 
         ObjectMapper mapper = new ObjectMapper();
-        String[] arr = new String[node.size()];
+        List<String> list = new ArrayList<>(node.size());
         for (int i = 0; i < node.size(); i++) {
             try {
-                arr[i] = mapper.treeToValue(node.get(i), String.class);
+                list.add(mapper.treeToValue(node.get(i), String.class));
             } catch (JsonProcessingException e) {
                 throw new JWTDecodeException("Couldn't map the Claim's array contents to String", e);
             }
         }
-        return arr;
+        return list;
     }
 
     Date getDateFromSeconds(Map<String, JsonNode> tree, String claimName) {

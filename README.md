@@ -206,10 +206,10 @@ String subject = jwt.getSubject();
 
 #### Audience ("aud")
 
-Returns the Audience value in or null if it's not defined in the Payload.
+Returns the Audience value or null if it's not defined in the Payload.
 
 ```java
-String[] audience = jwt.getAudience();
+List<String> audience = jwt.getAudience();
 ```
 
 #### Expiration Time ("exp")

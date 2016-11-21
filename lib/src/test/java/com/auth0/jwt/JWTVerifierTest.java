@@ -102,9 +102,21 @@ public class JWTVerifierTest {
     }
 
     @Test
+    public void shouldAcceptPartialAudience() throws Exception {
+        //Token 'aud' = ["Mark", "David", "John"]
+        String tokenArr = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOlsiTWFyayIsIkRhdmlkIiwiSm9obiJdfQ.DX5xXiCaYvr54x_iL0LZsJhK7O6HhAdHeDYkgDeb0Rw";
+        JWT jwtArr = JWTVerifier.init(Algorithm.HMAC256("secret"))
+                .withAudience("John")
+                .build()
+                .verify(tokenArr);
+
+        assertThat(jwtArr, is(notNullValue()));
+    }
+
+    @Test
     public void shouldThrowOnInvalidAudience() throws Exception {
         exception.expect(InvalidClaimException.class);
-        exception.expectMessage("The Claim 'aud' value doesn't match the required one.");
+        exception.expectMessage("The Claim 'aud' value doesn't contain the required audience.");
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.Rq8IxqeX7eA6GgYxlcHdPFVRNFFZc5rEI3MQTZZbK3I";
         JWTVerifier.init(Algorithm.HMAC256("secret"))
                 .withAudience("nope")
