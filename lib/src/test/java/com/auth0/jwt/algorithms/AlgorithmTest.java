@@ -18,24 +18,51 @@ public class AlgorithmTest {
 
 
     @Test
+    public void shouldThrowHMAC256VerificationWithNullSecretBytes() throws Exception {
+        exception.expect(IllegalArgumentException.class);
+        exception.expectMessage("The Secret cannot be null");
+        byte[] secret = null;
+        Algorithm.HMAC256(secret);
+    }
+
+    @Test
+    public void shouldThrowHMAC384VerificationWithNullSecretBytes() throws Exception {
+        exception.expect(IllegalArgumentException.class);
+        exception.expectMessage("The Secret cannot be null");
+        byte[] secret = null;
+        Algorithm.HMAC384(secret);
+    }
+
+    @Test
+    public void shouldThrowHMAC512VerificationWithNullSecretBytes() throws Exception {
+        exception.expect(IllegalArgumentException.class);
+        exception.expectMessage("The Secret cannot be null");
+        byte[] secret = null;
+        Algorithm.HMAC512(secret);
+    }
+
+    @Test
     public void shouldThrowHMAC256VerificationWithNullSecret() throws Exception {
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage("The Secret cannot be null");
-        Algorithm.HMAC256(null);
+        String secret = null;
+        Algorithm.HMAC256(secret);
     }
 
     @Test
     public void shouldThrowHMAC384VerificationWithNullSecret() throws Exception {
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage("The Secret cannot be null");
-        Algorithm.HMAC384(null);
+        String secret = null;
+        Algorithm.HMAC384(secret);
     }
 
     @Test
     public void shouldThrowHMAC512VerificationWithNullSecret() throws Exception {
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage("The Secret cannot be null");
-        Algorithm.HMAC512(null);
+        String secret = null;
+        Algorithm.HMAC512(secret);
     }
 
     @Test
@@ -81,36 +108,69 @@ public class AlgorithmTest {
     }
 
     @Test
-    public void shouldCreateHMAC256Algorithm() throws Exception {
+    public void shouldCreateHMAC256AlgorithmWithBytes() throws Exception {
+        Algorithm algorithm = Algorithm.HMAC256("secret".getBytes());
+
+        assertThat(algorithm, is(notNullValue()));
+        assertThat(algorithm, is(instanceOf(HMACAlgorithm.class)));
+        assertThat(algorithm.getDescription(), is("HmacSHA256"));
+        assertThat(algorithm.getName(), is("HS256"));
+        assertThat(((HMACAlgorithm) algorithm).getSecret(), is("secret".getBytes()));
+    }
+
+    @Test
+    public void shouldCreateHMAC384AlgorithmWithBytes() throws Exception {
+        Algorithm algorithm = Algorithm.HMAC384("secret".getBytes());
+
+        assertThat(algorithm, is(notNullValue()));
+        assertThat(algorithm, is(instanceOf(HMACAlgorithm.class)));
+        assertThat(algorithm.getDescription(), is("HmacSHA384"));
+        assertThat(algorithm.getName(), is("HS384"));
+        assertThat(((HMACAlgorithm) algorithm).getSecret(), is("secret".getBytes()));
+    }
+
+    @Test
+    public void shouldCreateHMAC512AlgorithmWithBytes() throws Exception {
+        Algorithm algorithm = Algorithm.HMAC512("secret".getBytes());
+
+        assertThat(algorithm, is(notNullValue()));
+        assertThat(algorithm, is(instanceOf(HMACAlgorithm.class)));
+        assertThat(algorithm.getDescription(), is("HmacSHA512"));
+        assertThat(algorithm.getName(), is("HS512"));
+        assertThat(((HMACAlgorithm) algorithm).getSecret(), is("secret".getBytes()));
+    }
+
+    @Test
+    public void shouldCreateHMAC256AlgorithmWithString() throws Exception {
         Algorithm algorithm = Algorithm.HMAC256("secret");
 
         assertThat(algorithm, is(notNullValue()));
         assertThat(algorithm, is(instanceOf(HMACAlgorithm.class)));
         assertThat(algorithm.getDescription(), is("HmacSHA256"));
         assertThat(algorithm.getName(), is("HS256"));
-        assertThat(((HMACAlgorithm) algorithm).getSecret(), is("secret"));
+        assertThat(((HMACAlgorithm) algorithm).getSecret(), is("secret".getBytes()));
     }
 
     @Test
-    public void shouldCreateHMAC384Algorithm() throws Exception {
+    public void shouldCreateHMAC384AlgorithmWithString() throws Exception {
         Algorithm algorithm = Algorithm.HMAC384("secret");
 
         assertThat(algorithm, is(notNullValue()));
         assertThat(algorithm, is(instanceOf(HMACAlgorithm.class)));
         assertThat(algorithm.getDescription(), is("HmacSHA384"));
         assertThat(algorithm.getName(), is("HS384"));
-        assertThat(((HMACAlgorithm) algorithm).getSecret(), is("secret"));
+        assertThat(((HMACAlgorithm) algorithm).getSecret(), is("secret".getBytes()));
     }
 
     @Test
-    public void shouldCreateHMAC512Algorithm() throws Exception {
+    public void shouldCreateHMAC512AlgorithmWithString() throws Exception {
         Algorithm algorithm = Algorithm.HMAC512("secret");
 
         assertThat(algorithm, is(notNullValue()));
         assertThat(algorithm, is(instanceOf(HMACAlgorithm.class)));
         assertThat(algorithm.getDescription(), is("HmacSHA512"));
         assertThat(algorithm.getName(), is("HS512"));
-        assertThat(((HMACAlgorithm) algorithm).getSecret(), is("secret"));
+        assertThat(((HMACAlgorithm) algorithm).getSecret(), is("secret".getBytes()));
     }
 
     @Test

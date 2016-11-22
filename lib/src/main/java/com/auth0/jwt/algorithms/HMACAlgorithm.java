@@ -2,36 +2,49 @@ package com.auth0.jwt.algorithms;
 
 import com.auth0.jwt.exceptions.SignatureGenerationException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
+import org.apache.commons.codec.CharEncoding;
 
+import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
 class HMACAlgorithm extends Algorithm {
 
     private final CryptoHelper crypto;
-    private final String secret;
+    private final byte[] secret;
 
-    HMACAlgorithm(CryptoHelper crypto, String id, String algorithm, String secret) throws IllegalArgumentException {
+    HMACAlgorithm(CryptoHelper crypto, String id, String algorithm, byte[] secretBytes) throws IllegalArgumentException {
         super(id, algorithm);
-        if (secret == null) {
+        if (secretBytes == null) {
             throw new IllegalArgumentException("The Secret cannot be null");
         }
-        this.secret = secret;
+        this.secret = secretBytes;
         this.crypto = crypto;
     }
 
-    HMACAlgorithm(String id, String algorithm, String secret) throws IllegalArgumentException {
-        this(new CryptoHelper(), id, algorithm, secret);
+    HMACAlgorithm(String id, String algorithm, byte[] secretBytes) throws IllegalArgumentException {
+        this(new CryptoHelper(), id, algorithm, secretBytes);
     }
 
-    String getSecret() {
+    HMACAlgorithm(String id, String algorithm, String secret) throws IllegalArgumentException, UnsupportedEncodingException {
+        this(new CryptoHelper(), id, algorithm, getSecretBytes(secret));
+    }
+
+    static byte[] getSecretBytes(String secret) throws IllegalArgumentException, UnsupportedEncodingException {
+        if (secret == null) {
+            throw new IllegalArgumentException("The Secret cannot be null");
+        }
+        return secret.getBytes(CharEncoding.UTF_8);
+    }
+
+    byte[] getSecret() {
         return secret;
     }
 
     @Override
     public void verify(byte[] contentBytes, byte[] signatureBytes) throws SignatureVerificationException {
         try {
-            boolean valid = crypto.verifySignatureFor(getDescription(), secret.getBytes(), contentBytes, signatureBytes);
+            boolean valid = crypto.verifySignatureFor(getDescription(), secret, contentBytes, signatureBytes);
             if (!valid) {
                 throw new SignatureVerificationException(this);
             }
@@ -43,7 +56,7 @@ class HMACAlgorithm extends Algorithm {
     @Override
     public byte[] sign(byte[] contentBytes) throws SignatureGenerationException {
         try {
-            return crypto.createSignatureFor(getDescription(), secret.getBytes(), contentBytes);
+            return crypto.createSignatureFor(getDescription(), secret, contentBytes);
         } catch (NoSuchAlgorithmException | InvalidKeyException e) {
             throw new SignatureGenerationException(this, e);
         }
