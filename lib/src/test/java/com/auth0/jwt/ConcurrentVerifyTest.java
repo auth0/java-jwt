@@ -2,23 +2,26 @@ package com.auth0.jwt;
 
 import com.auth0.jwt.algorithms.Algorithm;
 import net.jodah.concurrentunit.Waiter;
-import org.junit.*;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Rule;
+import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import java.security.interfaces.ECKey;
 import java.security.interfaces.RSAKey;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeoutException;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.*;
 
 import static com.auth0.jwt.PemUtils.readPublicKeyFromFile;
 
 //@Ignore("Skipping concurrency tests")
 public class ConcurrentVerifyTest {
 
-    private static final long TIMEOUT = 60 * 1000 * 1000; //1 min
-    private static final int THREAD_COUNT = 1500;
-    private static final int REPEAT_COUNT = 10000;
+    private static final long TIMEOUT = 10 * 1000 * 1000; //1 min
+    private static final int THREAD_COUNT = 100;
+    private static final int REPEAT_COUNT = 2000;
     private static final String PUBLIC_KEY_FILE = "src/test/resources/rsa-public.pem";
     private static final String PUBLIC_KEY_FILE_256 = "src/test/resources/ec256-key-public.pem";
     private static final String PUBLIC_KEY_FILE_384 = "src/test/resources/ec384-key-public.pem";
@@ -39,25 +42,37 @@ public class ConcurrentVerifyTest {
     }
 
     @SuppressWarnings("Convert2Lambda")
-    private void concurrentVerify(final JWTVerifier verifier, final String token) throws TimeoutException {
+    private void concurrentVerify(final JWTVerifier verifier, final String token) throws TimeoutException, InterruptedException {
         final Waiter waiter = new Waiter();
-        for (int i = 0; i < REPEAT_COUNT; i++) {
-            executor.execute(new Runnable() {
-                @Override
-                public void run() {
-                    JWT result = null;
-                    try {
-                        result = verifier.verify(token);
-                    } catch (Exception e) {
-                        waiter.fail(e);
-                    }
-                    waiter.assertNotNull(result);
-                    waiter.resume();
-                }
-            });
+        List<VerifyTask> tasks = Collections.nCopies(REPEAT_COUNT, new VerifyTask(waiter, verifier, token));
+        executor.invokeAll(tasks, TIMEOUT, TimeUnit.MILLISECONDS);
+        waiter.await(TIMEOUT, REPEAT_COUNT);
+    }
+
+    private static class VerifyTask implements Callable<JWT> {
+
+        private final Waiter waiter;
+        private final JWTVerifier verifier;
+        private final String token;
+
+        public VerifyTask(Waiter waiter, final JWTVerifier verifier, final String token) {
+            this.waiter = waiter;
+            this.verifier = verifier;
+            this.token = token;
         }
 
-        waiter.await(TIMEOUT, REPEAT_COUNT);
+        @Override
+        public JWT call() throws Exception {
+            JWT jwt = null;
+            try {
+                jwt = verifier.verify(token);
+                waiter.assertNotNull(jwt);
+            } catch (Exception e) {
+                waiter.fail(e);
+            }
+            waiter.resume();
+            return jwt;
+        }
     }
 
     @Test
