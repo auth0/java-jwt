@@ -15,6 +15,7 @@ import java.util.List;
 /**
  * The JWTDecoder class holds the decode method to parse a given Token into it's JWT representation.
  */
+@SuppressWarnings("WeakerAccess")
 final class JWTDecoder implements JWT {
 
     private Header header;
