@@ -14,6 +14,8 @@ script:
   - "./gradlew clean check jacocoTestReport --continue"
 after_success:
   - bash <(curl -s https://codecov.io/bash)
+after_failure:
+  - cat file:///home/travis/build/auth0/java-jwt/lib/build/reports/tests/index.html
 branches:
   only:
   - v3

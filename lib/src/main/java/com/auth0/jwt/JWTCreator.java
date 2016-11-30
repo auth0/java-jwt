@@ -18,7 +18,8 @@ import java.util.Map;
 /**
  * The JWTCreator class holds the sign method to generate a complete JWT (with Signature) from a given Header and Payload content.
  */
-class JWTCreator {
+@SuppressWarnings("WeakerAccess")
+public final class JWTCreator {
 
     private final Algorithm algorithm;
     private final String headerJson;
@@ -51,7 +52,7 @@ class JWTCreator {
     /**
      * The Builder class holds the Claims that defines the JWT to be created.
      */
-    static class Builder {
+    public static class Builder {
         private final Map<String, Object> payloadClaims;
         private Map<String, Object> headerClaims;
 

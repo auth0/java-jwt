@@ -7,6 +7,7 @@ import com.auth0.jwt.interfaces.Claim;
 import java.util.Date;
 import java.util.List;
 
+@SuppressWarnings("WeakerAccess")
 public final class JWT implements com.auth0.jwt.interfaces.JWT {
 
     private final com.auth0.jwt.interfaces.JWT jwt;

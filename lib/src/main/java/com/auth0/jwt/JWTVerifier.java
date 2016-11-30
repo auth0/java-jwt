@@ -14,7 +14,8 @@ import java.util.*;
 /**
  * The JWTVerifier class holds the verify method to assert that a given Token has not only a proper JWT format, but also it's signature matches.
  */
-final class JWTVerifier {
+@SuppressWarnings("WeakerAccess")
+public final class JWTVerifier {
     private final Algorithm algorithm;
     final Map<String, Object> claims;
     private final Clock clock;
@@ -39,7 +40,7 @@ final class JWTVerifier {
     /**
      * The Verification class holds the Claims required by a JWT to be valid.
      */
-    static class Verification {
+    public static class Verification {
         private final Algorithm algorithm;
         private final Map<String, Object> claims;
         private long defaultLeeway;
