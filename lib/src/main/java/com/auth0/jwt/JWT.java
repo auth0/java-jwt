@@ -117,4 +117,9 @@ public final class JWT implements com.auth0.jwt.interfaces.JWT {
     public String getKeyId() {
         return jwt.getKeyId();
     }
+
+    @Override
+    public String toString() {
+        return jwt.toString();
+    }
 }

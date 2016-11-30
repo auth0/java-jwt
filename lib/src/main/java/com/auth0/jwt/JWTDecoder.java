@@ -18,11 +18,13 @@ import java.util.List;
 @SuppressWarnings("WeakerAccess")
 final class JWTDecoder implements JWT {
 
+    private final String token;
     private Header header;
     private Payload payload;
     private String signature;
 
     private JWTDecoder(String jwt) throws JWTDecodeException {
+        this.token = jwt;
         parseToken(jwt);
     }
 
@@ -124,4 +126,8 @@ final class JWTDecoder implements JWT {
         return signature;
     }
 
+    @Override
+    public String toString() {
+        return token;
+    }
 }

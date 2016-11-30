@@ -7,7 +7,6 @@ import com.auth0.jwt.interfaces.JWT;
 import org.apache.commons.codec.binary.Base64;
 import org.hamcrest.collection.IsCollectionWithSize;
 import org.hamcrest.core.IsCollectionContaining;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -63,7 +62,6 @@ public class JWTDecoderTest {
 
     // toString
     @Test
-    @Ignore("Pending implementation")
     public void shouldGetStringToken() throws Exception {
         JWT jwt = JWTDecoder.decode("eyJhbGciOiJIUzI1NiJ9.e30.XmNK3GpH3Ys_7wsYBfq4C3M6goz71I7dTgUkuIa5lyQ");
         assertThat(jwt, is(notNullValue()));
