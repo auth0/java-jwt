@@ -36,7 +36,7 @@ class HeaderDeserializer extends StdDeserializer<BasicHeader> {
     }
 
     String getString(Map<String, JsonNode> tree, String claimName) {
-        JsonNode node = tree.remove(claimName);
+        JsonNode node = tree.get(claimName);
         if (node == null || node.isNull()) {
             return null;
         }

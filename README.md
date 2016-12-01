@@ -189,7 +189,7 @@ String keyId = jwt.getKeyId();
 
 #### Private Claims
 
-Additional Claims defined in the token's Header can be obtained by calling `getHeaderClaim()` and passing the Claim name. A Claim will always be returned, even if it can't be found. You should always check for null values.
+Additional Claims defined in the token's Header can be obtained by calling `getHeaderClaim()` and passing the Claim name. A Claim will always be returned, even if it can't be found. You can check if a Claim's value is null by calling `claim.isNull()`.
 
 ```java
 Claim claim = jwt.getHeaderClaim("owner");
@@ -256,7 +256,7 @@ String id = jwt.getId();
 
 #### Private Claims
 
-Additional Claims defined in the token's Payload can be obtained by calling `getClaim()` and passing the Claim name. A Claim will always be returned, even if it can't be found. You should always check for null values.
+Additional Claims defined in the token's Payload can be obtained by calling `getClaim()` and passing the Claim name. A Claim will always be returned, even if it can't be found. You can check if a Claim's value is null by calling `claim.isNull()`.
 
 ```java
 Claim claim = jwt.getClaim("isAdmin");

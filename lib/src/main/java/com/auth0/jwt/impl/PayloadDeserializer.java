@@ -43,7 +43,7 @@ class PayloadDeserializer extends StdDeserializer<Payload> {
     }
 
     List<String> getStringOrArray(Map<String, JsonNode> tree, String claimName) throws JWTDecodeException {
-        JsonNode node = tree.remove(claimName);
+        JsonNode node = tree.get(claimName);
         if (node == null || node.isNull() || !(node.isArray() || node.isTextual())) {
             return null;
         }
@@ -64,7 +64,7 @@ class PayloadDeserializer extends StdDeserializer<Payload> {
     }
 
     Date getDateFromSeconds(Map<String, JsonNode> tree, String claimName) {
-        JsonNode node = tree.remove(claimName);
+        JsonNode node = tree.get(claimName);
         if (node == null || node.isNull() || !node.canConvertToLong()) {
             return null;
         }
@@ -73,7 +73,7 @@ class PayloadDeserializer extends StdDeserializer<Payload> {
     }
 
     String getString(Map<String, JsonNode> tree, String claimName) {
-        JsonNode node = tree.remove(claimName);
+        JsonNode node = tree.get(claimName);
         if (node == null || node.isNull()) {
             return null;
         }

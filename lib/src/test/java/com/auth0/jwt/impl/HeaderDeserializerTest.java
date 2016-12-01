@@ -58,7 +58,7 @@ public class HeaderDeserializerTest {
 
 
     @Test
-    public void shouldRemoveKnownPublicClaimsFromTree() throws Exception {
+    public void shouldNotRemoveKnownPublicClaimsFromTree() throws Exception {
         String headerJSON = "{\n" +
                 "  \"alg\": \"HS256\",\n" +
                 "  \"typ\": \"jws\",\n" +
@@ -80,10 +80,10 @@ public class HeaderDeserializerTest {
         assertThat(header.getKeyId(), is("key"));
 
         assertThat(header.getHeaderClaim("roles").asString(), is("admin"));
-        assertThat(header.getHeaderClaim("alg").isNull(), is(true));
-        assertThat(header.getHeaderClaim("typ").isNull(), is(true));
-        assertThat(header.getHeaderClaim("cty").isNull(), is(true));
-        assertThat(header.getHeaderClaim("kid").isNull(), is(true));
+        assertThat(header.getHeaderClaim("alg").asString(), is("HS256"));
+        assertThat(header.getHeaderClaim("typ").asString(), is("jws"));
+        assertThat(header.getHeaderClaim("cty").asString(), is("content"));
+        assertThat(header.getHeaderClaim("kid").asString(), is("key"));
     }
 
     @Test
