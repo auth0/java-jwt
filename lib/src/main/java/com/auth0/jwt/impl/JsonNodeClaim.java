@@ -13,13 +13,13 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * The ClaimImpl class implements the Claim interface.
+ * The JsonNodeClaim retrieves a claim value from a JsonNode object.
  */
-class ClaimImpl extends BaseClaim {
+class JsonNodeClaim implements Claim {
 
     private final JsonNode data;
 
-    private ClaimImpl(JsonNode node) {
+    private JsonNodeClaim(JsonNode node) {
         this.data = node;
     }
 
@@ -89,6 +89,11 @@ class ClaimImpl extends BaseClaim {
         return list;
     }
 
+    @Override
+    public boolean isNull() {
+        return !(data.isArray() || data.canConvertToLong() || data.isTextual() || data.isNumber() || data.isBoolean());
+    }
+
     /**
      * Helper method to extract a Claim from the given JsonNode tree.
      *
@@ -105,12 +110,12 @@ class ClaimImpl extends BaseClaim {
      * Helper method to create a Claim representation from the given JsonNode.
      *
      * @param node the JsonNode to convert into a Claim.
-     * @return a valid Claim instance. If the node is null or missing, a BaseClaim will be returned.
+     * @return a valid Claim instance. If the node is null or missing, a NullClaim will be returned.
      */
     static Claim claimFromNode(JsonNode node) {
         if (node == null || node.isNull() || node.isMissingNode()) {
-            return new BaseClaim();
+            return new NullClaim();
         }
-        return new ClaimImpl(node);
+        return new JsonNodeClaim(node);
     }
 }

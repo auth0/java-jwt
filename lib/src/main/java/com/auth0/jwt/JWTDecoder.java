@@ -3,8 +3,8 @@ package com.auth0.jwt;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.impl.JWTParser;
 import com.auth0.jwt.interfaces.Claim;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.Header;
-import com.auth0.jwt.interfaces.JWT;
 import com.auth0.jwt.interfaces.Payload;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.StringUtils;
@@ -13,31 +13,19 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * The JWTDecoder class holds the decode method to parse a given Token into it's JWT representation.
+ * The JWTDecoder class holds the decode method to parse a given Token into it's DecodedJWT representation.
  */
 @SuppressWarnings("WeakerAccess")
-final class JWTDecoder implements JWT {
+final class JWTDecoder extends JWT {
 
     private final String token;
     private Header header;
     private Payload payload;
     private String signature;
 
-    private JWTDecoder(String jwt) throws JWTDecodeException {
+    JWTDecoder(String jwt) throws JWTDecodeException {
         this.token = jwt;
         parseToken(jwt);
-    }
-
-    /**
-     * Decode a given Token into a JWT instance.
-     * Note that this method doesn't verify the JWT's signature! Use it only if you trust the issuer of the Token.
-     *
-     * @param token the String representation of the JWT.
-     * @return a decoded JWT.
-     * @throws JWTDecodeException if any part of the Token contained an invalid JWT or JSON format.
-     */
-    static JWT decode(String token) throws JWTDecodeException {
-        return new JWTDecoder(token);
     }
 
     private void parseToken(String token) throws JWTDecodeException {

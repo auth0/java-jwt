@@ -1,21 +1,21 @@
 package com.auth0.jwt.impl;
 
 
-public abstract class PublicClaims {
+public interface PublicClaims {
 
     //Header
-    public static final String ALGORITHM = "alg";
-    static final String CONTENT_TYPE = "cty";
-    static final String TYPE = "typ";
-    static final String KEY_ID = "kid";
+    String ALGORITHM = "alg";
+    String CONTENT_TYPE = "cty";
+    String TYPE = "typ";
+    String KEY_ID = "kid";
 
     //Payload
-    public static final String ISSUER = "iss";
-    public static final String SUBJECT = "sub";
-    public static final String EXPIRES_AT = "exp";
-    public static final String NOT_BEFORE = "nbf";
-    public static final String ISSUED_AT = "iat";
-    public static final String JWT_ID = "jti";
-    public static final String AUDIENCE = "aud";
+    String ISSUER = "iss";
+    String SUBJECT = "sub";
+    String EXPIRES_AT = "exp";
+    String NOT_BEFORE = "nbf";
+    String ISSUED_AT = "iat";
+    String JWT_ID = "jti";
+    String AUDIENCE = "aud";
 
 }

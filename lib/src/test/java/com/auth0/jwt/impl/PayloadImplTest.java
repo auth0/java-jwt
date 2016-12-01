@@ -142,7 +142,7 @@ public class PayloadImplTest {
     @Test
     public void shouldGetExtraClaim() throws Exception {
         assertThat(payload, is(notNullValue()));
-        assertThat(payload.getClaim("extraClaim"), is(instanceOf(ClaimImpl.class)));
+        assertThat(payload.getClaim("extraClaim"), is(instanceOf(JsonNodeClaim.class)));
         assertThat(payload.getClaim("extraClaim").asString(), is("extraValue"));
     }
 
@@ -151,6 +151,6 @@ public class PayloadImplTest {
         PayloadImpl payload = new PayloadImpl(null, null, null, null, null, null, null, null);
         assertThat(payload, is(notNullValue()));
         assertThat(payload.getClaim("missing"), is(notNullValue()));
-        assertThat(payload.getClaim("missing"), is(instanceOf(BaseClaim.class)));
+        assertThat(payload.getClaim("missing"), is(instanceOf(NullClaim.class)));
     }
 }

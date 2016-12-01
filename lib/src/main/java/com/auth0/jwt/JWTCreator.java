@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * The JWTCreator class holds the sign method to generate a complete JWT (with Signature) from a given Header and Payload content.
+ * The JWTCreator class holds the sign method to generate a complete DecodedJWT (with Signature) from a given Header and Payload content.
  */
 @SuppressWarnings("WeakerAccess")
 public final class JWTCreator {
@@ -50,7 +50,7 @@ public final class JWTCreator {
     }
 
     /**
-     * The Builder class holds the Claims that defines the JWT to be created.
+     * The Builder class holds the Claims that defines the DecodedJWT to be created.
      */
     public static class Builder {
         private final Map<String, Object> payloadClaims;
@@ -139,7 +139,7 @@ public final class JWTCreator {
         }
 
         /**
-         * Add a specific JWT Id ("jti") claim.
+         * Add a specific DecodedJWT Id ("jti") claim.
          *
          * @param jwtId the Token Id value.
          * @return this same Builder instance.
@@ -172,10 +172,10 @@ public final class JWTCreator {
         }
 
         /**
-         * Creates a new instance of the JWT with the specified payloadClaims.
+         * Creates a new instance of the DecodedJWT with the specified payloadClaims.
          *
-         * @param algorithm the Algorithm to use on the JWT signing.
-         * @return a new JWT instance.
+         * @param algorithm the Algorithm to use on the DecodedJWT signing.
+         * @return a new DecodedJWT instance.
          * @throws IllegalArgumentException if the provided algorithm is null.
          * @throws JWTCreationException     if the Claims coudln't be converted to a valid JSON or there was a problem with the signing key.
          */

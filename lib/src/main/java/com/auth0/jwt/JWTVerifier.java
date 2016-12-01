@@ -7,12 +7,13 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.impl.PublicClaims;
 import com.auth0.jwt.interfaces.Claim;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import org.apache.commons.codec.binary.Base64;
 
 import java.util.*;
 
 /**
- * The JWTVerifier class holds the verify method to assert that a given Token has not only a proper JWT format, but also it's signature matches.
+ * The JWTVerifier class holds the verify method to assert that a given Token has not only a proper DecodedJWT format, but also it's signature matches.
  */
 @SuppressWarnings("WeakerAccess")
 public final class JWTVerifier {
@@ -29,7 +30,7 @@ public final class JWTVerifier {
     /**
      * Initialize a JWTVerifier instance using the given Algorithm.
      *
-     * @param algorithm the Algorithm to use on the JWT verification.
+     * @param algorithm the Algorithm to use on the DecodedJWT verification.
      * @return a JWTVerifier.Verification instance to configure.
      * @throws IllegalArgumentException if the provided algorithm is null.
      */
@@ -38,7 +39,7 @@ public final class JWTVerifier {
     }
 
     /**
-     * The Verification class holds the Claims required by a JWT to be valid.
+     * The Verification class holds the Claims required by a DecodedJWT to be valid.
      */
     public static class Verification {
         private final Algorithm algorithm;
@@ -153,7 +154,7 @@ public final class JWTVerifier {
         }
 
         /**
-         * Require a specific JWT Id ("jti") claim.
+         * Require a specific DecodedJWT Id ("jti") claim.
          *
          * @param jwtId the required Id value
          * @return this same Verification instance.
@@ -231,12 +232,12 @@ public final class JWTVerifier {
     /**
      * Perform the verification against the given Token, using any previous configured options.
      *
-     * @param token the String representation of the JWT.
-     * @return a verified JWT.
-     * @throws JWTVerificationException if any of the required contents inside the JWT is invalid.
+     * @param token the String representation of the DecodedJWT.
+     * @return a verified DecodedJWT.
+     * @throws JWTVerificationException if any of the required contents inside the DecodedJWT is invalid.
      */
-    public JWT verify(String token) throws JWTVerificationException {
-        JWT jwt = new JWT(JWTDecoder.decode(token));
+    public DecodedJWT verify(String token) throws JWTVerificationException {
+        DecodedJWT jwt = JWTDecoder.decode(token);
         verifyAlgorithm(jwt, algorithm);
         verifySignature(TokenUtils.splitToken(token));
         verifyClaims(jwt, claims);
@@ -249,16 +250,17 @@ public final class JWTVerifier {
         algorithm.verify(content, signature);
     }
 
-    private void verifyAlgorithm(JWT jwt, Algorithm expectedAlgorithm) throws AlgorithmMismatchException {
+    private void verifyAlgorithm(DecodedJWT jwt, Algorithm expectedAlgorithm) throws AlgorithmMismatchException {
         if (!expectedAlgorithm.getName().equals(jwt.getAlgorithm())) {
-            throw new AlgorithmMismatchException("The provided Algorithm doesn't match the one defined in the JWT's Header.");
+            throw new AlgorithmMismatchException("The provided Algorithm doesn't match the one defined in the DecodedJWT's Header.");
         }
     }
 
-    private void verifyClaims(JWT jwt, Map<String, Object> claims) {
+    private void verifyClaims(DecodedJWT jwt, Map<String, Object> claims) {
         for (Map.Entry<String, Object> entry : claims.entrySet()) {
             switch (entry.getKey()) {
                 case PublicClaims.AUDIENCE:
+                    //noinspection unchecked
                     assertValidAudienceClaim(jwt.getAudience(), (List<String>) entry.getValue());
                     break;
                 case PublicClaims.EXPIRES_AT:

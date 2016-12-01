@@ -15,7 +15,7 @@ import org.junit.rules.ExpectedException;
 import java.util.Arrays;
 import java.util.Date;
 
-import static com.auth0.jwt.impl.ClaimImpl.claimFromNode;
+import static com.auth0.jwt.impl.JsonNodeClaim.claimFromNode;
 import static com.auth0.jwt.impl.JWTParser.getDefaultObjectMapper;
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.core.IsNull.notNullValue;
@@ -210,7 +210,7 @@ public class ClaimImplTest {
         Claim claim = claimFromNode(value);
 
         assertThat(claim, is(notNullValue()));
-        assertThat(claim, is(instanceOf(BaseClaim.class)));
+        assertThat(claim, is(instanceOf(NullClaim.class)));
         assertThat(claim.isNull(), is(true));
     }
 
@@ -220,7 +220,7 @@ public class ClaimImplTest {
         Claim claim = claimFromNode(value);
 
         assertThat(claim, is(notNullValue()));
-        assertThat(claim, is(instanceOf(BaseClaim.class)));
+        assertThat(claim, is(instanceOf(NullClaim.class)));
         assertThat(claim.isNull(), is(true));
     }
 
@@ -230,7 +230,7 @@ public class ClaimImplTest {
         Claim claim = claimFromNode(value);
 
         assertThat(claim, is(notNullValue()));
-        assertThat(claim, is(instanceOf(BaseClaim.class)));
+        assertThat(claim, is(instanceOf(NullClaim.class)));
         assertThat(claim.isNull(), is(true));
     }
 
@@ -240,7 +240,7 @@ public class ClaimImplTest {
         Claim claim = claimFromNode(value);
 
         assertThat(claim, is(notNullValue()));
-        assertThat(claim, is(instanceOf(ClaimImpl.class)));
+        assertThat(claim, is(instanceOf(JsonNodeClaim.class)));
         assertThat(claim.isNull(), is(true));
     }
 }

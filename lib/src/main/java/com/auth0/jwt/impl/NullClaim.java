@@ -7,9 +7,9 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * The BaseClaim class is a Claim implementation that returns null when any of it's methods it's called.
+ * The {@link NullClaim} class is a Claim implementation that returns null when any of it's methods it's called.
  */
-public class BaseClaim implements Claim {
+public class NullClaim implements Claim {
     @Override
     public boolean isNull() {
         return true;

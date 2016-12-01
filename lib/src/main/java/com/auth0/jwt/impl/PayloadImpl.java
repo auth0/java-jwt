@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import java.util.*;
 
-import static com.auth0.jwt.impl.ClaimImpl.extractClaim;
+import static com.auth0.jwt.impl.JsonNodeClaim.extractClaim;
 
 /**
  * The PayloadImpl class implements the Payload interface.

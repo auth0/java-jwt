@@ -23,14 +23,14 @@ public class HeaderImplTest {
     @Test
     public void shouldHaveUnmodifiableTreeWhenInstantiatedWithNonNullTree() throws Exception {
         exception.expect(UnsupportedOperationException.class);
-        HeaderImpl header = new HeaderImpl(null, null, null, null, new HashMap<String, JsonNode>());
+        BasicHeader header = new BasicHeader(null, null, null, null, new HashMap<String, JsonNode>());
         header.getTree().put("something", null);
     }
 
     @Test
     public void shouldHaveUnmodifiableTreeWhenInstantiatedWithNullTree() throws Exception {
         exception.expect(UnsupportedOperationException.class);
-        HeaderImpl header = new HeaderImpl(null, null, null, null, null);
+        BasicHeader header = new BasicHeader(null, null, null, null, null);
         header.getTree().put("something", null);
     }
 
@@ -39,7 +39,7 @@ public class HeaderImplTest {
         HashMap<String, JsonNode> map = new HashMap<>();
         JsonNode node = NullNode.getInstance();
         map.put("key", node);
-        HeaderImpl header = new HeaderImpl(null, null, null, null, map);
+        BasicHeader header = new BasicHeader(null, null, null, null, map);
 
         assertThat(header.getTree(), is(notNullValue()));
         assertThat(header.getTree(), is(IsMapContaining.hasEntry("key", node)));
@@ -47,7 +47,7 @@ public class HeaderImplTest {
 
     @Test
     public void shouldGetAlgorithm() throws Exception {
-        HeaderImpl header = new HeaderImpl("HS256", null, null, null, null);
+        BasicHeader header = new BasicHeader("HS256", null, null, null, null);
 
         assertThat(header, is(notNullValue()));
         assertThat(header.getAlgorithm(), is(notNullValue()));
@@ -56,7 +56,7 @@ public class HeaderImplTest {
 
     @Test
     public void shouldGetNullAlgorithmIfMissing() throws Exception {
-        HeaderImpl header = new HeaderImpl(null, null, null, null, null);
+        BasicHeader header = new BasicHeader(null, null, null, null, null);
 
         assertThat(header, is(notNullValue()));
         assertThat(header.getAlgorithm(), is(nullValue()));
@@ -64,7 +64,7 @@ public class HeaderImplTest {
 
     @Test
     public void shouldGetType() throws Exception {
-        HeaderImpl header = new HeaderImpl(null, "jwt", null, null, null);
+        BasicHeader header = new BasicHeader(null, "jwt", null, null, null);
 
         assertThat(header, is(notNullValue()));
         assertThat(header.getType(), is(notNullValue()));
@@ -73,7 +73,7 @@ public class HeaderImplTest {
 
     @Test
     public void shouldGetNullTypeIfMissing() throws Exception {
-        HeaderImpl header = new HeaderImpl(null, null, null, null, null);
+        BasicHeader header = new BasicHeader(null, null, null, null, null);
 
         assertThat(header, is(notNullValue()));
         assertThat(header.getType(), is(nullValue()));
@@ -81,7 +81,7 @@ public class HeaderImplTest {
 
     @Test
     public void shouldGetContentType() throws Exception {
-        HeaderImpl header = new HeaderImpl(null, null, "content", null, null);
+        BasicHeader header = new BasicHeader(null, null, "content", null, null);
 
         assertThat(header, is(notNullValue()));
         assertThat(header.getContentType(), is(notNullValue()));
@@ -90,7 +90,7 @@ public class HeaderImplTest {
 
     @Test
     public void shouldGetNullContentTypeIfMissing() throws Exception {
-        HeaderImpl header = new HeaderImpl(null, null, null, null, null);
+        BasicHeader header = new BasicHeader(null, null, null, null, null);
 
         assertThat(header, is(notNullValue()));
         assertThat(header.getContentType(), is(nullValue()));
@@ -98,7 +98,7 @@ public class HeaderImplTest {
 
     @Test
     public void shouldGetKeyId() throws Exception {
-        HeaderImpl header = new HeaderImpl(null, null, null, "key", null);
+        BasicHeader header = new BasicHeader(null, null, null, "key", null);
 
         assertThat(header, is(notNullValue()));
         assertThat(header.getKeyId(), is(notNullValue()));
@@ -107,7 +107,7 @@ public class HeaderImplTest {
 
     @Test
     public void shouldGetNullKeyIdIfMissing() throws Exception {
-        HeaderImpl header = new HeaderImpl(null, null, null, null, null);
+        BasicHeader header = new BasicHeader(null, null, null, null, null);
 
         assertThat(header, is(notNullValue()));
         assertThat(header.getKeyId(), is(nullValue()));
@@ -117,20 +117,20 @@ public class HeaderImplTest {
     public void shouldGetExtraClaim() throws Exception {
         Map<String, JsonNode> tree = new HashMap<>();
         tree.put("extraClaim", new TextNode("extraValue"));
-        HeaderImpl header = new HeaderImpl(null, null, null, null, tree);
+        BasicHeader header = new BasicHeader(null, null, null, null, tree);
 
         assertThat(header, is(notNullValue()));
-        assertThat(header.getHeaderClaim("extraClaim"), is(instanceOf(ClaimImpl.class)));
+        assertThat(header.getHeaderClaim("extraClaim"), is(instanceOf(JsonNodeClaim.class)));
         assertThat(header.getHeaderClaim("extraClaim").asString(), is("extraValue"));
     }
 
     @Test
     public void shouldGetNotNullExtraClaimIfMissing() throws Exception {
         Map<String, JsonNode> tree = new HashMap<>();
-        HeaderImpl header = new HeaderImpl(null, null, null, null, tree);
+        BasicHeader header = new BasicHeader(null, null, null, null, tree);
 
         assertThat(header, is(notNullValue()));
         assertThat(header.getHeaderClaim("missing"), is(notNullValue()));
-        assertThat(header.getHeaderClaim("missing"), is(instanceOf(BaseClaim.class)));
+        assertThat(header.getHeaderClaim("missing"), is(instanceOf(NullClaim.class)));
     }
 }

@@ -10,7 +10,7 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import java.io.IOException;
 import java.util.Map;
 
-class HeaderDeserializer extends StdDeserializer<HeaderImpl> {
+class HeaderDeserializer extends StdDeserializer<BasicHeader> {
 
     HeaderDeserializer() {
         this(null);
@@ -21,7 +21,7 @@ class HeaderDeserializer extends StdDeserializer<HeaderImpl> {
     }
 
     @Override
-    public HeaderImpl deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+    public BasicHeader deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
         Map<String, JsonNode> tree = p.getCodec().readValue(p, new TypeReference<Map<String, JsonNode>>() {
         });
         if (tree == null) {
@@ -32,7 +32,7 @@ class HeaderDeserializer extends StdDeserializer<HeaderImpl> {
         String type = getString(tree, PublicClaims.TYPE);
         String contentType = getString(tree, PublicClaims.CONTENT_TYPE);
         String keyId = getString(tree, PublicClaims.KEY_ID);
-        return new HeaderImpl(algorithm, type, contentType, keyId, tree);
+        return new BasicHeader(algorithm, type, contentType, keyId, tree);
     }
 
     String getString(Map<String, JsonNode> tree, String claimName) {

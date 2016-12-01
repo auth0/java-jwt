@@ -1,6 +1,7 @@
 package com.auth0.jwt;
 
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import net.jodah.concurrentunit.Waiter;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -21,7 +22,7 @@ public class ConcurrentVerifyTest {
 
     private static final long TIMEOUT = 10 * 1000 * 1000; //1 min
     private static final int THREAD_COUNT = 100;
-    private static final int REPEAT_COUNT = 2000;
+    private static final int REPEAT_COUNT = 1000;
     private static final String PUBLIC_KEY_FILE = "src/test/resources/rsa-public.pem";
     private static final String PUBLIC_KEY_FILE_256 = "src/test/resources/ec256-key-public.pem";
     private static final String PUBLIC_KEY_FILE_384 = "src/test/resources/ec384-key-public.pem";
@@ -49,21 +50,21 @@ public class ConcurrentVerifyTest {
         waiter.await(TIMEOUT, REPEAT_COUNT);
     }
 
-    private static class VerifyTask implements Callable<JWT> {
+    private static class VerifyTask implements Callable<DecodedJWT> {
 
         private final Waiter waiter;
         private final JWTVerifier verifier;
         private final String token;
 
-        public VerifyTask(Waiter waiter, final JWTVerifier verifier, final String token) {
+        VerifyTask(Waiter waiter, final JWTVerifier verifier, final String token) {
             this.waiter = waiter;
             this.verifier = verifier;
             this.token = token;
         }
 
         @Override
-        public JWT call() throws Exception {
-            JWT jwt = null;
+        public DecodedJWT call() throws Exception {
+            DecodedJWT jwt = null;
             try {
                 jwt = verifier.verify(token);
                 waiter.assertNotNull(jwt);

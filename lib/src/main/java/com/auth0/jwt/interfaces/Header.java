@@ -1,26 +1,26 @@
 package com.auth0.jwt.interfaces;
 
 /**
- * The Header class represents the 1st part of the JWT, where the Header value is hold.
+ * The Header class represents the 1st part of the DecodedJWT, where the Header value is hold.
  */
 public interface Header {
 
     /**
-     * Getter for the Algorithm "alg" claim defined in the JWT's Header. If the claim is missing it will return null.
+     * Getter for the Algorithm "alg" claim defined in the DecodedJWT's Header. If the claim is missing it will return null.
      *
      * @return the Algorithm defined or null.
      */
     String getAlgorithm();
 
     /**
-     * Getter for the Type "typ" claim defined in the JWT's Header. If the claim is missing it will return null.
+     * Getter for the Type "typ" claim defined in the DecodedJWT's Header. If the claim is missing it will return null.
      *
      * @return the Type defined or null.
      */
     String getType();
 
     /**
-     * Getter for the Content Type "cty" claim defined in the JWT's Header. If the claim is missing it will return null.
+     * Getter for the Content Type "cty" claim defined in the DecodedJWT's Header. If the claim is missing it will return null.
      *
      * @return the Content Type defined or null.
      */
@@ -35,7 +35,7 @@ public interface Header {
     String getKeyId();
 
     /**
-     * Get a Private Claim given it's name. If the Claim wasn't specified in the Header, a BaseClaim will be returned.
+     * Get a Private Claim given it's name. If the Claim wasn't specified in the Header, a NullClaim will be returned.
      *
      * @param name the name of the Claim to retrieve.
      * @return a non-null Claim.
