@@ -16,28 +16,16 @@ import java.util.List;
  * The JWTDecoder class holds the decode method to parse a given Token into it's DecodedJWT representation.
  */
 @SuppressWarnings("WeakerAccess")
-final class JWTDecoder implements DecodedJWT {
+final class JWTDecoder extends JWT {
 
     private final String token;
     private Header header;
     private Payload payload;
     private String signature;
 
-    private JWTDecoder(String jwt) throws JWTDecodeException {
+    JWTDecoder(String jwt) throws JWTDecodeException {
         this.token = jwt;
         parseToken(jwt);
-    }
-
-    /**
-     * Decode a given Token into a DecodedJWT instance.
-     * Note that this method doesn't verify the DecodedJWT's signature! Use it only if you trust the issuer of the Token.
-     *
-     * @param token the String representation of the DecodedJWT.
-     * @return a decoded DecodedJWT.
-     * @throws JWTDecodeException if any part of the Token contained an invalid DecodedJWT or JSON format.
-     */
-    static DecodedJWT decode(String token) throws JWTDecodeException {
-        return new JWTDecoder(token);
     }
 
     private void parseToken(String token) throws JWTDecodeException {

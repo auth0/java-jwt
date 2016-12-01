@@ -9,7 +9,7 @@ import java.util.Date;
 import java.util.List;
 
 @SuppressWarnings("WeakerAccess")
-public final class JWT {
+public abstract class JWT implements DecodedJWT {
 
     /**
      * Decode a given JWT token.
@@ -20,8 +20,8 @@ public final class JWT {
      * @return a decoded token.
      * @throws JWTDecodeException if any part of the token contained an invalid jwt or JSON format of each of the jwt parts.
      */
-    public static DecodedJWT decode(String token) throws JWTDecodeException {
-        return JWTDecoder.decode(token);
+    public static JWT decode(String token) throws JWTDecodeException {
+        return new JWTDecoder(token);
     }
 
     /**

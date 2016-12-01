@@ -260,6 +260,7 @@ public final class JWTVerifier {
         for (Map.Entry<String, Object> entry : claims.entrySet()) {
             switch (entry.getKey()) {
                 case PublicClaims.AUDIENCE:
+                    //noinspection unchecked
                     assertValidAudienceClaim(jwt.getAudience(), (List<String>) entry.getValue());
                     break;
                 case PublicClaims.EXPIRES_AT:

@@ -22,7 +22,7 @@ public class ConcurrentVerifyTest {
 
     private static final long TIMEOUT = 10 * 1000 * 1000; //1 min
     private static final int THREAD_COUNT = 100;
-    private static final int REPEAT_COUNT = 2000;
+    private static final int REPEAT_COUNT = 1000;
     private static final String PUBLIC_KEY_FILE = "src/test/resources/rsa-public.pem";
     private static final String PUBLIC_KEY_FILE_256 = "src/test/resources/ec256-key-public.pem";
     private static final String PUBLIC_KEY_FILE_384 = "src/test/resources/ec384-key-public.pem";
