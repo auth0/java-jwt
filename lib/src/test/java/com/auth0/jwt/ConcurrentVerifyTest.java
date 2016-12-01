@@ -1,6 +1,7 @@
 package com.auth0.jwt;
 
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import net.jodah.concurrentunit.Waiter;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -49,21 +50,21 @@ public class ConcurrentVerifyTest {
         waiter.await(TIMEOUT, REPEAT_COUNT);
     }
 
-    private static class VerifyTask implements Callable<JWT> {
+    private static class VerifyTask implements Callable<DecodedJWT> {
 
         private final Waiter waiter;
         private final JWTVerifier verifier;
         private final String token;
 
-        public VerifyTask(Waiter waiter, final JWTVerifier verifier, final String token) {
+        VerifyTask(Waiter waiter, final JWTVerifier verifier, final String token) {
             this.waiter = waiter;
             this.verifier = verifier;
             this.token = token;
         }
 
         @Override
-        public JWT call() throws Exception {
-            JWT jwt = null;
+        public DecodedJWT call() throws Exception {
+            DecodedJWT jwt = null;
             try {
                 jwt = verifier.verify(token);
                 waiter.assertNotNull(jwt);

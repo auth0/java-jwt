@@ -160,7 +160,7 @@ public abstract class Algorithm {
     }
 
     /**
-     * Getter for the name of this Algorithm, as defined in the JWT Standard. i.e. "HS256"
+     * Getter for the name of this Algorithm, as defined in the DecodedJWT Standard. i.e. "HS256"
      *
      * @return the algorithm name.
      */

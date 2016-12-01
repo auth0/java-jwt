@@ -8,19 +8,19 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.auth0.jwt.impl.ClaimImpl.extractClaim;
+import static com.auth0.jwt.impl.JsonNodeClaim.extractClaim;
 
 /**
- * The HeaderImpl class implements the Header interface.
+ * The BasicHeader class implements the Header interface.
  */
-class HeaderImpl implements Header {
+class BasicHeader implements Header {
     private final String algorithm;
     private final String type;
     private final String contentType;
     private final String keyId;
     private final Map<String, JsonNode> tree;
 
-    HeaderImpl(String algorithm, String type, String contentType, String keyId, Map<String, JsonNode> tree) {
+    BasicHeader(String algorithm, String type, String contentType, String keyId, Map<String, JsonNode> tree) {
         this.algorithm = algorithm;
         this.type = type;
         this.contentType = contentType;

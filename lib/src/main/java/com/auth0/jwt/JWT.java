@@ -3,123 +3,44 @@ package com.auth0.jwt;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.interfaces.Claim;
+import com.auth0.jwt.interfaces.DecodedJWT;
 
 import java.util.Date;
 import java.util.List;
 
 @SuppressWarnings("WeakerAccess")
-public final class JWT implements com.auth0.jwt.interfaces.JWT {
-
-    private final com.auth0.jwt.interfaces.JWT jwt;
-
-    JWT(com.auth0.jwt.interfaces.JWT jwt) {
-        this.jwt = jwt;
-    }
+public final class JWT {
 
     /**
-     * Decode a given Token into a JWT instance.
-     * Note that this method doesn't verify the JWT's signature! Use it only if you trust the issuer of the Token.
+     * Decode a given JWT token.
      *
-     * @param token the String representation of the JWT.
-     * @return a decoded JWT.
-     * @throws JWTDecodeException if any part of the Token contained an invalid JWT or JSON format.
+     * Note that this method <b>doesn't verify the token's signature!</b> Use it only if you trust the token or you already verified it.
+     *
+     * @param token with jwt format as string.
+     * @return a decoded token.
+     * @throws JWTDecodeException if any part of the token contained an invalid jwt or JSON format of each of the jwt parts.
      */
-    public static JWT decode(String token) throws JWTDecodeException {
-        return new JWT(JWTDecoder.decode(token));
+    public static DecodedJWT decode(String token) throws JWTDecodeException {
+        return JWTDecoder.decode(token);
     }
 
     /**
-     * Creates a Verification instance to configure and verify a Token using the given Algorithm.
+     * Returns a {@link JWTVerifier} builder with the algorithm to be used to validate token signature.
      *
-     * @param algorithm the Algorithm to use in JWT verifications.
-     * @return a Verification instance to configure.
+     * @param algorithm that will be used to verify the token's signature.
+     * @return {@link JWTVerifier} builder
      * @throws IllegalArgumentException if the provided algorithm is null.
      */
-    public static JWTVerifier.Verification require(Algorithm algorithm) throws IllegalArgumentException {
+    public static JWTVerifier.Verification require(Algorithm algorithm) {
         return JWTVerifier.init(algorithm);
     }
 
     /**
-     * Creates a Builder instance to configure and construct a Token using the given Algorithm.
+     * Returns a JWT builder used to create and sign jwt tokens
      *
-     * @return a Builder instance to configure.
+     * @return a jwt token builder.
      */
     public static JWTCreator.Builder create() {
         return JWTCreator.init();
-    }
-
-    @Override
-    public String getSignature() {
-        return jwt.getSignature();
-    }
-
-    @Override
-    public String getIssuer() {
-        return jwt.getIssuer();
-    }
-
-    @Override
-    public String getSubject() {
-        return jwt.getSubject();
-    }
-
-    @Override
-    public List<String> getAudience() {
-        return jwt.getAudience();
-    }
-
-    @Override
-    public Date getExpiresAt() {
-        return jwt.getExpiresAt();
-    }
-
-    @Override
-    public Date getNotBefore() {
-        return jwt.getNotBefore();
-    }
-
-    @Override
-    public Date getIssuedAt() {
-        return jwt.getIssuedAt();
-    }
-
-    @Override
-    public String getId() {
-        return jwt.getId();
-    }
-
-    @Override
-    public Claim getClaim(String name) {
-        return jwt.getClaim(name);
-    }
-
-    @Override
-    public Claim getHeaderClaim(String name) {
-        return jwt.getHeaderClaim(name);
-    }
-
-    @Override
-    public String getAlgorithm() {
-        return jwt.getAlgorithm();
-    }
-
-    @Override
-    public String getType() {
-        return jwt.getType();
-    }
-
-    @Override
-    public String getContentType() {
-        return jwt.getContentType();
-    }
-
-    @Override
-    public String getKeyId() {
-        return jwt.getKeyId();
-    }
-
-    @Override
-    public String getToken() {
-        return jwt.getToken();
     }
 }

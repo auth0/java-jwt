@@ -9,11 +9,11 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 public class BaseClaimTest {
-    private BaseClaim claim;
+    private NullClaim claim;
 
     @Before
     public void setUp() throws Exception {
-        claim = new BaseClaim();
+        claim = new NullClaim();
     }
 
     @Test
