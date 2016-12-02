@@ -1,0 +1,14 @@
+coverage:
+  precision: 2
+  round: down
+  range: "70...100"
+  status:
+    patch:
+      default:
+        if_no_uploads: error
+    changes: true
+    project:
+      default:
+        target: auto
+        if_no_uploads: error
+comment: false
