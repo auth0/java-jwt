@@ -1,1 +1,2 @@
-include ':lib'
+include ':java-jwt'
+project(':java-jwt').projectDir = new File(rootProject.projectDir, '/lib')

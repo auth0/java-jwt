@@ -1,0 +1,55 @@
+def credentials = new Bintray(project);
+
+if (credentials.valid()) {
+    apply plugin: 'com.jfrog.bintray'
+    bintray {
+        user = credentials.user
+        key = credentials.key
+        publications = ['mavenJava']
+        dryRun = project.version.endsWith("-SNAPSHOT")
+        publish = false
+        pkg {
+            repo = 'java'
+            name = 'java-jwt'
+            desc = 'Java implementation of JSON Web Token (JWT) '
+            websiteUrl = 'https://github.com/auth0/java-jwt'
+            vcsUrl = 'scm:git@github.com:auth0/java-jwt.git'
+            licenses = ["MIT"]
+            userOrg = 'auth0'
+            publish = false
+            version {
+                gpg {
+                    sign = true
+                    passphrase = credentials.passphrasse
+                }
+                vcsTag = project.version
+                name = project.version
+                released = new Date()
+            }
+        }
+    }
+}
+
+class Bintray {
+    String user
+    String key
+    String passphrasse
+
+    Bintray(project) {
+        this.user = Bintray.value(project, 'BINTRAY_USER', 'bintray.user')
+        this.key = Bintray.value(project, 'BINTRAY_KEY', 'bintray.key')
+        this.passphrasse = Bintray.value(project, 'BINTRAY_PASSPHRASE', 'bintray.gpg.password')
+    }
+
+    def valid() {
+        return this.user != null && this.key != null && this.passphrasse != null;
+    }
+
+    private static def value(Project project, String env, String property) {
+        def value = System.getenv(env)
+        if (project.hasProperty(property)) {
+            value = project.getProperty(property);
+        }
+        return value
+    }
+}
