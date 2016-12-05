@@ -10,10 +10,11 @@ import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import org.apache.commons.codec.binary.Base64;
 
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 /**
- * The JWTVerifier class holds the verify method to assert that a given Token has not only a proper DecodedJWT format, but also it's signature matches.
+ * The JWTVerifier class holds the verify method to assert that a given Token has not only a proper JWT format, but also it's signature matches.
  */
 @SuppressWarnings("WeakerAccess")
 public final class JWTVerifier {
@@ -30,7 +31,7 @@ public final class JWTVerifier {
     /**
      * Initialize a JWTVerifier instance using the given Algorithm.
      *
-     * @param algorithm the Algorithm to use on the DecodedJWT verification.
+     * @param algorithm the Algorithm to use on the JWT verification.
      * @return a JWTVerifier.Verification instance to configure.
      * @throws IllegalArgumentException if the provided algorithm is null.
      */
@@ -39,7 +40,7 @@ public final class JWTVerifier {
     }
 
     /**
-     * The Verification class holds the Claims required by a DecodedJWT to be valid.
+     * The Verification class holds the Claims required by a JWT to be valid.
      */
     public static class Verification {
         private final Algorithm algorithm;
@@ -154,7 +155,7 @@ public final class JWTVerifier {
         }
 
         /**
-         * Require a specific DecodedJWT Id ("jti") claim.
+         * Require a specific JWT Id ("jti") claim.
          *
          * @param jwtId the required Id value
          * @return this same Verification instance.
@@ -232,9 +233,9 @@ public final class JWTVerifier {
     /**
      * Perform the verification against the given Token, using any previous configured options.
      *
-     * @param token the String representation of the DecodedJWT.
-     * @return a verified DecodedJWT.
-     * @throws JWTVerificationException if any of the required contents inside the DecodedJWT is invalid.
+     * @param token to verify.
+     * @return a verified and decoded JWT.
+     * @throws JWTVerificationException if any of the required contents inside the JWT is invalid.
      */
     public DecodedJWT verify(String token) throws JWTVerificationException {
         DecodedJWT jwt = JWTDecoder.decode(token);
@@ -245,14 +246,14 @@ public final class JWTVerifier {
     }
 
     private void verifySignature(String[] parts) throws SignatureVerificationException {
-        byte[] content = String.format("%s.%s", parts[0], parts[1]).getBytes();
+        byte[] content = String.format("%s.%s", parts[0], parts[1]).getBytes(StandardCharsets.UTF_8);
         byte[] signature = Base64.decodeBase64(parts[2]);
         algorithm.verify(content, signature);
     }
 
     private void verifyAlgorithm(DecodedJWT jwt, Algorithm expectedAlgorithm) throws AlgorithmMismatchException {
         if (!expectedAlgorithm.getName().equals(jwt.getAlgorithm())) {
-            throw new AlgorithmMismatchException("The provided Algorithm doesn't match the one defined in the DecodedJWT's Header.");
+            throw new AlgorithmMismatchException("The provided Algorithm doesn't match the one defined in the JWT's Header.");
         }
     }
 

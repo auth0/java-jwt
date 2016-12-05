@@ -4,6 +4,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import java.nio.charset.StandardCharsets;
 import java.security.interfaces.ECKey;
 import java.security.interfaces.RSAKey;
 
@@ -109,35 +110,35 @@ public class AlgorithmTest {
 
     @Test
     public void shouldCreateHMAC256AlgorithmWithBytes() throws Exception {
-        Algorithm algorithm = Algorithm.HMAC256("secret".getBytes());
+        Algorithm algorithm = Algorithm.HMAC256("secret".getBytes(StandardCharsets.UTF_8));
 
         assertThat(algorithm, is(notNullValue()));
         assertThat(algorithm, is(instanceOf(HMACAlgorithm.class)));
         assertThat(algorithm.getDescription(), is("HmacSHA256"));
         assertThat(algorithm.getName(), is("HS256"));
-        assertThat(((HMACAlgorithm) algorithm).getSecret(), is("secret".getBytes()));
+        assertThat(((HMACAlgorithm) algorithm).getSecret(), is("secret".getBytes(StandardCharsets.UTF_8)));
     }
 
     @Test
     public void shouldCreateHMAC384AlgorithmWithBytes() throws Exception {
-        Algorithm algorithm = Algorithm.HMAC384("secret".getBytes());
+        Algorithm algorithm = Algorithm.HMAC384("secret".getBytes(StandardCharsets.UTF_8));
 
         assertThat(algorithm, is(notNullValue()));
         assertThat(algorithm, is(instanceOf(HMACAlgorithm.class)));
         assertThat(algorithm.getDescription(), is("HmacSHA384"));
         assertThat(algorithm.getName(), is("HS384"));
-        assertThat(((HMACAlgorithm) algorithm).getSecret(), is("secret".getBytes()));
+        assertThat(((HMACAlgorithm) algorithm).getSecret(), is("secret".getBytes(StandardCharsets.UTF_8)));
     }
 
     @Test
     public void shouldCreateHMAC512AlgorithmWithBytes() throws Exception {
-        Algorithm algorithm = Algorithm.HMAC512("secret".getBytes());
+        Algorithm algorithm = Algorithm.HMAC512("secret".getBytes(StandardCharsets.UTF_8));
 
         assertThat(algorithm, is(notNullValue()));
         assertThat(algorithm, is(instanceOf(HMACAlgorithm.class)));
         assertThat(algorithm.getDescription(), is("HmacSHA512"));
         assertThat(algorithm.getName(), is("HS512"));
-        assertThat(((HMACAlgorithm) algorithm).getSecret(), is("secret".getBytes()));
+        assertThat(((HMACAlgorithm) algorithm).getSecret(), is("secret".getBytes(StandardCharsets.UTF_8)));
     }
 
     @Test
@@ -148,7 +149,7 @@ public class AlgorithmTest {
         assertThat(algorithm, is(instanceOf(HMACAlgorithm.class)));
         assertThat(algorithm.getDescription(), is("HmacSHA256"));
         assertThat(algorithm.getName(), is("HS256"));
-        assertThat(((HMACAlgorithm) algorithm).getSecret(), is("secret".getBytes()));
+        assertThat(((HMACAlgorithm) algorithm).getSecret(), is("secret".getBytes(StandardCharsets.UTF_8)));
     }
 
     @Test
@@ -159,7 +160,7 @@ public class AlgorithmTest {
         assertThat(algorithm, is(instanceOf(HMACAlgorithm.class)));
         assertThat(algorithm.getDescription(), is("HmacSHA384"));
         assertThat(algorithm.getName(), is("HS384"));
-        assertThat(((HMACAlgorithm) algorithm).getSecret(), is("secret".getBytes()));
+        assertThat(((HMACAlgorithm) algorithm).getSecret(), is("secret".getBytes(StandardCharsets.UTF_8)));
     }
 
     @Test
@@ -170,7 +171,7 @@ public class AlgorithmTest {
         assertThat(algorithm, is(instanceOf(HMACAlgorithm.class)));
         assertThat(algorithm.getDescription(), is("HmacSHA512"));
         assertThat(algorithm.getName(), is("HS512"));
-        assertThat(((HMACAlgorithm) algorithm).getSecret(), is("secret".getBytes()));
+        assertThat(((HMACAlgorithm) algorithm).getSecret(), is("secret".getBytes(StandardCharsets.UTF_8)));
     }
 
     @Test

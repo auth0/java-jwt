@@ -3,7 +3,7 @@ package com.auth0.jwt.interfaces;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 
 /**
- * The JWTPartsParser class defines which parts of the DecodedJWT should be converted to it's specific Object representation instance.
+ * The JWTPartsParser class defines which parts of the JWT should be converted to it's specific Object representation instance.
  */
 public interface JWTPartsParser {
 
