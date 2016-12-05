@@ -15,10 +15,7 @@ public class ClockTest {
     public void shouldGetToday() throws Exception{
         Clock clock = new Clock();
         Date clockToday = clock.getToday();
-        Date today = new Date();
-
         assertThat(clockToday, is(notNullValue()));
-        assertThat(clockToday.getTime(), is(equalTo(today.getTime())));
     }
 
 }
