@@ -4,7 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * The Payload class represents the 2nd part of the DecodedJWT, where the Payload value is hold.
+ * The Payload class represents the 2nd part of the JWT, where the Payload value is hold.
  */
 public interface Payload {
 
@@ -53,7 +53,7 @@ public interface Payload {
     /**
      * Get the value of the "jti" claim, or null if it's not available.
      *
-     * @return the DecodedJWT ID value or null.
+     * @return the JWT ID value or null.
      */
     String getId();
 

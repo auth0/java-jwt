@@ -33,7 +33,7 @@ public class JWTVerifierTest {
     @Test
     public void shouldThrowWhenAlgorithmDoesntMatchTheTokensAlgorithm() throws Exception {
         exception.expect(AlgorithmMismatchException.class);
-        exception.expectMessage("The provided Algorithm doesn't match the one defined in the DecodedJWT's Header.");
+        exception.expectMessage("The provided Algorithm doesn't match the one defined in the JWT's Header.");
         JWTVerifier verifier = JWTVerifier.init(Algorithm.HMAC512("secret")).build();
         verifier.verify("eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJhdXRoMCJ9.s69x7Mmu4JqwmdxiK6sesALO7tcedbFsKEEITUxw9ho");
     }

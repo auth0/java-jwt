@@ -13,7 +13,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * The JWTDecoder class holds the decode method to parse a given Token into it's DecodedJWT representation.
+ * The JWTDecoder class holds the decode method to parse a given JWT token into it's JWT representation.
  */
 @SuppressWarnings("WeakerAccess")
 final class JWTDecoder extends JWT {

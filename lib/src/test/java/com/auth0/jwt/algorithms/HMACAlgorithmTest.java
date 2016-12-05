@@ -7,6 +7,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
@@ -153,8 +154,8 @@ public class HMACAlgorithmTest {
 
     @Test
     public void shouldDoHMAC256SigningWithBytes() throws Exception {
-        Algorithm algorithm = Algorithm.HMAC256("secret".getBytes());
-        byte[] contentBytes = String.format("%s.%s", HS256Header, auth0IssPayload).getBytes();
+        Algorithm algorithm = Algorithm.HMAC256("secret".getBytes(StandardCharsets.UTF_8));
+        byte[] contentBytes = String.format("%s.%s", HS256Header, auth0IssPayload).getBytes(StandardCharsets.UTF_8);
         byte[] signatureBytes = algorithm.sign(contentBytes);
         String signature = Base64.encodeBase64URLSafeString(signatureBytes);
         String expectedSignature = "s69x7Mmu4JqwmdxiK6sesALO7tcedbFsKEEITUxw9ho";
@@ -166,8 +167,8 @@ public class HMACAlgorithmTest {
 
     @Test
     public void shouldDoHMAC384SigningWithBytes() throws Exception {
-        Algorithm algorithm = Algorithm.HMAC384("secret".getBytes());
-        byte[] contentBytes = String.format("%s.%s", HS384Header, auth0IssPayload).getBytes();
+        Algorithm algorithm = Algorithm.HMAC384("secret".getBytes(StandardCharsets.UTF_8));
+        byte[] contentBytes = String.format("%s.%s", HS384Header, auth0IssPayload).getBytes(StandardCharsets.UTF_8);
         byte[] signatureBytes = algorithm.sign(contentBytes);
         String signature = Base64.encodeBase64URLSafeString(signatureBytes);
         String expectedSignature = "4-y2Gxz_foN0jAOFimmBPF7DWxf4AsjM20zxNkHg8Zah5Q64G42P9GfjmUp4Hldt";
@@ -179,8 +180,8 @@ public class HMACAlgorithmTest {
 
     @Test
     public void shouldDoHMAC512SigningWithBytes() throws Exception {
-        Algorithm algorithm = Algorithm.HMAC512("secret".getBytes());
-        byte[] contentBytes = String.format("%s.%s", HS512Header, auth0IssPayload).getBytes();
+        Algorithm algorithm = Algorithm.HMAC512("secret".getBytes(StandardCharsets.UTF_8));
+        byte[] contentBytes = String.format("%s.%s", HS512Header, auth0IssPayload).getBytes(StandardCharsets.UTF_8);
         byte[] signatureBytes = algorithm.sign(contentBytes);
         String signature = Base64.encodeBase64URLSafeString(signatureBytes);
         String expectedSignature = "OXWyxmf-VcVo8viOiTFfLaEy6mrQqLEos5R82Xsx8mtFxQadJAQ1aVniIWN8qT2GNE_pMQPcdzk4x7Cqxsp1dw";
@@ -193,7 +194,7 @@ public class HMACAlgorithmTest {
     @Test
     public void shouldDoHMAC256SigningWithString() throws Exception {
         Algorithm algorithm = Algorithm.HMAC256("secret");
-        byte[] contentBytes = String.format("%s.%s", HS256Header, auth0IssPayload).getBytes();
+        byte[] contentBytes = String.format("%s.%s", HS256Header, auth0IssPayload).getBytes(StandardCharsets.UTF_8);
         byte[] signatureBytes = algorithm.sign(contentBytes);
         String signature = Base64.encodeBase64URLSafeString(signatureBytes);
         String expectedSignature = "s69x7Mmu4JqwmdxiK6sesALO7tcedbFsKEEITUxw9ho";
@@ -206,7 +207,7 @@ public class HMACAlgorithmTest {
     @Test
     public void shouldDoHMAC384SigningWithString() throws Exception {
         Algorithm algorithm = Algorithm.HMAC384("secret");
-        byte[] contentBytes = String.format("%s.%s", HS384Header, auth0IssPayload).getBytes();
+        byte[] contentBytes = String.format("%s.%s", HS384Header, auth0IssPayload).getBytes(StandardCharsets.UTF_8);
         byte[] signatureBytes = algorithm.sign(contentBytes);
         String signature = Base64.encodeBase64URLSafeString(signatureBytes);
         String expectedSignature = "4-y2Gxz_foN0jAOFimmBPF7DWxf4AsjM20zxNkHg8Zah5Q64G42P9GfjmUp4Hldt";
@@ -219,7 +220,7 @@ public class HMACAlgorithmTest {
     @Test
     public void shouldDoHMAC512SigningWithString() throws Exception {
         Algorithm algorithm = Algorithm.HMAC512("secret");
-        byte[] contentBytes = String.format("%s.%s", HS512Header, auth0IssPayload).getBytes();
+        byte[] contentBytes = String.format("%s.%s", HS512Header, auth0IssPayload).getBytes(StandardCharsets.UTF_8);
         byte[] signatureBytes = algorithm.sign(contentBytes);
         String signature = Base64.encodeBase64URLSafeString(signatureBytes);
         String expectedSignature = "OXWyxmf-VcVo8viOiTFfLaEy6mrQqLEos5R82Xsx8mtFxQadJAQ1aVniIWN8qT2GNE_pMQPcdzk4x7Cqxsp1dw";
@@ -239,7 +240,7 @@ public class HMACAlgorithmTest {
         when(crypto.createSignatureFor(anyString(), any(byte[].class), any(byte[].class)))
                 .thenThrow(NoSuchAlgorithmException.class);
 
-        Algorithm algorithm = new HMACAlgorithm(crypto, "some-alg", "some-algorithm", "secret".getBytes());
+        Algorithm algorithm = new HMACAlgorithm(crypto, "some-alg", "some-algorithm", "secret".getBytes(StandardCharsets.UTF_8));
         algorithm.sign(new byte[0]);
     }
 
@@ -253,7 +254,7 @@ public class HMACAlgorithmTest {
         when(crypto.createSignatureFor(anyString(), any(byte[].class), any(byte[].class)))
                 .thenThrow(InvalidKeyException.class);
 
-        Algorithm algorithm = new HMACAlgorithm(crypto, "some-alg", "some-algorithm", "secret".getBytes());
+        Algorithm algorithm = new HMACAlgorithm(crypto, "some-alg", "some-algorithm", "secret".getBytes(StandardCharsets.UTF_8));
         algorithm.sign(new byte[0]);
     }
 

@@ -11,12 +11,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.apache.commons.codec.binary.Base64;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * The JWTCreator class holds the sign method to generate a complete DecodedJWT (with Signature) from a given Header and Payload content.
+ * The JWTCreator class holds the sign method to generate a complete JWT (with Signature) from a given Header and Payload content.
  */
 @SuppressWarnings("WeakerAccess")
 public final class JWTCreator {
@@ -50,7 +51,7 @@ public final class JWTCreator {
     }
 
     /**
-     * The Builder class holds the Claims that defines the DecodedJWT to be created.
+     * The Builder class holds the Claims that defines the JWT to be created.
      */
     public static class Builder {
         private final Map<String, Object> payloadClaims;
@@ -139,7 +140,7 @@ public final class JWTCreator {
         }
 
         /**
-         * Add a specific DecodedJWT Id ("jti") claim.
+         * Add a specific JWT Id ("jti") claim.
          *
          * @param jwtId the Token Id value.
          * @return this same Builder instance.
@@ -172,12 +173,12 @@ public final class JWTCreator {
         }
 
         /**
-         * Creates a new instance of the DecodedJWT with the specified payloadClaims.
+         * Creates a new JWT and signs is with the given algorithm
          *
-         * @param algorithm the Algorithm to use on the DecodedJWT signing.
-         * @return a new DecodedJWT instance.
+         * @param algorithm used to sign the JWT
+         * @return a new JWT token
          * @throws IllegalArgumentException if the provided algorithm is null.
-         * @throws JWTCreationException     if the Claims coudln't be converted to a valid JSON or there was a problem with the signing key.
+         * @throws JWTCreationException     if the claims could not be converted to a valid JSON or there was a problem with the signing key.
          */
         public String sign(Algorithm algorithm) throws IllegalArgumentException, JWTCreationException {
             if (algorithm == null) {
@@ -197,11 +198,11 @@ public final class JWTCreator {
     }
 
     private String sign() throws SignatureGenerationException {
-        String header = Base64.encodeBase64URLSafeString((headerJson.getBytes()));
-        String payload = Base64.encodeBase64URLSafeString((payloadJson.getBytes()));
+        String header = Base64.encodeBase64URLSafeString((headerJson.getBytes(StandardCharsets.UTF_8)));
+        String payload = Base64.encodeBase64URLSafeString((payloadJson.getBytes(StandardCharsets.UTF_8)));
         String content = String.format("%s.%s", header, payload);
 
-        byte[] signatureBytes = algorithm.sign(content.getBytes());
+        byte[] signatureBytes = algorithm.sign(content.getBytes(StandardCharsets.UTF_8));
         String signature = Base64.encodeBase64URLSafeString((signatureBytes));
 
         return String.format("%s.%s", content, signature);

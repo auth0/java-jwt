@@ -11,6 +11,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -200,8 +201,8 @@ public class JWTDecoderTest {
     //Helper Methods
 
     private DecodedJWT customJWT(String jsonHeader, String jsonPayload, String signature) {
-        String header = Base64.encodeBase64URLSafeString(jsonHeader.getBytes());
-        String body = Base64.encodeBase64URLSafeString(jsonPayload.getBytes());
+        String header = Base64.encodeBase64URLSafeString(jsonHeader.getBytes(StandardCharsets.UTF_8));
+        String body = Base64.encodeBase64URLSafeString(jsonPayload.getBytes(StandardCharsets.UTF_8));
         return JWTDecoder.decode(String.format("%s.%s.%s", header, body, signature));
     }
 

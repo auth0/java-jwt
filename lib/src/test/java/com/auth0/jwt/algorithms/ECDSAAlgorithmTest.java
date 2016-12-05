@@ -7,6 +7,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.security.interfaces.ECKey;
 import java.security.interfaces.ECPrivateKey;
@@ -352,7 +353,7 @@ public class ECDSAAlgorithmTest {
     public void shouldDoECDSA256Signing() throws Exception {
         Algorithm algorithmSign = Algorithm.ECDSA256((ECKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_256, "EC"));
         Algorithm algorithmVerify = Algorithm.ECDSA256((ECKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC"));
-        byte[] contentBytes = String.format("%s.%s", ES256Header, auth0IssPayload).getBytes();
+        byte[] contentBytes = String.format("%s.%s", ES256Header, auth0IssPayload).getBytes(StandardCharsets.UTF_8);
         byte[] signatureBytes = algorithmSign.sign(contentBytes);
 
         assertThat(signatureBytes, is(notNullValue()));
@@ -374,7 +375,7 @@ public class ECDSAAlgorithmTest {
     public void shouldDoECDSA384Signing() throws Exception {
         Algorithm algorithmSign = Algorithm.ECDSA384((ECKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_384, "EC"));
         Algorithm algorithmVerify = Algorithm.ECDSA384((ECKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_384, "EC"));
-        byte[] contentBytes = String.format("%s.%s", ES384Header, auth0IssPayload).getBytes();
+        byte[] contentBytes = String.format("%s.%s", ES384Header, auth0IssPayload).getBytes(StandardCharsets.UTF_8);
         byte[] signatureBytes = algorithmSign.sign(contentBytes);
 
         assertThat(signatureBytes, is(notNullValue()));
@@ -396,7 +397,7 @@ public class ECDSAAlgorithmTest {
     public void shouldDoECDSA512Signing() throws Exception {
         Algorithm algorithmSign = Algorithm.ECDSA512((ECKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_512, "EC"));
         Algorithm algorithmVerify = Algorithm.ECDSA512((ECKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_512, "EC"));
-        byte[] contentBytes = String.format("%s.%s", ES512Header, auth0IssPayload).getBytes();
+        byte[] contentBytes = String.format("%s.%s", ES512Header, auth0IssPayload).getBytes(StandardCharsets.UTF_8);
         byte[] signatureBytes = algorithmSign.sign(contentBytes);
 
         assertThat(signatureBytes, is(notNullValue()));
@@ -441,7 +442,7 @@ public class ECDSAAlgorithmTest {
 
         ECKey key = mock(ECKey.class, withSettings().extraInterfaces(ECPrivateKey.class));
         Algorithm algorithm = new ECDSAAlgorithm(crypto, "some-alg", "some-algorithm", 32, key);
-        algorithm.sign(ES256Header.getBytes());
+        algorithm.sign(ES256Header.getBytes(StandardCharsets.UTF_8));
     }
 
     @Test
@@ -457,7 +458,7 @@ public class ECDSAAlgorithmTest {
 
         ECKey key = mock(ECKey.class, withSettings().extraInterfaces(ECPublicKey.class));
         Algorithm algorithm = new ECDSAAlgorithm(crypto, "some-alg", "some-algorithm", 32, key);
-        algorithm.sign(ES256Header.getBytes());
+        algorithm.sign(ES256Header.getBytes(StandardCharsets.UTF_8));
     }
 
     @Test
@@ -472,6 +473,6 @@ public class ECDSAAlgorithmTest {
 
         ECKey key = mock(ECKey.class, withSettings().extraInterfaces(ECPrivateKey.class));
         Algorithm algorithm = new ECDSAAlgorithm(crypto, "some-alg", "some-algorithm", 32, key);
-        algorithm.sign(ES256Header.getBytes());
+        algorithm.sign(ES256Header.getBytes(StandardCharsets.UTF_8));
     }
 }
