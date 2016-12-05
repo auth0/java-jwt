@@ -77,7 +77,7 @@ public class JWTSigner {
             segments.add(encodedSignature(join(segments, "."), algorithm));
             return join(segments, ".");
         } catch (Exception e) {
-            throw new RuntimeException(e.getCause());
+            throw new RuntimeException(e);
         }
     }
 
