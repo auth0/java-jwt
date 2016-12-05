@@ -42,6 +42,7 @@ class Auth0OSS implements Plugin<Project> {
                     root.appendNode('packaging', 'jar')
                     root.appendNode('name', lib.name)
                     root.appendNode('description', lib.description)
+                    root.appendNode('url', lib.url)
 
                     def developersNode = root.appendNode('developers')
                     project.extensions.auth0.developers.each {
@@ -79,6 +80,7 @@ class Auth0Extension {
     String name
     String repo
     String description
+    String url
     List<Developer> developers = []
 
     private Project project

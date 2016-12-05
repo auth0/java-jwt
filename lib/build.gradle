@@ -10,6 +10,7 @@ auth0 {
     name "java jwt"
     repo "java-jwt"
     description "Java implementation of JSON Web Token (JWT)"
+    url  'http://www.jwt.io'
     developer {
         id = "auth0"
         name = "Auth0"

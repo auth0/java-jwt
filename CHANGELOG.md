@@ -1,6 +1,11 @@
 # Change Log
 
-## [3.0.0](https://github.com/auth0/java-jwt/tree/3.0.0) (2016-12-01)
+## [3.0.1](https://github.com/auth0/java-jwt/tree/3.0.0) (2016-12-05)
+[Full Changelog](https://github.com/auth0/java-jwt/compare/3.0.0...3.0.1)
+
+Update to allow sync with Maven Central
+
+## [3.0.0](https://github.com/auth0/java-jwt/tree/3.0.0) (2016-12-05)
 
 Reimplemented java-jwt to improve API and include more signing algorithms
 
