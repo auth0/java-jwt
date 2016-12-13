@@ -16,14 +16,14 @@ A Java implementation of [JSON Web Tokens (draft-ietf-oauth-json-web-token-08)](
 <dependency>
     <groupId>com.auth0</groupId>
     <artifactId>java-jwt</artifactId>
-    <version>3.0.1</version>
+    <version>3.0.2</version>
 </dependency>
 ```
 
 ### Gradle
 
 ```gradle
-compile 'com.auth0:java-jwt:3.0.1'
+compile 'com.auth0:java-jwt:3.0.2'
 ```
 
 ## Available Algorithms

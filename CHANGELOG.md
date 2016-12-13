@@ -1,5 +1,11 @@
 # Change Log
 
+## [3.0.2](https://github.com/auth0/java-jwt/tree/3.0.2) (2016-12-13)
+[Full Changelog](https://github.com/auth0/java-jwt/compare/3.0.1...3.0.2)
+
+**Fixed**
+- Add targetCompatibility to 1.7 [\#121](https://github.com/auth0/java-jwt/pull/121) ([hzalaz](https://github.com/hzalaz))
+
 ## [3.0.1](https://github.com/auth0/java-jwt/tree/3.0.0) (2016-12-05)
 [Full Changelog](https://github.com/auth0/java-jwt/compare/3.0.0...3.0.1)
 
