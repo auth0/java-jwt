@@ -100,13 +100,16 @@ class ReadmeTask extends DefaultTask {
     @TaskAction
     def update() {
         def file = new File(filename)
-        def updated = "compile '${project.group}:${project.name}:${next}'"
+        def gradleUpdated = "compile '${project.group}:${project.name}:${next}'"
         def oldSingleQuote = "compile '${project.group}:${project.name}:${current}'"
         def oldDoubleQuote = "compile \"${project.group}:${project.name}:${current}\""
+        def mavenUpdated = "<version>${next}</version>"
+        def mavenOld = "<version>${current}</version>"
         def contents = file.getText('UTF-8')
-        contents = contents.replace(oldSingleQuote, updated).replace(oldDoubleQuote, updated)
+        contents = contents.replace(oldSingleQuote, gradleUpdated).replace(oldDoubleQuote, gradleUpdated).replace(mavenOld, mavenUpdated)
         file.write(contents, 'UTF-8')
     }
+    
 }
 
 class ReleasePlugin implements Plugin<Project> {
