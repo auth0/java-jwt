@@ -256,7 +256,14 @@ String id = jwt.getId();
 
 #### Private Claims
 
-Additional Claims defined in the token's Payload can be obtained by calling `getClaim()` and passing the Claim name. A Claim will always be returned, even if it can't be found. You can check if a Claim's value is null by calling `claim.isNull()`.
+Additional Claims defined in the token's Payload can be obtained by calling `getClaims()` or `getClaim()` and passing the Claim name. A Claim will always be returned, even if it can't be found. You can check if a Claim's value is null by calling `claim.isNull()`.
+
+```java
+Map<String, Claim> claims = jwt.getClaims();    //Key is the Claim name
+Claim claim = claims.get("isAdmin");
+```
+al
+or
 
 ```java
 Claim claim = jwt.getClaim("isAdmin");

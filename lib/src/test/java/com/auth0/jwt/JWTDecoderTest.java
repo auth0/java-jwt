@@ -13,6 +13,7 @@ import org.junit.rules.ExpectedException;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -196,6 +197,22 @@ public class JWTDecoderTest {
         assertThat(jwt, is(notNullValue()));
         assertThat(jwt.getClaim("object"), is(notNullValue()));
         assertThat(jwt.getClaim("object").isNull(), is(true));
+    }
+
+    @Test
+    public void shouldGetAvailableClaims() throws Exception {
+        DecodedJWT jwt = JWTDecoder.decode("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOiIxMjM0NTY3ODkwIiwiaWF0IjoiMTIzNDU2Nzg5MCIsIm5iZiI6IjEyMzQ1Njc4OTAiLCJqdGkiOiJodHRwczovL2p3dC5pby8iLCJhdWQiOiJodHRwczovL2RvbWFpbi5hdXRoMC5jb20iLCJzdWIiOiJsb2dpbiIsImlzcyI6ImF1dGgwIiwiZXh0cmFDbGFpbSI6IkpvaG4gRG9lIn0.TX9Ct4feGp9YyeGK9Zl91tO0YBOrguJ4As9jeqgHdZQ");
+        assertThat(jwt, is(notNullValue()));
+        assertThat(jwt.getClaims(), is(notNullValue()));
+        assertThat(jwt.getClaims(), is(instanceOf(Map.class)));
+        assertThat(jwt.getClaims().get("exp"), is(notNullValue()));
+        assertThat(jwt.getClaims().get("iat"), is(notNullValue()));
+        assertThat(jwt.getClaims().get("nbf"), is(notNullValue()));
+        assertThat(jwt.getClaims().get("jti"), is(notNullValue()));
+        assertThat(jwt.getClaims().get("aud"), is(notNullValue()));
+        assertThat(jwt.getClaims().get("sub"), is(notNullValue()));
+        assertThat(jwt.getClaims().get("iss"), is(notNullValue()));
+        assertThat(jwt.getClaims().get("extraClaim"), is(notNullValue()));
     }
 
     //Helper Methods
