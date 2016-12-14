@@ -152,6 +152,15 @@ JWTVerifier verifier = JWT.require(Algorithm.RSA256(key))
     .build();
 ```
 
+If you need to test this behaviour in your lib/app cast the `Verification` instance to a `BaseVerification` to gain visibility of the `verification.build()` method that accepts a custom `Clock`. e.g.:
+
+```java
+BaseVerification verification = (BaseVerification) JWT.require(Algorithm.RSA256(key))
+    .acceptLeeway(1)
+    .acceptExpiresAt(5);
+Clock clock = new Clock();
+JWTVerifier verifier = verification.build(clock);
+```
 
 ### Header Claims
 

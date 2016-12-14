@@ -5,9 +5,9 @@ import java.util.Date;
 /**
  * The Clock class is used to wrap calls to Date class.
  */
-class Clock {
+public class Clock {
 
-    Clock() {
+    public Clock() {
     }
 
     /**
@@ -15,7 +15,7 @@ class Clock {
      *
      * @return a new Date representing Today's time.
      */
-    Date getToday() {
+    public Date getToday() {
         return new Date();
     }
 }
