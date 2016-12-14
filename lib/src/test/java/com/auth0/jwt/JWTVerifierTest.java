@@ -8,9 +8,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
@@ -130,14 +128,6 @@ public class JWTVerifierTest {
         exception.expectMessage("The Custom Claim's name can't be null.");
         JWTVerifier.init(Algorithm.HMAC256("secret"))
                 .withClaim(null, "value");
-    }
-
-    @Test
-    public void shouldThrowOnIllegalCustomClaimValueClass() throws Exception {
-        exception.expect(IllegalArgumentException.class);
-        exception.expectMessage("The Custom Claim's value class must be an instance of Integer, Double, Boolean, Date or String.");
-        JWTVerifier.init(Algorithm.HMAC256("secret"))
-                .withClaim("name", new Object());
     }
 
     @Test
@@ -263,6 +253,38 @@ public class JWTVerifierTest {
         assertThat(jwt, is(notNullValue()));
     }
 
+    @Test
+    public void shouldValidateCustomClaimOfCustomType() throws Exception {
+        String token = "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyIjp7Im5hbWUiOiJqb2huIiwiaWQiOjEyM319.j3e7IfnEchQEwgDs1icOyufhzAyNOYfX9fjJwV6uyZk";
+        DecodedJWT jwt = JWTVerifier.init(Algorithm.HMAC256("secret"))
+                .withClaim("user", new UserPojo("john", 123))
+                .build()
+                .verify(token);
+
+        assertThat(jwt, is(notNullValue()));
+    }
+
+    @Test
+    public void shouldValidateCustomClaimOfTypeArray() throws Exception {
+        String token = "eyJhbGciOiJIUzI1NiJ9.eyJuYW1lIjpbInRleHQiLDEyMyx0cnVlXX0.uSulPFzLSbgfG8Lpr0jq0JDMhDlGGeQrx09PHEymu1E";
+        DecodedJWT jwt = JWTVerifier.init(Algorithm.HMAC256("secret"))
+                .withClaim("name", new Object[]{"text", 123, true})
+                .build()
+                .verify(token);
+
+        assertThat(jwt, is(notNullValue()));
+    }
+
+    @Test
+    public void shouldValidateCustomClaimOfTypeList() throws Exception {
+        String token = "eyJhbGciOiJIUzI1NiJ9.eyJuYW1lIjpbInRleHQiLDEyMyx0cnVlXX0.uSulPFzLSbgfG8Lpr0jq0JDMhDlGGeQrx09PHEymu1E";
+        DecodedJWT jwt = JWTVerifier.init(Algorithm.HMAC256("secret"))
+                .withClaim("name", new ArrayList<>(Arrays.asList("text", 123, true)))
+                .build()
+                .verify(token);
+
+        assertThat(jwt, is(notNullValue()));
+    }
 
     // Generic Delta
     @SuppressWarnings("RedundantCast")

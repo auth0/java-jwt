@@ -7,13 +7,15 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.MissingNode;
 import com.fasterxml.jackson.databind.node.NullNode;
-import org.hamcrest.collection.IsMapContaining;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Map;
 
 import static com.auth0.jwt.impl.JWTParser.getDefaultObjectMapper;
 import static com.auth0.jwt.impl.JsonNodeClaim.claimFromNode;
@@ -223,7 +225,7 @@ public class JsonNodeClaimTest {
         claim.as(String.class);
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "RedundantCast"})
     @Test
     public void shouldGetAsMapValue() throws Exception {
         JsonNode value = mapper.valueToTree(Collections.singletonMap("key", new UserPojo("john", 123)));
@@ -231,8 +233,8 @@ public class JsonNodeClaimTest {
 
         assertThat(claim, is(notNullValue()));
         Map map = claim.as(Map.class);
-        assertThat(((HashMap<String, Object>) map.get("key")), IsMapContaining.hasEntry("name", "john"));
-        assertThat(((HashMap<String, Object>) map.get("key")), IsMapContaining.hasEntry("id", 123));
+        assertThat(((Map<String, Object>) map.get("key")), hasEntry("name", (Object) "john"));
+        assertThat(((Map<String, Object>) map.get("key")), hasEntry("id", (Object) 123));
     }
 
     @Test
