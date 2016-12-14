@@ -90,6 +90,16 @@ class JsonNodeClaim implements Claim {
     }
 
     @Override
+    public <T> T as(Class<T> tClazz) throws JWTDecodeException {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            return mapper.treeToValue(data, tClazz);
+        } catch (JsonProcessingException e) {
+            throw new JWTDecodeException("Couldn't map the Claim value to " + tClazz.getSimpleName(), e);
+        }
+    }
+
+    @Override
     public boolean isNull() {
         return !(data.isArray() || data.canConvertToLong() || data.isTextual() || data.isNumber() || data.isBoolean());
     }

@@ -286,8 +286,6 @@ JWT.require(Algorithm.HMAC256("secret"))
     .verify("my.jwt.token");
 ```
 
-> The value of the custom Claim in all the cases must be of a `Integer`, `Double`, `Date`, `String`, or `Boolean` class.
-
 
 ### Claim Class
 The Claim class is a wrapper for the Claim values. It allows you to get the Claim as different class types. The available helpers are:
@@ -299,13 +297,14 @@ The Claim class is a wrapper for the Claim values. It allows you to get the Clai
 * **asString()**: Returns the String value or null if it can't be converted.
 * **asDate()**: Returns the Date value or null if it can't be converted. This must be a NumericDate (Unix Epoch/Timestamp). Note that the [JWT Standard](https://tools.ietf.org/html/rfc7519#section-2) specified that all the *NumericDate* values must be in seconds.
 
-#### Collections
+#### Custom Class and Collections
 To obtain a Claim as a Collection you'll need to provide the **Class Type** of the contents to convert from.
 
+* **as(class)**: Returns the value parsed as **Class Type**.
 * **asArray(class)**: Returns the value parsed as an Array of elements of type **Class Type**, or null if the value isn't a JSON Array.
 * **asList(class)**: Returns the value parsed as a List of elements of type **Class Type**, or null if the value isn't a JSON Array.
 
-If the values inside the JSON Array can't be converted to the given **Class Type**, a `JWTDecodeException` will raise.
+If the values can't be converted to the given **Class Type** a `JWTDecodeException` will raise.
 
 
 

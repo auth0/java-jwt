@@ -69,4 +69,12 @@ public interface Claim {
      * @throws JWTDecodeException if the values inside the List can't be converted to a class T.
      */
     <T> List<T> asList(Class<T> tClazz) throws JWTDecodeException;
+
+    /**
+     * Get this Claim as a custom type T.
+     *
+     * @return the value as instance of T.
+     * @throws JWTDecodeException if the value can't be converted to a class T.
+     */
+    <T> T as(Class<T> tClazz) throws JWTDecodeException;
 }
