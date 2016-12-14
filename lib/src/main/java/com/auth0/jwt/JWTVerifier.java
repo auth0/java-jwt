@@ -7,6 +7,7 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.impl.PublicClaims;
 import com.auth0.jwt.interfaces.Claim;
+import com.auth0.jwt.interfaces.Clock;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.Verification;
 import org.apache.commons.codec.binary.Base64;
@@ -278,7 +279,7 @@ public final class JWTVerifier {
          */
         @Override
         public JWTVerifier build() {
-            return this.build(new Clock());
+            return this.build(new ClockImpl());
         }
 
         /**

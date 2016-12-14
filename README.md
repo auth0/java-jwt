@@ -158,7 +158,7 @@ If you need to test this behaviour in your lib/app cast the `Verification` insta
 BaseVerification verification = (BaseVerification) JWT.require(Algorithm.RSA256(key))
     .acceptLeeway(1)
     .acceptExpiresAt(5);
-Clock clock = new Clock();
+Clock clock = new CustomClock(); //Must implement Clock interface
 JWTVerifier verifier = verification.build(clock);
 ```
 
