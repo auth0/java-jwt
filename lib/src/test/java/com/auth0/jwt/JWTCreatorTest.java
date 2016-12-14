@@ -5,9 +5,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
@@ -154,14 +152,6 @@ public class JWTCreatorTest {
     }
 
     @Test
-    public void shouldThrowOnIllegalCustomClaimValueClass() throws Exception {
-        exception.expect(IllegalArgumentException.class);
-        exception.expectMessage("The Custom Claim's value class must be an instance of Integer, Double, Boolean, Date or String.");
-        JWTCreator.init()
-                .withClaim("name", new Object());
-    }
-
-    @Test
     public void shouldAcceptCustomClaimOfTypeString() throws Exception {
         String jwt = JWTCreator.init()
                 .withClaim("name", "value")
@@ -217,4 +207,47 @@ public class JWTCreatorTest {
         assertThat(jwt, is(token));
     }
 
+    @Test
+    public void shouldAcceptCustomClaimOfTypeArray() throws Exception {
+        String jwt = JWTCreator.init()
+                .withClaim("name", new Object[]{"text", 123, true})
+                .sign(Algorithm.HMAC256("secret"));
+        String token = "eyJhbGciOiJIUzI1NiJ9.eyJuYW1lIjpbInRleHQiLDEyMyx0cnVlXX0.uSulPFzLSbgfG8Lpr0jq0JDMhDlGGeQrx09PHEymu1E";
+
+        assertThat(jwt, is(notNullValue()));
+        assertThat(jwt, is(token));
+    }
+
+    @Test
+    public void shouldAcceptCustomClaimOfTypeList() throws Exception {
+        String jwt = JWTCreator.init()
+                .withClaim("name", Arrays.asList("text", 123, true))
+                .sign(Algorithm.HMAC256("secret"));
+        String token = "eyJhbGciOiJIUzI1NiJ9.eyJuYW1lIjpbInRleHQiLDEyMyx0cnVlXX0.uSulPFzLSbgfG8Lpr0jq0JDMhDlGGeQrx09PHEymu1E";
+
+        assertThat(jwt, is(notNullValue()));
+        assertThat(jwt, is(token));
+    }
+
+    @Test
+    public void shouldAcceptCustomClaimOfTypeMap() throws Exception {
+        String jwt = JWTCreator.init()
+                .withClaim("name", Collections.singletonMap("value", new Object[]{"text", 123, true}))
+                .sign(Algorithm.HMAC256("secret"));
+        String token = "eyJhbGciOiJIUzI1NiJ9.eyJuYW1lIjp7InZhbHVlIjpbInRleHQiLDEyMyx0cnVlXX19.CtZqZMoG__8yJQisT__pcv3NlynrkDl6qvq4sERx6D0";
+
+        assertThat(jwt, is(notNullValue()));
+        assertThat(jwt, is(token));
+    }
+
+    @Test
+    public void shouldAcceptCustomClaimOfTypeObject() throws Exception {
+        String jwt = JWTCreator.init()
+                .withClaim("name", new UserPojo("john", 123))
+                .sign(Algorithm.HMAC256("secret"));
+        String token = "eyJhbGciOiJIUzI1NiJ9.eyJuYW1lIjp7Im5hbWUiOiJqb2huIiwiaWQiOjEyM319.4ar5Q2vy8h7mw-FjFp1XRoiiKQrrPqdrSqEfATCGmNM";
+
+        assertThat(jwt, is(notNullValue()));
+        assertThat(jwt, is(token));
+    }
 }

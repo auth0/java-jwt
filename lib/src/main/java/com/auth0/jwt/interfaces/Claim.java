@@ -54,18 +54,18 @@ public interface Claim {
 
     /**
      * Get this Claim as an Array of type T.
-     * If the value isn't an Array, an empty Array will be returned.
+     * If the value isn't an Array, null will be returned.
      *
-     * @return the value as an Array or an empty Array.
+     * @return the value as an Array or null.
      * @throws JWTDecodeException if the values inside the Array can't be converted to a class T.
      */
     <T> T[] asArray(Class<T> tClazz) throws JWTDecodeException;
 
     /**
      * Get this Claim as a List of type T.
-     * If the value isn't an Array, an empty List will be returned.
+     * If the value isn't an Array, null will be returned.
      *
-     * @return the value as a List or an empty List.
+     * @return the value as a List or null.
      * @throws JWTDecodeException if the values inside the List can't be converted to a class T.
      */
     <T> List<T> asList(Class<T> tClazz) throws JWTDecodeException;
