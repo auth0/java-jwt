@@ -11,6 +11,7 @@ import org.apache.commons.codec.binary.StringUtils;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * The JWTDecoder class holds the decode method to parse a given JWT token into it's JWT representation.
@@ -107,6 +108,11 @@ final class JWTDecoder extends JWT {
     @Override
     public Claim getClaim(String name) {
         return payload.getClaim(name);
+    }
+
+    @Override
+    public Map<String, Claim> getClaims() {
+        return payload.getClaims();
     }
 
     @Override

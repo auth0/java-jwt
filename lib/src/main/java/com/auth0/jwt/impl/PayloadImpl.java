@@ -76,4 +76,12 @@ class PayloadImpl implements Payload {
         return extractClaim(name, tree);
     }
 
+    @Override
+    public Map<String, Claim> getClaims() {
+        Map<String, Claim> claims = new HashMap<>();
+        for (String name : tree.keySet()) {
+            claims.put(name, extractClaim(name, tree));
+        }
+        return Collections.unmodifiableMap(claims);
+    }
 }

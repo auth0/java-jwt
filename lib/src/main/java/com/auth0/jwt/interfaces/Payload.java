@@ -2,6 +2,7 @@ package com.auth0.jwt.interfaces;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * The Payload class represents the 2nd part of the JWT, where the Payload value is hold.
@@ -58,10 +59,17 @@ public interface Payload {
     String getId();
 
     /**
-     * Get a Private Claim given it's name. If the Claim wasn't specified in the Payload, a NullClaim will be returned.
+     * Get a Claim given it's name. If the Claim wasn't specified in the Payload, a NullClaim will be returned.
      *
      * @param name the name of the Claim to retrieve.
      * @return a non-null Claim.
      */
     Claim getClaim(String name);
+
+    /**
+     * Get the Claims defined in the Token.
+     *
+     * @return a non-null Map containing the Claims defined in the Token.
+     */
+    Map<String, Claim> getClaims();
 }

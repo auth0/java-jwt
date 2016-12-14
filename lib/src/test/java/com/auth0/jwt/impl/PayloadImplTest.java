@@ -1,5 +1,6 @@
 package com.auth0.jwt.impl;
 
+import com.auth0.jwt.interfaces.Claim;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import org.hamcrest.collection.IsCollectionWithSize;
@@ -152,5 +153,28 @@ public class PayloadImplTest {
         assertThat(payload, is(notNullValue()));
         assertThat(payload.getClaim("missing"), is(notNullValue()));
         assertThat(payload.getClaim("missing"), is(instanceOf(NullClaim.class)));
+    }
+
+    @Test
+    public void shouldGetClaims() throws Exception {
+        Map<String, JsonNode> tree = new HashMap<>();
+        tree.put("extraClaim", new TextNode("extraValue"));
+        tree.put("sub", new TextNode("auth0"));
+        PayloadImpl payload = new PayloadImpl(null, null, null, null, null, null, null, tree);
+        assertThat(payload, is(notNullValue()));
+        Map<String, Claim> claims = payload.getClaims();
+        assertThat(claims, is(notNullValue()));
+
+        assertThat(claims.get("extraClaim"), is(notNullValue()));
+        assertThat(claims.get("sub"), is(notNullValue()));
+    }
+
+    @Test
+    public void shouldNotAllowToModifyClaimsMap() throws Exception {
+        assertThat(payload, is(notNullValue()));
+        Map<String, Claim> claims = payload.getClaims();
+        assertThat(claims, is(notNullValue()));
+        exception.expect(UnsupportedOperationException.class);
+        claims.put("name", null);
     }
 }
