@@ -286,6 +286,8 @@ JWT.require(Algorithm.HMAC256("secret"))
     .verify("my.jwt.token");
 ```
 
+> Currently supported classes for custom Claim verification are: Boolean, Integer, Double, String, Date and Array of types String and Integer.
+
 
 ### Claim Class
 The Claim class is a wrapper for the Claim values. It allows you to get the Claim as different class types. The available helpers are:

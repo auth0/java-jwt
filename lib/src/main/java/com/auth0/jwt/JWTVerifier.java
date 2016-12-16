@@ -99,9 +99,7 @@ public final class JWTVerifier {
          * @throws IllegalArgumentException if leeway is negative.
          */
         public Verification acceptLeeway(long leeway) throws IllegalArgumentException {
-            if (leeway < 0) {
-                throw new IllegalArgumentException("Leeway value can't be negative.");
-            }
+            assertPositive(leeway);
             this.defaultLeeway = leeway;
             return this;
         }
@@ -115,9 +113,7 @@ public final class JWTVerifier {
          * @throws IllegalArgumentException if leeway is negative.
          */
         public Verification acceptExpiresAt(long leeway) throws IllegalArgumentException {
-            if (leeway < 0) {
-                throw new IllegalArgumentException("Leeway value can't be negative.");
-            }
+            assertPositive(leeway);
             requireClaim(PublicClaims.EXPIRES_AT, leeway);
             return this;
         }
@@ -131,9 +127,7 @@ public final class JWTVerifier {
          * @throws IllegalArgumentException if leeway is negative.
          */
         public Verification acceptNotBefore(long leeway) throws IllegalArgumentException {
-            if (leeway < 0) {
-                throw new IllegalArgumentException("Leeway value can't be negative.");
-            }
+            assertPositive(leeway);
             requireClaim(PublicClaims.NOT_BEFORE, leeway);
             return this;
         }
@@ -147,9 +141,7 @@ public final class JWTVerifier {
          * @throws IllegalArgumentException if leeway is negative.
          */
         public Verification acceptIssuedAt(long leeway) throws IllegalArgumentException {
-            if (leeway < 0) {
-                throw new IllegalArgumentException("Leeway value can't be negative.");
-            }
+            assertPositive(leeway);
             requireClaim(PublicClaims.ISSUED_AT, leeway);
             return this;
         }
@@ -173,12 +165,93 @@ public final class JWTVerifier {
          * @return this same Verification instance.
          * @throws IllegalArgumentException if the name is null.
          */
-        public Verification withClaim(String name, Object value) throws IllegalArgumentException {
-            if (name == null) {
-                throw new IllegalArgumentException("The Custom Claim's name can't be null.");
-            }
-
+        public Verification withClaim(String name, Boolean value) throws IllegalArgumentException {
+            assertNonNull(name);
             requireClaim(name, value);
+            return this;
+        }
+
+        /**
+         * Require a specific Claim value.
+         *
+         * @param name  the Claim's name.
+         * @param value the Claim's value.
+         * @return this same Verification instance.
+         * @throws IllegalArgumentException if the name is null.
+         */
+        public Verification withClaim(String name, Integer value) throws IllegalArgumentException {
+            assertNonNull(name);
+            requireClaim(name, value);
+            return this;
+        }
+
+        /**
+         * Require a specific Claim value.
+         *
+         * @param name  the Claim's name.
+         * @param value the Claim's value.
+         * @return this same Verification instance.
+         * @throws IllegalArgumentException if the name is null.
+         */
+        public Verification withClaim(String name, Double value) throws IllegalArgumentException {
+            assertNonNull(name);
+            requireClaim(name, value);
+            return this;
+        }
+
+        /**
+         * Require a specific Claim value.
+         *
+         * @param name  the Claim's name.
+         * @param value the Claim's value.
+         * @return this same Verification instance.
+         * @throws IllegalArgumentException if the name is null.
+         */
+        public Verification withClaim(String name, String value) throws IllegalArgumentException {
+            assertNonNull(name);
+            requireClaim(name, value);
+            return this;
+        }
+
+        /**
+         * Require a specific Claim value.
+         *
+         * @param name  the Claim's name.
+         * @param value the Claim's value.
+         * @return this same Verification instance.
+         * @throws IllegalArgumentException if the name is null.
+         */
+        public Verification withClaim(String name, Date value) throws IllegalArgumentException {
+            assertNonNull(name);
+            requireClaim(name, value);
+            return this;
+        }
+
+        /**
+         * Require a specific Array Claim to contain at least the given items.
+         *
+         * @param name  the Claim's name.
+         * @param items the items the Claim must contain.
+         * @return this same Verification instance.
+         * @throws IllegalArgumentException if the name is null.
+         */
+        public Verification withArrayClaim(String name, String... items) throws IllegalArgumentException {
+            assertNonNull(name);
+            requireClaim(name, items);
+            return this;
+        }
+
+        /**
+         * Require a specific Array Claim to contain at least the given items.
+         *
+         * @param name  the Claim's name.
+         * @param items the items the Claim must contain.
+         * @return this same Verification instance.
+         * @throws IllegalArgumentException if the name is null.
+         */
+        public Verification withArrayClaim(String name, Integer... items) throws IllegalArgumentException {
+            assertNonNull(name);
+            requireClaim(name, items);
             return this;
         }
 
@@ -201,6 +274,18 @@ public final class JWTVerifier {
         JWTVerifier build(Clock clock) {
             addLeewayToDateClaims();
             return new JWTVerifier(algorithm, claims, clock);
+        }
+
+        private void assertPositive(long leeway) {
+            if (leeway < 0) {
+                throw new IllegalArgumentException("Leeway value can't be negative.");
+            }
+        }
+
+        private void assertNonNull(String name) {
+            if (name == null) {
+                throw new IllegalArgumentException("The Custom Claim's name can't be null.");
+            }
         }
 
         private void addLeewayToDateClaims() {
@@ -296,8 +381,10 @@ public final class JWTVerifier {
             isValid = value.equals(claim.asDouble());
         } else if (value instanceof Date) {
             isValid = value.equals(claim.asDate());
-        } else {
-            isValid = Objects.deepEquals(value, claim.as(value.getClass()));
+        } else if (value instanceof Object[]) {
+            List<Object> claimArr = Arrays.asList(claim.as(Object[].class));
+            List<Object> valueArr = Arrays.asList((Object[]) value);
+            isValid = claimArr.containsAll(valueArr);
         }
 
         if (!isValid) {

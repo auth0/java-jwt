@@ -8,7 +8,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
@@ -254,10 +256,10 @@ public class JWTVerifierTest {
     }
 
     @Test
-    public void shouldValidateCustomClaimOfCustomType() throws Exception {
-        String token = "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyIjp7Im5hbWUiOiJqb2huIiwiaWQiOjEyM319.j3e7IfnEchQEwgDs1icOyufhzAyNOYfX9fjJwV6uyZk";
+    public void shouldValidateCustomArrayClaimOfTypeString() throws Exception {
+        String token = "eyJhbGciOiJIUzI1NiJ9.eyJuYW1lIjpbInRleHQiLCIxMjMiLCJ0cnVlIl19.lxM8EcmK1uSZRAPd0HUhXGZJdauRmZmLjoeqz4J9yAA";
         DecodedJWT jwt = JWTVerifier.init(Algorithm.HMAC256("secret"))
-                .withClaim("user", new UserPojo("john", 123))
+                .withArrayClaim("name", "text", "123", "true")
                 .build()
                 .verify(token);
 
@@ -265,21 +267,10 @@ public class JWTVerifierTest {
     }
 
     @Test
-    public void shouldValidateCustomClaimOfTypeArray() throws Exception {
-        String token = "eyJhbGciOiJIUzI1NiJ9.eyJuYW1lIjpbInRleHQiLDEyMyx0cnVlXX0.uSulPFzLSbgfG8Lpr0jq0JDMhDlGGeQrx09PHEymu1E";
+    public void shouldValidateCustomArrayClaimOfTypeInteger() throws Exception {
+        String token = "eyJhbGciOiJIUzI1NiJ9.eyJuYW1lIjpbMSwyLDNdfQ.UEuMKRQYrzKAiPpPLhIVawWkKWA1zj0_GderrWUIyFE";
         DecodedJWT jwt = JWTVerifier.init(Algorithm.HMAC256("secret"))
-                .withClaim("name", new Object[]{"text", 123, true})
-                .build()
-                .verify(token);
-
-        assertThat(jwt, is(notNullValue()));
-    }
-
-    @Test
-    public void shouldValidateCustomClaimOfTypeList() throws Exception {
-        String token = "eyJhbGciOiJIUzI1NiJ9.eyJuYW1lIjpbInRleHQiLDEyMyx0cnVlXX0.uSulPFzLSbgfG8Lpr0jq0JDMhDlGGeQrx09PHEymu1E";
-        DecodedJWT jwt = JWTVerifier.init(Algorithm.HMAC256("secret"))
-                .withClaim("name", new ArrayList<>(Arrays.asList("text", 123, true)))
+                .withArrayClaim("name", 1, 2, 3)
                 .build()
                 .verify(token);
 
