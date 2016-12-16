@@ -274,6 +274,7 @@ When creating a Token with the `JWT.create()` you can specify a custom Claim by 
 ```java
 JWT.create()
     .withClaim("name", 123)
+    .withArrayClaim("array", new Integer[]{1, 2, 3})
     .sign(Algorithm.HMAC256("secret"));
 ```
 
@@ -282,11 +283,12 @@ You can also verify custom Claims on the `JWT.require()` by calling `withClaim()
 ```java
 JWT.require(Algorithm.HMAC256("secret"))
     .withClaim("name", 123)
+    .withArrayClaim("array", 1, 2, 3)
     .build()
     .verify("my.jwt.token");
 ```
 
-> Currently supported classes for custom Claim verification are: Boolean, Integer, Double, String, Date and Array of types String and Integer.
+> Currently supported classes for custom JWT Claim creation and verification are: Boolean, Integer, Double, String, Date and Arrays of type String and Integer.
 
 
 ### Claim Class
@@ -299,7 +301,7 @@ The Claim class is a wrapper for the Claim values. It allows you to get the Clai
 * **asString()**: Returns the String value or null if it can't be converted.
 * **asDate()**: Returns the Date value or null if it can't be converted. This must be a NumericDate (Unix Epoch/Timestamp). Note that the [JWT Standard](https://tools.ietf.org/html/rfc7519#section-2) specified that all the *NumericDate* values must be in seconds.
 
-#### Custom Class and Collections
+#### Custom Classes and Collections
 To obtain a Claim as a Collection you'll need to provide the **Class Type** of the contents to convert from.
 
 * **as(class)**: Returns the value parsed as **Class Type**. For collections you should use the `asArray` and `asList` methods.
