@@ -427,7 +427,7 @@ public class ECDSAAlgorithmTest {
 
         ECKey key = mock(ECKey.class, withSettings().extraInterfaces(ECPrivateKey.class));
         Algorithm algorithm = new ECDSAAlgorithm(crypto, "some-alg", "some-algorithm", 32, key);
-        algorithm.sign(ES256Header.getBytes());
+        algorithm.sign(ES256Header.getBytes(StandardCharsets.UTF_8));
     }
 
     @Test
