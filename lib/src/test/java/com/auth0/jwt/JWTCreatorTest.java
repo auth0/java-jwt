@@ -154,14 +154,6 @@ public class JWTCreatorTest {
     }
 
     @Test
-    public void shouldThrowOnIllegalCustomClaimValueClass() throws Exception {
-        exception.expect(IllegalArgumentException.class);
-        exception.expectMessage("The Custom Claim's value class must be an instance of Integer, Double, Boolean, Date or String.");
-        JWTCreator.init()
-                .withClaim("name", new Object());
-    }
-
-    @Test
     public void shouldAcceptCustomClaimOfTypeString() throws Exception {
         String jwt = JWTCreator.init()
                 .withClaim("name", "value")
@@ -217,4 +209,25 @@ public class JWTCreatorTest {
         assertThat(jwt, is(token));
     }
 
+    @Test
+    public void shouldAcceptCustomArrayClaimOfTypeString() throws Exception {
+        String jwt = JWTCreator.init()
+                .withArrayClaim("name", new String[]{"text", "123", "true"})
+                .sign(Algorithm.HMAC256("secret"));
+        String token = "eyJhbGciOiJIUzI1NiJ9.eyJuYW1lIjpbInRleHQiLCIxMjMiLCJ0cnVlIl19.lxM8EcmK1uSZRAPd0HUhXGZJdauRmZmLjoeqz4J9yAA";
+
+        assertThat(jwt, is(notNullValue()));
+        assertThat(jwt, is(token));
+    }
+
+    @Test
+    public void shouldAcceptCustomArrayClaimOfTypeInteger() throws Exception {
+        String jwt = JWTCreator.init()
+                .withArrayClaim("name", new Integer[]{1, 2, 3})
+                .sign(Algorithm.HMAC256("secret"));
+        String token = "eyJhbGciOiJIUzI1NiJ9.eyJuYW1lIjpbMSwyLDNdfQ.UEuMKRQYrzKAiPpPLhIVawWkKWA1zj0_GderrWUIyFE";
+
+        assertThat(jwt, is(notNullValue()));
+        assertThat(jwt, is(token));
+    }
 }

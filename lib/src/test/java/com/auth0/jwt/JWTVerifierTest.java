@@ -133,14 +133,6 @@ public class JWTVerifierTest {
     }
 
     @Test
-    public void shouldThrowOnIllegalCustomClaimValueClass() throws Exception {
-        exception.expect(IllegalArgumentException.class);
-        exception.expectMessage("The Custom Claim's value class must be an instance of Integer, Double, Boolean, Date or String.");
-        JWTVerifier.init(Algorithm.HMAC256("secret"))
-                .withClaim("name", new Object());
-    }
-
-    @Test
     public void shouldThrowOnInvalidCustomClaimValueOfTypeString() throws Exception {
         exception.expect(InvalidClaimException.class);
         exception.expectMessage("The Claim 'name' value doesn't match the required one.");
@@ -263,6 +255,27 @@ public class JWTVerifierTest {
         assertThat(jwt, is(notNullValue()));
     }
 
+    @Test
+    public void shouldValidateCustomArrayClaimOfTypeString() throws Exception {
+        String token = "eyJhbGciOiJIUzI1NiJ9.eyJuYW1lIjpbInRleHQiLCIxMjMiLCJ0cnVlIl19.lxM8EcmK1uSZRAPd0HUhXGZJdauRmZmLjoeqz4J9yAA";
+        DecodedJWT jwt = JWTVerifier.init(Algorithm.HMAC256("secret"))
+                .withArrayClaim("name", "text", "123", "true")
+                .build()
+                .verify(token);
+
+        assertThat(jwt, is(notNullValue()));
+    }
+
+    @Test
+    public void shouldValidateCustomArrayClaimOfTypeInteger() throws Exception {
+        String token = "eyJhbGciOiJIUzI1NiJ9.eyJuYW1lIjpbMSwyLDNdfQ.UEuMKRQYrzKAiPpPLhIVawWkKWA1zj0_GderrWUIyFE";
+        DecodedJWT jwt = JWTVerifier.init(Algorithm.HMAC256("secret"))
+                .withArrayClaim("name", 1, 2, 3)
+                .build()
+                .verify(token);
+
+        assertThat(jwt, is(notNullValue()));
+    }
 
     // Generic Delta
     @SuppressWarnings("RedundantCast")
