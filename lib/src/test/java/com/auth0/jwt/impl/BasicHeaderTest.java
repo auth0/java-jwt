@@ -14,7 +14,7 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
-public class HeaderImplTest {
+public class BasicHeaderTest {
 
     @Rule
     public ExpectedException exception = ExpectedException.none();

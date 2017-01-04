@@ -13,16 +13,18 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
+import java.util.Map;
 
-import static com.auth0.jwt.impl.JsonNodeClaim.claimFromNode;
 import static com.auth0.jwt.impl.JWTParser.getDefaultObjectMapper;
+import static com.auth0.jwt.impl.JsonNodeClaim.claimFromNode;
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertThat;
 
-public class ClaimImplTest {
+public class JsonNodeClaimTest {
 
     private ObjectMapper mapper;
     @Rule
@@ -202,6 +204,37 @@ public class ClaimImplTest {
 
         exception.expect(JWTDecodeException.class);
         claim.asList(UserPojo.class);
+    }
+
+    @Test
+    public void shouldGetCustomClassValue() throws Exception {
+        JsonNode value = mapper.valueToTree(new UserPojo("john", 123));
+        Claim claim = claimFromNode(value);
+
+        assertThat(claim, is(notNullValue()));
+        assertThat(claim.as(UserPojo.class).getName(), is("john"));
+        assertThat(claim.as(UserPojo.class).getId(), is(123));
+    }
+
+    @Test
+    public void shouldThrowIfCustomClassMismatch() throws Exception {
+        JsonNode value = mapper.valueToTree(new UserPojo("john", 123));
+        Claim claim = claimFromNode(value);
+
+        exception.expect(JWTDecodeException.class);
+        claim.as(String.class);
+    }
+
+    @SuppressWarnings({"unchecked", "RedundantCast"})
+    @Test
+    public void shouldGetAsMapValue() throws Exception {
+        JsonNode value = mapper.valueToTree(Collections.singletonMap("key", new UserPojo("john", 123)));
+        Claim claim = claimFromNode(value);
+
+        assertThat(claim, is(notNullValue()));
+        Map map = claim.as(Map.class);
+        assertThat(((Map<String, Object>) map.get("key")), hasEntry("name", (Object) "john"));
+        assertThat(((Map<String, Object>) map.get("key")), hasEntry("id", (Object) 123));
     }
 
     @Test

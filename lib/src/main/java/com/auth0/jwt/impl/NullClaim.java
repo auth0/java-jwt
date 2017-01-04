@@ -49,4 +49,9 @@ public class NullClaim implements Claim {
     public <T> List<T> asList(Class<T> tClazz) throws JWTDecodeException {
         return null;
     }
+
+    @Override
+    public <T> T as(Class<T> tClazz) throws JWTDecodeException {
+        return null;
+    }
 }

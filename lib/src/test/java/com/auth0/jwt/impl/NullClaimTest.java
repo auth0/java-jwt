@@ -8,7 +8,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
-public class BaseClaimTest {
+public class NullClaimTest {
     private NullClaim claim;
 
     @Before
@@ -54,6 +54,11 @@ public class BaseClaimTest {
     @Test
     public void shouldGetAsList() throws Exception {
         assertThat(claim.asList(Object.class), is(nullValue()));
+    }
+
+    @Test
+    public void shouldGetAsCustomClass() throws Exception {
+        assertThat(claim.as(Object.class), is(nullValue()));
     }
 
 }

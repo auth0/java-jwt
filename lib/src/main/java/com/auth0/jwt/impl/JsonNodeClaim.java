@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Date;
@@ -87,6 +88,16 @@ class JsonNodeClaim implements Claim {
             }
         }
         return list;
+    }
+
+    @Override
+    public <T> T as(Class<T> tClazz) throws JWTDecodeException {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            return mapper.treeAsTokens(data).readValueAs(tClazz);
+        } catch (IOException e) {
+            throw new JWTDecodeException("Couldn't map the Claim value to " + tClazz.getSimpleName(), e);
+        }
     }
 
     @Override
