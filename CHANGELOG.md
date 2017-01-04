@@ -1,5 +1,13 @@
 # Change Log
 
+## [3.1.0](https://github.com/auth0/java-jwt/tree/3.1.0) (2017-01-04)
+[Full Changelog](https://github.com/auth0/java-jwt/compare/3.0.2...3.1.0)
+
+**Added**
+- Make Clock customization accessible for verification [\#125](https://github.com/auth0/java-jwt/pull/125) ([lbalmaceda](https://github.com/lbalmaceda))
+- Add getter for all the Payload's Claims [\#124](https://github.com/auth0/java-jwt/pull/124) ([lbalmaceda](https://github.com/lbalmaceda))
+- Accept Array type on verification and creation. [\#123](https://github.com/auth0/java-jwt/pull/123) ([lbalmaceda](https://github.com/lbalmaceda))
+
 ## [3.0.2](https://github.com/auth0/java-jwt/tree/3.0.2) (2016-12-13)
 [Full Changelog](https://github.com/auth0/java-jwt/compare/3.0.1...3.0.2)
 
