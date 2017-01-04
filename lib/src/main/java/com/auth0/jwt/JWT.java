@@ -2,18 +2,15 @@ package com.auth0.jwt;
 
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTDecodeException;
-import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
-
-import java.util.Date;
-import java.util.List;
+import com.auth0.jwt.interfaces.Verification;
 
 @SuppressWarnings("WeakerAccess")
 public abstract class JWT implements DecodedJWT {
 
     /**
      * Decode a given JWT token.
-     *
+     * <p>
      * Note that this method <b>doesn't verify the token's signature!</b> Use it only if you trust the token or you already verified it.
      *
      * @param token with jwt format as string.
@@ -31,7 +28,7 @@ public abstract class JWT implements DecodedJWT {
      * @return {@link JWTVerifier} builder
      * @throws IllegalArgumentException if the provided algorithm is null.
      */
-    public static JWTVerifier.Verification require(Algorithm algorithm) {
+    public static Verification require(Algorithm algorithm) {
         return JWTVerifier.init(algorithm);
     }
 

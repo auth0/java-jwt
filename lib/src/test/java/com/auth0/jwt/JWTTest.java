@@ -1,6 +1,7 @@
 package com.auth0.jwt;
 
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.Clock;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import org.hamcrest.collection.IsCollectionWithSize;
 import org.hamcrest.core.IsCollectionContaining;
@@ -242,7 +243,8 @@ public class JWTTest {
         when(clock.getToday()).thenReturn(expectedDate);
 
         String token = "eyJhbGciOiJIUzI1NiJ9.eyJleHAiOjE0Nzc1OTJ9.x_ZjkPkKYUV5tdvc0l8go6D_z2kez1MQcOxokXrDc3k";
-        DecodedJWT jwt = JWT.require(Algorithm.HMAC256("secret"))
+        JWTVerifier.BaseVerification verification = (JWTVerifier.BaseVerification) JWT.require(Algorithm.HMAC256("secret"));
+        DecodedJWT jwt = verification
                 .build(clock)
                 .verify(token);
 
@@ -259,7 +261,8 @@ public class JWTTest {
         when(clock.getToday()).thenReturn(expectedDate);
 
         String token = "eyJhbGciOiJIUzI1NiJ9.eyJuYmYiOjE0Nzc1OTJ9.mWYSOPoNXstjKbZkKrqgkwPOQWEx3F3gMm6PMcfuJd8";
-        DecodedJWT jwt = JWT.require(Algorithm.HMAC256("secret"))
+        JWTVerifier.BaseVerification verification = (JWTVerifier.BaseVerification) JWT.require(Algorithm.HMAC256("secret"));
+        DecodedJWT jwt = verification
                 .build(clock)
                 .verify(token);
 
@@ -276,7 +279,8 @@ public class JWTTest {
         when(clock.getToday()).thenReturn(expectedDate);
 
         String token = "eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE0Nzc1OTJ9.5o1CKlLFjKKcddZzoarQ37pq7qZqNPav3sdZ_bsZaD4";
-        DecodedJWT jwt = JWT.require(Algorithm.HMAC256("secret"))
+        JWTVerifier.BaseVerification verification = (JWTVerifier.BaseVerification) JWT.require(Algorithm.HMAC256("secret"));
+        DecodedJWT jwt = verification
                 .build(clock)
                 .verify(token);
 
@@ -289,7 +293,8 @@ public class JWTTest {
     @Test
     public void shouldGetId() throws Exception {
         String token = "eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiIxMjM0NTY3ODkwIn0.m3zgEfVUFOd-CvL3xG5BuOWLzb0zMQZCqiVNQQOPOvA";
-        DecodedJWT jwt = JWT.require(Algorithm.HMAC256("secret"))
+        JWTVerifier.BaseVerification verification = (JWTVerifier.BaseVerification) JWT.require(Algorithm.HMAC256("secret"));
+        DecodedJWT jwt = verification
                 .build()
                 .verify(token);
 

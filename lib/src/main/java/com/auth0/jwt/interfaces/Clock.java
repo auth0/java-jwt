@@ -1,21 +1,16 @@
-package com.auth0.jwt;
+package com.auth0.jwt.interfaces;
 
 import java.util.Date;
 
 /**
  * The Clock class is used to wrap calls to Date class.
  */
-class Clock {
-
-    Clock() {
-    }
+public interface Clock {
 
     /**
      * Returns a new Date representing Today's time.
      *
      * @return a new Date representing Today's time.
      */
-    Date getToday() {
-        return new Date();
-    }
+    Date getToday();
 }

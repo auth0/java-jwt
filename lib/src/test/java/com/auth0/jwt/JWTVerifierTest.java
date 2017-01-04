@@ -3,6 +3,7 @@ package com.auth0.jwt;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.AlgorithmMismatchException;
 import com.auth0.jwt.exceptions.InvalidClaimException;
+import com.auth0.jwt.interfaces.Clock;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import org.junit.Rule;
 import org.junit.Test;
@@ -195,7 +196,7 @@ public class JWTVerifierTest {
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjpbInNvbWV0aGluZyJdfQ.3ENLez6tU_fG0SVFrGmISltZPiXLSHaz_dyn-XFTEGQ";
         Map<String, Object> map = new HashMap<>();
         map.put("name", new Object());
-        JWTVerifier verifier = new JWTVerifier(Algorithm.HMAC256("secret"), map, new Clock());
+        JWTVerifier verifier = new JWTVerifier(Algorithm.HMAC256("secret"), map, new ClockImpl());
         verifier.verify(token);
     }
 
@@ -366,8 +367,9 @@ public class JWTVerifierTest {
         when(clock.getToday()).thenReturn(new Date(DATE_TOKEN_MS_VALUE + 1000));
 
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE0Nzc1OTJ9.isvT0Pqx0yjnZk53mUFSeYFJLDs-Ls9IsNAm86gIdZo";
-        DecodedJWT jwt = JWTVerifier.init(Algorithm.HMAC256("secret"))
-                .acceptExpiresAt(2)
+        JWTVerifier.BaseVerification verification = (JWTVerifier.BaseVerification) JWTVerifier.init(Algorithm.HMAC256("secret"))
+                .acceptExpiresAt(2);
+        DecodedJWT jwt = verification
                 .build(clock)
                 .verify(token);
 
@@ -380,7 +382,8 @@ public class JWTVerifierTest {
         when(clock.getToday()).thenReturn(new Date(DATE_TOKEN_MS_VALUE));
 
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE0Nzc1OTJ9.isvT0Pqx0yjnZk53mUFSeYFJLDs-Ls9IsNAm86gIdZo";
-        DecodedJWT jwt = JWTVerifier.init(Algorithm.HMAC256("secret"))
+        JWTVerifier.BaseVerification verification = (JWTVerifier.BaseVerification) JWTVerifier.init(Algorithm.HMAC256("secret"));
+        DecodedJWT jwt = verification
                 .build(clock)
                 .verify(token);
 
@@ -395,7 +398,8 @@ public class JWTVerifierTest {
         when(clock.getToday()).thenReturn(new Date(DATE_TOKEN_MS_VALUE + 1000));
 
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE0Nzc1OTJ9.isvT0Pqx0yjnZk53mUFSeYFJLDs-Ls9IsNAm86gIdZo";
-        JWTVerifier.init(Algorithm.HMAC256("secret"))
+        JWTVerifier.BaseVerification verification = (JWTVerifier.BaseVerification) JWTVerifier.init(Algorithm.HMAC256("secret"));
+        verification
                 .build(clock)
                 .verify(token);
     }
@@ -416,8 +420,9 @@ public class JWTVerifierTest {
         when(clock.getToday()).thenReturn(new Date(DATE_TOKEN_MS_VALUE - 1000));
 
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYmYiOjE0Nzc1OTJ9.wq4ZmnSF2VOxcQBxPLfeh1J2Ozy1Tj5iUaERm3FKaw8";
-        DecodedJWT jwt = JWTVerifier.init(Algorithm.HMAC256("secret"))
-                .acceptNotBefore(2)
+        JWTVerifier.BaseVerification verification = (JWTVerifier.BaseVerification) JWTVerifier.init(Algorithm.HMAC256("secret"))
+                .acceptNotBefore(2);
+        DecodedJWT jwt = verification
                 .build(clock)
                 .verify(token);
 
@@ -432,7 +437,8 @@ public class JWTVerifierTest {
         when(clock.getToday()).thenReturn(new Date(DATE_TOKEN_MS_VALUE - 1000));
 
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYmYiOjE0Nzc1OTJ9.wq4ZmnSF2VOxcQBxPLfeh1J2Ozy1Tj5iUaERm3FKaw8";
-        JWTVerifier.init(Algorithm.HMAC256("secret"))
+        JWTVerifier.BaseVerification verification = (JWTVerifier.BaseVerification) JWTVerifier.init(Algorithm.HMAC256("secret"));
+        verification
                 .build(clock)
                 .verify(token);
     }
@@ -443,7 +449,8 @@ public class JWTVerifierTest {
         when(clock.getToday()).thenReturn(new Date(DATE_TOKEN_MS_VALUE));
 
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE0Nzc1OTJ9.isvT0Pqx0yjnZk53mUFSeYFJLDs-Ls9IsNAm86gIdZo";
-        DecodedJWT jwt = JWTVerifier.init(Algorithm.HMAC256("secret"))
+        JWTVerifier.BaseVerification verification = (JWTVerifier.BaseVerification) JWTVerifier.init(Algorithm.HMAC256("secret"));
+        DecodedJWT jwt = verification
                 .build(clock)
                 .verify(token);
 
@@ -466,8 +473,9 @@ public class JWTVerifierTest {
         when(clock.getToday()).thenReturn(new Date(DATE_TOKEN_MS_VALUE - 1000));
 
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE0Nzc1OTJ9.0WJky9eLN7kuxLyZlmbcXRL3Wy8hLoNCEk5CCl2M4lo";
-        DecodedJWT jwt = JWTVerifier.init(Algorithm.HMAC256("secret"))
-                .acceptIssuedAt(2)
+        JWTVerifier.BaseVerification verification = (JWTVerifier.BaseVerification) JWTVerifier.init(Algorithm.HMAC256("secret"))
+                .acceptIssuedAt(2);
+        DecodedJWT jwt = verification
                 .build(clock)
                 .verify(token);
 
@@ -482,7 +490,8 @@ public class JWTVerifierTest {
         when(clock.getToday()).thenReturn(new Date(DATE_TOKEN_MS_VALUE - 1000));
 
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE0Nzc1OTJ9.0WJky9eLN7kuxLyZlmbcXRL3Wy8hLoNCEk5CCl2M4lo";
-        JWTVerifier.init(Algorithm.HMAC256("secret"))
+        JWTVerifier.BaseVerification verification = (JWTVerifier.BaseVerification) JWTVerifier.init(Algorithm.HMAC256("secret"));
+        verification
                 .build(clock)
                 .verify(token);
     }
@@ -493,7 +502,8 @@ public class JWTVerifierTest {
         when(clock.getToday()).thenReturn(new Date(DATE_TOKEN_MS_VALUE));
 
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE0Nzc1OTJ9.0WJky9eLN7kuxLyZlmbcXRL3Wy8hLoNCEk5CCl2M4lo";
-        DecodedJWT jwt = JWTVerifier.init(Algorithm.HMAC256("secret"))
+        JWTVerifier.BaseVerification verification = (JWTVerifier.BaseVerification) JWTVerifier.init(Algorithm.HMAC256("secret"));
+        DecodedJWT jwt = verification
                 .build(clock)
                 .verify(token);
 
