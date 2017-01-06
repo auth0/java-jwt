@@ -96,7 +96,7 @@ public final class JWTVerifier {
         }
 
         /**
-         * Define the default window in milliseconds in which the Not Before, Issued At and Expires At Claims will still be valid.
+         * Define the default window in seconds in which the Not Before, Issued At and Expires At Claims will still be valid.
          * Setting a specific leeway value on a given Claim will override this value for that Claim.
          *
          * @param leeway the window in seconds in which the Not Before, Issued At and Expires At Claims will still be valid.
