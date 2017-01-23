@@ -206,6 +206,18 @@ Additional Claims defined in the token's Header can be obtained by calling `getH
 Claim claim = jwt.getHeaderClaim("owner");
 ```
 
+When creating a Token with the `JWT.create()` you can specify header Claims by calling `withHeader()` and passing both the map of claims. 
+
+```java
+Map<String, Object> headerClaims = new HashMap();
+headerclaims.put("owner", "auth0");
+JWT.create()
+    .withHeader(headerClaims)
+    .sign(Algorithm.HMAC256("secret"));
+```
+
+> The `alg` and `typ` values will always be included in the Header after the signing process.
+
 
 ### Payload Claims
 
@@ -273,14 +285,14 @@ Additional Claims defined in the token's Payload can be obtained by calling `get
 Map<String, Claim> claims = jwt.getClaims();    //Key is the Claim name
 Claim claim = claims.get("isAdmin");
 ```
-al
+
 or
 
 ```java
 Claim claim = jwt.getClaim("isAdmin");
 ```
 
-When creating a Token with the `JWT.create()` you can specify a custom Claim by calling `withClaim()` and passing both the name and the value.
+When creating a Token with the `JWT.create()` you can specify a custom Claim by calling `withClaim()` and passing both the name and the value. 
 
 ```java
 JWT.create()
