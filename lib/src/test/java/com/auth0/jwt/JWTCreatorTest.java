@@ -36,7 +36,7 @@ public class JWTCreatorTest {
                 .sign(Algorithm.HMAC256("secret"));
 
         assertThat(signed, is(notNullValue()));
-        assertThat(TokenUtils.splitToken(signed)[0], is("eyJhbGciOiJIUzI1NiIsImFzZCI6MTIzfQ"));
+        assertThat(TokenUtils.splitToken(signed)[0], is("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImFzZCI6MTIzfQ"));
     }
 
     @Test
@@ -134,7 +134,7 @@ public class JWTCreatorTest {
                 .sign(Algorithm.HMAC256("secret"));
 
         assertThat(signed, is(notNullValue()));
-        assertThat(TokenUtils.splitToken(signed)[0], is("eyJhbGciOiJIUzI1NiJ9"));
+        assertThat(TokenUtils.splitToken(signed)[0], is("eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9"));
     }
 
     @Test
@@ -158,7 +158,7 @@ public class JWTCreatorTest {
         String jwt = JWTCreator.init()
                 .withClaim("name", "value")
                 .sign(Algorithm.HMAC256("secret"));
-        String token = "eyJhbGciOiJIUzI1NiJ9.eyJuYW1lIjoidmFsdWUifQ.4qDWJcNQHDVDW1iAcIgZNiu-qqJQ0RIq8X3ETijBx5k";
+        String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYW1lIjoidmFsdWUifQ.eR3DUeX142NjueZjkqCn_NqxJpb5k-Y55Oo0N-ap3rI";
 
         assertThat(jwt, is(notNullValue()));
         assertThat(jwt, is(token));
@@ -169,7 +169,7 @@ public class JWTCreatorTest {
         String jwt = JWTCreator.init()
                 .withClaim("name", 123)
                 .sign(Algorithm.HMAC256("secret"));
-        String token = "eyJhbGciOiJIUzI1NiJ9.eyJuYW1lIjoxMjN9.5i6ga8YMteicIeZrFZgJyW4OnI_2jpMaUXcDt-_jme4";
+        String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYW1lIjoxMjN9.7Diqx9FPPuaw9ESwkZOHL2BARjqQz00qrHYOm0lKcgQ";
 
         assertThat(jwt, is(notNullValue()));
         assertThat(jwt, is(token));
@@ -180,7 +180,7 @@ public class JWTCreatorTest {
         String jwt = JWTCreator.init()
                 .withClaim("name", 23.45)
                 .sign(Algorithm.HMAC256("secret"));
-        String token = "eyJhbGciOiJIUzI1NiJ9.eyJuYW1lIjoyMy40NX0.aFNlMk3WiikukJq1jo4Tf8ztR180wjTfSpqec0xKKqU";
+        String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYW1lIjoyMy40NX0.VwOI-xjYFthgT43b9EYcaOSIpGSD6PVLSCPuGzDuEnQ";
 
         assertThat(jwt, is(notNullValue()));
         assertThat(jwt, is(token));
@@ -191,7 +191,7 @@ public class JWTCreatorTest {
         String jwt = JWTCreator.init()
                 .withClaim("name", true)
                 .sign(Algorithm.HMAC256("secret"));
-        String token = "eyJhbGciOiJIUzI1NiJ9.eyJuYW1lIjp0cnVlfQ.jseAYuhVmT1boYrHQfn9wXmomWq_tdGfphLtG_2tj_M";
+        String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYW1lIjp0cnVlfQ.8L_Td4EtEAUuQeNCU0fuJEu78SS8K3Y5OOkFzYA81g8";
 
         assertThat(jwt, is(notNullValue()));
         assertThat(jwt, is(token));
@@ -203,7 +203,7 @@ public class JWTCreatorTest {
         String jwt = JWTCreator.init()
                 .withClaim("name", date)
                 .sign(Algorithm.HMAC256("secret"));
-        String token = "eyJhbGciOiJIUzI1NiJ9.eyJuYW1lIjoxNDc4ODkxNTIxfQ.ZU1B1pDLYoJZhWD8h3_QsK5dViolxvL5Q43Yz9QIxL4";
+        String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYW1lIjoxNDc4ODkxNTIxfQ.0esDU87VaYbx6KQDWhFrRPNzq3rl3vcHO8T21fao28U";
 
         assertThat(jwt, is(notNullValue()));
         assertThat(jwt, is(token));
@@ -214,7 +214,7 @@ public class JWTCreatorTest {
         String jwt = JWTCreator.init()
                 .withArrayClaim("name", new String[]{"text", "123", "true"})
                 .sign(Algorithm.HMAC256("secret"));
-        String token = "eyJhbGciOiJIUzI1NiJ9.eyJuYW1lIjpbInRleHQiLCIxMjMiLCJ0cnVlIl19.lxM8EcmK1uSZRAPd0HUhXGZJdauRmZmLjoeqz4J9yAA";
+        String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYW1lIjpbInRleHQiLCIxMjMiLCJ0cnVlIl19.TTP2tJjVdoOzKfIgDcn_MSP7XQpafeVCKVNE2Y3-0Hk";
 
         assertThat(jwt, is(notNullValue()));
         assertThat(jwt, is(token));
@@ -225,7 +225,7 @@ public class JWTCreatorTest {
         String jwt = JWTCreator.init()
                 .withArrayClaim("name", new Integer[]{1, 2, 3})
                 .sign(Algorithm.HMAC256("secret"));
-        String token = "eyJhbGciOiJIUzI1NiJ9.eyJuYW1lIjpbMSwyLDNdfQ.UEuMKRQYrzKAiPpPLhIVawWkKWA1zj0_GderrWUIyFE";
+        String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYW1lIjpbMSwyLDNdfQ.1AdYaNBWR8lPB0yOxUtnQjuOU7tzD4LWz2AWrziPUqA";
 
         assertThat(jwt, is(notNullValue()));
         assertThat(jwt, is(token));

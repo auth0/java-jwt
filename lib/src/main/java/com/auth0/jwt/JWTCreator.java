@@ -74,7 +74,7 @@ public final class JWTCreator {
         }
 
         /**
-         * Add a specific Issuer ("iss") claim.
+         * Add a specific Issuer ("iss") claim to the Payload.
          *
          * @param issuer the Issuer value.
          * @return this same Builder instance.
@@ -85,7 +85,7 @@ public final class JWTCreator {
         }
 
         /**
-         * Add a specific Subject ("sub") claim.
+         * Add a specific Subject ("sub") claim to the Payload.
          *
          * @param subject the Subject value.
          * @return this same Builder instance.
@@ -96,7 +96,7 @@ public final class JWTCreator {
         }
 
         /**
-         * Add a specific Audience ("aud") claim.
+         * Add a specific Audience ("aud") claim to the Payload.
          *
          * @param audience the Audience value.
          * @return this same Builder instance.
@@ -107,7 +107,7 @@ public final class JWTCreator {
         }
 
         /**
-         * Add a specific Expires At ("exp") claim.
+         * Add a specific Expires At ("exp") claim to the Payload.
          *
          * @param expiresAt the Expires At value.
          * @return this same Builder instance.
@@ -118,7 +118,7 @@ public final class JWTCreator {
         }
 
         /**
-         * Add a specific Not Before ("nbf") claim.
+         * Add a specific Not Before ("nbf") claim to the Payload.
          *
          * @param notBefore the Not Before value.
          * @return this same Builder instance.
@@ -129,7 +129,7 @@ public final class JWTCreator {
         }
 
         /**
-         * Add a specific Issued At ("iat") claim.
+         * Add a specific Issued At ("iat") claim to the Payload.
          *
          * @param issuedAt the Issued At value.
          * @return this same Builder instance.
@@ -140,7 +140,7 @@ public final class JWTCreator {
         }
 
         /**
-         * Add a specific JWT Id ("jti") claim.
+         * Add a specific JWT Id ("jti") claim to the Payload.
          *
          * @param jwtId the Token Id value.
          * @return this same Builder instance.
@@ -261,6 +261,7 @@ public final class JWTCreator {
                 throw new IllegalArgumentException("The Algorithm cannot be null.");
             }
             headerClaims.put(PublicClaims.ALGORITHM, algorithm.getName());
+            headerClaims.put(PublicClaims.TYPE, "JWT");
             return new JWTCreator(algorithm, headerClaims, payloadClaims).sign();
         }
 
