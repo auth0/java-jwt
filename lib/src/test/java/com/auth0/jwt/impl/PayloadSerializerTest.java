@@ -14,8 +14,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 public class PayloadSerializerTest {
@@ -115,6 +114,26 @@ public class PayloadSerializerTest {
         jsonGenerator.flush();
 
         assertThat(writer.toString(), is(equalTo("{\"birthdate\":1478874}")));
+    }
+
+    @Test
+    public void shouldSerializeDatesUsingLong() throws Exception {
+        long secs = Integer.MAX_VALUE + 10000L;
+        Date date = new Date(secs * 1000L);
+        Map<String, Object> claims = new HashMap<String, Object>();
+        claims.put("iat", date);
+        claims.put("nbf", date);
+        claims.put("exp", date);
+        claims.put("ctm", date);
+        ClaimsHolder holder = new ClaimsHolder(claims);
+        serializer.serialize(holder, jsonGenerator, serializerProvider);
+        jsonGenerator.flush();
+
+        String json = writer.toString();
+        assertThat(json, containsString("\"iat\":2147493647"));
+        assertThat(json, containsString("\"nbf\":2147493647"));
+        assertThat(json, containsString("\"exp\":2147493647"));
+        assertThat(json, containsString("\"ctm\":2147493647"));
     }
 
     @Test

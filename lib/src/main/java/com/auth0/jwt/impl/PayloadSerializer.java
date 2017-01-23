@@ -54,7 +54,7 @@ public class PayloadSerializer extends StdSerializer<ClaimsHolder> {
         gen.writeObject(safePayload);
     }
 
-    private int dateToSeconds(Date date) {
-        return (int) (date.getTime() / 1000);
+    private long dateToSeconds(Date date) {
+        return date.getTime() / 1000;
     }
 }
