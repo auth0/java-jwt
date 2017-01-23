@@ -3,12 +3,14 @@ package com.auth0.jwt;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.Clock;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import org.apache.commons.codec.binary.Base64;
 import org.hamcrest.collection.IsCollectionWithSize;
 import org.hamcrest.core.IsCollectionContaining;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import java.nio.charset.StandardCharsets;
 import java.security.interfaces.ECKey;
 import java.security.interfaces.RSAKey;
 import java.util.Date;
@@ -353,11 +355,14 @@ public class JWTTest {
 
     @Test
     public void shouldCreateAnEmptyHMAC256SignedToken() throws Exception {
-        String headerAndPayload = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.e30.";
-
         String signed = JWT.create().sign(Algorithm.HMAC256("secret"));
         assertThat(signed, is(notNullValue()));
-        assertThat(signed, startsWith(headerAndPayload));
+
+        String[] parts = signed.split("\\.");
+        String headerJson = new String(Base64.decodeBase64(parts[0]), StandardCharsets.UTF_8);
+        assertThat(headerJson, JsonMatcher.hasEntry("alg", "HS256"));
+        assertThat(headerJson, JsonMatcher.hasEntry("typ", "JWT"));
+        assertThat(parts[1], is("e30"));
 
         JWTVerifier verified = JWT.require(Algorithm.HMAC256("secret"))
                 .build();
@@ -366,11 +371,14 @@ public class JWTTest {
 
     @Test
     public void shouldCreateAnEmptyHMAC384SignedToken() throws Exception {
-        String headerAndPayload = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzM4NCJ9.e30.";
-
         String signed = JWT.create().sign(Algorithm.HMAC384("secret"));
         assertThat(signed, is(notNullValue()));
-        assertThat(signed, startsWith(headerAndPayload));
+
+        String[] parts = signed.split("\\.");
+        String headerJson = new String(Base64.decodeBase64(parts[0]), StandardCharsets.UTF_8);
+        assertThat(headerJson, JsonMatcher.hasEntry("alg", "HS384"));
+        assertThat(headerJson, JsonMatcher.hasEntry("typ", "JWT"));
+        assertThat(parts[1], is("e30"));
 
         JWTVerifier verified = JWT.require(Algorithm.HMAC384("secret"))
                 .build();
@@ -379,11 +387,14 @@ public class JWTTest {
 
     @Test
     public void shouldCreateAnEmptyHMAC512SignedToken() throws Exception {
-        String headerAndPayload = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.e30.";
-
         String signed = JWT.create().sign(Algorithm.HMAC512("secret"));
         assertThat(signed, is(notNullValue()));
-        assertThat(signed, startsWith(headerAndPayload));
+
+        String[] parts = signed.split("\\.");
+        String headerJson = new String(Base64.decodeBase64(parts[0]), StandardCharsets.UTF_8);
+        assertThat(headerJson, JsonMatcher.hasEntry("alg", "HS512"));
+        assertThat(headerJson, JsonMatcher.hasEntry("typ", "JWT"));
+        assertThat(parts[1], is("e30"));
 
         JWTVerifier verified = JWT.require(Algorithm.HMAC512("secret"))
                 .build();
@@ -392,11 +403,14 @@ public class JWTTest {
 
     @Test
     public void shouldCreateAnEmptyRSA256SignedToken() throws Exception {
-        String headerAndPayload = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.e30.";
-
         String signed = JWT.create().sign(Algorithm.RSA256((RSAKey) PemUtils.readPrivateKeyFromFile(PRIVATE_KEY_FILE_RSA, "RSA")));
         assertThat(signed, is(notNullValue()));
-        assertThat(signed, startsWith(headerAndPayload));
+
+        String[] parts = signed.split("\\.");
+        String headerJson = new String(Base64.decodeBase64(parts[0]), StandardCharsets.UTF_8);
+        assertThat(headerJson, JsonMatcher.hasEntry("alg", "RS256"));
+        assertThat(headerJson, JsonMatcher.hasEntry("typ", "JWT"));
+        assertThat(parts[1], is("e30"));
 
         JWTVerifier verified = JWT.require(Algorithm.RSA256((RSAKey) PemUtils.readPublicKeyFromFile(PUBLIC_KEY_FILE_RSA, "RSA")))
                 .build();
@@ -405,11 +419,14 @@ public class JWTTest {
 
     @Test
     public void shouldCreateAnEmptyRSA384SignedToken() throws Exception {
-        String headerAndPayload = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzM4NCJ9.e30.";
-
         String signed = JWT.create().sign(Algorithm.RSA384((RSAKey) PemUtils.readPrivateKeyFromFile(PRIVATE_KEY_FILE_RSA, "RSA")));
         assertThat(signed, is(notNullValue()));
-        assertThat(signed, startsWith(headerAndPayload));
+
+        String[] parts = signed.split("\\.");
+        String headerJson = new String(Base64.decodeBase64(parts[0]), StandardCharsets.UTF_8);
+        assertThat(headerJson, JsonMatcher.hasEntry("alg", "RS384"));
+        assertThat(headerJson, JsonMatcher.hasEntry("typ", "JWT"));
+        assertThat(parts[1], is("e30"));
 
         JWTVerifier verified = JWT.require(Algorithm.RSA384((RSAKey) PemUtils.readPublicKeyFromFile(PUBLIC_KEY_FILE_RSA, "RSA")))
                 .build();
@@ -418,11 +435,14 @@ public class JWTTest {
 
     @Test
     public void shouldCreateAnEmptyRSA512SignedToken() throws Exception {
-        String headerAndPayload = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzUxMiJ9.e30.";
-
         String signed = JWT.create().sign(Algorithm.RSA512((RSAKey) PemUtils.readPrivateKeyFromFile(PRIVATE_KEY_FILE_RSA, "RSA")));
         assertThat(signed, is(notNullValue()));
-        assertThat(signed, startsWith(headerAndPayload));
+
+        String[] parts = signed.split("\\.");
+        String headerJson = new String(Base64.decodeBase64(parts[0]), StandardCharsets.UTF_8);
+        assertThat(headerJson, JsonMatcher.hasEntry("alg", "RS512"));
+        assertThat(headerJson, JsonMatcher.hasEntry("typ", "JWT"));
+        assertThat(parts[1], is("e30"));
 
         JWTVerifier verified = JWT.require(Algorithm.RSA512((RSAKey) PemUtils.readPublicKeyFromFile(PUBLIC_KEY_FILE_RSA, "RSA")))
                 .build();
@@ -431,11 +451,14 @@ public class JWTTest {
 
     @Test
     public void shouldCreateAnEmptyECDSA256SignedToken() throws Exception {
-        String headerAndPayload = "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.e30.";
-
         String signed = JWT.create().sign(Algorithm.ECDSA256((ECKey) PemUtils.readPrivateKeyFromFile(PRIVATE_KEY_FILE_EC_256, "EC")));
         assertThat(signed, is(notNullValue()));
-        assertThat(signed, startsWith(headerAndPayload));
+
+        String[] parts = signed.split("\\.");
+        String headerJson = new String(Base64.decodeBase64(parts[0]), StandardCharsets.UTF_8);
+        assertThat(headerJson, JsonMatcher.hasEntry("alg", "ES256"));
+        assertThat(headerJson, JsonMatcher.hasEntry("typ", "JWT"));
+        assertThat(parts[1], is("e30"));
 
         JWTVerifier verified = JWT.require(Algorithm.ECDSA256((ECKey) PemUtils.readPublicKeyFromFile(PUBLIC_KEY_FILE_EC_256, "EC")))
                 .build();
@@ -444,11 +467,14 @@ public class JWTTest {
 
     @Test
     public void shouldCreateAnEmptyECDSA384SignedToken() throws Exception {
-        String headerAndPayload = "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzM4NCJ9.e30.";
-
         String signed = JWT.create().sign(Algorithm.ECDSA384((ECKey) PemUtils.readPrivateKeyFromFile(PRIVATE_KEY_FILE_EC_384, "EC")));
         assertThat(signed, is(notNullValue()));
-        assertThat(signed, startsWith(headerAndPayload));
+
+        String[] parts = signed.split("\\.");
+        String headerJson = new String(Base64.decodeBase64(parts[0]), StandardCharsets.UTF_8);
+        assertThat(headerJson, JsonMatcher.hasEntry("alg", "ES384"));
+        assertThat(headerJson, JsonMatcher.hasEntry("typ", "JWT"));
+        assertThat(parts[1], is("e30"));
 
         JWTVerifier verified = JWT.require(Algorithm.ECDSA384((ECKey) PemUtils.readPublicKeyFromFile(PUBLIC_KEY_FILE_EC_384, "EC")))
                 .build();
@@ -457,11 +483,14 @@ public class JWTTest {
 
     @Test
     public void shouldCreateAnEmptyECDSA512SignedToken() throws Exception {
-        String headerAndPayload = "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzUxMiJ9.e30.";
-
         String signed = JWT.create().sign(Algorithm.ECDSA512((ECKey) PemUtils.readPrivateKeyFromFile(PRIVATE_KEY_FILE_EC_512, "EC")));
         assertThat(signed, is(notNullValue()));
-        assertThat(signed, startsWith(headerAndPayload));
+
+        String[] parts = signed.split("\\.");
+        String headerJson = new String(Base64.decodeBase64(parts[0]), StandardCharsets.UTF_8);
+        assertThat(headerJson, JsonMatcher.hasEntry("alg", "ES512"));
+        assertThat(headerJson, JsonMatcher.hasEntry("typ", "JWT"));
+        assertThat(parts[1], is("e30"));
 
         JWTVerifier verified = JWT.require(Algorithm.ECDSA512((ECKey) PemUtils.readPublicKeyFromFile(PUBLIC_KEY_FILE_EC_512, "EC")))
                 .build();
