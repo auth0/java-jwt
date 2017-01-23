@@ -74,6 +74,17 @@ public final class JWTCreator {
         }
 
         /**
+         * Add a specific Key Id ("kid") claim to the Header.
+         *
+         * @param keyId the Key Id value.
+         * @return this same Builder instance.
+         */
+        public Builder withKeyId(String keyId) {
+            this.headerClaims.put(PublicClaims.KEY_ID, keyId);
+            return this;
+        }
+
+        /**
          * Add a specific Issuer ("iss") claim to the Payload.
          *
          * @param issuer the Issuer value.

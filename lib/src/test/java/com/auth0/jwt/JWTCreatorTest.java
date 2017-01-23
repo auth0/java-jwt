@@ -40,6 +40,16 @@ public class JWTCreatorTest {
     }
 
     @Test
+    public void shouldAddKeyId() throws Exception {
+        String signed = JWTCreator.init()
+                .withKeyId("56a8bd44da435300010000015f5ed")
+                .sign(Algorithm.HMAC256("secret"));
+
+        assertThat(signed, is(notNullValue()));
+        assertThat(TokenUtils.splitToken(signed)[0], is("eyJraWQiOiI1NmE4YmQ0NGRhNDM1MzAwMDEwMDAwMDE1ZjVlZCIsInR5cCI6IkpXVCIsImFsZyI6IkhTMjU2In0"));
+    }
+
+    @Test
     public void shouldAddIssuer() throws Exception {
         String signed = JWTCreator.init()
                 .withIssuer("auth0")
