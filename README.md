@@ -46,20 +46,6 @@ The library implements JWT Verification and Signing using the following algorith
 
 ## Usage
 
-### Decode a Token
-
-```java
-String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXUyJ9.eyJpc3MiOiJhdXRoMCJ9.AbIJTDMFc7yUa5MhvcP03nJPyCPzZtQcGEp-zWfOkEE";
-try {
-    JWT jwt = JWT.decode(token);
-} catch (JWTDecodeException exception){
-    //Invalid token
-}
-```
-
-If the token has an invalid syntax or the header or payload are not JSONs, a `JWTDecodeException` will raise.
-
-
 ### Create and Sign a Token
 
 You'll first need to create a `JWTCreator` instance by calling `JWT.create()`. Use the builder to define the custom Claims your token needs to have. Finally to get the String token call `sign()` and pass the Algorithm instance.
@@ -163,6 +149,20 @@ BaseVerification verification = (BaseVerification) JWT.require(Algorithm.RSA256(
 Clock clock = new CustomClock(); //Must implement Clock interface
 JWTVerifier verifier = verification.build(clock);
 ```
+
+### Decode a Token
+
+```java
+String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXUyJ9.eyJpc3MiOiJhdXRoMCJ9.AbIJTDMFc7yUa5MhvcP03nJPyCPzZtQcGEp-zWfOkEE";
+try {
+    JWT jwt = JWT.decode(token);
+} catch (JWTDecodeException exception){
+    //Invalid token
+}
+```
+
+If the token has an invalid syntax or the header or payload are not JSONs, a `JWTDecodeException` will raise.
+
 
 ### Header Claims
 
