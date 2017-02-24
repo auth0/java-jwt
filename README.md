@@ -6,7 +6,9 @@
 [![Coverage Status](https://img.shields.io/codecov/c/github/auth0/java-jwt/v3.svg?style=flat-square)](https://codecov.io/github/auth0/java-jwt)
 [![License](http://img.shields.io/:license-mit-blue.svg?style=flat)](http://doge.mit-license.org)
 
-A Java implementation of [JSON Web Tokens (draft-ietf-oauth-json-web-token-08)](http://self-issued.info/docs/draft-ietf-oauth-json-web-token.html)
+A Java implementation of [JSON Web Tokens (draft-ietf-oauth-json-web-token-08)](http://self-issued.info/docs/draft-ietf-oauth-json-web-token.html).
+
+If you're looking for an *Android* version of the JWT Decoder take a look at our [JWTDecode.Android](https://github.com/auth0/JWTDecode.Android) library.
 
 ## Installation
 
