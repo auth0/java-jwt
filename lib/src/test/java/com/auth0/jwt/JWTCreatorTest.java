@@ -1,10 +1,12 @@
 package com.auth0.jwt;
 
 import com.auth0.jwt.algorithms.Algorithm;
+import org.apache.commons.codec.binary.Base64;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,7 +30,7 @@ public class JWTCreatorTest {
 
     @SuppressWarnings("Convert2Diamond")
     @Test
-    public void shouldAddHeader() throws Exception {
+    public void shouldAddHeaderClaim() throws Exception {
         Map<String, Object> header = new HashMap<String, Object>();
         header.put("asd", 123);
         String signed = JWTCreator.init()
@@ -36,7 +38,21 @@ public class JWTCreatorTest {
                 .sign(Algorithm.HMAC256("secret"));
 
         assertThat(signed, is(notNullValue()));
-        assertThat(TokenUtils.splitToken(signed)[0], is("eyJhbGciOiJIUzI1NiIsImFzZCI6MTIzfQ"));
+        String[] parts = signed.split("\\.");
+        String headerJson = new String(Base64.decodeBase64(parts[0]), StandardCharsets.UTF_8);
+        assertThat(headerJson, JsonMatcher.hasEntry("asd", 123));
+    }
+
+    @Test
+    public void shouldAddKeyId() throws Exception {
+        String signed = JWTCreator.init()
+                .withKeyId("56a8bd44da435300010000015f5ed")
+                .sign(Algorithm.HMAC256("secret"));
+
+        assertThat(signed, is(notNullValue()));
+        String[] parts = signed.split("\\.");
+        String headerJson = new String(Base64.decodeBase64(parts[0]), StandardCharsets.UTF_8);
+        assertThat(headerJson, JsonMatcher.hasEntry("kid", "56a8bd44da435300010000015f5ed"));
     }
 
     @Test
@@ -134,7 +150,20 @@ public class JWTCreatorTest {
                 .sign(Algorithm.HMAC256("secret"));
 
         assertThat(signed, is(notNullValue()));
-        assertThat(TokenUtils.splitToken(signed)[0], is("eyJhbGciOiJIUzI1NiJ9"));
+        String[] parts = signed.split("\\.");
+        String headerJson = new String(Base64.decodeBase64(parts[0]), StandardCharsets.UTF_8);
+        assertThat(headerJson, JsonMatcher.hasEntry("alg", "HS256"));
+    }
+
+    @Test
+    public void shouldSetCorrectTypeInTheHeader() throws Exception {
+        String signed = JWTCreator.init()
+                .sign(Algorithm.HMAC256("secret"));
+
+        assertThat(signed, is(notNullValue()));
+        String[] parts = signed.split("\\.");
+        String headerJson = new String(Base64.decodeBase64(parts[0]), StandardCharsets.UTF_8);
+        assertThat(headerJson, JsonMatcher.hasEntry("typ", "JWT"));
     }
 
     @Test
@@ -158,10 +187,10 @@ public class JWTCreatorTest {
         String jwt = JWTCreator.init()
                 .withClaim("name", "value")
                 .sign(Algorithm.HMAC256("secret"));
-        String token = "eyJhbGciOiJIUzI1NiJ9.eyJuYW1lIjoidmFsdWUifQ.4qDWJcNQHDVDW1iAcIgZNiu-qqJQ0RIq8X3ETijBx5k";
 
         assertThat(jwt, is(notNullValue()));
-        assertThat(jwt, is(token));
+        String[] parts = jwt.split("\\.");
+        assertThat(parts[1], is("eyJuYW1lIjoidmFsdWUifQ"));
     }
 
     @Test
@@ -169,10 +198,10 @@ public class JWTCreatorTest {
         String jwt = JWTCreator.init()
                 .withClaim("name", 123)
                 .sign(Algorithm.HMAC256("secret"));
-        String token = "eyJhbGciOiJIUzI1NiJ9.eyJuYW1lIjoxMjN9.5i6ga8YMteicIeZrFZgJyW4OnI_2jpMaUXcDt-_jme4";
 
         assertThat(jwt, is(notNullValue()));
-        assertThat(jwt, is(token));
+        String[] parts = jwt.split("\\.");
+        assertThat(parts[1], is("eyJuYW1lIjoxMjN9"));
     }
 
     @Test
@@ -180,10 +209,10 @@ public class JWTCreatorTest {
         String jwt = JWTCreator.init()
                 .withClaim("name", 23.45)
                 .sign(Algorithm.HMAC256("secret"));
-        String token = "eyJhbGciOiJIUzI1NiJ9.eyJuYW1lIjoyMy40NX0.aFNlMk3WiikukJq1jo4Tf8ztR180wjTfSpqec0xKKqU";
 
         assertThat(jwt, is(notNullValue()));
-        assertThat(jwt, is(token));
+        String[] parts = jwt.split("\\.");
+        assertThat(parts[1], is("eyJuYW1lIjoyMy40NX0"));
     }
 
     @Test
@@ -191,10 +220,10 @@ public class JWTCreatorTest {
         String jwt = JWTCreator.init()
                 .withClaim("name", true)
                 .sign(Algorithm.HMAC256("secret"));
-        String token = "eyJhbGciOiJIUzI1NiJ9.eyJuYW1lIjp0cnVlfQ.jseAYuhVmT1boYrHQfn9wXmomWq_tdGfphLtG_2tj_M";
 
         assertThat(jwt, is(notNullValue()));
-        assertThat(jwt, is(token));
+        String[] parts = jwt.split("\\.");
+        assertThat(parts[1], is("eyJuYW1lIjp0cnVlfQ"));
     }
 
     @Test
@@ -203,10 +232,10 @@ public class JWTCreatorTest {
         String jwt = JWTCreator.init()
                 .withClaim("name", date)
                 .sign(Algorithm.HMAC256("secret"));
-        String token = "eyJhbGciOiJIUzI1NiJ9.eyJuYW1lIjoxNDc4ODkxNTIxfQ.ZU1B1pDLYoJZhWD8h3_QsK5dViolxvL5Q43Yz9QIxL4";
 
         assertThat(jwt, is(notNullValue()));
-        assertThat(jwt, is(token));
+        String[] parts = jwt.split("\\.");
+        assertThat(parts[1], is("eyJuYW1lIjoxNDc4ODkxNTIxfQ"));
     }
 
     @Test
@@ -214,10 +243,10 @@ public class JWTCreatorTest {
         String jwt = JWTCreator.init()
                 .withArrayClaim("name", new String[]{"text", "123", "true"})
                 .sign(Algorithm.HMAC256("secret"));
-        String token = "eyJhbGciOiJIUzI1NiJ9.eyJuYW1lIjpbInRleHQiLCIxMjMiLCJ0cnVlIl19.lxM8EcmK1uSZRAPd0HUhXGZJdauRmZmLjoeqz4J9yAA";
 
         assertThat(jwt, is(notNullValue()));
-        assertThat(jwt, is(token));
+        String[] parts = jwt.split("\\.");
+        assertThat(parts[1], is("eyJuYW1lIjpbInRleHQiLCIxMjMiLCJ0cnVlIl19"));
     }
 
     @Test
@@ -225,9 +254,9 @@ public class JWTCreatorTest {
         String jwt = JWTCreator.init()
                 .withArrayClaim("name", new Integer[]{1, 2, 3})
                 .sign(Algorithm.HMAC256("secret"));
-        String token = "eyJhbGciOiJIUzI1NiJ9.eyJuYW1lIjpbMSwyLDNdfQ.UEuMKRQYrzKAiPpPLhIVawWkKWA1zj0_GderrWUIyFE";
 
         assertThat(jwt, is(notNullValue()));
-        assertThat(jwt, is(token));
+        String[] parts = jwt.split("\\.");
+        assertThat(parts[1], is("eyJuYW1lIjpbMSwyLDNdfQ"));
     }
 }
