@@ -102,6 +102,13 @@ public class JWTParserTest {
     }
 
     @Test
+    public void shouldConvertFromValidJSONWithWhiteSpace() {
+        String json = " {}\r\n ";
+        Object object = parser.convertFromJSON(json, Object.class);
+        assertThat(object, is(notNullValue()));
+    }
+
+    @Test
     public void shouldThrowWhenConvertingIfNullJson() throws Exception {
         exception.expect(JWTDecodeException.class);
         exception.expectMessage("The string 'null' doesn't have a valid JSON format.");

@@ -50,7 +50,7 @@ public class JWTParser implements JWTPartsParser {
     @SuppressWarnings("WeakerAccess")
     <T> T convertFromJSON(String json, Class<T> tClazz) throws JWTDecodeException {
         JWTDecodeException exception = new JWTDecodeException(String.format("The string '%s' doesn't have a valid JSON format.", json));
-        if (json == null || !json.startsWith("{") || !json.endsWith("}")) {
+        if (json == null) {
             throw exception;
         }
         try {
