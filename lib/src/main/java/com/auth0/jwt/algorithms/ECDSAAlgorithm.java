@@ -5,46 +5,51 @@ import com.auth0.jwt.exceptions.SignatureVerificationException;
 
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
 import java.security.SignatureException;
-import java.security.interfaces.ECKey;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
 
 class ECDSAAlgorithm extends Algorithm {
 
+    private final ECPublicKey publicKey;
+    private final ECPrivateKey privateKey;
     private final CryptoHelper crypto;
     private final int ecNumberSize;
-    private final ECKey key;
 
-    ECDSAAlgorithm(CryptoHelper crypto, String id, String algorithm, int ecNumberSize, ECKey key) throws IllegalArgumentException {
+    //Visible for testing
+    ECDSAAlgorithm(CryptoHelper crypto, String id, String algorithm, int ecNumberSize, ECPublicKey publicKey, ECPrivateKey privateKey) throws IllegalArgumentException {
         super(id, algorithm);
-        if (key == null) {
-            throw new IllegalArgumentException("The ECKey cannot be null");
+        if (publicKey == null && privateKey == null) {
+            throw new IllegalArgumentException("Both provided Keys cannot be null.");
         }
+        this.publicKey = publicKey;
+        this.privateKey = privateKey;
         this.ecNumberSize = ecNumberSize;
-        this.key = key;
         this.crypto = crypto;
     }
 
-    ECDSAAlgorithm(String id, String algorithm, int ecNumberSize, ECKey key) throws IllegalArgumentException {
-        this(new CryptoHelper(), id, algorithm, ecNumberSize, key);
+    ECDSAAlgorithm(String id, String algorithm, int ecNumberSize, ECPublicKey publicKey, ECPrivateKey privateKey) throws IllegalArgumentException {
+        this(new CryptoHelper(), id, algorithm, ecNumberSize, publicKey, privateKey);
     }
 
-    ECKey getKey() {
-        return key;
+    ECPublicKey getPublicKey() {
+        return publicKey;
+    }
+
+    ECPrivateKey getPrivateKey() {
+        return privateKey;
     }
 
     @Override
     public void verify(byte[] contentBytes, byte[] signatureBytes) throws SignatureVerificationException {
         try {
-            if (!(key instanceof ECPublicKey)) {
-                throw new IllegalArgumentException("The given ECKey is not an ECPublicKey.");
+            if (publicKey == null) {
+                throw new IllegalArgumentException("The given Public Key is null.");
             }
             if (!isDERSignature(signatureBytes)) {
                 signatureBytes = JOSEToDER(signatureBytes);
             }
-            boolean valid = crypto.verifySignatureFor(getDescription(), (ECPublicKey) key, contentBytes, signatureBytes);
+            boolean valid = crypto.verifySignatureFor(getDescription(), publicKey, contentBytes, signatureBytes);
 
             if (!valid) {
                 throw new SignatureVerificationException(this);
@@ -57,10 +62,10 @@ class ECDSAAlgorithm extends Algorithm {
     @Override
     public byte[] sign(byte[] contentBytes) throws SignatureGenerationException {
         try {
-            if (!(key instanceof ECPrivateKey)) {
-                throw new IllegalArgumentException("The given ECKey is not a ECPrivateKey.");
+            if (privateKey == null) {
+                throw new IllegalArgumentException("The given Private Key is null.");
             }
-            return crypto.createSignatureFor(getDescription(), (PrivateKey) key, contentBytes);
+            return crypto.createSignatureFor(getDescription(), privateKey, contentBytes);
         } catch (NoSuchAlgorithmException | SignatureException | InvalidKeyException | IllegalArgumentException e) {
             throw new SignatureGenerationException(this, e);
         }
