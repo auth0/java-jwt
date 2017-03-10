@@ -8,7 +8,7 @@
 
 A Java implementation of [JSON Web Tokens (draft-ietf-oauth-json-web-token-08)](http://self-issued.info/docs/draft-ietf-oauth-json-web-token.html).
 
-If you're looking for an *Android* version of the JWT Decoder take a look at our [JWTDecode.Android](https://github.com/auth0/JWTDecode.Android) library.
+If you're looking for an **Android** version of the JWT Decoder take a look at our [JWTDecode.Android](https://github.com/auth0/JWTDecode.Android) library.
 
 ## Installation
 
@@ -48,15 +48,18 @@ The library implements JWT Verification and Signing using the following algorith
 
 ### Create and Sign a Token
 
-You'll first need to create a `JWTCreator` instance by calling `JWT.create()`. Use the builder to define the custom Claims your token needs to have. Finally to get the String token call `sign()` and pass the Algorithm instance.
+You'll first need to create a `JWTCreator` instance by calling `JWT.create()`. Use the builder to define the custom Claims your token needs to have. Finally to get the String token call `sign()` and pass the `Algorithm` instance.
 
 * Example using `HS256`
 
 ```java
 try {
+    Algorithm algorithm = Algorithm.HMAC256("secret");
     String token = JWT.create()
         .withIssuer("auth0")
-        .sign(Algorithm.HMAC256("secret"));
+        .sign(algorithm);
+} catch (UnsupportedEncodingException exception){
+    //UTF-8 encoding not supported
 } catch (JWTCreationException exception){
     //Invalid Signing configuration / Couldn't convert Claims.
 }
@@ -65,11 +68,13 @@ try {
 * Example using `RS256`
 
 ```java
-PrivateKey key = //Get the key instance
+RSAPublicKey publicKey = //Get the key instance
+RSAPrivateKey privateKey = //Get the key instance
 try {
+    Algorithm algorithm = Algorithm.RSA256(publicKey, privateKey);
     String token = JWT.create()
         .withIssuer("auth0")
-        .sign(Algorithm.RSA256(key));
+        .sign(algorithm);
 } catch (JWTCreationException exception){
     //Invalid Signing configuration / Couldn't convert Claims.
 }
@@ -80,17 +85,20 @@ If a Claim couldn't be converted to JSON or the Key used in the signing process 
 
 ### Verify a Token
 
-You'll first need to create a `JWTVerifier` instance by calling `JWT.require()` and passing the Algorithm instance. If you require the token to have specific Claim values, use the builder to define them. The instance returned by the method `build()` is reusable, so you can define it once and use it to verify different tokens. Finally call `verifier.verify()` passing the token.
+You'll first need to create a `JWTVerifier` instance by calling `JWT.require()` and passing the `Algorithm` instance. If you require the token to have specific Claim values, use the builder to define them. The instance returned by the method `build()` is reusable, so you can define it once and use it to verify different tokens. Finally call `verifier.verify()` passing the token.
 
 * Example using `HS256`
 
 ```java
 String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXUyJ9.eyJpc3MiOiJhdXRoMCJ9.AbIJTDMFc7yUa5MhvcP03nJPyCPzZtQcGEp-zWfOkEE";
 try {
-    JWTVerifier verifier = JWT.require(Algorithm.HMAC256("secret"))
+    Algorithm algorithm = Algorithm.HMAC256("secret");
+    JWTVerifier verifier = JWT.require(algorithm)
         .withIssuer("auth0")
         .build(); //Reusable verifier instance
     DecodedJWT jwt = verifier.verify(token);
+} catch (UnsupportedEncodingException exception){
+    //UTF-8 encoding not supported
 } catch (JWTVerificationException exception){
     //Invalid signature/claims
 }
@@ -100,9 +108,11 @@ try {
 
 ```java
 String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXUyJ9.eyJpc3MiOiJhdXRoMCJ9.AbIJTDMFc7yUa5MhvcP03nJPyCPzZtQcGEp-zWfOkEE";
-PublicKey key = //Get the key instance
+RSAPublicKey publicKey = //Get the key instance
+RSAPrivateKey privateKey = //Get the key instance
 try {
-    JWTVerifier verifier = JWT.require(Algorithm.RSA256(key))
+    Algorithm algorithm = Algorithm.RSA256(publicKey, privateKey);
+    JWTVerifier verifier = JWT.require(algorithm)
         .withIssuer("auth0")
         .build(); //Reusable verifier instance
     DecodedJWT jwt = verifier.verify(token);
@@ -126,7 +136,7 @@ When verifying a token the time validation occurs automatically, resulting in a 
 To specify a **leeway window** in which the Token should still be considered valid, use the `acceptLeeway()` method in the `JWTVerifier` builder and pass a positive seconds value. This applies to every item listed above.
 
 ```java
-JWTVerifier verifier = JWT.require(Algorithm.RSA256(key))
+JWTVerifier verifier = JWT.require(algorithm)
     .acceptLeeway(1) // 1 sec for nbf, iat and exp
     .build();
 ```
@@ -134,7 +144,7 @@ JWTVerifier verifier = JWT.require(Algorithm.RSA256(key))
 You can also specify a custom value for a given Date claim and override the default one for only that claim.
 
 ```java
-JWTVerifier verifier = JWT.require(Algorithm.RSA256(key))
+JWTVerifier verifier = JWT.require(algorithm)
     .acceptLeeway(1)   //1 sec for nbf and iat
     .acceptExpiresAt(5)   //5 secs for exp
     .build();
@@ -143,7 +153,7 @@ JWTVerifier verifier = JWT.require(Algorithm.RSA256(key))
 If you need to test this behaviour in your lib/app cast the `Verification` instance to a `BaseVerification` to gain visibility of the `verification.build()` method that accepts a custom `Clock`. e.g.:
 
 ```java
-BaseVerification verification = (BaseVerification) JWT.require(Algorithm.RSA256(key))
+BaseVerification verification = (BaseVerification) JWT.require(algorithm)
     .acceptLeeway(1)
     .acceptExpiresAt(5);
 Clock clock = new CustomClock(); //Must implement Clock interface
@@ -211,9 +221,9 @@ When creating a Token with the `JWT.create()` you can specify header Claims by c
 ```java
 Map<String, Object> headerClaims = new HashMap();
 headerclaims.put("owner", "auth0");
-JWT.create()
-    .withHeader(headerClaims)
-    .sign(Algorithm.HMAC256("secret"));
+String token = JWT.create()
+        .withHeader(headerClaims)
+        .sign(algorithm);
 ```
 
 > The `alg` and `typ` values will always be included in the Header after the signing process.
@@ -295,20 +305,20 @@ Claim claim = jwt.getClaim("isAdmin");
 When creating a Token with the `JWT.create()` you can specify a custom Claim by calling `withClaim()` and passing both the name and the value. 
 
 ```java
-JWT.create()
-    .withClaim("name", 123)
-    .withArrayClaim("array", new Integer[]{1, 2, 3})
-    .sign(Algorithm.HMAC256("secret"));
+String token = JWT.create()
+        .withClaim("name", 123)
+        .withArrayClaim("array", new Integer[]{1, 2, 3})
+        .sign(algorithm);
 ```
 
 You can also verify custom Claims on the `JWT.require()` by calling `withClaim()` and passing both the name and the required value.
 
 ```java
-JWT.require(Algorithm.HMAC256("secret"))
+JWTVerifier verifier = JWT.require(algorithm)
     .withClaim("name", 123)
     .withArrayClaim("array", 1, 2, 3)
-    .build()
-    .verify("my.jwt.token");
+    .build();
+DecodedJWT jwt = verifier.verify("my.jwt.token");
 ```
 
 > Currently supported classes for custom JWT Claim creation and verification are: Boolean, Integer, Double, String, Date and Arrays of type String and Integer.
