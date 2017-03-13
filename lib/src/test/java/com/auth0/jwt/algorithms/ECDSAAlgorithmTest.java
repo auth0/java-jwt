@@ -88,7 +88,7 @@ public class ECDSAAlgorithmTest {
     public void shouldFailECDSA256VerificationWhenUsingPrivateKey() throws Exception {
         exception.expect(SignatureVerificationException.class);
         exception.expectMessage("The Token's Signature resulted invalid when verified using the Algorithm: SHA256withECDSA");
-        exception.expectCause(isA(IllegalArgumentException.class));
+        exception.expectCause(isA(IllegalStateException.class));
         exception.expectCause(hasMessage(is("The given Public Key is null.")));
         String jwt = "eyJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJhdXRoMCJ9.W9qfN1b80B9hnMo49WL8THrOsf1vEjOhapeFemPMGySzxTcgfyudS5esgeBTO908X5SLdAr5jMwPUPBs9b6nNg";
         Algorithm algorithm = Algorithm.ECDSA256((ECKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_256, "EC"));
@@ -180,7 +180,7 @@ public class ECDSAAlgorithmTest {
     public void shouldFailECDSA384VerificationWhenUsingPrivateKey() throws Exception {
         exception.expect(SignatureVerificationException.class);
         exception.expectMessage("The Token's Signature resulted invalid when verified using the Algorithm: SHA384withECDSA");
-        exception.expectCause(isA(IllegalArgumentException.class));
+        exception.expectCause(isA(IllegalStateException.class));
         exception.expectCause(hasMessage(is("The given Public Key is null.")));
         String jwt = "eyJhbGciOiJFUzM4NCJ9.eyJpc3MiOiJhdXRoMCJ9._k5h1KyO-NE0R2_HAw0-XEc0bGT5atv29SxHhOGC9JDqUHeUdptfCK_ljQ01nLVt2OQWT2SwGs-TuyHDFmhPmPGFZ9wboxvq_ieopmYqhQilNAu-WF-frioiRz9733fU";
         Algorithm algorithm = Algorithm.ECDSA384((ECKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_384, "EC"));
@@ -272,7 +272,7 @@ public class ECDSAAlgorithmTest {
     public void shouldFailECDSA512VerificationWhenUsingPrivateKey() throws Exception {
         exception.expect(SignatureVerificationException.class);
         exception.expectMessage("The Token's Signature resulted invalid when verified using the Algorithm: SHA512withECDSA");
-        exception.expectCause(isA(IllegalArgumentException.class));
+        exception.expectCause(isA(IllegalStateException.class));
         exception.expectCause(hasMessage(is("The given Public Key is null.")));
         String jwt = "eyJhbGciOiJFUzUxMiJ9.eyJpc3MiOiJhdXRoMCJ9.AZgdopFFsN0amCSs2kOucXdpylD31DEm5ChK1PG0_gq5Mf47MrvVph8zHSVuvcrXzcE1U3VxeCg89mYW1H33Y-8iAF0QFkdfTUQIWKNObH543WNMYYssv3OtOj0znPv8atDbaF8DMYAtcT1qdmaSJRhx-egRE9HGZkinPh9CfLLLt58X";
         Algorithm algorithm = Algorithm.ECDSA512((ECKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_512, "EC"));
@@ -421,7 +421,7 @@ public class ECDSAAlgorithmTest {
     public void shouldFailOnECDSA256SigningWhenUsingPublicKey() throws Exception {
         exception.expect(SignatureGenerationException.class);
         exception.expectMessage("The Token's Signature couldn't be generated when signing using the Algorithm: SHA256withECDSA");
-        exception.expectCause(isA(IllegalArgumentException.class));
+        exception.expectCause(isA(IllegalStateException.class));
         exception.expectCause(hasMessage(is("The given Private Key is null.")));
 
         Algorithm algorithm = Algorithm.ECDSA256((ECKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC"));
@@ -453,7 +453,7 @@ public class ECDSAAlgorithmTest {
     public void shouldFailOnECDSA384SigningWhenUsingPublicKey() throws Exception {
         exception.expect(SignatureGenerationException.class);
         exception.expectMessage("The Token's Signature couldn't be generated when signing using the Algorithm: SHA384withECDSA");
-        exception.expectCause(isA(IllegalArgumentException.class));
+        exception.expectCause(isA(IllegalStateException.class));
         exception.expectCause(hasMessage(is("The given Private Key is null.")));
 
         Algorithm algorithm = Algorithm.ECDSA384((ECKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_384, "EC"));
@@ -485,7 +485,7 @@ public class ECDSAAlgorithmTest {
     public void shouldFailOnECDSA512SigningWhenUsingPublicKey() throws Exception {
         exception.expect(SignatureGenerationException.class);
         exception.expectMessage("The Token's Signature couldn't be generated when signing using the Algorithm: SHA512withECDSA");
-        exception.expectCause(isA(IllegalArgumentException.class));
+        exception.expectCause(isA(IllegalStateException.class));
         exception.expectCause(hasMessage(is("The given Private Key is null.")));
 
         Algorithm algorithm = Algorithm.ECDSA512((ECKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_512, "EC"));

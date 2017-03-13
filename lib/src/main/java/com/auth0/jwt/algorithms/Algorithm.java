@@ -4,8 +4,6 @@ import com.auth0.jwt.exceptions.SignatureGenerationException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
 
 import java.io.UnsupportedEncodingException;
-import java.security.PrivateKey;
-import java.security.PublicKey;
 import java.security.interfaces.*;
 
 /**
@@ -27,8 +25,8 @@ public abstract class Algorithm {
      */
     @Deprecated
     public static Algorithm RSA256(RSAKey key) throws IllegalArgumentException {
-        RSAPublicKey publicKey = key instanceof PublicKey ? (RSAPublicKey) key : null;
-        RSAPrivateKey privateKey = key instanceof PrivateKey ? (RSAPrivateKey) key : null;
+        RSAPublicKey publicKey = key instanceof RSAPublicKey ? (RSAPublicKey) key : null;
+        RSAPrivateKey privateKey = key instanceof RSAPrivateKey ? (RSAPrivateKey) key : null;
         return RSA256(publicKey, privateKey);
     }
 
@@ -42,8 +40,8 @@ public abstract class Algorithm {
      */
     @Deprecated
     public static Algorithm RSA384(RSAKey key) throws IllegalArgumentException {
-        RSAPublicKey publicKey = key instanceof PublicKey ? (RSAPublicKey) key : null;
-        RSAPrivateKey privateKey = key instanceof PrivateKey ? (RSAPrivateKey) key : null;
+        RSAPublicKey publicKey = key instanceof RSAPublicKey ? (RSAPublicKey) key : null;
+        RSAPrivateKey privateKey = key instanceof RSAPrivateKey ? (RSAPrivateKey) key : null;
         return RSA384(publicKey, privateKey);
     }
 
@@ -57,8 +55,8 @@ public abstract class Algorithm {
      */
     @Deprecated
     public static Algorithm RSA512(RSAKey key) throws IllegalArgumentException {
-        RSAPublicKey publicKey = key instanceof PublicKey ? (RSAPublicKey) key : null;
-        RSAPrivateKey privateKey = key instanceof PrivateKey ? (RSAPrivateKey) key : null;
+        RSAPublicKey publicKey = key instanceof RSAPublicKey ? (RSAPublicKey) key : null;
+        RSAPrivateKey privateKey = key instanceof RSAPrivateKey ? (RSAPrivateKey) key : null;
         return RSA512(publicKey, privateKey);
     }
 
@@ -177,8 +175,8 @@ public abstract class Algorithm {
      */
     @Deprecated
     public static Algorithm ECDSA256(ECKey key) throws IllegalArgumentException {
-        ECPublicKey publicKey = key instanceof PublicKey ? (ECPublicKey) key : null;
-        ECPrivateKey privateKey = key instanceof PrivateKey ? (ECPrivateKey) key : null;
+        ECPublicKey publicKey = key instanceof ECPublicKey ? (ECPublicKey) key : null;
+        ECPrivateKey privateKey = key instanceof ECPrivateKey ? (ECPrivateKey) key : null;
         return ECDSA256(publicKey, privateKey);
     }
 
@@ -192,8 +190,8 @@ public abstract class Algorithm {
      */
     @Deprecated
     public static Algorithm ECDSA384(ECKey key) throws IllegalArgumentException {
-        ECPublicKey publicKey = key instanceof PublicKey ? (ECPublicKey) key : null;
-        ECPrivateKey privateKey = key instanceof PrivateKey ? (ECPrivateKey) key : null;
+        ECPublicKey publicKey = key instanceof ECPublicKey ? (ECPublicKey) key : null;
+        ECPrivateKey privateKey = key instanceof ECPrivateKey ? (ECPrivateKey) key : null;
         return ECDSA384(publicKey, privateKey);
     }
 
@@ -207,8 +205,8 @@ public abstract class Algorithm {
      */
     @Deprecated
     public static Algorithm ECDSA512(ECKey key) throws IllegalArgumentException {
-        ECPublicKey publicKey = key instanceof PublicKey ? (ECPublicKey) key : null;
-        ECPrivateKey privateKey = key instanceof PrivateKey ? (ECPrivateKey) key : null;
+        ECPublicKey publicKey = key instanceof ECPublicKey ? (ECPublicKey) key : null;
+        ECPrivateKey privateKey = key instanceof ECPrivateKey ? (ECPrivateKey) key : null;
         return ECDSA512(publicKey, privateKey);
     }
 

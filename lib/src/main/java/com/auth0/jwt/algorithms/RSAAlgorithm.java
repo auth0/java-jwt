@@ -42,13 +42,13 @@ class RSAAlgorithm extends Algorithm {
     public void verify(byte[] contentBytes, byte[] signatureBytes) throws SignatureVerificationException {
         try {
             if (publicKey == null) {
-                throw new IllegalArgumentException("The given Public Key is null.");
+                throw new IllegalStateException("The given Public Key is null.");
             }
             boolean valid = crypto.verifySignatureFor(getDescription(), publicKey, contentBytes, signatureBytes);
             if (!valid) {
                 throw new SignatureVerificationException(this);
             }
-        } catch (NoSuchAlgorithmException | SignatureException | InvalidKeyException | IllegalArgumentException e) {
+        } catch (NoSuchAlgorithmException | SignatureException | InvalidKeyException | IllegalStateException e) {
             throw new SignatureVerificationException(this, e);
         }
     }
@@ -57,10 +57,10 @@ class RSAAlgorithm extends Algorithm {
     public byte[] sign(byte[] contentBytes) throws SignatureGenerationException {
         try {
             if (privateKey == null) {
-                throw new IllegalArgumentException("The given Private Key is null.");
+                throw new IllegalStateException("The given Private Key is null.");
             }
             return crypto.createSignatureFor(getDescription(), privateKey, contentBytes);
-        } catch (NoSuchAlgorithmException | SignatureException | InvalidKeyException | IllegalArgumentException e) {
+        } catch (NoSuchAlgorithmException | SignatureException | InvalidKeyException | IllegalStateException e) {
             throw new SignatureGenerationException(this, e);
         }
     }
