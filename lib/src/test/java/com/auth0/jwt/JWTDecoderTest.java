@@ -47,7 +47,7 @@ public class JWTDecoderTest {
     @Test
     public void shouldThrowIfPayloadHasInvalidJSONFormat() throws Exception {
         String validJson = "{}";
-        String invalidJson = "{}}{";
+        String invalidJson = "}{";
         exception.expect(JWTDecodeException.class);
         exception.expectMessage(String.format("The string '%s' doesn't have a valid JSON format.", invalidJson));
         customJWT(validJson, invalidJson, "signature");
@@ -56,7 +56,7 @@ public class JWTDecoderTest {
     @Test
     public void shouldThrowIfHeaderHasInvalidJSONFormat() throws Exception {
         String validJson = "{}";
-        String invalidJson = "{}}{";
+        String invalidJson = "}{";
         exception.expect(JWTDecodeException.class);
         exception.expectMessage(String.format("The string '%s' doesn't have a valid JSON format.", invalidJson));
         customJWT(invalidJson, validJson, "signature");
