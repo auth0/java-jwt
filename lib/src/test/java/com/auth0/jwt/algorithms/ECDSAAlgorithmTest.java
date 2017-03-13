@@ -2,6 +2,7 @@ package com.auth0.jwt.algorithms;
 
 import com.auth0.jwt.exceptions.SignatureGenerationException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
+import com.auth0.jwt.interfaces.ECKeyProvider;
 import org.apache.commons.codec.binary.Base64;
 import org.junit.Rule;
 import org.junit.Test;
@@ -351,7 +352,8 @@ public class ECDSAAlgorithmTest {
 
         ECPublicKey publicKey = mock(ECPublicKey.class);
         ECPrivateKey privateKey = mock(ECPrivateKey.class);
-        Algorithm algorithm = new ECDSAAlgorithm(crypto, "some-alg", "some-algorithm", 32, publicKey, privateKey);
+        ECKeyProvider provider = ECDSAAlgorithm.providerForKeys(publicKey, privateKey);
+        Algorithm algorithm = new ECDSAAlgorithm(crypto, "some-alg", "some-algorithm", 32, provider);
         String jwt = "eyJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJhdXRoMCJ9.4iVk3-Y0v4RT4_9IaQlp-8dZ_4fsTzIylgrPTDLrEvTHBTyVS3tgPbr2_IZfLETtiKRqCg0aQ5sh9eIsTTwB1g";
         AlgorithmUtils.verify(algorithm, jwt);
     }
@@ -368,7 +370,8 @@ public class ECDSAAlgorithmTest {
 
         ECPublicKey publicKey = mock(ECPublicKey.class);
         ECPrivateKey privateKey = mock(ECPrivateKey.class);
-        Algorithm algorithm = new ECDSAAlgorithm(crypto, "some-alg", "some-algorithm", 32, publicKey, privateKey);
+        ECKeyProvider provider = ECDSAAlgorithm.providerForKeys(publicKey, privateKey);
+        Algorithm algorithm = new ECDSAAlgorithm(crypto, "some-alg", "some-algorithm", 32, provider);
         String jwt = "eyJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJhdXRoMCJ9.4iVk3-Y0v4RT4_9IaQlp-8dZ_4fsTzIylgrPTDLrEvTHBTyVS3tgPbr2_IZfLETtiKRqCg0aQ5sh9eIsTTwB1g";
         AlgorithmUtils.verify(algorithm, jwt);
     }
@@ -385,7 +388,8 @@ public class ECDSAAlgorithmTest {
 
         ECPublicKey publicKey = mock(ECPublicKey.class);
         ECPrivateKey privateKey = mock(ECPrivateKey.class);
-        Algorithm algorithm = new ECDSAAlgorithm(crypto, "some-alg", "some-algorithm", 32, publicKey, privateKey);
+        ECKeyProvider provider = ECDSAAlgorithm.providerForKeys(publicKey, privateKey);
+        Algorithm algorithm = new ECDSAAlgorithm(crypto, "some-alg", "some-algorithm", 32, provider);
         String jwt = "eyJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJhdXRoMCJ9.4iVk3-Y0v4RT4_9IaQlp-8dZ_4fsTzIylgrPTDLrEvTHBTyVS3tgPbr2_IZfLETtiKRqCg0aQ5sh9eIsTTwB1g";
         AlgorithmUtils.verify(algorithm, jwt);
     }
@@ -504,7 +508,8 @@ public class ECDSAAlgorithmTest {
 
         ECPublicKey publicKey = mock(ECPublicKey.class);
         ECPrivateKey privateKey = mock(ECPrivateKey.class);
-        Algorithm algorithm = new ECDSAAlgorithm(crypto, "some-alg", "some-algorithm", 32, publicKey, privateKey);
+        ECKeyProvider provider = ECDSAAlgorithm.providerForKeys(publicKey, privateKey);
+        Algorithm algorithm = new ECDSAAlgorithm(crypto, "some-alg", "some-algorithm", 32, provider);
         algorithm.sign(ES256Header.getBytes(StandardCharsets.UTF_8));
     }
 
@@ -520,7 +525,8 @@ public class ECDSAAlgorithmTest {
 
         ECPublicKey publicKey = mock(ECPublicKey.class);
         ECPrivateKey privateKey = mock(ECPrivateKey.class);
-        Algorithm algorithm = new ECDSAAlgorithm(crypto, "some-alg", "some-algorithm", 32, publicKey, privateKey);
+        ECKeyProvider provider = ECDSAAlgorithm.providerForKeys(publicKey, privateKey);
+        Algorithm algorithm = new ECDSAAlgorithm(crypto, "some-alg", "some-algorithm", 32, provider);
         algorithm.sign(ES256Header.getBytes(StandardCharsets.UTF_8));
     }
 
@@ -536,7 +542,8 @@ public class ECDSAAlgorithmTest {
 
         ECPublicKey publicKey = mock(ECPublicKey.class);
         ECPrivateKey privateKey = mock(ECPrivateKey.class);
-        Algorithm algorithm = new ECDSAAlgorithm(crypto, "some-alg", "some-algorithm", 32, publicKey, privateKey);
+        ECKeyProvider provider = ECDSAAlgorithm.providerForKeys(publicKey, privateKey);
+        Algorithm algorithm = new ECDSAAlgorithm(crypto, "some-alg", "some-algorithm", 32, provider);
         algorithm.sign(ES256Header.getBytes(StandardCharsets.UTF_8));
     }
 }

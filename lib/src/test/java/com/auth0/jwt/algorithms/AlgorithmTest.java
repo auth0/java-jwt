@@ -1,5 +1,7 @@
 package com.auth0.jwt.algorithms;
 
+import com.auth0.jwt.interfaces.ECKeyProvider;
+import com.auth0.jwt.interfaces.RSAKeyProvider;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -70,7 +72,8 @@ public class AlgorithmTest {
     public void shouldThrowRSA256InstanceWithNullKey() throws Exception {
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage("Both provided Keys cannot be null.");
-        Algorithm.RSA256(null);
+        RSAKey key = null;
+        Algorithm.RSA256(key);
     }
 
     @Test
@@ -81,10 +84,19 @@ public class AlgorithmTest {
     }
 
     @Test
+    public void shouldThrowRSA256InstanceWithNullKeyProvider() throws Exception {
+        exception.expect(IllegalArgumentException.class);
+        exception.expectMessage("The Key Provider cannot be null.");
+        RSAKeyProvider provider = null;
+        Algorithm.RSA256(provider);
+    }
+
+    @Test
     public void shouldThrowRSA384InstanceWithNullKey() throws Exception {
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage("Both provided Keys cannot be null.");
-        Algorithm.RSA384(null);
+        RSAKey key = null;
+        Algorithm.RSA384(key);
     }
 
     @Test
@@ -95,10 +107,19 @@ public class AlgorithmTest {
     }
 
     @Test
+    public void shouldThrowRSA384InstanceWithNullKeyProvider() throws Exception {
+        exception.expect(IllegalArgumentException.class);
+        exception.expectMessage("The Key Provider cannot be null.");
+        RSAKeyProvider provider = null;
+        Algorithm.RSA384(provider);
+    }
+
+    @Test
     public void shouldThrowRSA512InstanceWithNullKey() throws Exception {
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage("Both provided Keys cannot be null.");
-        Algorithm.RSA512(null);
+        RSAKey key = null;
+        Algorithm.RSA512(key);
     }
 
     @Test
@@ -109,10 +130,19 @@ public class AlgorithmTest {
     }
 
     @Test
+    public void shouldThrowRSA512InstanceWithNullKeyProvider() throws Exception {
+        exception.expect(IllegalArgumentException.class);
+        exception.expectMessage("The Key Provider cannot be null.");
+        RSAKeyProvider provider = null;
+        Algorithm.RSA512(provider);
+    }
+
+    @Test
     public void shouldThrowECDSA256InstanceWithNullKey() throws Exception {
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage("Both provided Keys cannot be null.");
-        Algorithm.ECDSA256(null);
+        ECKey key = null;
+        Algorithm.ECDSA256(key);
     }
 
     @Test
@@ -123,10 +153,19 @@ public class AlgorithmTest {
     }
 
     @Test
+    public void shouldThrowECDSA256InstanceWithNullKeyProvider() throws Exception {
+        exception.expect(IllegalArgumentException.class);
+        exception.expectMessage("The Key Provider cannot be null.");
+        ECKeyProvider provider = null;
+        Algorithm.ECDSA256(provider);
+    }
+
+    @Test
     public void shouldThrowECDSA384InstanceWithNullKey() throws Exception {
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage("Both provided Keys cannot be null.");
-        Algorithm.ECDSA384(null);
+        ECKey key = null;
+        Algorithm.ECDSA384(key);
     }
 
     @Test
@@ -137,10 +176,19 @@ public class AlgorithmTest {
     }
 
     @Test
+    public void shouldThrowECDSA384InstanceWithNullKeyProvider() throws Exception {
+        exception.expect(IllegalArgumentException.class);
+        exception.expectMessage("The Key Provider cannot be null.");
+        ECKeyProvider provider = null;
+        Algorithm.ECDSA384(provider);
+    }
+
+    @Test
     public void shouldThrowECDSA512InstanceWithNullKey() throws Exception {
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage("Both provided Keys cannot be null.");
-        Algorithm.ECDSA512(null);
+        ECKey key = null;
+        Algorithm.ECDSA512(key);
     }
 
     @Test
@@ -148,6 +196,14 @@ public class AlgorithmTest {
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage("Both provided Keys cannot be null.");
         Algorithm.ECDSA512(null, null);
+    }
+
+    @Test
+    public void shouldThrowECDSA512InstanceWithNullKeyProvider() throws Exception {
+        exception.expect(IllegalArgumentException.class);
+        exception.expectMessage("The Key Provider cannot be null.");
+        ECKeyProvider provider = null;
+        Algorithm.ECDSA512(provider);
     }
 
     @Test
