@@ -3,6 +3,7 @@ package com.auth0.jwt.impl;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.interfaces.Claim;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -88,6 +89,18 @@ class JsonNodeClaim implements Claim {
             }
         }
         return list;
+    }
+
+    @Override
+    public Map<String, Object> asMap() throws JWTDecodeException {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            TypeReference<Map<String, Object>> mapType = new TypeReference<Map<String, Object>>() {
+            };
+            return mapper.treeAsTokens(data).readValueAs(mapType);
+        } catch (IOException e) {
+            throw new JWTDecodeException("Couldn't map the Claim value to Map", e);
+        }
     }
 
     @Override
