@@ -90,7 +90,7 @@ try {
     JWTVerifier verifier = JWT.require(Algorithm.HMAC256("secret"))
         .withIssuer("auth0")
         .build(); //Reusable verifier instance
-    JWT jwt = verifier.verify(token);
+    DecodedJWT jwt = verifier.verify(token);
 } catch (JWTVerificationException exception){
     //Invalid signature/claims
 }
@@ -105,7 +105,7 @@ try {
     JWTVerifier verifier = JWT.require(Algorithm.RSA256(key))
         .withIssuer("auth0")
         .build(); //Reusable verifier instance
-    JWT jwt = verifier.verify(token);
+    DecodedJWT jwt = verifier.verify(token);
 } catch (JWTVerificationException exception){
     //Invalid signature/claims
 }
@@ -155,7 +155,7 @@ JWTVerifier verifier = verification.build(clock);
 ```java
 String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXUyJ9.eyJpc3MiOiJhdXRoMCJ9.AbIJTDMFc7yUa5MhvcP03nJPyCPzZtQcGEp-zWfOkEE";
 try {
-    JWT jwt = JWT.decode(token);
+    DecodedJWT jwt = JWT.decode(token);
 } catch (JWTDecodeException exception){
     //Invalid token
 }
