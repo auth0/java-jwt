@@ -2,6 +2,7 @@ package com.auth0.jwt.algorithms;
 
 import com.auth0.jwt.exceptions.SignatureGenerationException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
+import com.auth0.jwt.interfaces.ECKeyProvider;
 
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -11,45 +12,46 @@ import java.security.interfaces.ECPublicKey;
 
 class ECDSAAlgorithm extends Algorithm {
 
-    private final ECPublicKey publicKey;
-    private final ECPrivateKey privateKey;
+    private final ECKeyProvider keyProvider;
     private final CryptoHelper crypto;
     private final int ecNumberSize;
 
     //Visible for testing
-    ECDSAAlgorithm(CryptoHelper crypto, String id, String algorithm, int ecNumberSize, ECPublicKey publicKey, ECPrivateKey privateKey) throws IllegalArgumentException {
+    ECDSAAlgorithm(CryptoHelper crypto, String id, String algorithm, int ecNumberSize, ECKeyProvider keyProvider) throws IllegalArgumentException {
         super(id, algorithm);
-        if (publicKey == null && privateKey == null) {
+        if (keyProvider == null) {
+            throw new IllegalArgumentException("The Key Provider cannot be null.");
+        }
+        if (keyProvider.getPublicKey() == null && keyProvider.getPrivateKey() == null) {
             throw new IllegalArgumentException("Both provided Keys cannot be null.");
         }
-        this.publicKey = publicKey;
-        this.privateKey = privateKey;
-        this.ecNumberSize = ecNumberSize;
+        this.keyProvider = keyProvider;
         this.crypto = crypto;
+        this.ecNumberSize = ecNumberSize;
     }
 
-    ECDSAAlgorithm(String id, String algorithm, int ecNumberSize, ECPublicKey publicKey, ECPrivateKey privateKey) throws IllegalArgumentException {
-        this(new CryptoHelper(), id, algorithm, ecNumberSize, publicKey, privateKey);
+    ECDSAAlgorithm(String id, String algorithm, int ecNumberSize, ECKeyProvider keyProvider) throws IllegalArgumentException {
+        this(new CryptoHelper(), id, algorithm, ecNumberSize, keyProvider);
     }
 
     ECPublicKey getPublicKey() {
-        return publicKey;
+        return keyProvider.getPublicKey();
     }
 
     ECPrivateKey getPrivateKey() {
-        return privateKey;
+        return keyProvider.getPrivateKey();
     }
 
     @Override
     public void verify(byte[] contentBytes, byte[] signatureBytes) throws SignatureVerificationException {
         try {
-            if (publicKey == null) {
+            if (keyProvider.getPublicKey() == null) {
                 throw new IllegalStateException("The given Public Key is null.");
             }
             if (!isDERSignature(signatureBytes)) {
                 signatureBytes = JOSEToDER(signatureBytes);
             }
-            boolean valid = crypto.verifySignatureFor(getDescription(), publicKey, contentBytes, signatureBytes);
+            boolean valid = crypto.verifySignatureFor(getDescription(), keyProvider.getPublicKey(), contentBytes, signatureBytes);
 
             if (!valid) {
                 throw new SignatureVerificationException(this);
@@ -62,14 +64,15 @@ class ECDSAAlgorithm extends Algorithm {
     @Override
     public byte[] sign(byte[] contentBytes) throws SignatureGenerationException {
         try {
-            if (privateKey == null) {
+            if (keyProvider.getPrivateKey() == null) {
                 throw new IllegalStateException("The given Private Key is null.");
             }
-            return crypto.createSignatureFor(getDescription(), privateKey, contentBytes);
+            return crypto.createSignatureFor(getDescription(), keyProvider.getPrivateKey(), contentBytes);
         } catch (NoSuchAlgorithmException | SignatureException | InvalidKeyException | IllegalStateException e) {
             throw new SignatureGenerationException(this, e);
         }
     }
+
 
     private boolean isDERSignature(byte[] signature) {
         // DER Structure: http://crypto.stackexchange.com/a/1797
@@ -131,5 +134,20 @@ class ECDSAAlgorithm extends Algorithm {
             padding++;
         }
         return bytes[fromIndex + padding] > 0x7f ? padding : padding - 1;
+    }
+
+    //Visible for testing
+    static ECKeyProvider providerForKeys(final ECPublicKey publicKey, final ECPrivateKey privateKey) {
+        return new ECKeyProvider() {
+            @Override
+            public ECPublicKey getPublicKey() {
+                return publicKey;
+            }
+
+            @Override
+            public ECPrivateKey getPrivateKey() {
+                return privateKey;
+            }
+        };
     }
 }
