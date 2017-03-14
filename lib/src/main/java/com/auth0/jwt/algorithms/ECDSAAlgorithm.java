@@ -30,10 +30,6 @@ class ECDSAAlgorithm extends Algorithm {
         this.ecNumberSize = ecNumberSize;
     }
 
-    ECDSAAlgorithm(String id, String algorithm, int ecNumberSize, ECPublicKey publicKey, ECPrivateKey privateKey) throws IllegalArgumentException {
-        this(new CryptoHelper(), id, algorithm, ecNumberSize, providerForKeys(publicKey, privateKey));
-    }
-
     ECDSAAlgorithm(String id, String algorithm, int ecNumberSize, ECKeyProvider keyProvider) throws IllegalArgumentException {
         this(new CryptoHelper(), id, algorithm, ecNumberSize, keyProvider);
     }

@@ -37,7 +37,7 @@ public abstract class Algorithm {
      * @throws IllegalArgumentException if both provided Keys are null.
      */
     public static Algorithm RSA256(RSAPublicKey publicKey, RSAPrivateKey privateKey) throws IllegalArgumentException {
-        return new RSAAlgorithm("RS256", "SHA256withRSA", publicKey, privateKey);
+        return RSA256(RSAAlgorithm.providerForKeys(publicKey, privateKey));
     }
 
     /**
@@ -46,7 +46,7 @@ public abstract class Algorithm {
      * @param key the key to use in the verify or signing instance.
      * @return a valid RSA256 Algorithm.
      * @throws IllegalArgumentException if the Key Provider is null.
-     * @deprecated use {@link #RSA256(RSAPublicKey, RSAPrivateKey)}
+     * @deprecated use {@link #RSA256(RSAPublicKey, RSAPrivateKey)} or {@link #RSA256(RSAKeyProvider)}
      */
     @Deprecated
     public static Algorithm RSA256(RSAKey key) throws IllegalArgumentException {
@@ -75,7 +75,7 @@ public abstract class Algorithm {
      * @throws IllegalArgumentException if both provided Keys are null.
      */
     public static Algorithm RSA384(RSAPublicKey publicKey, RSAPrivateKey privateKey) throws IllegalArgumentException {
-        return new RSAAlgorithm("RS384", "SHA384withRSA", publicKey, privateKey);
+        return RSA384(RSAAlgorithm.providerForKeys(publicKey, privateKey));
     }
 
     /**
@@ -84,7 +84,7 @@ public abstract class Algorithm {
      * @param key the key to use in the verify or signing instance.
      * @return a valid RSA384 Algorithm.
      * @throws IllegalArgumentException if the provided Key is null.
-     * @deprecated use {@link #RSA384(RSAPublicKey, RSAPrivateKey)}
+     * @deprecated use {@link #RSA384(RSAPublicKey, RSAPrivateKey)} or {@link #RSA384(RSAKeyProvider)}
      */
     @Deprecated
     public static Algorithm RSA384(RSAKey key) throws IllegalArgumentException {
@@ -113,7 +113,7 @@ public abstract class Algorithm {
      * @throws IllegalArgumentException if both provided Keys are null.
      */
     public static Algorithm RSA512(RSAPublicKey publicKey, RSAPrivateKey privateKey) throws IllegalArgumentException {
-        return new RSAAlgorithm("RS512", "SHA512withRSA", publicKey, privateKey);
+        return RSA512(RSAAlgorithm.providerForKeys(publicKey, privateKey));
     }
 
     /**
@@ -122,7 +122,7 @@ public abstract class Algorithm {
      * @param key the key to use in the verify or signing instance.
      * @return a valid RSA512 Algorithm.
      * @throws IllegalArgumentException if the provided Key is null.
-     * @deprecated use {@link #RSA512(RSAPublicKey, RSAPrivateKey)}
+     * @deprecated use {@link #RSA512(RSAPublicKey, RSAPrivateKey)} or {@link #RSA512(RSAKeyProvider)}
      */
     @Deprecated
     public static Algorithm RSA512(RSAKey key) throws IllegalArgumentException {
@@ -220,7 +220,7 @@ public abstract class Algorithm {
      * @throws IllegalArgumentException if the provided Key is null.
      */
     public static Algorithm ECDSA256(ECPublicKey publicKey, ECPrivateKey privateKey) throws IllegalArgumentException {
-        return new ECDSAAlgorithm("ES256", "SHA256withECDSA", 32, publicKey, privateKey);
+        return ECDSA256(ECDSAAlgorithm.providerForKeys(publicKey, privateKey));
     }
 
     /**
@@ -229,7 +229,7 @@ public abstract class Algorithm {
      * @param key the key to use in the verify or signing instance.
      * @return a valid ECDSA256 Algorithm.
      * @throws IllegalArgumentException if the provided Key is null.
-     * @deprecated use {@link #ECDSA256(ECPublicKey, ECPrivateKey)}
+     * @deprecated use {@link #ECDSA256(ECPublicKey, ECPrivateKey)} or {@link #ECDSA256(ECKeyProvider)}
      */
     @Deprecated
     public static Algorithm ECDSA256(ECKey key) throws IllegalArgumentException {
@@ -258,7 +258,7 @@ public abstract class Algorithm {
      * @throws IllegalArgumentException if the provided Key is null.
      */
     public static Algorithm ECDSA384(ECPublicKey publicKey, ECPrivateKey privateKey) throws IllegalArgumentException {
-        return new ECDSAAlgorithm("ES384", "SHA384withECDSA", 48, publicKey, privateKey);
+        return ECDSA384(ECDSAAlgorithm.providerForKeys(publicKey, privateKey));
     }
 
     /**
@@ -267,7 +267,7 @@ public abstract class Algorithm {
      * @param key the key to use in the verify or signing instance.
      * @return a valid ECDSA384 Algorithm.
      * @throws IllegalArgumentException if the provided Key is null.
-     * @deprecated use {@link #ECDSA384(ECPublicKey, ECPrivateKey)}
+     * @deprecated use {@link #ECDSA384(ECPublicKey, ECPrivateKey)} or {@link #ECDSA384(ECKeyProvider)}
      */
     @Deprecated
     public static Algorithm ECDSA384(ECKey key) throws IllegalArgumentException {
@@ -296,7 +296,7 @@ public abstract class Algorithm {
      * @throws IllegalArgumentException if the provided Key is null.
      */
     public static Algorithm ECDSA512(ECPublicKey publicKey, ECPrivateKey privateKey) throws IllegalArgumentException {
-        return new ECDSAAlgorithm("ES512", "SHA512withECDSA", 66, publicKey, privateKey);
+        return ECDSA512(ECDSAAlgorithm.providerForKeys(publicKey, privateKey));
     }
 
     /**
@@ -305,7 +305,7 @@ public abstract class Algorithm {
      * @param key the key to use in the verify or signing instance.
      * @return a valid ECDSA512 Algorithm.
      * @throws IllegalArgumentException if the provided Key is null.
-     * @deprecated use {@link #ECDSA512(ECPublicKey, ECPrivateKey)}
+     * @deprecated use {@link #ECDSA512(ECPublicKey, ECPrivateKey)} or {@link #ECDSA512(ECKeyProvider)}
      */
     @Deprecated
     public static Algorithm ECDSA512(ECKey key) throws IllegalArgumentException {

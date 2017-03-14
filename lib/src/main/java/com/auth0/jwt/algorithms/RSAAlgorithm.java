@@ -28,10 +28,6 @@ class RSAAlgorithm extends Algorithm {
         this.crypto = crypto;
     }
 
-    RSAAlgorithm(String id, String algorithm, RSAPublicKey publicKey, RSAPrivateKey privateKey) throws IllegalArgumentException {
-        this(new CryptoHelper(), id, algorithm, providerForKeys(publicKey, privateKey));
-    }
-
     RSAAlgorithm(String id, String algorithm, RSAKeyProvider keyProvider) throws IllegalArgumentException {
         this(new CryptoHelper(), id, algorithm, keyProvider);
     }

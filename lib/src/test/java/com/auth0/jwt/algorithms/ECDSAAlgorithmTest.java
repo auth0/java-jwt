@@ -336,7 +336,8 @@ public class ECDSAAlgorithmTest {
 
         ECPublicKey publicKey = (ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC");
         ECPrivateKey privateKey = mock(ECPrivateKey.class);
-        Algorithm algorithm = new ECDSAAlgorithm("ES256", "SHA256withECDSA", 128, publicKey, privateKey);
+        ECKeyProvider provider = ECDSAAlgorithm.providerForKeys(publicKey, privateKey);
+        Algorithm algorithm = new ECDSAAlgorithm("ES256", "SHA256withECDSA", 128, provider);
         AlgorithmUtils.verify(algorithm, jwt);
     }
 
