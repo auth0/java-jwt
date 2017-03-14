@@ -3,44 +3,52 @@ package com.auth0.jwt.algorithms;
 import com.auth0.jwt.exceptions.SignatureGenerationException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
 
-import java.security.*;
-import java.security.interfaces.RSAKey;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SignatureException;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 
 class RSAAlgorithm extends Algorithm {
 
-    private final RSAKey key;
+    private final RSAPublicKey publicKey;
+    private final RSAPrivateKey privateKey;
     private final CryptoHelper crypto;
 
-    RSAAlgorithm(CryptoHelper crypto, String id, String algorithm, RSAKey key) throws IllegalArgumentException {
+    //Visible for testing
+    RSAAlgorithm(CryptoHelper crypto, String id, String algorithm, RSAPublicKey publicKey, RSAPrivateKey privateKey) throws IllegalArgumentException {
         super(id, algorithm);
-        if (key == null) {
-            throw new IllegalArgumentException("The RSAKey cannot be null");
+        if (publicKey == null && privateKey == null) {
+            throw new IllegalArgumentException("Both provided Keys cannot be null.");
         }
-        this.key = key;
+        this.publicKey = publicKey;
+        this.privateKey = privateKey;
         this.crypto = crypto;
     }
 
-    RSAAlgorithm(String id, String algorithm, RSAKey key) throws IllegalArgumentException {
-        this(new CryptoHelper(), id, algorithm, key);
+    RSAAlgorithm(String id, String algorithm, RSAPublicKey publicKey, RSAPrivateKey privateKey) throws IllegalArgumentException {
+        this(new CryptoHelper(), id, algorithm, publicKey, privateKey);
     }
 
-    RSAKey getKey() {
-        return key;
+    RSAPublicKey getPublicKey() {
+        return publicKey;
+    }
+
+    RSAPrivateKey getPrivateKey() {
+        return privateKey;
     }
 
     @Override
     public void verify(byte[] contentBytes, byte[] signatureBytes) throws SignatureVerificationException {
         try {
-            if (!(key instanceof PublicKey)) {
-                throw new IllegalArgumentException("The given RSAKey is not a RSAPublicKey.");
+            if (publicKey == null) {
+                throw new IllegalStateException("The given Public Key is null.");
             }
-            boolean valid = crypto.verifySignatureFor(getDescription(), (RSAPublicKey) key, contentBytes, signatureBytes);
+            boolean valid = crypto.verifySignatureFor(getDescription(), publicKey, contentBytes, signatureBytes);
             if (!valid) {
                 throw new SignatureVerificationException(this);
             }
-        } catch (NoSuchAlgorithmException | SignatureException | InvalidKeyException | IllegalArgumentException e) {
+        } catch (NoSuchAlgorithmException | SignatureException | InvalidKeyException | IllegalStateException e) {
             throw new SignatureVerificationException(this, e);
         }
     }
@@ -48,11 +56,11 @@ class RSAAlgorithm extends Algorithm {
     @Override
     public byte[] sign(byte[] contentBytes) throws SignatureGenerationException {
         try {
-            if (!(key instanceof PrivateKey)) {
-                throw new IllegalArgumentException("The given RSAKey is not a RSAPrivateKey.");
+            if (privateKey == null) {
+                throw new IllegalStateException("The given Private Key is null.");
             }
-            return crypto.createSignatureFor(getDescription(), (RSAPrivateKey) key, contentBytes);
-        } catch (NoSuchAlgorithmException | SignatureException | InvalidKeyException | IllegalArgumentException e) {
+            return crypto.createSignatureFor(getDescription(), privateKey, contentBytes);
+        } catch (NoSuchAlgorithmException | SignatureException | InvalidKeyException | IllegalStateException e) {
             throw new SignatureGenerationException(this, e);
         }
     }
