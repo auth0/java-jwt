@@ -393,6 +393,8 @@ public final class JWTVerifier {
             isValid = value.equals(claim.asString());
         } else if (value instanceof Integer) {
             isValid = value.equals(claim.asInt());
+        } else if (value instanceof Long) {
+            isValid = value.equals(claim.asLong());
         } else if (value instanceof Boolean) {
             isValid = value.equals(claim.asBoolean());
         } else if (value instanceof Double) {
