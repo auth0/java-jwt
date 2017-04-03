@@ -25,6 +25,8 @@ public interface Verification {
 
     Verification withClaim(String name, Integer value) throws IllegalArgumentException;
 
+    Verification withClaim(String name, Long value) throws IllegalArgumentException;
+
     Verification withClaim(String name, Double value) throws IllegalArgumentException;
 
     Verification withClaim(String name, String value) throws IllegalArgumentException;
