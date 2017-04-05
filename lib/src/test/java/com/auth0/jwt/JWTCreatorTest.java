@@ -268,7 +268,7 @@ public class JWTCreatorTest {
 
         assertThat(jwt, is(notNullValue()));
         String[] parts = jwt.split("\\.");
-        assertThat(parts[1], is("eyJuYW1lIjp7ImZvbyI6ImJhciJ9fQ"));
+        assertThat(parts[1], is("eyJuYW1lIjpbMSwyLDNdfQ"));
     }
 
     private static class FooBar {
