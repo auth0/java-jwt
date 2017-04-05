@@ -1,14 +1,21 @@
 package com.auth0.jwt;
 
 import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.exceptions.*;
-import com.auth0.jwt.impl.*;
+import com.auth0.jwt.exceptions.JWTCreationException;
+import com.auth0.jwt.exceptions.SignatureGenerationException;
+import com.auth0.jwt.impl.ClaimsHolder;
+import com.auth0.jwt.impl.PayloadSerializer;
+import com.auth0.jwt.impl.PublicClaims;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.MapperFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import java.nio.charset.StandardCharsets;
-import java.util.*;
 import org.apache.commons.codec.binary.Base64;
+
+import java.nio.charset.StandardCharsets;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * The JWTCreator class holds the sign method to generate a complete JWT (with Signature) from a given Header and Payload content.
