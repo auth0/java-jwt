@@ -205,6 +205,17 @@ public class JWTCreatorTest {
     }
 
     @Test
+    public void shouldAcceptCustomClaimOfTypeLong() throws Exception {
+        String jwt = JWTCreator.init()
+                .withClaim("name", Long.MAX_VALUE)
+                .sign(Algorithm.HMAC256("secret"));
+
+        assertThat(jwt, is(notNullValue()));
+        String[] parts = jwt.split("\\.");
+        assertThat(parts[1], is("eyJuYW1lIjo5MjIzMzcyMDM2ODU0Nzc1ODA3fQ"));
+    }
+
+    @Test
     public void shouldAcceptCustomClaimOfTypeDouble() throws Exception {
         String jwt = JWTCreator.init()
                 .withClaim("name", 23.45)
@@ -253,6 +264,17 @@ public class JWTCreatorTest {
     public void shouldAcceptCustomArrayClaimOfTypeInteger() throws Exception {
         String jwt = JWTCreator.init()
                 .withArrayClaim("name", new Integer[]{1, 2, 3})
+                .sign(Algorithm.HMAC256("secret"));
+
+        assertThat(jwt, is(notNullValue()));
+        String[] parts = jwt.split("\\.");
+        assertThat(parts[1], is("eyJuYW1lIjpbMSwyLDNdfQ"));
+    }
+
+    @Test
+    public void shouldAcceptCustomArrayClaimOfTypeLong() throws Exception {
+        String jwt = JWTCreator.init()
+                .withArrayClaim("name", new Long[]{1L, 2L, 3L})
                 .sign(Algorithm.HMAC256("secret"));
 
         assertThat(jwt, is(notNullValue()));
