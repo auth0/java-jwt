@@ -337,8 +337,12 @@ public final class JWTVerifier {
      */
     public DecodedJWT verify(String token) throws JWTVerificationException {
         DecodedJWT jwt = JWTDecoder.decode(token);
+        return verify(jwt);
+    }
+
+    public DecodedJWT verify(DecodedJWT jwt) throws JWTVerificationException {
         verifyAlgorithm(jwt, algorithm);
-        verifySignature(TokenUtils.splitToken(token));
+        verifySignature(TokenUtils.splitToken(jwt.getToken()));
         verifyClaims(jwt, claims);
         return jwt;
     }
