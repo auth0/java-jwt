@@ -5,14 +5,17 @@ import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.interfaces.Claim;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.JsonNodeType;
 import com.fasterxml.jackson.databind.node.MissingNode;
 import com.fasterxml.jackson.databind.node.NullNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.hamcrest.collection.IsMapContaining;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import java.io.IOException;
 import java.util.*;
 
 import static com.auth0.jwt.impl.JWTParser.getDefaultObjectMapper;
@@ -21,6 +24,8 @@ import static org.hamcrest.Matchers.*;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class JsonNodeClaimTest {
 
@@ -205,6 +210,22 @@ public class JsonNodeClaimTest {
     }
 
     @Test
+    public void shouldGetNullMapIfNullValue() throws Exception {
+        JsonNode value = mapper.valueToTree(null);
+        Claim claim = claimFromNode(value);
+
+        assertThat(claim.asMap(), is(nullValue()));
+    }
+
+    @Test
+    public void shouldGetNullMapIfNonArrayValue() throws Exception {
+        JsonNode value = mapper.valueToTree(1);
+        Claim claim = claimFromNode(value);
+
+        assertThat(claim.asMap(), is(nullValue()));
+    }
+
+    @Test
     public void shouldGetMapValue() throws Exception {
         Map<String, Object> map = new HashMap<>();
         map.put("text", "extraValue");
@@ -226,8 +247,10 @@ public class JsonNodeClaimTest {
     }
 
     @Test
-    public void shouldThrowIfMapClassMismatch() throws Exception {
-        JsonNode value = mapper.valueToTree("text node");
+    public void shouldThrowIfAnExtraordinaryExceptionHappensWhenParsingAsGenericMap() throws Exception {
+        JsonNode value = mock(ObjectNode.class);
+        when(value.getNodeType()).thenReturn(JsonNodeType.OBJECT);
+        when(value.fields()).thenThrow(IOException.class);
         Claim claim = claimFromNode(value);
 
         exception.expect(JWTDecodeException.class);

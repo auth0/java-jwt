@@ -93,6 +93,10 @@ class JsonNodeClaim implements Claim {
 
     @Override
     public Map<String, Object> asMap() throws JWTDecodeException {
+        if (!data.isObject()) {
+            return null;
+        }
+
         ObjectMapper mapper = new ObjectMapper();
         try {
             TypeReference<Map<String, Object>> mapType = new TypeReference<Map<String, Object>>() {
