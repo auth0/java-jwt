@@ -224,6 +224,17 @@ public class JWTVerifierTest {
     }
 
     @Test
+    public void shouldValidateCustomClaimOfTypeLong() throws Exception {
+        String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjo5MjIzMzcyMDM2ODU0Nzc2MDB9.km-IwQ5IDnTZFmuJzhSgvjTzGkn_Z5X29g4nAuVC56I";
+        DecodedJWT jwt = JWTVerifier.init(Algorithm.HMAC256("secret"))
+                .withClaim("name", 922337203685477600L)
+                .build()
+                .verify(token);
+
+        assertThat(jwt, is(notNullValue()));
+    }
+
+    @Test
     public void shouldValidateCustomClaimOfTypeDouble() throws Exception {
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoyMy40NX0.7pyX2OmEGaU9q15T8bGFqRm-d3RVTYnqmZNZtxMKSlA";
         DecodedJWT jwt = JWTVerifier.init(Algorithm.HMAC256("secret"))

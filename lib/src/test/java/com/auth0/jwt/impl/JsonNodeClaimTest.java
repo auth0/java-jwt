@@ -73,6 +73,23 @@ public class JsonNodeClaimTest {
     }
 
     @Test
+    public void shouldGetLongValue() throws Exception {
+        JsonNode value = mapper.valueToTree(Long.MAX_VALUE);
+        Claim claim = claimFromNode(value);
+
+        assertThat(claim.asLong(), is(notNullValue()));
+        assertThat(claim.asLong(), is(Long.MAX_VALUE));
+    }
+
+    @Test
+    public void shouldGetNullLongIfNotIntValue() throws Exception {
+        JsonNode objectValue = mapper.valueToTree(new Object());
+        assertThat(claimFromNode(objectValue).asLong(), is(nullValue()));
+        JsonNode stringValue = mapper.valueToTree("" + Long.MAX_VALUE);
+        assertThat(claimFromNode(stringValue).asLong(), is(nullValue()));
+    }
+
+    @Test
     public void shouldGetDoubleValue() throws Exception {
         JsonNode value = mapper.valueToTree(1.5);
         Claim claim = claimFromNode(value);

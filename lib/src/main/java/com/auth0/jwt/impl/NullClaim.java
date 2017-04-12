@@ -27,6 +27,11 @@ public class NullClaim implements Claim {
     }
 
     @Override
+    public Long asLong() {
+        return null;
+    }
+
+    @Override
     public Double asDouble() {
         return null;
     }

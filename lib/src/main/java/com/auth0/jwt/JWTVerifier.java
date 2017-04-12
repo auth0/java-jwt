@@ -207,6 +207,21 @@ public final class JWTVerifier {
          * @throws IllegalArgumentException if the name is null.
          */
         @Override
+        public Verification withClaim(String name, Long value) throws IllegalArgumentException {
+            assertNonNull(name);
+            requireClaim(name, value);
+            return this;
+        }
+
+        /**
+         * Require a specific Claim value.
+         *
+         * @param name  the Claim's name.
+         * @param value the Claim's value.
+         * @return this same Verification instance.
+         * @throws IllegalArgumentException if the name is null.
+         */
+        @Override
         public Verification withClaim(String name, Double value) throws IllegalArgumentException {
             assertNonNull(name);
             requireClaim(name, value);
@@ -394,6 +409,8 @@ public final class JWTVerifier {
             isValid = value.equals(claim.asString());
         } else if (value instanceof Integer) {
             isValid = value.equals(claim.asInt());
+        } else if (value instanceof Long) {
+            isValid = value.equals(claim.asLong());
         } else if (value instanceof Boolean) {
             isValid = value.equals(claim.asBoolean());
         } else if (value instanceof Double) {
