@@ -3,6 +3,7 @@ package com.auth0.jwt;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.AlgorithmMismatchException;
 import com.auth0.jwt.exceptions.InvalidClaimException;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.Clock;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import org.junit.Rule;
@@ -392,7 +393,7 @@ public class JWTVerifierTest {
 
     @Test
     public void shouldThrowOnInvalidExpiresAtIfPresent() throws Exception {
-        exception.expect(InvalidClaimException.class);
+        exception.expect(TokenExpiredException.class);
         exception.expectMessage(startsWith("The Token has expired on"));
         Clock clock = mock(Clock.class);
         when(clock.getToday()).thenReturn(new Date(DATE_TOKEN_MS_VALUE + 1000));

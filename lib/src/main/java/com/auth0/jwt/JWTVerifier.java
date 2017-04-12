@@ -5,6 +5,7 @@ import com.auth0.jwt.exceptions.AlgorithmMismatchException;
 import com.auth0.jwt.exceptions.InvalidClaimException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.impl.PublicClaims;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.Clock;
@@ -417,23 +418,31 @@ public final class JWTVerifier {
     }
 
     private void assertValidDateClaim(Date date, long leeway, boolean shouldBeFuture) {
-        Date today = clock.getToday();
-        today.setTime((long) Math.floor((today.getTime() / 1000) * 1000)); //truncate millis
-        boolean isValid;
-        String errMessage;
-        if (shouldBeFuture) {
-            today.setTime(today.getTime() - leeway * 1000);
-            isValid = date == null || !today.after(date);
-            errMessage = String.format("The Token has expired on %s.", date);
-        } else {
-            today.setTime(today.getTime() + leeway * 1000);
-            isValid = date == null || !today.before(date);
-            errMessage = String.format("The Token can't be used before %s.", date);
-        }
-        if (!isValid) {
-            throw new InvalidClaimException(errMessage);
-        }
-    }
+		Date today = clock.getToday();
+		today.setTime((long) Math.floor((today.getTime() / 1000) * 1000)); // truncate
+																		  // millis
+		if (shouldBeFuture) {
+			assertDateIsFuture(date, leeway, today);
+		} else {
+			assertDateIsPast(date, leeway, today);
+		}
+	}
+
+	private void assertDateIsFuture(Date date, long leeway, Date today) {
+		
+		today.setTime(today.getTime() - leeway * 1000);
+		if (date != null && today.after(date)) {
+			throw new TokenExpiredException(String.format("The Token has expired on %s.", date));
+		}
+	}
+	
+	private void assertDateIsPast(Date date, long leeway, Date today) {
+		today.setTime(today.getTime() + leeway * 1000);
+		if(date!=null && today.before(date)) {
+			throw new InvalidClaimException(String.format("The Token can't be used before %s.", date));
+		}
+		
+	}
 
     private void assertValidAudienceClaim(List<String> audience, List<String> value) {
         if (audience == null || !audience.containsAll(value)) {
