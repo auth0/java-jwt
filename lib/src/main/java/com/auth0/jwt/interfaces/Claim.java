@@ -4,6 +4,7 @@ import com.auth0.jwt.exceptions.JWTDecodeException;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * The Claim class holds the value in a generic way so that it can be recovered in many representations.
@@ -74,6 +75,14 @@ public interface Claim {
      * @throws JWTDecodeException if the values inside the List can't be converted to a class T.
      */
     <T> List<T> asList(Class<T> tClazz) throws JWTDecodeException;
+
+    /**
+     * Get this Claim as a generic Map of values.
+     *
+     * @return the value as instance of Map.
+     * @throws JWTDecodeException if the value can't be converted to a Map.
+     */
+    Map<String, Object> asMap() throws JWTDecodeException;
 
     /**
      * Get this Claim as a custom type T.
