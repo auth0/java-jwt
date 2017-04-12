@@ -192,11 +192,11 @@ public class JWTDecoderTest {
     }
 
     @Test
-    public void shouldGetNullClaimIfClaimValueIsNull() throws Exception {
+    public void shouldNotGetNullClaimIfClaimIsEmptyObject() throws Exception {
         DecodedJWT jwt = JWTDecoder.decode("eyJhbGciOiJIUzI1NiJ9.eyJvYmplY3QiOnt9fQ.d3nUeeL_69QsrHL0ZWij612LHEQxD8EZg1rNoY3a4aI");
         assertThat(jwt, is(notNullValue()));
         assertThat(jwt.getClaim("object"), is(notNullValue()));
-        assertThat(jwt.getClaim("object").isNull(), is(true));
+        assertThat(jwt.getClaim("object").isNull(), is(false));
     }
 
     @Test

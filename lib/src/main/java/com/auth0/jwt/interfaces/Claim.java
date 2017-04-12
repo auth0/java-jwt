@@ -10,6 +10,11 @@ import java.util.List;
  */
 public interface Claim {
 
+    /**
+     * Whether this Claim has a null value or not.
+     *
+     * @return whether this Claim has a null value or not.
+     */
     boolean isNull();
 
     /**

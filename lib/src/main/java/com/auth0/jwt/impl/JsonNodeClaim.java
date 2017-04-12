@@ -102,7 +102,7 @@ class JsonNodeClaim implements Claim {
 
     @Override
     public boolean isNull() {
-        return !(data.isArray() || data.canConvertToLong() || data.isTextual() || data.isNumber() || data.isBoolean());
+        return false;
     }
 
     /**
