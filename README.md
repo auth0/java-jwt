@@ -338,6 +338,7 @@ The Claim class is a wrapper for the Claim values. It allows you to get the Clai
 To obtain a Claim as a Collection you'll need to provide the **Class Type** of the contents to convert from.
 
 * **as(class)**: Returns the value parsed as **Class Type**. For collections you should use the `asArray` and `asList` methods.
+* **asMap()**: Returns the value parsed as **Map<String, Object>**.
 * **asArray(class)**: Returns the value parsed as an Array of elements of type **Class Type**, or null if the value isn't a JSON Array.
 * **asList(class)**: Returns the value parsed as a List of elements of type **Class Type**, or null if the value isn't a JSON Array.
 
