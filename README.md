@@ -331,6 +331,7 @@ The Claim class is a wrapper for the Claim values. It allows you to get the Clai
 * **asBoolean()**: Returns the Boolean value or null if it can't be converted.
 * **asInt()**: Returns the Integer value or null if it can't be converted.
 * **asDouble()**: Returns the Double value or null if it can't be converted.
+* **asLong()**: Returns the Long value or null if it can't be converted.
 * **asString()**: Returns the String value or null if it can't be converted.
 * **asDate()**: Returns the Date value or null if it can't be converted. This must be a NumericDate (Unix Epoch/Timestamp). Note that the [JWT Standard](https://tools.ietf.org/html/rfc7519#section-2) specified that all the *NumericDate* values must be in seconds.
 
