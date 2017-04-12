@@ -239,6 +239,17 @@ public class JWTCreatorTest {
     }
 
     @Test
+    public void shouldAcceptCustomClaimOfTypeObject() throws Exception {
+        String jwt = JWTCreator.init()
+                .withClaim("name", new FooBar("bar"))
+                .sign(Algorithm.HMAC256("secret"));
+
+        assertThat(jwt, is(notNullValue()));
+        String[] parts = jwt.split("\\.");
+        assertThat(parts[1], is("eyJuYW1lIjp7ImZvbyI6ImJhciJ9fQ"));
+    }
+
+    @Test
     public void shouldAcceptCustomArrayClaimOfTypeString() throws Exception {
         String jwt = JWTCreator.init()
                 .withArrayClaim("name", new String[]{"text", "123", "true"})
@@ -258,5 +269,17 @@ public class JWTCreatorTest {
         assertThat(jwt, is(notNullValue()));
         String[] parts = jwt.split("\\.");
         assertThat(parts[1], is("eyJuYW1lIjpbMSwyLDNdfQ"));
+    }
+
+    private static class FooBar {
+        private final String foo;
+
+        private FooBar(String foo) {
+            this.foo = foo;
+        }
+
+        public String getFoo() {
+            return foo;
+        }
     }
 }
