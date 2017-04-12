@@ -5,6 +5,7 @@ import com.auth0.jwt.interfaces.Claim;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * The {@link NullClaim} class is a Claim implementation that returns null when any of it's methods it's called.
@@ -52,6 +53,11 @@ public class NullClaim implements Claim {
 
     @Override
     public <T> List<T> asList(Class<T> tClazz) throws JWTDecodeException {
+        return null;
+    }
+
+    @Override
+    public Map<String, Object> asMap() throws JWTDecodeException {
         return null;
     }
 

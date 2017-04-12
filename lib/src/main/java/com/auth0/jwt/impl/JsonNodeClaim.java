@@ -3,6 +3,7 @@ package com.auth0.jwt.impl;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.interfaces.Claim;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -94,6 +95,22 @@ class JsonNodeClaim implements Claim {
     }
 
     @Override
+    public Map<String, Object> asMap() throws JWTDecodeException {
+        if (!data.isObject()) {
+            return null;
+        }
+
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            TypeReference<Map<String, Object>> mapType = new TypeReference<Map<String, Object>>() {
+            };
+            return mapper.treeAsTokens(data).readValueAs(mapType);
+        } catch (IOException e) {
+            throw new JWTDecodeException("Couldn't map the Claim value to Map", e);
+        }
+    }
+
+    @Override
     public <T> T as(Class<T> tClazz) throws JWTDecodeException {
         ObjectMapper mapper = new ObjectMapper();
         try {
@@ -105,7 +122,7 @@ class JsonNodeClaim implements Claim {
 
     @Override
     public boolean isNull() {
-        return !(data.isArray() || data.canConvertToLong() || data.isTextual() || data.isNumber() || data.isBoolean());
+        return false;
     }
 
     /**

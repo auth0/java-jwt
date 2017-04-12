@@ -62,6 +62,11 @@ public class NullClaimTest {
     }
 
     @Test
+    public void shouldGetAsMap() throws Exception {
+        assertThat(claim.asMap(), is(nullValue()));
+    }
+
+    @Test
     public void shouldGetAsCustomClass() throws Exception {
         assertThat(claim.as(Object.class), is(nullValue()));
     }
