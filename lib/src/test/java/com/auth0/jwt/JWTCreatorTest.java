@@ -281,4 +281,32 @@ public class JWTCreatorTest {
         String[] parts = jwt.split("\\.");
         assertThat(parts[1], is("eyJuYW1lIjpbMSwyLDNdfQ"));
     }
+
+    @Test
+    public void shouldAcceptCustomMapStringString() throws Exception {
+        Map <String, String> map = new HashMap<>();
+        map.put("test", "1");
+
+        String jwt = JWTCreator.init()
+                .withMapClaim("map", map)
+                .sign(Algorithm.HMAC256("secret"));
+
+        assertThat(jwt, is(notNullValue()));
+        String[] parts = jwt.split("\\.");
+        assertThat(parts[1], is("eyJtYXAiOnsidGVzdCI6IjEifX0"));
+    }
+
+    @Test
+    public void shouldAcceptCustomMapStringInt() throws Exception {
+        Map <String, Object> map = new HashMap<>();
+        map.put("test", 1);
+
+        String jwt = JWTCreator.init()
+                .withMapClaim("map", map)
+                .sign(Algorithm.HMAC256("secret"));
+
+        assertThat(jwt, is(notNullValue()));
+        String[] parts = jwt.split("\\.");
+        assertThat(parts[1], is("eyJtYXAiOnsidGVzdCI6MX19"));
+    }
 }
