@@ -46,6 +46,57 @@ The library implements JWT Verification and Signing using the following algorith
 
 ## Usage
 
+### Instantiate the Algorithm
+
+The Algorithm defines how a token is signed and verified. It can be instantiated with the raw value of the secret in the case of HMAC algorithms, or the key pairs or `KeyProvider` in the case of RSA and ECDSA algorithms. Once created, the Algorithm instance is reusable for token signing and verification operations.
+
+i.e. Using HMAC256:
+
+```java
+Algorithm algorithm = Algorithm.HMAC256("secret");
+```
+
+i.e. Using RSA256:
+
+```java
+RSAPublicKey publicKey = //Get the key instance
+RSAPrivateKey privateKey = //Get the key instance
+Algorithm algorithm = Algorithm.RSA256(publicKey, privateKey);
+```
+
+i.e. Using a `KeyProvider`.
+
+The advantage of using this interface instead of giving directly the `PublicKey` and `PrivateKey` is that both keys are requested on-demand, allowing you to use rotating keys. This can be achieved if you host the `jwks` file in a public domain. Check the [IETF draft](https://tools.ietf.org/html/rfc7517) for more information on how to implement this. 
+
+Next, use a library like [auth0/jwks-rsa-java](https://github.com/auth0/jwks-rsa-java) or implement your own class to fetch the JWK and handle the PublicKey if the `kid` matches the one received in your token.
+
+
+```java
+
+//Decode your received JWT
+DecodedJWT jwt = JWT.decode("json.web.token"); 
+JwkProvider provider = new JwkProviderBuilder("https://samples.auth0.com/")
+    .build();
+//Use the 'kid' to get a PublicKey from the JWK
+final Jwk jwk = provider.get(jwt.getKeyId());
+final RSAPrivateKey privateKey = //Get the key instance
+
+Algorithm.RSA256(new RSAKeyProvider() {
+            @Override
+            public RSAPublicKey getPublicKey() {
+                return (RSAPublicKey) jwk.getPublicKey();
+            }
+
+            @Override
+            public RSAPrivateKey getPrivateKey() {
+                return privateKey;
+            }
+        });
+Algorithm algorithm = Algorithm.RSA256(keyProvider);
+
+```
+
+
 ### Create and Sign a Token
 
 You'll first need to create a `JWTCreator` instance by calling `JWT.create()`. Use the builder to define the custom Claims your token needs to have. Finally to get the String token call `sign()` and pass the `Algorithm` instance.
