@@ -2,7 +2,7 @@
 
 # Java JWT
 
-[![Build Status](https://travis-ci.org/auth0/java-jwt.svg?branch=v3)](https://travis-ci.org/auth0/java-jwt)
+[![CircleCI](https://img.shields.io/circleci/project/github/auth0/java-jwt.svg?style=flat-square)](https://circleci.com/gh/auth0/java-jwt/tree/master)
 [![Coverage Status](https://img.shields.io/codecov/c/github/auth0/java-jwt/v3.svg?style=flat-square)](https://codecov.io/github/auth0/java-jwt)
 [![License](http://img.shields.io/:license-mit-blue.svg?style=flat)](http://doge.mit-license.org)
 
@@ -216,7 +216,7 @@ Additional Claims defined in the token's Header can be obtained by calling `getH
 Claim claim = jwt.getHeaderClaim("owner");
 ```
 
-When creating a Token with the `JWT.create()` you can specify header Claims by calling `withHeader()` and passing both the map of claims. 
+When creating a Token with the `JWT.create()` you can specify header Claims by calling `withHeader()` and passing both the map of claims.
 
 ```java
 Map<String, Object> headerClaims = new HashMap();
@@ -302,7 +302,7 @@ or
 Claim claim = jwt.getClaim("isAdmin");
 ```
 
-When creating a Token with the `JWT.create()` you can specify a custom Claim by calling `withClaim()` and passing both the name and the value. 
+When creating a Token with the `JWT.create()` you can specify a custom Claim by calling `withClaim()` and passing both the name and the value.
 
 ```java
 String token = JWT.create()
@@ -331,6 +331,7 @@ The Claim class is a wrapper for the Claim values. It allows you to get the Clai
 * **asBoolean()**: Returns the Boolean value or null if it can't be converted.
 * **asInt()**: Returns the Integer value or null if it can't be converted.
 * **asDouble()**: Returns the Double value or null if it can't be converted.
+* **asLong()**: Returns the Long value or null if it can't be converted.
 * **asString()**: Returns the String value or null if it can't be converted.
 * **asDate()**: Returns the Date value or null if it can't be converted. This must be a NumericDate (Unix Epoch/Timestamp). Note that the [JWT Standard](https://tools.ietf.org/html/rfc7519#section-2) specified that all the *NumericDate* values must be in seconds.
 
