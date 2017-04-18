@@ -1,11 +1,7 @@
 package com.auth0.jwt;
 
 import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.exceptions.AlgorithmMismatchException;
-import com.auth0.jwt.exceptions.InvalidClaimException;
-import com.auth0.jwt.exceptions.JWTVerificationException;
-import com.auth0.jwt.exceptions.SignatureVerificationException;
-import com.auth0.jwt.exceptions.TokenExpiredException;
+import com.auth0.jwt.exceptions.*;
 import com.auth0.jwt.impl.PublicClaims;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.Clock;
@@ -349,7 +345,10 @@ public final class JWTVerifier {
      *
      * @param token to verify.
      * @return a verified and decoded JWT.
-     * @throws JWTVerificationException if any of the required contents inside the JWT is invalid.
+     * @throws AlgorithmMismatchException     if the algorithm stated in the token's header it's not equal to the one defined in the {@link JWTVerifier}.
+     * @throws SignatureVerificationException if the signature is invalid.
+     * @throws TokenExpiredException          if the token has expired.
+     * @throws InvalidClaimException          if a claim contained a different value than the expected one.
      */
     public DecodedJWT verify(String token) throws JWTVerificationException {
         DecodedJWT jwt = JWTDecoder.decode(token);
@@ -371,7 +370,7 @@ public final class JWTVerifier {
         }
     }
 
-    private void verifyClaims(DecodedJWT jwt, Map<String, Object> claims) {
+    private void verifyClaims(DecodedJWT jwt, Map<String, Object> claims) throws TokenExpiredException, InvalidClaimException {
         for (Map.Entry<String, Object> entry : claims.entrySet()) {
             switch (entry.getKey()) {
                 case PublicClaims.AUDIENCE:
@@ -435,31 +434,30 @@ public final class JWTVerifier {
     }
 
     private void assertValidDateClaim(Date date, long leeway, boolean shouldBeFuture) {
-		Date today = clock.getToday();
-		today.setTime((long) Math.floor((today.getTime() / 1000) * 1000)); // truncate
-																		  // millis
-		if (shouldBeFuture) {
-			assertDateIsFuture(date, leeway, today);
-		} else {
-			assertDateIsPast(date, leeway, today);
-		}
-	}
+        Date today = clock.getToday();
+        today.setTime((long) Math.floor((today.getTime() / 1000) * 1000)); // truncate
+        // millis
+        if (shouldBeFuture) {
+            assertDateIsFuture(date, leeway, today);
+        } else {
+            assertDateIsPast(date, leeway, today);
+        }
+    }
 
-	private void assertDateIsFuture(Date date, long leeway, Date today) {
-		
-		today.setTime(today.getTime() - leeway * 1000);
-		if (date != null && today.after(date)) {
-			throw new TokenExpiredException(String.format("The Token has expired on %s.", date));
-		}
-	}
-	
-	private void assertDateIsPast(Date date, long leeway, Date today) {
-		today.setTime(today.getTime() + leeway * 1000);
-		if(date!=null && today.before(date)) {
-			throw new InvalidClaimException(String.format("The Token can't be used before %s.", date));
-		}
-		
-	}
+    private void assertDateIsFuture(Date date, long leeway, Date today) {
+        today.setTime(today.getTime() - leeway * 1000);
+        if (date != null && today.after(date)) {
+            throw new TokenExpiredException(String.format("The Token has expired on %s.", date));
+        }
+    }
+
+    private void assertDateIsPast(Date date, long leeway, Date today) {
+        today.setTime(today.getTime() + leeway * 1000);
+        if (date != null && today.before(date)) {
+            throw new InvalidClaimException(String.format("The Token can't be used before %s.", date));
+        }
+
+    }
 
     private void assertValidAudienceClaim(List<String> audience, List<String> value) {
         if (audience == null || !audience.containsAll(value)) {
