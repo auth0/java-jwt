@@ -3,6 +3,7 @@ package com.auth0.jwt;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.impl.JWTParser;
 import com.auth0.jwt.interfaces.Claim;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.Header;
 import com.auth0.jwt.interfaces.Payload;
 import org.apache.commons.codec.binary.Base64;
@@ -16,7 +17,7 @@ import java.util.Map;
  * The JWTDecoder class holds the decode method to parse a given JWT token into it's JWT representation.
  */
 @SuppressWarnings("WeakerAccess")
-final class JWTDecoder extends JWT {
+final class JWTDecoder implements DecodedJWT {
 
     private final String token;
     private Header header;

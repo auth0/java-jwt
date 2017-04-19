@@ -6,7 +6,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.Verification;
 
 @SuppressWarnings("WeakerAccess")
-public abstract class JWT implements DecodedJWT {
+public abstract class JWT {
 
     /**
      * Decode a given Json Web Token.
