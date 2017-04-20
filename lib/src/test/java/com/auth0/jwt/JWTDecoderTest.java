@@ -63,7 +63,8 @@ public class JWTDecoderTest {
         customJWT(invalidJson, validJson, "signature");
     }
 
-    // getToken
+    // Parts
+
     @Test
     public void shouldGetStringToken() throws Exception {
         DecodedJWT jwt = JWT.decode("eyJhbGciOiJIUzI1NiJ9.e30.XmNK3GpH3Ys_7wsYBfq4C3M6goz71I7dTgUkuIa5lyQ");
@@ -72,13 +73,18 @@ public class JWTDecoderTest {
         assertThat(jwt.getToken(), is("eyJhbGciOiJIUzI1NiJ9.e30.XmNK3GpH3Ys_7wsYBfq4C3M6goz71I7dTgUkuIa5lyQ"));
     }
 
-    // Parts
-
     @Test
-    public void shouldGetAlgorithm() throws Exception {
+    public void shouldGetHeader() throws Exception {
         DecodedJWT jwt = JWT.decode("eyJhbGciOiJIUzI1NiJ9.e30.XmNK3GpH3Ys_7wsYBfq4C3M6goz71I7dTgUkuIa5lyQ");
         assertThat(jwt, is(notNullValue()));
-        assertThat(jwt.getAlgorithm(), is("HS256"));
+        assertThat(jwt.getHeader(), is("eyJhbGciOiJIUzI1NiJ9"));
+    }
+
+    @Test
+    public void shouldGetPayload() throws Exception {
+        DecodedJWT jwt = JWT.decode("eyJhbGciOiJIUzI1NiJ9.e30.XmNK3GpH3Ys_7wsYBfq4C3M6goz71I7dTgUkuIa5lyQ");
+        assertThat(jwt, is(notNullValue()));
+        assertThat(jwt.getPayload(), is("e30"));
     }
 
     @Test
@@ -172,6 +178,13 @@ public class JWTDecoderTest {
         DecodedJWT jwt = JWT.decode("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXUyJ9.e30.WdFmrzx8b9v_a-r6EHC2PTAaWywgm_8LiP8RBRhYwkI");
         assertThat(jwt, is(notNullValue()));
         assertThat(jwt.getType(), is("JWS"));
+    }
+
+    @Test
+    public void shouldGetAlgorithm() throws Exception {
+        DecodedJWT jwt = JWT.decode("eyJhbGciOiJIUzI1NiJ9.e30.XmNK3GpH3Ys_7wsYBfq4C3M6goz71I7dTgUkuIa5lyQ");
+        assertThat(jwt, is(notNullValue()));
+        assertThat(jwt.getAlgorithm(), is("HS256"));
     }
 
     //Private PublicClaims

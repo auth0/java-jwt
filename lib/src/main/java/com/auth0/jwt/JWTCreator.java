@@ -303,6 +303,10 @@ public final class JWTCreator {
             }
             headerClaims.put(PublicClaims.ALGORITHM, algorithm.getName());
             headerClaims.put(PublicClaims.TYPE, "JWT");
+            String signingKeyId = algorithm.getSigningKeyId();
+            if (!headerClaims.containsKey(PublicClaims.KEY_ID) && signingKeyId != null) {
+                withKeyId(signingKeyId);
+            }
             return new JWTCreator(algorithm, headerClaims, payloadClaims).sign();
         }
 
@@ -322,8 +326,8 @@ public final class JWTCreator {
     }
 
     private String sign() throws SignatureGenerationException {
-        String header = Base64.encodeBase64URLSafeString((headerJson.getBytes(StandardCharsets.UTF_8)));
-        String payload = Base64.encodeBase64URLSafeString((payloadJson.getBytes(StandardCharsets.UTF_8)));
+        String header = Base64.encodeBase64URLSafeString(headerJson.getBytes(StandardCharsets.UTF_8));
+        String payload = Base64.encodeBase64URLSafeString(payloadJson.getBytes(StandardCharsets.UTF_8));
         String content = String.format("%s.%s", header, payload);
 
         byte[] signatureBytes = algorithm.sign(content.getBytes(StandardCharsets.UTF_8));

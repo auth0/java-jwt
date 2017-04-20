@@ -2,8 +2,11 @@ package com.auth0.jwt.algorithms;
 
 import com.auth0.jwt.exceptions.SignatureGenerationException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.RSAKeyProvider;
+import org.apache.commons.codec.binary.Base64;
 
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
@@ -21,9 +24,6 @@ class RSAAlgorithm extends Algorithm {
         if (keyProvider == null) {
             throw new IllegalArgumentException("The Key Provider cannot be null.");
         }
-        if (keyProvider.getPublicKey() == null && keyProvider.getPrivateKey() == null) {
-            throw new IllegalArgumentException("Both provided Keys cannot be null.");
-        }
         this.keyProvider = keyProvider;
         this.crypto = crypto;
     }
@@ -32,21 +32,17 @@ class RSAAlgorithm extends Algorithm {
         this(new CryptoHelper(), id, algorithm, keyProvider);
     }
 
-    RSAPublicKey getPublicKey() {
-        return keyProvider.getPublicKey();
-    }
-
-    RSAPrivateKey getPrivateKey() {
-        return keyProvider.getPrivateKey();
-    }
-
     @Override
-    public void verify(byte[] contentBytes, byte[] signatureBytes) throws SignatureVerificationException {
+    public void verify(DecodedJWT jwt) throws SignatureVerificationException {
+        byte[] contentBytes = String.format("%s.%s", jwt.getHeader(), jwt.getPayload()).getBytes(StandardCharsets.UTF_8);
+        byte[] signatureBytes = Base64.decodeBase64(jwt.getSignature());
+
         try {
-            if (keyProvider.getPublicKey() == null) {
+            RSAPublicKey publicKey = keyProvider.getPublicKey(jwt.getKeyId());
+            if (publicKey == null) {
                 throw new IllegalStateException("The given Public Key is null.");
             }
-            boolean valid = crypto.verifySignatureFor(getDescription(), keyProvider.getPublicKey(), contentBytes, signatureBytes);
+            boolean valid = crypto.verifySignatureFor(getDescription(), publicKey, contentBytes, signatureBytes);
             if (!valid) {
                 throw new SignatureVerificationException(this);
             }
@@ -58,26 +54,40 @@ class RSAAlgorithm extends Algorithm {
     @Override
     public byte[] sign(byte[] contentBytes) throws SignatureGenerationException {
         try {
-            if (keyProvider.getPrivateKey() == null) {
+            RSAPrivateKey privateKey = keyProvider.getPrivateKey();
+            if (privateKey == null) {
                 throw new IllegalStateException("The given Private Key is null.");
             }
-            return crypto.createSignatureFor(getDescription(), keyProvider.getPrivateKey(), contentBytes);
+            return crypto.createSignatureFor(getDescription(), privateKey, contentBytes);
         } catch (NoSuchAlgorithmException | SignatureException | InvalidKeyException | IllegalStateException e) {
             throw new SignatureGenerationException(this, e);
         }
     }
 
+    @Override
+    public String getSigningKeyId() {
+        return keyProvider.getSigningKeyId();
+    }
+
     //Visible for testing
     static RSAKeyProvider providerForKeys(final RSAPublicKey publicKey, final RSAPrivateKey privateKey) {
+        if (publicKey == null && privateKey == null) {
+            throw new IllegalArgumentException("Both provided Keys cannot be null.");
+        }
         return new RSAKeyProvider() {
             @Override
-            public RSAPublicKey getPublicKey() {
+            public RSAPublicKey getPublicKey(String keyId) {
                 return publicKey;
             }
 
             @Override
             public RSAPrivateKey getPrivateKey() {
                 return privateKey;
+            }
+
+            @Override
+            public String getSigningKeyId() {
+                return null;
             }
         };
     }

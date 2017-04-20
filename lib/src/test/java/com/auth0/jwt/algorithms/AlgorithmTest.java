@@ -214,7 +214,6 @@ public class AlgorithmTest {
         assertThat(algorithm, is(instanceOf(HMACAlgorithm.class)));
         assertThat(algorithm.getDescription(), is("HmacSHA256"));
         assertThat(algorithm.getName(), is("HS256"));
-        assertThat(((HMACAlgorithm) algorithm).getSecret(), is("secret".getBytes(StandardCharsets.UTF_8)));
     }
 
     @Test
@@ -225,7 +224,6 @@ public class AlgorithmTest {
         assertThat(algorithm, is(instanceOf(HMACAlgorithm.class)));
         assertThat(algorithm.getDescription(), is("HmacSHA384"));
         assertThat(algorithm.getName(), is("HS384"));
-        assertThat(((HMACAlgorithm) algorithm).getSecret(), is("secret".getBytes(StandardCharsets.UTF_8)));
     }
 
     @Test
@@ -236,7 +234,6 @@ public class AlgorithmTest {
         assertThat(algorithm, is(instanceOf(HMACAlgorithm.class)));
         assertThat(algorithm.getDescription(), is("HmacSHA512"));
         assertThat(algorithm.getName(), is("HS512"));
-        assertThat(((HMACAlgorithm) algorithm).getSecret(), is("secret".getBytes(StandardCharsets.UTF_8)));
     }
 
     @Test
@@ -247,7 +244,6 @@ public class AlgorithmTest {
         assertThat(algorithm, is(instanceOf(HMACAlgorithm.class)));
         assertThat(algorithm.getDescription(), is("HmacSHA256"));
         assertThat(algorithm.getName(), is("HS256"));
-        assertThat(((HMACAlgorithm) algorithm).getSecret(), is("secret".getBytes(StandardCharsets.UTF_8)));
     }
 
     @Test
@@ -258,7 +254,6 @@ public class AlgorithmTest {
         assertThat(algorithm, is(instanceOf(HMACAlgorithm.class)));
         assertThat(algorithm.getDescription(), is("HmacSHA384"));
         assertThat(algorithm.getName(), is("HS384"));
-        assertThat(((HMACAlgorithm) algorithm).getSecret(), is("secret".getBytes(StandardCharsets.UTF_8)));
     }
 
     @Test
@@ -269,7 +264,6 @@ public class AlgorithmTest {
         assertThat(algorithm, is(instanceOf(HMACAlgorithm.class)));
         assertThat(algorithm.getDescription(), is("HmacSHA512"));
         assertThat(algorithm.getName(), is("HS512"));
-        assertThat(((HMACAlgorithm) algorithm).getSecret(), is("secret".getBytes(StandardCharsets.UTF_8)));
     }
 
     @Test
@@ -281,7 +275,6 @@ public class AlgorithmTest {
         assertThat(algorithm, is(instanceOf(RSAAlgorithm.class)));
         assertThat(algorithm.getDescription(), is("SHA256withRSA"));
         assertThat(algorithm.getName(), is("RS256"));
-        assertThat(((RSAAlgorithm) algorithm).getPublicKey(), is(key));
     }
 
     @Test
@@ -293,11 +286,10 @@ public class AlgorithmTest {
         assertThat(algorithm, is(instanceOf(RSAAlgorithm.class)));
         assertThat(algorithm.getDescription(), is("SHA256withRSA"));
         assertThat(algorithm.getName(), is("RS256"));
-        assertThat(((RSAAlgorithm) algorithm).getPrivateKey(), is(key));
     }
 
     @Test
-    public void shouldCreateRSA256Algorithm() throws Exception {
+    public void shouldCreateRSA256AlgorithmWithBothKeys() throws Exception {
         RSAPublicKey publicKey = mock(RSAPublicKey.class);
         RSAPrivateKey privateKey = mock(RSAPrivateKey.class);
         Algorithm algorithm = Algorithm.RSA256(publicKey, privateKey);
@@ -306,8 +298,17 @@ public class AlgorithmTest {
         assertThat(algorithm, is(instanceOf(RSAAlgorithm.class)));
         assertThat(algorithm.getDescription(), is("SHA256withRSA"));
         assertThat(algorithm.getName(), is("RS256"));
-        assertThat(((RSAAlgorithm) algorithm).getPublicKey(), is(publicKey));
-        assertThat(((RSAAlgorithm) algorithm).getPrivateKey(), is(privateKey));
+    }
+
+    @Test
+    public void shouldCreateRSA256AlgorithmWithProvider() throws Exception {
+        RSAKeyProvider provider = mock(RSAKeyProvider.class);
+        Algorithm algorithm = Algorithm.RSA256(provider);
+
+        assertThat(algorithm, is(notNullValue()));
+        assertThat(algorithm, is(instanceOf(RSAAlgorithm.class)));
+        assertThat(algorithm.getDescription(), is("SHA256withRSA"));
+        assertThat(algorithm.getName(), is("RS256"));
     }
 
     @Test
@@ -319,7 +320,6 @@ public class AlgorithmTest {
         assertThat(algorithm, is(instanceOf(RSAAlgorithm.class)));
         assertThat(algorithm.getDescription(), is("SHA384withRSA"));
         assertThat(algorithm.getName(), is("RS384"));
-        assertThat(((RSAAlgorithm) algorithm).getPublicKey(), is(key));
     }
 
     @Test
@@ -331,11 +331,10 @@ public class AlgorithmTest {
         assertThat(algorithm, is(instanceOf(RSAAlgorithm.class)));
         assertThat(algorithm.getDescription(), is("SHA384withRSA"));
         assertThat(algorithm.getName(), is("RS384"));
-        assertThat(((RSAAlgorithm) algorithm).getPrivateKey(), is(key));
     }
 
     @Test
-    public void shouldCreateRSA384Algorithm() throws Exception {
+    public void shouldCreateRSA384AlgorithmWithBothKeys() throws Exception {
         RSAPublicKey publicKey = mock(RSAPublicKey.class);
         RSAPrivateKey privateKey = mock(RSAPrivateKey.class);
         Algorithm algorithm = Algorithm.RSA384(publicKey, privateKey);
@@ -344,8 +343,17 @@ public class AlgorithmTest {
         assertThat(algorithm, is(instanceOf(RSAAlgorithm.class)));
         assertThat(algorithm.getDescription(), is("SHA384withRSA"));
         assertThat(algorithm.getName(), is("RS384"));
-        assertThat(((RSAAlgorithm) algorithm).getPublicKey(), is(publicKey));
-        assertThat(((RSAAlgorithm) algorithm).getPrivateKey(), is(privateKey));
+    }
+
+    @Test
+    public void shouldCreateRSA384AlgorithmWithProvider() throws Exception {
+        RSAKeyProvider provider = mock(RSAKeyProvider.class);
+        Algorithm algorithm = Algorithm.RSA384(provider);
+
+        assertThat(algorithm, is(notNullValue()));
+        assertThat(algorithm, is(instanceOf(RSAAlgorithm.class)));
+        assertThat(algorithm.getDescription(), is("SHA384withRSA"));
+        assertThat(algorithm.getName(), is("RS384"));
     }
 
     @Test
@@ -357,7 +365,6 @@ public class AlgorithmTest {
         assertThat(algorithm, is(instanceOf(RSAAlgorithm.class)));
         assertThat(algorithm.getDescription(), is("SHA512withRSA"));
         assertThat(algorithm.getName(), is("RS512"));
-        assertThat(((RSAAlgorithm) algorithm).getPublicKey(), is(key));
     }
 
     @Test
@@ -369,11 +376,10 @@ public class AlgorithmTest {
         assertThat(algorithm, is(instanceOf(RSAAlgorithm.class)));
         assertThat(algorithm.getDescription(), is("SHA512withRSA"));
         assertThat(algorithm.getName(), is("RS512"));
-        assertThat(((RSAAlgorithm) algorithm).getPrivateKey(), is(key));
     }
 
     @Test
-    public void shouldCreateRSA512Algorithm() throws Exception {
+    public void shouldCreateRSA512AlgorithmWithBothKeys() throws Exception {
         RSAPublicKey publicKey = mock(RSAPublicKey.class);
         RSAPrivateKey privateKey = mock(RSAPrivateKey.class);
         Algorithm algorithm = Algorithm.RSA512(publicKey, privateKey);
@@ -382,8 +388,17 @@ public class AlgorithmTest {
         assertThat(algorithm, is(instanceOf(RSAAlgorithm.class)));
         assertThat(algorithm.getDescription(), is("SHA512withRSA"));
         assertThat(algorithm.getName(), is("RS512"));
-        assertThat(((RSAAlgorithm) algorithm).getPublicKey(), is(publicKey));
-        assertThat(((RSAAlgorithm) algorithm).getPrivateKey(), is(privateKey));
+    }
+
+    @Test
+    public void shouldCreateRSA512AlgorithmWithProvider() throws Exception {
+        RSAKeyProvider provider = mock(RSAKeyProvider.class);
+        Algorithm algorithm = Algorithm.RSA512(provider);
+
+        assertThat(algorithm, is(notNullValue()));
+        assertThat(algorithm, is(instanceOf(RSAAlgorithm.class)));
+        assertThat(algorithm.getDescription(), is("SHA512withRSA"));
+        assertThat(algorithm.getName(), is("RS512"));
     }
 
     @Test
@@ -395,7 +410,6 @@ public class AlgorithmTest {
         assertThat(algorithm, is(instanceOf(ECDSAAlgorithm.class)));
         assertThat(algorithm.getDescription(), is("SHA256withECDSA"));
         assertThat(algorithm.getName(), is("ES256"));
-        assertThat(((ECDSAAlgorithm) algorithm).getPublicKey(), is(key));
     }
 
     @Test
@@ -407,11 +421,10 @@ public class AlgorithmTest {
         assertThat(algorithm, is(instanceOf(ECDSAAlgorithm.class)));
         assertThat(algorithm.getDescription(), is("SHA256withECDSA"));
         assertThat(algorithm.getName(), is("ES256"));
-        assertThat(((ECDSAAlgorithm) algorithm).getPrivateKey(), is(key));
     }
 
     @Test
-    public void shouldCreateECDSA256Algorithm() throws Exception {
+    public void shouldCreateECDSA256AlgorithmWithBothKeys() throws Exception {
         ECPublicKey publicKey = mock(ECPublicKey.class);
         ECPrivateKey privateKey = mock(ECPrivateKey.class);
         Algorithm algorithm = Algorithm.ECDSA256(publicKey, privateKey);
@@ -420,8 +433,17 @@ public class AlgorithmTest {
         assertThat(algorithm, is(instanceOf(ECDSAAlgorithm.class)));
         assertThat(algorithm.getDescription(), is("SHA256withECDSA"));
         assertThat(algorithm.getName(), is("ES256"));
-        assertThat(((ECDSAAlgorithm) algorithm).getPublicKey(), is(publicKey));
-        assertThat(((ECDSAAlgorithm) algorithm).getPrivateKey(), is(privateKey));
+    }
+
+    @Test
+    public void shouldCreateECDSA256AlgorithmWithProvider() throws Exception {
+        ECKeyProvider provider = mock(ECKeyProvider.class);
+        Algorithm algorithm = Algorithm.ECDSA256(provider);
+
+        assertThat(algorithm, is(notNullValue()));
+        assertThat(algorithm, is(instanceOf(ECDSAAlgorithm.class)));
+        assertThat(algorithm.getDescription(), is("SHA256withECDSA"));
+        assertThat(algorithm.getName(), is("ES256"));
     }
 
     @Test
@@ -433,7 +455,6 @@ public class AlgorithmTest {
         assertThat(algorithm, is(instanceOf(ECDSAAlgorithm.class)));
         assertThat(algorithm.getDescription(), is("SHA384withECDSA"));
         assertThat(algorithm.getName(), is("ES384"));
-        assertThat(((ECDSAAlgorithm) algorithm).getPublicKey(), is(key));
     }
 
     @Test
@@ -445,11 +466,10 @@ public class AlgorithmTest {
         assertThat(algorithm, is(instanceOf(ECDSAAlgorithm.class)));
         assertThat(algorithm.getDescription(), is("SHA384withECDSA"));
         assertThat(algorithm.getName(), is("ES384"));
-        assertThat(((ECDSAAlgorithm) algorithm).getPrivateKey(), is(key));
     }
 
     @Test
-    public void shouldCreateECDSA384Algorithm() throws Exception {
+    public void shouldCreateECDSA384AlgorithmWithBothKeys() throws Exception {
         ECPublicKey publicKey = mock(ECPublicKey.class);
         ECPrivateKey privateKey = mock(ECPrivateKey.class);
         Algorithm algorithm = Algorithm.ECDSA384(publicKey, privateKey);
@@ -458,8 +478,17 @@ public class AlgorithmTest {
         assertThat(algorithm, is(instanceOf(ECDSAAlgorithm.class)));
         assertThat(algorithm.getDescription(), is("SHA384withECDSA"));
         assertThat(algorithm.getName(), is("ES384"));
-        assertThat(((ECDSAAlgorithm) algorithm).getPublicKey(), is(publicKey));
-        assertThat(((ECDSAAlgorithm) algorithm).getPrivateKey(), is(privateKey));
+    }
+
+    @Test
+    public void shouldCreateECDSA384AlgorithmWithProvider() throws Exception {
+        ECKeyProvider provider = mock(ECKeyProvider.class);
+        Algorithm algorithm = Algorithm.ECDSA384(provider);
+
+        assertThat(algorithm, is(notNullValue()));
+        assertThat(algorithm, is(instanceOf(ECDSAAlgorithm.class)));
+        assertThat(algorithm.getDescription(), is("SHA384withECDSA"));
+        assertThat(algorithm.getName(), is("ES384"));
     }
 
     @Test
@@ -471,7 +500,6 @@ public class AlgorithmTest {
         assertThat(algorithm, is(instanceOf(ECDSAAlgorithm.class)));
         assertThat(algorithm.getDescription(), is("SHA512withECDSA"));
         assertThat(algorithm.getName(), is("ES512"));
-        assertThat(((ECDSAAlgorithm) algorithm).getPublicKey(), is(key));
     }
 
     @Test
@@ -483,11 +511,10 @@ public class AlgorithmTest {
         assertThat(algorithm, is(instanceOf(ECDSAAlgorithm.class)));
         assertThat(algorithm.getDescription(), is("SHA512withECDSA"));
         assertThat(algorithm.getName(), is("ES512"));
-        assertThat(((ECDSAAlgorithm) algorithm).getPrivateKey(), is(key));
     }
 
     @Test
-    public void shouldCreateECDSA512Algorithm() throws Exception {
+    public void shouldCreateECDSA512AlgorithmWithBothKeys() throws Exception {
         ECPublicKey publicKey = mock(ECPublicKey.class);
         ECPrivateKey privateKey = mock(ECPrivateKey.class);
         Algorithm algorithm = Algorithm.ECDSA512(publicKey, privateKey);
@@ -496,8 +523,17 @@ public class AlgorithmTest {
         assertThat(algorithm, is(instanceOf(ECDSAAlgorithm.class)));
         assertThat(algorithm.getDescription(), is("SHA512withECDSA"));
         assertThat(algorithm.getName(), is("ES512"));
-        assertThat(((ECDSAAlgorithm) algorithm).getPublicKey(), is(publicKey));
-        assertThat(((ECDSAAlgorithm) algorithm).getPrivateKey(), is(privateKey));
+    }
+
+    @Test
+    public void shouldCreateECDSA512AlgorithmWithProvider() throws Exception {
+        ECKeyProvider provider = mock(ECKeyProvider.class);
+        Algorithm algorithm = Algorithm.ECDSA512(provider);
+
+        assertThat(algorithm, is(notNullValue()));
+        assertThat(algorithm, is(instanceOf(ECDSAAlgorithm.class)));
+        assertThat(algorithm.getDescription(), is("SHA512withECDSA"));
+        assertThat(algorithm.getName(), is("ES512"));
     }
 
     @Test

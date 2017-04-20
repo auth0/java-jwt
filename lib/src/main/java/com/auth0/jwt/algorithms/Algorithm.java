@@ -2,6 +2,7 @@ package com.auth0.jwt.algorithms;
 
 import com.auth0.jwt.exceptions.SignatureGenerationException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.ECKeyProvider;
 import com.auth0.jwt.interfaces.RSAKeyProvider;
 
@@ -325,6 +326,15 @@ public abstract class Algorithm {
     }
 
     /**
+     * Getter for the Id of the Private Key used to sign the tokens. This is usually specified as the `kid` claim in the Header.
+     *
+     * @return the Key Id that identifies the Signing Key or null if it's not specified.
+     */
+    public String getSigningKeyId() {
+        return null;
+    }
+
+    /**
      * Getter for the name of this Algorithm, as defined in the JWT Standard. i.e. "HS256"
      *
      * @return the algorithm name.
@@ -348,13 +358,12 @@ public abstract class Algorithm {
     }
 
     /**
-     * Verify the given content using this Algorithm instance.
+     * Verify the given token using this Algorithm instance.
      *
-     * @param contentBytes   an array of bytes representing the base64 encoded content to be verified against the signature.
-     * @param signatureBytes an array of bytes representing the base64 encoded signature to compare the content against.
+     * @param jwt the already decoded JWT that it's going to be verified.
      * @throws SignatureVerificationException if the Token's Signature is invalid, meaning that it doesn't match the signatureBytes, or if the Key is invalid.
      */
-    public abstract void verify(byte[] contentBytes, byte[] signatureBytes) throws SignatureVerificationException;
+    public abstract void verify(DecodedJWT jwt) throws SignatureVerificationException;
 
     /**
      * Sign the given content using this Algorithm instance.
