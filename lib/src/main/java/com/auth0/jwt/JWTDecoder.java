@@ -19,18 +19,12 @@ import java.util.Map;
 @SuppressWarnings("WeakerAccess")
 final class JWTDecoder implements DecodedJWT {
 
-    private final String token;
-    private Header header;
-    private Payload payload;
-    private String signature;
+    private final String[] parts;
+    private final Header header;
+    private final Payload payload;
 
     JWTDecoder(String jwt) throws JWTDecodeException {
-        this.token = jwt;
-        parseToken(jwt);
-    }
-
-    private void parseToken(String token) throws JWTDecodeException {
-        final String[] parts = TokenUtils.splitToken(token);
+        parts = TokenUtils.splitToken(jwt);
         final JWTParser converter = new JWTParser();
         String headerJson;
         String payloadJson;
@@ -42,7 +36,6 @@ final class JWTDecoder implements DecodedJWT {
         }
         header = converter.parseHeader(headerJson);
         payload = converter.parsePayload(payloadJson);
-        signature = parts[2];
     }
 
     @Override
@@ -116,12 +109,22 @@ final class JWTDecoder implements DecodedJWT {
     }
 
     @Override
+    public String getHeader() {
+        return parts[0];
+    }
+
+    @Override
+    public String getPayload() {
+        return parts[1];
+    }
+
+    @Override
     public String getSignature() {
-        return signature;
+        return parts[2];
     }
 
     @Override
     public String getToken() {
-        return token;
+        return String.format("%s.%s.%s", parts[0], parts[1], parts[2]);
     }
 }

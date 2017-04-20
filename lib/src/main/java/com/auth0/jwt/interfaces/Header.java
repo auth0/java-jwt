@@ -26,7 +26,6 @@ public interface Header {
      */
     String getContentType();
 
-
     /**
      * Get the value of the "kid" claim, or null if it's not available.
      *
