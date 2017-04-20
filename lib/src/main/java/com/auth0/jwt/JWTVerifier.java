@@ -343,7 +343,10 @@ public final class JWTVerifier {
      *
      * @param token to verify.
      * @return a verified and decoded JWT.
-     * @throws JWTVerificationException if any of the required contents inside the JWT is invalid.
+     * @throws AlgorithmMismatchException     if the algorithm stated in the token's header it's not equal to the one defined in the {@link JWTVerifier}.
+     * @throws SignatureVerificationException if the signature is invalid.
+     * @throws TokenExpiredException          if the token has expired.
+     * @throws InvalidClaimException          if a claim contained a different value than the expected one.
      */
     public DecodedJWT verify(String token) throws JWTVerificationException {
         DecodedJWT jwt = JWT.decode(token);
@@ -359,7 +362,7 @@ public final class JWTVerifier {
         }
     }
 
-    private void verifyClaims(DecodedJWT jwt, Map<String, Object> claims) {
+    private void verifyClaims(DecodedJWT jwt, Map<String, Object> claims) throws TokenExpiredException, InvalidClaimException {
         for (Map.Entry<String, Object> entry : claims.entrySet()) {
             switch (entry.getKey()) {
                 case PublicClaims.AUDIENCE:
