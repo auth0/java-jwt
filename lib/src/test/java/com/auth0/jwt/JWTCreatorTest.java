@@ -1,7 +1,7 @@
 package com.auth0.jwt;
 
 import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.interfaces.ECKeyProvider;
+import com.auth0.jwt.interfaces.ECDSAKeyProvider;
 import com.auth0.jwt.interfaces.RSAKeyProvider;
 import org.apache.commons.codec.binary.Base64;
 import org.junit.Rule;
@@ -66,10 +66,10 @@ public class JWTCreatorTest {
     }
 
     @Test
-    public void shouldAddKeyIdIfAvailableAndNotAlreadyAddedUsingRSAAlgorithms() throws Exception {
+    public void shouldAddKeyIdIfAvailableFromRSAAlgorithms() throws Exception {
         RSAPrivateKey privateKey = (RSAPrivateKey) PemUtils.readPrivateKeyFromFile(PRIVATE_KEY_FILE_RSA, "RSA");
         RSAKeyProvider provider = mock(RSAKeyProvider.class);
-        when(provider.getSigningKeyId()).thenReturn("my-key-id");
+        when(provider.getPrivateKeyId()).thenReturn("my-key-id");
         when(provider.getPrivateKey()).thenReturn(privateKey);
 
         String signed = JWTCreator.init()
@@ -82,10 +82,10 @@ public class JWTCreatorTest {
     }
 
     @Test
-    public void shouldNotOverwriteKeyIdIfAlreadySetUsingRSAAlgorithms() throws Exception {
+    public void shouldNotOverwriteKeyIdIfAddedFromRSAAlgorithms() throws Exception {
         RSAPrivateKey privateKey = (RSAPrivateKey) PemUtils.readPrivateKeyFromFile(PRIVATE_KEY_FILE_RSA, "RSA");
         RSAKeyProvider provider = mock(RSAKeyProvider.class);
-        when(provider.getSigningKeyId()).thenReturn("my-key-id");
+        when(provider.getPrivateKeyId()).thenReturn("my-key-id");
         when(provider.getPrivateKey()).thenReturn(privateKey);
 
         String signed = JWTCreator.init()
@@ -95,14 +95,14 @@ public class JWTCreatorTest {
         assertThat(signed, is(notNullValue()));
         String[] parts = signed.split("\\.");
         String headerJson = new String(Base64.decodeBase64(parts[0]), StandardCharsets.UTF_8);
-        assertThat(headerJson, JsonMatcher.hasEntry("kid", "real-key-id"));
+        assertThat(headerJson, JsonMatcher.hasEntry("kid", "my-key-id"));
     }
 
     @Test
-    public void shouldAddKeyIdIfAvailableAndNotAlreadyAddedUsingECDSAAlgorithms() throws Exception {
+    public void shouldAddKeyIdIfAvailableFromECDSAAlgorithms() throws Exception {
         ECPrivateKey privateKey = (ECPrivateKey) PemUtils.readPrivateKeyFromFile(PRIVATE_KEY_FILE_EC_256, "EC");
-        ECKeyProvider provider = mock(ECKeyProvider.class);
-        when(provider.getSigningKeyId()).thenReturn("my-key-id");
+        ECDSAKeyProvider provider = mock(ECDSAKeyProvider.class);
+        when(provider.getPrivateKeyId()).thenReturn("my-key-id");
         when(provider.getPrivateKey()).thenReturn(privateKey);
 
         String signed = JWTCreator.init()
@@ -115,10 +115,10 @@ public class JWTCreatorTest {
     }
 
     @Test
-    public void shouldNotOverwriteKeyIdIfAlreadySetUsingECDSAAlgorithms() throws Exception {
+    public void shouldNotOverwriteKeyIdIfAddedFromECDSAAlgorithms() throws Exception {
         ECPrivateKey privateKey = (ECPrivateKey) PemUtils.readPrivateKeyFromFile(PRIVATE_KEY_FILE_EC_256, "EC");
-        ECKeyProvider provider = mock(ECKeyProvider.class);
-        when(provider.getSigningKeyId()).thenReturn("my-key-id");
+        ECDSAKeyProvider provider = mock(ECDSAKeyProvider.class);
+        when(provider.getPrivateKeyId()).thenReturn("my-key-id");
         when(provider.getPrivateKey()).thenReturn(privateKey);
 
         String signed = JWTCreator.init()
@@ -128,7 +128,7 @@ public class JWTCreatorTest {
         assertThat(signed, is(notNullValue()));
         String[] parts = signed.split("\\.");
         String headerJson = new String(Base64.decodeBase64(parts[0]), StandardCharsets.UTF_8);
-        assertThat(headerJson, JsonMatcher.hasEntry("kid", "real-key-id"));
+        assertThat(headerJson, JsonMatcher.hasEntry("kid", "my-key-id"));
     }
 
     @Test

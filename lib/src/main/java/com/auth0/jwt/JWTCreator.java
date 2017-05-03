@@ -77,6 +77,7 @@ public final class JWTCreator {
 
         /**
          * Add a specific Key Id ("kid") claim to the Header.
+         * If the {@link Algorithm} used to sign this token was instantiated with a KeyProvider, the 'kid' value will be taken from that provider and this one will be ignored.
          *
          * @param keyId the Key Id value.
          * @return this same Builder instance.
@@ -304,7 +305,7 @@ public final class JWTCreator {
             headerClaims.put(PublicClaims.ALGORITHM, algorithm.getName());
             headerClaims.put(PublicClaims.TYPE, "JWT");
             String signingKeyId = algorithm.getSigningKeyId();
-            if (!headerClaims.containsKey(PublicClaims.KEY_ID) && signingKeyId != null) {
+            if (signingKeyId != null) {
                 withKeyId(signingKeyId);
             }
             return new JWTCreator(algorithm, headerClaims, payloadClaims).sign();

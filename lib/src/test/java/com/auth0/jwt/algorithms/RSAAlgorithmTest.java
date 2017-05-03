@@ -55,7 +55,7 @@ public class RSAAlgorithmTest {
     public void shouldPassRSA256VerificationWithProvidedPublicKey() throws Exception {
         RSAKeyProvider provider = mock(RSAKeyProvider.class);
         PublicKey publicKey = readPublicKeyFromFile(PUBLIC_KEY_FILE, "RSA");
-        when(provider.getPublicKey("my-key-id")).thenReturn((RSAPublicKey) publicKey);
+        when(provider.getPublicKeyById("my-key-id")).thenReturn((RSAPublicKey) publicKey);
         String jwt = "eyJhbGciOiJSUzI1NiIsImtpZCI6Im15LWtleS1pZCJ9.eyJpc3MiOiJhdXRoMCJ9.jXrbue3xJmnzWH9kU-uGeCTtgbQEKbch8uHd4Z52t86ncNyepfusl_bsyLJIcxMwK7odRzKiSE9efV9JaRSEDODDBdMeCzODFx82uBM7e46T1NLVSmjYIM7Hcfh81ZeTIk-hITvgtL6hvTdeJWOCZAB0bs18qSVW5SvursRUhY38xnhuNI6HOHCtqp7etxWAu6670L53I3GtXsmi6bXIzv_0v1xZcAFg4HTvXxfhfj3oCqkSs2nC27mHxBmQtmZKWmXk5HzVUyPRwTUWx5wHPT_hCsGer-CMCAyGsmOg466y1KDqf7ogpMYojfVZGWBsyA39LO1oWZ4Ryomkn8t5Vg";
         Algorithm algorithm = Algorithm.RSA256(provider);
         algorithm.verify(JWT.decode(jwt));
@@ -68,7 +68,7 @@ public class RSAAlgorithmTest {
         exception.expectCause(isA(IllegalStateException.class));
         exception.expectCause(hasMessage(is("The given Public Key is null.")));
         RSAKeyProvider provider = mock(RSAKeyProvider.class);
-        when(provider.getPublicKey("my-key-id")).thenReturn(null);
+        when(provider.getPublicKeyById("my-key-id")).thenReturn(null);
         String jwt = "eyJhbGciOiJSUzI1NiIsImtpZCI6Im15LWtleS1pZCJ9.eyJpc3MiOiJhdXRoMCJ9.jXrbue3xJmnzWH9kU-uGeCTtgbQEKbch8uHd4Z52t86ncNyepfusl_bsyLJIcxMwK7odRzKiSE9efV9JaRSEDODDBdMeCzODFx82uBM7e46T1NLVSmjYIM7Hcfh81ZeTIk-hITvgtL6hvTdeJWOCZAB0bs18qSVW5SvursRUhY38xnhuNI6HOHCtqp7etxWAu6670L53I3GtXsmi6bXIzv_0v1xZcAFg4HTvXxfhfj3oCqkSs2nC27mHxBmQtmZKWmXk5HzVUyPRwTUWx5wHPT_hCsGer-CMCAyGsmOg466y1KDqf7ogpMYojfVZGWBsyA39LO1oWZ4Ryomkn8t5Vg";
         Algorithm algorithm = Algorithm.RSA256(provider);
         algorithm.verify(JWT.decode(jwt));
@@ -112,7 +112,7 @@ public class RSAAlgorithmTest {
     public void shouldPassRSA384VerificationWithProvidedPublicKey() throws Exception {
         RSAKeyProvider provider = mock(RSAKeyProvider.class);
         PublicKey publicKey = readPublicKeyFromFile(PUBLIC_KEY_FILE, "RSA");
-        when(provider.getPublicKey("my-key-id")).thenReturn((RSAPublicKey) publicKey);
+        when(provider.getPublicKeyById("my-key-id")).thenReturn((RSAPublicKey) publicKey);
         String jwt = "eyJhbGciOiJSUzM4NCIsImtpZCI6Im15LWtleS1pZCJ9.eyJpc3MiOiJhdXRoMCJ9.ITNTVCT7ercumZKHV4-BXGkJwwa7fyF3CnSfEvm09fDFSkaseDxNo_75WLDmK9WM8RMHTPvkpHcTKm4guYEbC_la7RzFIKpU72bppzQojggSmWWXt_6zq50QP2t5HFMebote1zxhp8ccEdSCX5pyY6J2sm9kJ__HKK32KxIVCTjVCz-bFBS60oG35aYEySdKsxuUdWbD5FQ9I16Ony2x0EPvmlL3GPiAPmgjSFp3LtcBIbCDaoonM7iuDRGIQiDN_n2FKKb1Bt4_38uWPtTkwRpNalt6l53Y3JDdzGI5fMrMo3RQnQlAJxUJKD0eL6dRAA645IVIIXucHwuhgGGIVw";
         Algorithm algorithm = Algorithm.RSA384(provider);
         algorithm.verify(JWT.decode(jwt));
@@ -125,7 +125,7 @@ public class RSAAlgorithmTest {
         exception.expectCause(isA(IllegalStateException.class));
         exception.expectCause(hasMessage(is("The given Public Key is null.")));
         RSAKeyProvider provider = mock(RSAKeyProvider.class);
-        when(provider.getPublicKey("my-key-id")).thenReturn(null);
+        when(provider.getPublicKeyById("my-key-id")).thenReturn(null);
         String jwt = "eyJhbGciOiJSUzM4NCIsImtpZCI6Im15LWtleS1pZCJ9.eyJpc3MiOiJhdXRoMCJ9.ITNTVCT7ercumZKHV4-BXGkJwwa7fyF3CnSfEvm09fDFSkaseDxNo_75WLDmK9WM8RMHTPvkpHcTKm4guYEbC_la7RzFIKpU72bppzQojggSmWWXt_6zq50QP2t5HFMebote1zxhp8ccEdSCX5pyY6J2sm9kJ__HKK32KxIVCTjVCz-bFBS60oG35aYEySdKsxuUdWbD5FQ9I16Ony2x0EPvmlL3GPiAPmgjSFp3LtcBIbCDaoonM7iuDRGIQiDN_n2FKKb1Bt4_38uWPtTkwRpNalt6l53Y3JDdzGI5fMrMo3RQnQlAJxUJKD0eL6dRAA645IVIIXucHwuhgGGIVw";
         Algorithm algorithm = Algorithm.RSA384(provider);
         algorithm.verify(JWT.decode(jwt));
@@ -169,7 +169,7 @@ public class RSAAlgorithmTest {
     public void shouldPassRSA512VerificationWithProvidedPublicKey() throws Exception {
         RSAKeyProvider provider = mock(RSAKeyProvider.class);
         PublicKey publicKey = readPublicKeyFromFile(PUBLIC_KEY_FILE, "RSA");
-        when(provider.getPublicKey("my-key-id")).thenReturn((RSAPublicKey) publicKey);
+        when(provider.getPublicKeyById("my-key-id")).thenReturn((RSAPublicKey) publicKey);
         String jwt = "eyJhbGciOiJSUzUxMiIsImtpZCI6Im15LWtleS1pZCJ9.eyJpc3MiOiJhdXRoMCJ9.GpHv85Q8tAU_6hNWsmO0GEpO1qz9lmK3NKeAcemysz9MGo4FXWn8xbD8NjCfzZ8EWphm65M0NArKSjpKHO5-gcNsQxLBVfSED1vzcoaZH_Vy5Rp1M76dGH7JghB_66KrpfyMxer_yRJb-KXesNvIroDGilLQF2ENG-IfLF5nBKlDiVHmPaqr3pm1q20fNLhegkSRca4BJ5VdIlT6kOqE_ykVyCBqzD_oXp3LKO_ARnxoeB9SegIW1fy_3tuxSTKYsCZiOfiyVEXXblAuY3pSLZnGvgeBRnfvmWXDWhP0vVUFtYJBF09eULvvUMVqWcrjUG9gDzzzT7veiY_fHd_x8g";
         Algorithm algorithm = Algorithm.RSA512(provider);
         algorithm.verify(JWT.decode(jwt));
@@ -182,7 +182,7 @@ public class RSAAlgorithmTest {
         exception.expectCause(isA(IllegalStateException.class));
         exception.expectCause(hasMessage(is("The given Public Key is null.")));
         RSAKeyProvider provider = mock(RSAKeyProvider.class);
-        when(provider.getPublicKey("my-key-id")).thenReturn(null);
+        when(provider.getPublicKeyById("my-key-id")).thenReturn(null);
         String jwt = "eyJhbGciOiJSUzUxMiIsImtpZCI6Im15LWtleS1pZCJ9.eyJpc3MiOiJhdXRoMCJ9.GpHv85Q8tAU_6hNWsmO0GEpO1qz9lmK3NKeAcemysz9MGo4FXWn8xbD8NjCfzZ8EWphm65M0NArKSjpKHO5-gcNsQxLBVfSED1vzcoaZH_Vy5Rp1M76dGH7JghB_66KrpfyMxer_yRJb-KXesNvIroDGilLQF2ENG-IfLF5nBKlDiVHmPaqr3pm1q20fNLhegkSRca4BJ5VdIlT6kOqE_ykVyCBqzD_oXp3LKO_ARnxoeB9SegIW1fy_3tuxSTKYsCZiOfiyVEXXblAuY3pSLZnGvgeBRnfvmWXDWhP0vVUFtYJBF09eULvvUMVqWcrjUG9gDzzzT7veiY_fHd_x8g";
         Algorithm algorithm = Algorithm.RSA512(provider);
         algorithm.verify(JWT.decode(jwt));
@@ -308,7 +308,7 @@ public class RSAAlgorithmTest {
         PrivateKey privateKey = readPrivateKeyFromFile(PRIVATE_KEY_FILE, "RSA");
         PublicKey publicKey = readPublicKeyFromFile(PUBLIC_KEY_FILE, "RSA");
         when(provider.getPrivateKey()).thenReturn((RSAPrivateKey) privateKey);
-        when(provider.getPublicKey(null)).thenReturn((RSAPublicKey) publicKey);
+        when(provider.getPublicKeyById(null)).thenReturn((RSAPublicKey) publicKey);
         Algorithm algorithm = Algorithm.RSA256(provider);
         String jwtContent = String.format("%s.%s", RS256Header, auth0IssPayload);
         byte[] contentBytes = jwtContent.getBytes(StandardCharsets.UTF_8);
@@ -383,7 +383,7 @@ public class RSAAlgorithmTest {
         PrivateKey privateKey = readPrivateKeyFromFile(PRIVATE_KEY_FILE, "RSA");
         PublicKey publicKey = readPublicKeyFromFile(PUBLIC_KEY_FILE, "RSA");
         when(provider.getPrivateKey()).thenReturn((RSAPrivateKey) privateKey);
-        when(provider.getPublicKey(null)).thenReturn((RSAPublicKey) publicKey);
+        when(provider.getPublicKeyById(null)).thenReturn((RSAPublicKey) publicKey);
         Algorithm algorithm = Algorithm.RSA384(provider);
         String jwtContent = String.format("%s.%s", RS384Header, auth0IssPayload);
         byte[] contentBytes = jwtContent.getBytes(StandardCharsets.UTF_8);
@@ -458,7 +458,7 @@ public class RSAAlgorithmTest {
         PrivateKey privateKey = readPrivateKeyFromFile(PRIVATE_KEY_FILE, "RSA");
         PublicKey publicKey = readPublicKeyFromFile(PUBLIC_KEY_FILE, "RSA");
         when(provider.getPrivateKey()).thenReturn((RSAPrivateKey) privateKey);
-        when(provider.getPublicKey(null)).thenReturn((RSAPublicKey) publicKey);
+        when(provider.getPublicKeyById(null)).thenReturn((RSAPublicKey) publicKey);
         Algorithm algorithm = Algorithm.RSA512(provider);
         String jwtContent = String.format("%s.%s", RS512Header, auth0IssPayload);
         byte[] contentBytes = jwtContent.getBytes(StandardCharsets.UTF_8);
@@ -558,7 +558,7 @@ public class RSAAlgorithmTest {
     @Test
     public void shouldReturnSigningKeyIdFromProvider() throws Exception {
         RSAKeyProvider provider = mock(RSAKeyProvider.class);
-        when(provider.getSigningKeyId()).thenReturn("keyId");
+        when(provider.getPrivateKeyId()).thenReturn("keyId");
         Algorithm algorithm = new RSAAlgorithm("some-alg", "some-algorithm", provider);
 
         assertThat(algorithm.getSigningKeyId(), is("keyId"));

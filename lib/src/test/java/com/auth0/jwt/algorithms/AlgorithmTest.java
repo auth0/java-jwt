@@ -1,6 +1,6 @@
 package com.auth0.jwt.algorithms;
 
-import com.auth0.jwt.interfaces.ECKeyProvider;
+import com.auth0.jwt.interfaces.ECDSAKeyProvider;
 import com.auth0.jwt.interfaces.RSAKeyProvider;
 import org.junit.Rule;
 import org.junit.Test;
@@ -156,7 +156,7 @@ public class AlgorithmTest {
     public void shouldThrowECDSA256InstanceWithNullKeyProvider() throws Exception {
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage("The Key Provider cannot be null.");
-        ECKeyProvider provider = null;
+        ECDSAKeyProvider provider = null;
         Algorithm.ECDSA256(provider);
     }
 
@@ -179,7 +179,7 @@ public class AlgorithmTest {
     public void shouldThrowECDSA384InstanceWithNullKeyProvider() throws Exception {
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage("The Key Provider cannot be null.");
-        ECKeyProvider provider = null;
+        ECDSAKeyProvider provider = null;
         Algorithm.ECDSA384(provider);
     }
 
@@ -202,7 +202,7 @@ public class AlgorithmTest {
     public void shouldThrowECDSA512InstanceWithNullKeyProvider() throws Exception {
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage("The Key Provider cannot be null.");
-        ECKeyProvider provider = null;
+        ECDSAKeyProvider provider = null;
         Algorithm.ECDSA512(provider);
     }
 
@@ -437,7 +437,7 @@ public class AlgorithmTest {
 
     @Test
     public void shouldCreateECDSA256AlgorithmWithProvider() throws Exception {
-        ECKeyProvider provider = mock(ECKeyProvider.class);
+        ECDSAKeyProvider provider = mock(ECDSAKeyProvider.class);
         Algorithm algorithm = Algorithm.ECDSA256(provider);
 
         assertThat(algorithm, is(notNullValue()));
@@ -482,7 +482,7 @@ public class AlgorithmTest {
 
     @Test
     public void shouldCreateECDSA384AlgorithmWithProvider() throws Exception {
-        ECKeyProvider provider = mock(ECKeyProvider.class);
+        ECDSAKeyProvider provider = mock(ECDSAKeyProvider.class);
         Algorithm algorithm = Algorithm.ECDSA384(provider);
 
         assertThat(algorithm, is(notNullValue()));
@@ -527,7 +527,7 @@ public class AlgorithmTest {
 
     @Test
     public void shouldCreateECDSA512AlgorithmWithProvider() throws Exception {
-        ECKeyProvider provider = mock(ECKeyProvider.class);
+        ECDSAKeyProvider provider = mock(ECDSAKeyProvider.class);
         Algorithm algorithm = Algorithm.ECDSA512(provider);
 
         assertThat(algorithm, is(notNullValue()));

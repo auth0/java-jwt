@@ -3,7 +3,7 @@ package com.auth0.jwt.algorithms;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.exceptions.SignatureGenerationException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
-import com.auth0.jwt.interfaces.ECKeyProvider;
+import com.auth0.jwt.interfaces.ECDSAKeyProvider;
 import org.apache.commons.codec.binary.Base64;
 import org.junit.Rule;
 import org.junit.Test;
@@ -80,9 +80,9 @@ public class ECDSAAlgorithmTest {
 
     @Test
     public void shouldPassECDSA256VerificationWithProvidedPublicKey() throws Exception {
-        ECKeyProvider provider = mock(ECKeyProvider.class);
+        ECDSAKeyProvider provider = mock(ECDSAKeyProvider.class);
         PublicKey publicKey = readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC");
-        when(provider.getPublicKey("my-key-id")).thenReturn((ECPublicKey) publicKey);
+        when(provider.getPublicKeyById("my-key-id")).thenReturn((ECPublicKey) publicKey);
         String jwt = "eyJhbGciOiJFUzI1NiIsImtpZCI6Im15LWtleS1pZCJ9.eyJpc3MiOiJhdXRoMCJ9.D_oU4CB0ZEsxHOjcWnmS3ZJvlTzm6WcGFx-HASxnvcB2Xu2WjI-axqXH9xKq45aPBDs330JpRhJmqBSc2K8MXQ";
         Algorithm algorithm = Algorithm.ECDSA256(provider);
         algorithm.verify(JWT.decode(jwt));
@@ -94,8 +94,8 @@ public class ECDSAAlgorithmTest {
         exception.expectMessage("The Token's Signature resulted invalid when verified using the Algorithm: SHA256withECDSA");
         exception.expectCause(isA(IllegalStateException.class));
         exception.expectCause(hasMessage(is("The given Public Key is null.")));
-        ECKeyProvider provider = mock(ECKeyProvider.class);
-        when(provider.getPublicKey("my-key-id")).thenReturn(null);
+        ECDSAKeyProvider provider = mock(ECDSAKeyProvider.class);
+        when(provider.getPublicKeyById("my-key-id")).thenReturn(null);
         String jwt = "eyJhbGciOiJFUzI1NiIsImtpZCI6Im15LWtleS1pZCJ9.eyJpc3MiOiJhdXRoMCJ9.D_oU4CB0ZEsxHOjcWnmS3ZJvlTzm6WcGFx-HASxnvcB2Xu2WjI-axqXH9xKq45aPBDs330JpRhJmqBSc2K8MXQ";
         Algorithm algorithm = Algorithm.ECDSA256(provider);
         algorithm.verify(JWT.decode(jwt));
@@ -195,9 +195,9 @@ public class ECDSAAlgorithmTest {
 
     @Test
     public void shouldPassECDSA384VerificationWithProvidedPublicKey() throws Exception {
-        ECKeyProvider provider = mock(ECKeyProvider.class);
+        ECDSAKeyProvider provider = mock(ECDSAKeyProvider.class);
         PublicKey publicKey = readPublicKeyFromFile(PUBLIC_KEY_FILE_384, "EC");
-        when(provider.getPublicKey("my-key-id")).thenReturn((ECPublicKey) publicKey);
+        when(provider.getPublicKeyById("my-key-id")).thenReturn((ECPublicKey) publicKey);
         String jwt = "eyJhbGciOiJFUzM4NCIsImtpZCI6Im15LWtleS1pZCJ9.eyJpc3MiOiJhdXRoMCJ9.9kjGuFTPx3ylfpqL0eY9H7TGmPepjQOBKI8UPoEvby6N7dDLF5HxLohosNxxFymNT7LzpeSgOPAB0wJEwG2Nl2ukgdUOpZOf492wog_i5ZcZmAykd3g1QH7onrzd69GU";
         Algorithm algorithm = Algorithm.ECDSA384(provider);
         algorithm.verify(JWT.decode(jwt));
@@ -209,8 +209,8 @@ public class ECDSAAlgorithmTest {
         exception.expectMessage("The Token's Signature resulted invalid when verified using the Algorithm: SHA384withECDSA");
         exception.expectCause(isA(IllegalStateException.class));
         exception.expectCause(hasMessage(is("The given Public Key is null.")));
-        ECKeyProvider provider = mock(ECKeyProvider.class);
-        when(provider.getPublicKey("my-key-id")).thenReturn(null);
+        ECDSAKeyProvider provider = mock(ECDSAKeyProvider.class);
+        when(provider.getPublicKeyById("my-key-id")).thenReturn(null);
         String jwt = "eyJhbGciOiJFUzM4NCIsImtpZCI6Im15LWtleS1pZCJ9.eyJpc3MiOiJhdXRoMCJ9.9kjGuFTPx3ylfpqL0eY9H7TGmPepjQOBKI8UPoEvby6N7dDLF5HxLohosNxxFymNT7LzpeSgOPAB0wJEwG2Nl2ukgdUOpZOf492wog_i5ZcZmAykd3g1QH7onrzd69GU";
         Algorithm algorithm = Algorithm.ECDSA384(provider);
         algorithm.verify(JWT.decode(jwt));
@@ -310,9 +310,9 @@ public class ECDSAAlgorithmTest {
 
     @Test
     public void shouldPassECDSA512VerificationWithProvidedPublicKey() throws Exception {
-        ECKeyProvider provider = mock(ECKeyProvider.class);
+        ECDSAKeyProvider provider = mock(ECDSAKeyProvider.class);
         PublicKey publicKey = readPublicKeyFromFile(PUBLIC_KEY_FILE_512, "EC");
-        when(provider.getPublicKey("my-key-id")).thenReturn((ECPublicKey) publicKey);
+        when(provider.getPublicKeyById("my-key-id")).thenReturn((ECPublicKey) publicKey);
         String jwt = "eyJhbGciOiJFUzUxMiIsImtpZCI6Im15LWtleS1pZCJ9.eyJpc3MiOiJhdXRoMCJ9.AGxEwbsYa2bQ7Y7DAcTQnVD8PmLSlhJ20jg2OfdyPnqdXI8SgBaG6lGciq3_pofFhs1HEoFoJ33Jcluha24oMHIvAfwu8qbv_Wq3L2eI9Q0L0p6ul8Pd_BS8adRa2PgLc36xXGcRc7ID5YH-CYaQfsTp5YIaF0Po3h0QyCoQ6ZiYQkqm";
         Algorithm algorithm = Algorithm.ECDSA512(provider);
         algorithm.verify(JWT.decode(jwt));
@@ -324,8 +324,8 @@ public class ECDSAAlgorithmTest {
         exception.expectMessage("The Token's Signature resulted invalid when verified using the Algorithm: SHA512withECDSA");
         exception.expectCause(isA(IllegalStateException.class));
         exception.expectCause(hasMessage(is("The given Public Key is null.")));
-        ECKeyProvider provider = mock(ECKeyProvider.class);
-        when(provider.getPublicKey("my-key-id")).thenReturn(null);
+        ECDSAKeyProvider provider = mock(ECDSAKeyProvider.class);
+        when(provider.getPublicKeyById("my-key-id")).thenReturn(null);
         String jwt = "eyJhbGciOiJFUzUxMiIsImtpZCI6Im15LWtleS1pZCJ9.eyJpc3MiOiJhdXRoMCJ9.AGxEwbsYa2bQ7Y7DAcTQnVD8PmLSlhJ20jg2OfdyPnqdXI8SgBaG6lGciq3_pofFhs1HEoFoJ33Jcluha24oMHIvAfwu8qbv_Wq3L2eI9Q0L0p6ul8Pd_BS8adRa2PgLc36xXGcRc7ID5YH-CYaQfsTp5YIaF0Po3h0QyCoQ6ZiYQkqm";
         Algorithm algorithm = Algorithm.ECDSA512(provider);
         algorithm.verify(JWT.decode(jwt));
@@ -407,7 +407,7 @@ public class ECDSAAlgorithmTest {
 
         ECPublicKey publicKey = (ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC");
         ECPrivateKey privateKey = mock(ECPrivateKey.class);
-        ECKeyProvider provider = ECDSAAlgorithm.providerForKeys(publicKey, privateKey);
+        ECDSAKeyProvider provider = ECDSAAlgorithm.providerForKeys(publicKey, privateKey);
         Algorithm algorithm = new ECDSAAlgorithm("ES256", "SHA256withECDSA", 128, provider);
         algorithm.verify(JWT.decode(jwt));
     }
@@ -424,7 +424,7 @@ public class ECDSAAlgorithmTest {
 
         ECPublicKey publicKey = mock(ECPublicKey.class);
         ECPrivateKey privateKey = mock(ECPrivateKey.class);
-        ECKeyProvider provider = ECDSAAlgorithm.providerForKeys(publicKey, privateKey);
+        ECDSAKeyProvider provider = ECDSAAlgorithm.providerForKeys(publicKey, privateKey);
         Algorithm algorithm = new ECDSAAlgorithm(crypto, "some-alg", "some-algorithm", 32, provider);
         String jwt = "eyJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJhdXRoMCJ9.4iVk3-Y0v4RT4_9IaQlp-8dZ_4fsTzIylgrPTDLrEvTHBTyVS3tgPbr2_IZfLETtiKRqCg0aQ5sh9eIsTTwB1g";
         algorithm.verify(JWT.decode(jwt));
@@ -442,7 +442,7 @@ public class ECDSAAlgorithmTest {
 
         ECPublicKey publicKey = mock(ECPublicKey.class);
         ECPrivateKey privateKey = mock(ECPrivateKey.class);
-        ECKeyProvider provider = ECDSAAlgorithm.providerForKeys(publicKey, privateKey);
+        ECDSAKeyProvider provider = ECDSAAlgorithm.providerForKeys(publicKey, privateKey);
         Algorithm algorithm = new ECDSAAlgorithm(crypto, "some-alg", "some-algorithm", 32, provider);
         String jwt = "eyJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJhdXRoMCJ9.4iVk3-Y0v4RT4_9IaQlp-8dZ_4fsTzIylgrPTDLrEvTHBTyVS3tgPbr2_IZfLETtiKRqCg0aQ5sh9eIsTTwB1g";
         algorithm.verify(JWT.decode(jwt));
@@ -460,7 +460,7 @@ public class ECDSAAlgorithmTest {
 
         ECPublicKey publicKey = mock(ECPublicKey.class);
         ECPrivateKey privateKey = mock(ECPrivateKey.class);
-        ECKeyProvider provider = ECDSAAlgorithm.providerForKeys(publicKey, privateKey);
+        ECDSAKeyProvider provider = ECDSAAlgorithm.providerForKeys(publicKey, privateKey);
         Algorithm algorithm = new ECDSAAlgorithm(crypto, "some-alg", "some-algorithm", 32, provider);
         String jwt = "eyJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJhdXRoMCJ9.4iVk3-Y0v4RT4_9IaQlp-8dZ_4fsTzIylgrPTDLrEvTHBTyVS3tgPbr2_IZfLETtiKRqCg0aQ5sh9eIsTTwB1g";
         algorithm.verify(JWT.decode(jwt));
@@ -501,11 +501,11 @@ public class ECDSAAlgorithmTest {
 
     @Test
     public void shouldDoECDSA256SigningWithProvidedPrivateKey() throws Exception {
-        ECKeyProvider provider = mock(ECKeyProvider.class);
+        ECDSAKeyProvider provider = mock(ECDSAKeyProvider.class);
         PrivateKey privateKey = readPrivateKeyFromFile(PRIVATE_KEY_FILE_256, "EC");
         PublicKey publicKey = readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC");
         when(provider.getPrivateKey()).thenReturn((ECPrivateKey) privateKey);
-        when(provider.getPublicKey(null)).thenReturn((ECPublicKey) publicKey);
+        when(provider.getPublicKeyById(null)).thenReturn((ECPublicKey) publicKey);
         Algorithm algorithm = Algorithm.ECDSA256(provider);
         String jwtContent = String.format("%s.%s", ES256Header, auth0IssPayload);
         byte[] contentBytes = jwtContent.getBytes(StandardCharsets.UTF_8);
@@ -524,7 +524,7 @@ public class ECDSAAlgorithmTest {
         exception.expectCause(isA(IllegalStateException.class));
         exception.expectCause(hasMessage(is("The given Private Key is null.")));
 
-        ECKeyProvider provider = mock(ECKeyProvider.class);
+        ECDSAKeyProvider provider = mock(ECDSAKeyProvider.class);
         when(provider.getPrivateKey()).thenReturn(null);
         Algorithm algorithm = Algorithm.ECDSA256(provider);
         algorithm.sign(new byte[0]);
@@ -570,11 +570,11 @@ public class ECDSAAlgorithmTest {
 
     @Test
     public void shouldDoECDSA384SigningWithProvidedPrivateKey() throws Exception {
-        ECKeyProvider provider = mock(ECKeyProvider.class);
+        ECDSAKeyProvider provider = mock(ECDSAKeyProvider.class);
         PrivateKey privateKey = readPrivateKeyFromFile(PRIVATE_KEY_FILE_384, "EC");
         PublicKey publicKey = readPublicKeyFromFile(PUBLIC_KEY_FILE_384, "EC");
         when(provider.getPrivateKey()).thenReturn((ECPrivateKey) privateKey);
-        when(provider.getPublicKey(null)).thenReturn((ECPublicKey) publicKey);
+        when(provider.getPublicKeyById(null)).thenReturn((ECPublicKey) publicKey);
         Algorithm algorithm = Algorithm.ECDSA384(provider);
         String jwtContent = String.format("%s.%s", ES384Header, auth0IssPayload);
         byte[] contentBytes = jwtContent.getBytes(StandardCharsets.UTF_8);
@@ -593,7 +593,7 @@ public class ECDSAAlgorithmTest {
         exception.expectCause(isA(IllegalStateException.class));
         exception.expectCause(hasMessage(is("The given Private Key is null.")));
 
-        ECKeyProvider provider = mock(ECKeyProvider.class);
+        ECDSAKeyProvider provider = mock(ECDSAKeyProvider.class);
         when(provider.getPrivateKey()).thenReturn(null);
         Algorithm algorithm = Algorithm.ECDSA384(provider);
         algorithm.sign(new byte[0]);
@@ -640,11 +640,11 @@ public class ECDSAAlgorithmTest {
 
     @Test
     public void shouldDoECDSA512SigningWithProvidedPrivateKey() throws Exception {
-        ECKeyProvider provider = mock(ECKeyProvider.class);
+        ECDSAKeyProvider provider = mock(ECDSAKeyProvider.class);
         PrivateKey privateKey = readPrivateKeyFromFile(PRIVATE_KEY_FILE_512, "EC");
         PublicKey publicKey = readPublicKeyFromFile(PUBLIC_KEY_FILE_512, "EC");
         when(provider.getPrivateKey()).thenReturn((ECPrivateKey) privateKey);
-        when(provider.getPublicKey(null)).thenReturn((ECPublicKey) publicKey);
+        when(provider.getPublicKeyById(null)).thenReturn((ECPublicKey) publicKey);
         Algorithm algorithm = Algorithm.ECDSA512(provider);
         String jwtContent = String.format("%s.%s", ES512Header, auth0IssPayload);
         byte[] contentBytes = jwtContent.getBytes(StandardCharsets.UTF_8);
@@ -663,7 +663,7 @@ public class ECDSAAlgorithmTest {
         exception.expectCause(isA(IllegalStateException.class));
         exception.expectCause(hasMessage(is("The given Private Key is null.")));
 
-        ECKeyProvider provider = mock(ECKeyProvider.class);
+        ECDSAKeyProvider provider = mock(ECDSAKeyProvider.class);
         when(provider.getPrivateKey()).thenReturn(null);
         Algorithm algorithm = Algorithm.ECDSA512(provider);
         algorithm.sign(new byte[0]);
@@ -692,7 +692,7 @@ public class ECDSAAlgorithmTest {
 
         ECPublicKey publicKey = mock(ECPublicKey.class);
         ECPrivateKey privateKey = mock(ECPrivateKey.class);
-        ECKeyProvider provider = ECDSAAlgorithm.providerForKeys(publicKey, privateKey);
+        ECDSAKeyProvider provider = ECDSAAlgorithm.providerForKeys(publicKey, privateKey);
         Algorithm algorithm = new ECDSAAlgorithm(crypto, "some-alg", "some-algorithm", 32, provider);
         algorithm.sign(ES256Header.getBytes(StandardCharsets.UTF_8));
     }
@@ -709,7 +709,7 @@ public class ECDSAAlgorithmTest {
 
         ECPublicKey publicKey = mock(ECPublicKey.class);
         ECPrivateKey privateKey = mock(ECPrivateKey.class);
-        ECKeyProvider provider = ECDSAAlgorithm.providerForKeys(publicKey, privateKey);
+        ECDSAKeyProvider provider = ECDSAAlgorithm.providerForKeys(publicKey, privateKey);
         Algorithm algorithm = new ECDSAAlgorithm(crypto, "some-alg", "some-algorithm", 32, provider);
         algorithm.sign(ES256Header.getBytes(StandardCharsets.UTF_8));
     }
@@ -726,7 +726,7 @@ public class ECDSAAlgorithmTest {
 
         ECPublicKey publicKey = mock(ECPublicKey.class);
         ECPrivateKey privateKey = mock(ECPrivateKey.class);
-        ECKeyProvider provider = ECDSAAlgorithm.providerForKeys(publicKey, privateKey);
+        ECDSAKeyProvider provider = ECDSAAlgorithm.providerForKeys(publicKey, privateKey);
         Algorithm algorithm = new ECDSAAlgorithm(crypto, "some-alg", "some-algorithm", 32, provider);
         algorithm.sign(ES256Header.getBytes(StandardCharsets.UTF_8));
     }
@@ -735,7 +735,7 @@ public class ECDSAAlgorithmTest {
     public void shouldReturnNullSigningKeyIdIfCreatedWithDefaultProvider() throws Exception {
         ECPublicKey publicKey = mock(ECPublicKey.class);
         ECPrivateKey privateKey = mock(ECPrivateKey.class);
-        ECKeyProvider provider = ECDSAAlgorithm.providerForKeys(publicKey, privateKey);
+        ECDSAKeyProvider provider = ECDSAAlgorithm.providerForKeys(publicKey, privateKey);
         Algorithm algorithm = new ECDSAAlgorithm("some-alg", "some-algorithm", 32, provider);
 
         assertThat(algorithm.getSigningKeyId(), is(nullValue()));
@@ -743,8 +743,8 @@ public class ECDSAAlgorithmTest {
 
     @Test
     public void shouldReturnSigningKeyIdFromProvider() throws Exception {
-        ECKeyProvider provider = mock(ECKeyProvider.class);
-        when(provider.getSigningKeyId()).thenReturn("keyId");
+        ECDSAKeyProvider provider = mock(ECDSAKeyProvider.class);
+        when(provider.getPrivateKeyId()).thenReturn("keyId");
         Algorithm algorithm = new ECDSAAlgorithm("some-alg", "some-algorithm", 32, provider);
 
         assertThat(algorithm.getSigningKeyId(), is("keyId"));

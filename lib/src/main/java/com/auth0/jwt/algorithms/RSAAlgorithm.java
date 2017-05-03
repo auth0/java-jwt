@@ -38,7 +38,7 @@ class RSAAlgorithm extends Algorithm {
         byte[] signatureBytes = Base64.decodeBase64(jwt.getSignature());
 
         try {
-            RSAPublicKey publicKey = keyProvider.getPublicKey(jwt.getKeyId());
+            RSAPublicKey publicKey = keyProvider.getPublicKeyById(jwt.getKeyId());
             if (publicKey == null) {
                 throw new IllegalStateException("The given Public Key is null.");
             }
@@ -66,7 +66,7 @@ class RSAAlgorithm extends Algorithm {
 
     @Override
     public String getSigningKeyId() {
-        return keyProvider.getSigningKeyId();
+        return keyProvider.getPrivateKeyId();
     }
 
     //Visible for testing
@@ -76,7 +76,7 @@ class RSAAlgorithm extends Algorithm {
         }
         return new RSAKeyProvider() {
             @Override
-            public RSAPublicKey getPublicKey(String keyId) {
+            public RSAPublicKey getPublicKeyById(String keyId) {
                 return publicKey;
             }
 
@@ -86,7 +86,7 @@ class RSAAlgorithm extends Algorithm {
             }
 
             @Override
-            public String getSigningKeyId() {
+            public String getPrivateKeyId() {
                 return null;
             }
         };

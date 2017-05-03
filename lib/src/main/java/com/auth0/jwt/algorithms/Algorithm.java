@@ -3,7 +3,7 @@ package com.auth0.jwt.algorithms;
 import com.auth0.jwt.exceptions.SignatureGenerationException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.auth0.jwt.interfaces.ECKeyProvider;
+import com.auth0.jwt.interfaces.ECDSAKeyProvider;
 import com.auth0.jwt.interfaces.RSAKeyProvider;
 
 import java.io.UnsupportedEncodingException;
@@ -208,7 +208,7 @@ public abstract class Algorithm {
      * @return a valid ECDSA256 Algorithm.
      * @throws IllegalArgumentException if the Key Provider is null.
      */
-    public static Algorithm ECDSA256(ECKeyProvider keyProvider) throws IllegalArgumentException {
+    public static Algorithm ECDSA256(ECDSAKeyProvider keyProvider) throws IllegalArgumentException {
         return new ECDSAAlgorithm("ES256", "SHA256withECDSA", 32, keyProvider);
     }
 
@@ -230,7 +230,7 @@ public abstract class Algorithm {
      * @param key the key to use in the verify or signing instance.
      * @return a valid ECDSA256 Algorithm.
      * @throws IllegalArgumentException if the provided Key is null.
-     * @deprecated use {@link #ECDSA256(ECPublicKey, ECPrivateKey)} or {@link #ECDSA256(ECKeyProvider)}
+     * @deprecated use {@link #ECDSA256(ECPublicKey, ECPrivateKey)} or {@link #ECDSA256(ECDSAKeyProvider)}
      */
     @Deprecated
     public static Algorithm ECDSA256(ECKey key) throws IllegalArgumentException {
@@ -246,7 +246,7 @@ public abstract class Algorithm {
      * @return a valid ECDSA384 Algorithm.
      * @throws IllegalArgumentException if the Key Provider is null.
      */
-    public static Algorithm ECDSA384(ECKeyProvider keyProvider) throws IllegalArgumentException {
+    public static Algorithm ECDSA384(ECDSAKeyProvider keyProvider) throws IllegalArgumentException {
         return new ECDSAAlgorithm("ES384", "SHA384withECDSA", 48, keyProvider);
     }
 
@@ -268,7 +268,7 @@ public abstract class Algorithm {
      * @param key the key to use in the verify or signing instance.
      * @return a valid ECDSA384 Algorithm.
      * @throws IllegalArgumentException if the provided Key is null.
-     * @deprecated use {@link #ECDSA384(ECPublicKey, ECPrivateKey)} or {@link #ECDSA384(ECKeyProvider)}
+     * @deprecated use {@link #ECDSA384(ECPublicKey, ECPrivateKey)} or {@link #ECDSA384(ECDSAKeyProvider)}
      */
     @Deprecated
     public static Algorithm ECDSA384(ECKey key) throws IllegalArgumentException {
@@ -284,7 +284,7 @@ public abstract class Algorithm {
      * @return a valid ECDSA512 Algorithm.
      * @throws IllegalArgumentException if the Key Provider is null.
      */
-    public static Algorithm ECDSA512(ECKeyProvider keyProvider) throws IllegalArgumentException {
+    public static Algorithm ECDSA512(ECDSAKeyProvider keyProvider) throws IllegalArgumentException {
         return new ECDSAAlgorithm("ES512", "SHA512withECDSA", 66, keyProvider);
     }
 
@@ -306,7 +306,7 @@ public abstract class Algorithm {
      * @param key the key to use in the verify or signing instance.
      * @return a valid ECDSA512 Algorithm.
      * @throws IllegalArgumentException if the provided Key is null.
-     * @deprecated use {@link #ECDSA512(ECPublicKey, ECPrivateKey)} or {@link #ECDSA512(ECKeyProvider)}
+     * @deprecated use {@link #ECDSA512(ECPublicKey, ECPrivateKey)} or {@link #ECDSA512(ECDSAKeyProvider)}
      */
     @Deprecated
     public static Algorithm ECDSA512(ECKey key) throws IllegalArgumentException {
