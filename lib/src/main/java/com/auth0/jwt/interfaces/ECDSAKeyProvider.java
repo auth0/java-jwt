@@ -6,5 +6,5 @@ import java.security.interfaces.ECPublicKey;
 /**
  * Elliptic Curve (EC) Public/Private Key provider.
  */
-public interface ECKeyProvider extends KeyProvider<ECPublicKey, ECPrivateKey> {
+public interface ECDSAKeyProvider extends KeyProvider<ECPublicKey, ECPrivateKey> {
 }

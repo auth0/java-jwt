@@ -46,6 +46,65 @@ The library implements JWT Verification and Signing using the following algorith
 
 ## Usage
 
+### Pick the Algorithm
+
+The Algorithm defines how a token is signed and verified. It can be instantiated with the raw value of the secret in the case of HMAC algorithms, or the key pairs or `KeyProvider` in the case of RSA and ECDSA algorithms. Once created, the instance is reusable for token signing and verification operations.
+
+#### Using static secrets or keys:
+
+```java
+//HMAC
+Algorithm algorithmHS = Algorithm.HMAC256("secret");
+
+//RSA
+RSAPublicKey publicKey = //Get the key instance
+RSAPrivateKey privateKey = //Get the key instance
+Algorithm algorithmRS = Algorithm.RSA256(publicKey, privateKey);
+```
+
+#### Using a KeyProvider:
+
+By using a `KeyProvider` you can change in runtime the key used either to verify the token signature or to sign a new token for RSA or ECDSA algorithms. This is achieved by implementing either `RSAKeyProvider` or `ECDSAKeyProvider` methods:
+
+- `getPublicKeyById(String kid)`: Its called during token signature verification and it should return the key used to verify the token. If key rotation is being used, e.g. [JWK](https://tools.ietf.org/html/rfc7517) it can fetch the correct rotation key using the id. (Or just return the same key all the time).
+- `getPrivateKey()`: Its called during token signing and it should return the key that will be used to sign the JWT.
+- `getPrivateKeyId()`: Its called during token signing and it should return the id of the key that identifies the one returned by `getPrivateKey()`. This value is preferred over the one set in the `JWTCreator.Builder#withKeyId(String)` method. If you don't need to set a `kid` value avoid instantiating an Algorithm using a `KeyProvider`.
+
+
+The following snippet uses example classes showing how this would work:
+
+
+```java
+final JwkStore jwkStore = new JwkStore("{JWKS_FILE_HOST}");
+final RSAPrivateKey privateKey = //Get the key instance
+final String privateKeyId = //Create an Id for the above key
+
+RSAKeyProvider keyProvider = new RSAKeyProvider() {
+    @Override
+    public RSAPublicKey getPublicKeyById(String kid) {
+        //Received 'kid' value might be null if it wasn't defined in the Token's header
+        RSAPublicKey publicKey = jwkStore.get(kid);
+        return (RSAPublicKey) publicKey;
+    }
+
+    @Override
+    public RSAPrivateKey getPrivateKey() {
+        return privateKey;
+    }
+    
+    @Override
+    public String getPrivateKeyId() {
+        return privateKeyId;
+    }
+};
+
+Algorithm algorithm = Algorithm.RSA256(keyProvider);
+//Use the Algorithm to create and verify JWTs.
+```
+
+> For simple key rotation using JWKs try the [jwks-rsa-java](https://github.com/auth0/jwks-rsa-java) library.
+
+
 ### Create and Sign a Token
 
 You'll first need to create a `JWTCreator` instance by calling `JWT.create()`. Use the builder to define the custom Claims your token needs to have. Finally to get the String token call `sign()` and pass the `Algorithm` instance.
@@ -220,7 +279,7 @@ When creating a Token with the `JWT.create()` you can specify header Claims by c
 
 ```java
 Map<String, Object> headerClaims = new HashMap();
-headerclaims.put("owner", "auth0");
+headerClaims.put("owner", "auth0");
 String token = JWT.create()
         .withHeader(headerClaims)
         .sign(algorithm);

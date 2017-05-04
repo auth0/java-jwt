@@ -2,8 +2,11 @@ package com.auth0.jwt.algorithms;
 
 import com.auth0.jwt.exceptions.SignatureGenerationException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
-import com.auth0.jwt.interfaces.ECKeyProvider;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import com.auth0.jwt.interfaces.ECDSAKeyProvider;
+import org.apache.commons.codec.binary.Base64;
 
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
@@ -12,46 +15,39 @@ import java.security.interfaces.ECPublicKey;
 
 class ECDSAAlgorithm extends Algorithm {
 
-    private final ECKeyProvider keyProvider;
+    private final ECDSAKeyProvider keyProvider;
     private final CryptoHelper crypto;
     private final int ecNumberSize;
 
     //Visible for testing
-    ECDSAAlgorithm(CryptoHelper crypto, String id, String algorithm, int ecNumberSize, ECKeyProvider keyProvider) throws IllegalArgumentException {
+    ECDSAAlgorithm(CryptoHelper crypto, String id, String algorithm, int ecNumberSize, ECDSAKeyProvider keyProvider) throws IllegalArgumentException {
         super(id, algorithm);
         if (keyProvider == null) {
             throw new IllegalArgumentException("The Key Provider cannot be null.");
-        }
-        if (keyProvider.getPublicKey() == null && keyProvider.getPrivateKey() == null) {
-            throw new IllegalArgumentException("Both provided Keys cannot be null.");
         }
         this.keyProvider = keyProvider;
         this.crypto = crypto;
         this.ecNumberSize = ecNumberSize;
     }
 
-    ECDSAAlgorithm(String id, String algorithm, int ecNumberSize, ECKeyProvider keyProvider) throws IllegalArgumentException {
+    ECDSAAlgorithm(String id, String algorithm, int ecNumberSize, ECDSAKeyProvider keyProvider) throws IllegalArgumentException {
         this(new CryptoHelper(), id, algorithm, ecNumberSize, keyProvider);
     }
 
-    ECPublicKey getPublicKey() {
-        return keyProvider.getPublicKey();
-    }
-
-    ECPrivateKey getPrivateKey() {
-        return keyProvider.getPrivateKey();
-    }
-
     @Override
-    public void verify(byte[] contentBytes, byte[] signatureBytes) throws SignatureVerificationException {
+    public void verify(DecodedJWT jwt) throws SignatureVerificationException {
+        byte[] contentBytes = String.format("%s.%s", jwt.getHeader(), jwt.getPayload()).getBytes(StandardCharsets.UTF_8);
+        byte[] signatureBytes = Base64.decodeBase64(jwt.getSignature());
+
         try {
-            if (keyProvider.getPublicKey() == null) {
+            ECPublicKey publicKey = keyProvider.getPublicKeyById(jwt.getKeyId());
+            if (publicKey == null) {
                 throw new IllegalStateException("The given Public Key is null.");
             }
             if (!isDERSignature(signatureBytes)) {
                 signatureBytes = JOSEToDER(signatureBytes);
             }
-            boolean valid = crypto.verifySignatureFor(getDescription(), keyProvider.getPublicKey(), contentBytes, signatureBytes);
+            boolean valid = crypto.verifySignatureFor(getDescription(), publicKey, contentBytes, signatureBytes);
 
             if (!valid) {
                 throw new SignatureVerificationException(this);
@@ -64,15 +60,20 @@ class ECDSAAlgorithm extends Algorithm {
     @Override
     public byte[] sign(byte[] contentBytes) throws SignatureGenerationException {
         try {
-            if (keyProvider.getPrivateKey() == null) {
+            ECPrivateKey privateKey = keyProvider.getPrivateKey();
+            if (privateKey == null) {
                 throw new IllegalStateException("The given Private Key is null.");
             }
-            return crypto.createSignatureFor(getDescription(), keyProvider.getPrivateKey(), contentBytes);
+            return crypto.createSignatureFor(getDescription(), privateKey, contentBytes);
         } catch (NoSuchAlgorithmException | SignatureException | InvalidKeyException | IllegalStateException e) {
             throw new SignatureGenerationException(this, e);
         }
     }
 
+    @Override
+    public String getSigningKeyId() {
+        return keyProvider.getPrivateKeyId();
+    }
 
     private boolean isDERSignature(byte[] signature) {
         // DER Structure: http://crypto.stackexchange.com/a/1797
@@ -137,16 +138,24 @@ class ECDSAAlgorithm extends Algorithm {
     }
 
     //Visible for testing
-    static ECKeyProvider providerForKeys(final ECPublicKey publicKey, final ECPrivateKey privateKey) {
-        return new ECKeyProvider() {
+    static ECDSAKeyProvider providerForKeys(final ECPublicKey publicKey, final ECPrivateKey privateKey) {
+        if (publicKey == null && privateKey == null) {
+            throw new IllegalArgumentException("Both provided Keys cannot be null.");
+        }
+        return new ECDSAKeyProvider() {
             @Override
-            public ECPublicKey getPublicKey() {
+            public ECPublicKey getPublicKeyById(String keyId) {
                 return publicKey;
             }
 
             @Override
             public ECPrivateKey getPrivateKey() {
                 return privateKey;
+            }
+
+            @Override
+            public String getPrivateKeyId() {
+                return null;
             }
         };
     }

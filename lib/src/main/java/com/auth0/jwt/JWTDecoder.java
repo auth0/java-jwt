@@ -3,6 +3,7 @@ package com.auth0.jwt;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.impl.JWTParser;
 import com.auth0.jwt.interfaces.Claim;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.Header;
 import com.auth0.jwt.interfaces.Payload;
 import org.apache.commons.codec.binary.Base64;
@@ -16,20 +17,14 @@ import java.util.Map;
  * The JWTDecoder class holds the decode method to parse a given JWT token into it's JWT representation.
  */
 @SuppressWarnings("WeakerAccess")
-final class JWTDecoder extends JWT {
+final class JWTDecoder implements DecodedJWT {
 
-    private final String token;
-    private Header header;
-    private Payload payload;
-    private String signature;
+    private final String[] parts;
+    private final Header header;
+    private final Payload payload;
 
     JWTDecoder(String jwt) throws JWTDecodeException {
-        this.token = jwt;
-        parseToken(jwt);
-    }
-
-    private void parseToken(String token) throws JWTDecodeException {
-        final String[] parts = TokenUtils.splitToken(token);
+        parts = TokenUtils.splitToken(jwt);
         final JWTParser converter = new JWTParser();
         String headerJson;
         String payloadJson;
@@ -41,7 +36,6 @@ final class JWTDecoder extends JWT {
         }
         header = converter.parseHeader(headerJson);
         payload = converter.parsePayload(payloadJson);
-        signature = parts[2];
     }
 
     @Override
@@ -115,12 +109,22 @@ final class JWTDecoder extends JWT {
     }
 
     @Override
+    public String getHeader() {
+        return parts[0];
+    }
+
+    @Override
+    public String getPayload() {
+        return parts[1];
+    }
+
+    @Override
     public String getSignature() {
-        return signature;
+        return parts[2];
     }
 
     @Override
     public String getToken() {
-        return token;
+        return String.format("%s.%s.%s", parts[0], parts[1], parts[2]);
     }
 }

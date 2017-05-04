@@ -2,7 +2,8 @@ package com.auth0.jwt.algorithms;
 
 import com.auth0.jwt.exceptions.SignatureGenerationException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
-import com.auth0.jwt.interfaces.ECKeyProvider;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import com.auth0.jwt.interfaces.ECDSAKeyProvider;
 import com.auth0.jwt.interfaces.RSAKeyProvider;
 
 import java.io.UnsupportedEncodingException;
@@ -207,7 +208,7 @@ public abstract class Algorithm {
      * @return a valid ECDSA256 Algorithm.
      * @throws IllegalArgumentException if the Key Provider is null.
      */
-    public static Algorithm ECDSA256(ECKeyProvider keyProvider) throws IllegalArgumentException {
+    public static Algorithm ECDSA256(ECDSAKeyProvider keyProvider) throws IllegalArgumentException {
         return new ECDSAAlgorithm("ES256", "SHA256withECDSA", 32, keyProvider);
     }
 
@@ -229,7 +230,7 @@ public abstract class Algorithm {
      * @param key the key to use in the verify or signing instance.
      * @return a valid ECDSA256 Algorithm.
      * @throws IllegalArgumentException if the provided Key is null.
-     * @deprecated use {@link #ECDSA256(ECPublicKey, ECPrivateKey)} or {@link #ECDSA256(ECKeyProvider)}
+     * @deprecated use {@link #ECDSA256(ECPublicKey, ECPrivateKey)} or {@link #ECDSA256(ECDSAKeyProvider)}
      */
     @Deprecated
     public static Algorithm ECDSA256(ECKey key) throws IllegalArgumentException {
@@ -245,7 +246,7 @@ public abstract class Algorithm {
      * @return a valid ECDSA384 Algorithm.
      * @throws IllegalArgumentException if the Key Provider is null.
      */
-    public static Algorithm ECDSA384(ECKeyProvider keyProvider) throws IllegalArgumentException {
+    public static Algorithm ECDSA384(ECDSAKeyProvider keyProvider) throws IllegalArgumentException {
         return new ECDSAAlgorithm("ES384", "SHA384withECDSA", 48, keyProvider);
     }
 
@@ -267,7 +268,7 @@ public abstract class Algorithm {
      * @param key the key to use in the verify or signing instance.
      * @return a valid ECDSA384 Algorithm.
      * @throws IllegalArgumentException if the provided Key is null.
-     * @deprecated use {@link #ECDSA384(ECPublicKey, ECPrivateKey)} or {@link #ECDSA384(ECKeyProvider)}
+     * @deprecated use {@link #ECDSA384(ECPublicKey, ECPrivateKey)} or {@link #ECDSA384(ECDSAKeyProvider)}
      */
     @Deprecated
     public static Algorithm ECDSA384(ECKey key) throws IllegalArgumentException {
@@ -283,7 +284,7 @@ public abstract class Algorithm {
      * @return a valid ECDSA512 Algorithm.
      * @throws IllegalArgumentException if the Key Provider is null.
      */
-    public static Algorithm ECDSA512(ECKeyProvider keyProvider) throws IllegalArgumentException {
+    public static Algorithm ECDSA512(ECDSAKeyProvider keyProvider) throws IllegalArgumentException {
         return new ECDSAAlgorithm("ES512", "SHA512withECDSA", 66, keyProvider);
     }
 
@@ -305,7 +306,7 @@ public abstract class Algorithm {
      * @param key the key to use in the verify or signing instance.
      * @return a valid ECDSA512 Algorithm.
      * @throws IllegalArgumentException if the provided Key is null.
-     * @deprecated use {@link #ECDSA512(ECPublicKey, ECPrivateKey)} or {@link #ECDSA512(ECKeyProvider)}
+     * @deprecated use {@link #ECDSA512(ECPublicKey, ECPrivateKey)} or {@link #ECDSA512(ECDSAKeyProvider)}
      */
     @Deprecated
     public static Algorithm ECDSA512(ECKey key) throws IllegalArgumentException {
@@ -322,6 +323,15 @@ public abstract class Algorithm {
     protected Algorithm(String name, String description) {
         this.name = name;
         this.description = description;
+    }
+
+    /**
+     * Getter for the Id of the Private Key used to sign the tokens. This is usually specified as the `kid` claim in the Header.
+     *
+     * @return the Key Id that identifies the Signing Key or null if it's not specified.
+     */
+    public String getSigningKeyId() {
+        return null;
     }
 
     /**
@@ -348,13 +358,12 @@ public abstract class Algorithm {
     }
 
     /**
-     * Verify the given content using this Algorithm instance.
+     * Verify the given token using this Algorithm instance.
      *
-     * @param contentBytes   an array of bytes representing the base64 encoded content to be verified against the signature.
-     * @param signatureBytes an array of bytes representing the base64 encoded signature to compare the content against.
+     * @param jwt the already decoded JWT that it's going to be verified.
      * @throws SignatureVerificationException if the Token's Signature is invalid, meaning that it doesn't match the signatureBytes, or if the Key is invalid.
      */
-    public abstract void verify(byte[] contentBytes, byte[] signatureBytes) throws SignatureVerificationException;
+    public abstract void verify(DecodedJWT jwt) throws SignatureVerificationException;
 
     /**
      * Sign the given content using this Algorithm instance.

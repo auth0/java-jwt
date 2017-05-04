@@ -77,6 +77,7 @@ public final class JWTCreator {
 
         /**
          * Add a specific Key Id ("kid") claim to the Header.
+         * If the {@link Algorithm} used to sign this token was instantiated with a KeyProvider, the 'kid' value will be taken from that provider and this one will be ignored.
          *
          * @param keyId the Key Id value.
          * @return this same Builder instance.
@@ -303,6 +304,10 @@ public final class JWTCreator {
             }
             headerClaims.put(PublicClaims.ALGORITHM, algorithm.getName());
             headerClaims.put(PublicClaims.TYPE, "JWT");
+            String signingKeyId = algorithm.getSigningKeyId();
+            if (signingKeyId != null) {
+                withKeyId(signingKeyId);
+            }
             return new JWTCreator(algorithm, headerClaims, payloadClaims).sign();
         }
 
@@ -322,8 +327,8 @@ public final class JWTCreator {
     }
 
     private String sign() throws SignatureGenerationException {
-        String header = Base64.encodeBase64URLSafeString((headerJson.getBytes(StandardCharsets.UTF_8)));
-        String payload = Base64.encodeBase64URLSafeString((payloadJson.getBytes(StandardCharsets.UTF_8)));
+        String header = Base64.encodeBase64URLSafeString(headerJson.getBytes(StandardCharsets.UTF_8));
+        String payload = Base64.encodeBase64URLSafeString(payloadJson.getBytes(StandardCharsets.UTF_8));
         String content = String.format("%s.%s", header, payload);
 
         byte[] signatureBytes = algorithm.sign(content.getBytes(StandardCharsets.UTF_8));

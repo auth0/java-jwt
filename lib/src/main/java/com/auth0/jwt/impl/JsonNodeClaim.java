@@ -36,7 +36,9 @@ class JsonNodeClaim implements Claim {
     }
 
     @Override
-    public Long asLong() { return !data.isNumber() ? null : data.asLong(); }
+    public Long asLong() {
+        return !data.isNumber() ? null : data.asLong();
+    }
 
     @Override
     public Double asDouble() {
