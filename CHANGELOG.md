@@ -1,5 +1,30 @@
 # Change Log
 
+## [3.2.0](https://github.com/auth0/java-jwt/tree/3.2.0) (2017-05-04)
+[Full Changelog](https://github.com/auth0/java-jwt/compare/3.1.0...3.2.0)
+**Closed issues**
+- Claim.isNull() returns true for JSON Object constructed claims [\#160](https://github.com/auth0/java-jwt/issues/160)
+- Incorrectly rejects whitespace after JSON header as invalid [\#144](https://github.com/auth0/java-jwt/issues/144)
+- No token type [\#136](https://github.com/auth0/java-jwt/issues/136)
+- Timestamps are limited by Integer/int to 2038-01-19T04:14:07.000+0100 [\#132](https://github.com/auth0/java-jwt/issues/132)
+
+**Added**
+- Refactor KeyProvider to receive the "Key Id" [\#167](https://github.com/auth0/java-jwt/pull/167) ([lbalmaceda](https://github.com/lbalmaceda))
+- Add Sign/Verify of Long type claims [\#157](https://github.com/auth0/java-jwt/pull/157) ([vrancic](https://github.com/vrancic))
+- added date validation dedicated exception [\#155](https://github.com/auth0/java-jwt/pull/155) ([Spyna](https://github.com/Spyna))
+- Allow to get a Claim as Map [\#152](https://github.com/auth0/java-jwt/pull/152) ([lbalmaceda](https://github.com/lbalmaceda))
+- Add Algorithm KeyProvider interface [\#149](https://github.com/auth0/java-jwt/pull/149) ([lbalmaceda](https://github.com/lbalmaceda))
+- Instantiate RSA/EC Algorithm with both keys [\#147](https://github.com/auth0/java-jwt/pull/147) ([lbalmaceda](https://github.com/lbalmaceda))
+- Add Key Id setter and set JWT Type after signing [\#138](https://github.com/auth0/java-jwt/pull/138) ([lbalmaceda](https://github.com/lbalmaceda))
+
+**Changed**
+- Change the JWT.decode() return type to DecodedJWT [\#150](https://github.com/auth0/java-jwt/pull/150) ([lbalmaceda](https://github.com/lbalmaceda))
+
+**Fixed**
+- Fix Claim.isNull() method for JSON Objects [\#161](https://github.com/auth0/java-jwt/pull/161) ([lbalmaceda](https://github.com/lbalmaceda))
+- Accept blanks, new line and carriage returns on JSON [\#151](https://github.com/auth0/java-jwt/pull/151) ([lbalmaceda](https://github.com/lbalmaceda))
+- Fix Date value conversion [\#137](https://github.com/auth0/java-jwt/pull/137) ([lbalmaceda](https://github.com/lbalmaceda))
+
 ## [3.1.0](https://github.com/auth0/java-jwt/tree/3.1.0) (2017-01-04)
 [Full Changelog](https://github.com/auth0/java-jwt/compare/3.0.2...3.1.0)
 
