@@ -53,6 +53,10 @@ public class JWTParser implements JWTPartsParser {
         if (json == null) {
             throw exception;
         }
+        String trimmedJson = json.trim();
+        if(!trimmedJson.startsWith("{") || !trimmedJson.endsWith("}")) {
+            throw  exception;
+        }
         try {
             return mapper.readValue(json, tClazz);
         } catch (IOException e) {
