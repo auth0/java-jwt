@@ -50,6 +50,9 @@ The library implements JWT Verification and Signing using the following algorith
 
 The Algorithm defines how a token is signed and verified. It can be instantiated with the raw value of the secret in the case of HMAC algorithms, or the key pairs or `KeyProvider` in the case of RSA and ECDSA algorithms. Once created, the instance is reusable for token signing and verification operations.
 
+When using RSA or ECDSA algorithms and you just need to **sign** JWTs you can avoid specifying a Public Key by passing a `null` value. The same can be done with the Private Key when you just need to **verify** JWTs.
+
+
 #### Using static secrets or keys:
 
 ```java
@@ -91,7 +94,7 @@ RSAKeyProvider keyProvider = new RSAKeyProvider() {
     public RSAPrivateKey getPrivateKey() {
         return privateKey;
     }
-    
+
     @Override
     public String getPrivateKeyId() {
         return privateKeyId;
