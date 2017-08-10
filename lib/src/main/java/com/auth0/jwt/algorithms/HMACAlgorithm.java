@@ -3,8 +3,9 @@ package com.auth0.jwt.algorithms;
 import com.auth0.jwt.exceptions.SignatureGenerationException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.auth0.jwt.wrapper.Base64Wrapper;
+
 import org.apache.commons.codec.CharEncoding;
-import org.apache.commons.codec.binary.Base64;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
@@ -45,7 +46,7 @@ class HMACAlgorithm extends Algorithm {
     @Override
     public void verify(DecodedJWT jwt) throws SignatureVerificationException {
         byte[] contentBytes = String.format("%s.%s", jwt.getHeader(), jwt.getPayload()).getBytes(StandardCharsets.UTF_8);
-        byte[] signatureBytes = Base64.decodeBase64(jwt.getSignature());
+        byte[] signatureBytes = Base64Wrapper.getInstance().decode(jwt.getSignature());
 
         try {
             boolean valid = crypto.verifySignatureFor(getDescription(), secret, contentBytes, signatureBytes);

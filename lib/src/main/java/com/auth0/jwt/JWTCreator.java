@@ -6,11 +6,11 @@ import com.auth0.jwt.exceptions.SignatureGenerationException;
 import com.auth0.jwt.impl.ClaimsHolder;
 import com.auth0.jwt.impl.PayloadSerializer;
 import com.auth0.jwt.impl.PublicClaims;
+import com.auth0.jwt.wrapper.Base64Wrapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import org.apache.commons.codec.binary.Base64;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
@@ -327,12 +327,15 @@ public final class JWTCreator {
     }
 
     private String sign() throws SignatureGenerationException {
-        String header = Base64.encodeBase64URLSafeString(headerJson.getBytes(StandardCharsets.UTF_8));
-        String payload = Base64.encodeBase64URLSafeString(payloadJson.getBytes(StandardCharsets.UTF_8));
+        String header = Base64Wrapper.getInstance().encode(headerJson.getBytes(StandardCharsets.UTF_8));
+        String payload = Base64Wrapper.getInstance().encode(payloadJson.getBytes(StandardCharsets.UTF_8));
         String content = String.format("%s.%s", header, payload);
 
         byte[] signatureBytes = algorithm.sign(content.getBytes(StandardCharsets.UTF_8));
-        String signature = Base64.encodeBase64URLSafeString((signatureBytes));
+
+
+
+        String signature = Base64Wrapper.getInstance().encode((signatureBytes));
 
         return String.format("%s.%s", content, signature);
     }

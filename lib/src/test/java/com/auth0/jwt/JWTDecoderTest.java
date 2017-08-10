@@ -4,7 +4,8 @@ import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.impl.NullClaim;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import org.apache.commons.codec.binary.Base64;
+import com.auth0.jwt.wrapper.Base64Wrapper;
+
 import org.hamcrest.collection.IsCollectionWithSize;
 import org.hamcrest.core.IsCollectionContaining;
 import org.junit.Assert;
@@ -292,8 +293,8 @@ public class JWTDecoderTest {
     //Helper Methods
 
     private DecodedJWT customJWT(String jsonHeader, String jsonPayload, String signature) {
-        String header = Base64.encodeBase64URLSafeString(jsonHeader.getBytes(StandardCharsets.UTF_8));
-        String body = Base64.encodeBase64URLSafeString(jsonPayload.getBytes(StandardCharsets.UTF_8));
+        String header = Base64Wrapper.getInstance().encode(jsonHeader.getBytes(StandardCharsets.UTF_8));
+        String body = Base64Wrapper.getInstance().encode(jsonPayload.getBytes(StandardCharsets.UTF_8));
         return JWT.decode(String.format("%s.%s.%s", header, body, signature));
     }
 
