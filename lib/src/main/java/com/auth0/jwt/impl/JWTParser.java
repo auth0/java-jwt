@@ -49,14 +49,17 @@ public class JWTParser implements JWTPartsParser {
 
     @SuppressWarnings("WeakerAccess")
     <T> T convertFromJSON(String json, Class<T> tClazz) throws JWTDecodeException {
-        JWTDecodeException exception = new JWTDecodeException(String.format("The string '%s' doesn't have a valid JSON format.", json));
         if (json == null) {
-            throw exception;
+            throw exceptionForInvalidJson(null);
         }
         try {
             return mapper.readValue(json, tClazz);
         } catch (IOException e) {
-            throw exception;
+            throw exceptionForInvalidJson(json);
         }
+    }
+
+    private JWTDecodeException exceptionForInvalidJson(String json) {
+        return new JWTDecodeException(String.format("The string '%s' doesn't have a valid JSON format.", json));
     }
 }
