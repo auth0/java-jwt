@@ -4,7 +4,8 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.exceptions.SignatureGenerationException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.interfaces.RSAKeyProvider;
-import org.apache.commons.codec.binary.Base64;
+import com.auth0.jwt.wrapper.Base64Wrapper;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -277,7 +278,7 @@ public class RSAAlgorithmTest {
         String jwtContent = String.format("%s.%s", RS256Header, auth0IssPayload);
         byte[] contentBytes = jwtContent.getBytes(StandardCharsets.UTF_8);
         byte[] signatureBytes = algorithmSign.sign(contentBytes);
-        String jwtSignature = Base64.encodeBase64URLSafeString(signatureBytes);
+        String jwtSignature = Base64Wrapper.getInstance().encode(signatureBytes);
         String jwt = String.format("%s.%s", jwtContent, jwtSignature);
         String expectedSignature = "ZB-Tr0vLtnf8I9fhSdSjU6HZei5xLYZQ6nZqM5O6Va0W9PgAqgRT7ShI9CjeYulRXPHvVmSl5EQuYuXdBzM0-H_3p_Nsl6tSMy4EyX2kkhEm6T0HhvarTh8CG0PCjn5p6FP5ZxWwhLcmRN70ItP6Z5MMO4CcJh1JrNxR4Fi4xQgt-CK2aVDMFXd-Br5yQiLVx1CX83w28OD9wssW3Rdltl5e66vCef0Ql6Q5I5e5F0nqGYT989a9fkNgLIx2F8k_az5x07BY59FV2SZg59nSiY7TZNjP8ot11Ew7HKRfPXOdh9eKRUVdhcxzqDePhyzKabU8TG5FP0SiWH5qVPfAgw";
 
@@ -293,7 +294,7 @@ public class RSAAlgorithmTest {
         String jwtContent = String.format("%s.%s", RS256Header, auth0IssPayload);
         byte[] contentBytes = jwtContent.getBytes(StandardCharsets.UTF_8);
         byte[] signatureBytes = algorithm.sign(contentBytes);
-        String jwtSignature = Base64.encodeBase64URLSafeString(signatureBytes);
+        String jwtSignature = Base64Wrapper.getInstance().encode(signatureBytes);
         String jwt = String.format("%s.%s", jwtContent, jwtSignature);
         String expectedSignature = "ZB-Tr0vLtnf8I9fhSdSjU6HZei5xLYZQ6nZqM5O6Va0W9PgAqgRT7ShI9CjeYulRXPHvVmSl5EQuYuXdBzM0-H_3p_Nsl6tSMy4EyX2kkhEm6T0HhvarTh8CG0PCjn5p6FP5ZxWwhLcmRN70ItP6Z5MMO4CcJh1JrNxR4Fi4xQgt-CK2aVDMFXd-Br5yQiLVx1CX83w28OD9wssW3Rdltl5e66vCef0Ql6Q5I5e5F0nqGYT989a9fkNgLIx2F8k_az5x07BY59FV2SZg59nSiY7TZNjP8ot11Ew7HKRfPXOdh9eKRUVdhcxzqDePhyzKabU8TG5FP0SiWH5qVPfAgw";
 
@@ -313,7 +314,7 @@ public class RSAAlgorithmTest {
         String jwtContent = String.format("%s.%s", RS256Header, auth0IssPayload);
         byte[] contentBytes = jwtContent.getBytes(StandardCharsets.UTF_8);
         byte[] signatureBytes = algorithm.sign(contentBytes);
-        String jwtSignature = Base64.encodeBase64URLSafeString(signatureBytes);
+        String jwtSignature = Base64Wrapper.getInstance().encode(signatureBytes);
         String jwt = String.format("%s.%s", jwtContent, jwtSignature);
 
         assertThat(signatureBytes, is(notNullValue()));
@@ -352,7 +353,7 @@ public class RSAAlgorithmTest {
         String jwtContent = String.format("%s.%s", RS384Header, auth0IssPayload);
         byte[] contentBytes = jwtContent.getBytes(StandardCharsets.UTF_8);
         byte[] signatureBytes = algorithmSign.sign(contentBytes);
-        String jwtSignature = Base64.encodeBase64URLSafeString(signatureBytes);
+        String jwtSignature = Base64Wrapper.getInstance().encode(signatureBytes);
         String jwt = String.format("%s.%s", jwtContent, jwtSignature);
         String expectedSignature = "Jx1PaTBnjd_U56MNjifFcY7w9ImDbseg0y8Ijr2pSiA1_wzQb_wy9undaWfzR5YqdIAXvjS8AGuZUAzIoTG4KMgOgdVyYDz3l2jzj6wI-lgqfR5hTy1w1ruMUQ4_wobpdxAiJ4fEbg8Mi_GljOiCO-P1HilxKnpiOJZidR8MQGwTInsf71tOUkK4x5UsdmUueuZbaU-CL5kPnRfXmJj9CcdxZbD9oMlbo23dwkP5BNMrS2LwGGzc9C_-ypxrBIOVilG3WZxcSmuG86LjcZbnL6LBEfph5NmKBgQav147uipb_7umBEr1m2dYiB_9u606n3bcoo3rnsYYK_Xfi1GAEQ";
 
@@ -368,7 +369,7 @@ public class RSAAlgorithmTest {
         String jwtContent = String.format("%s.%s", RS384Header, auth0IssPayload);
         byte[] contentBytes = jwtContent.getBytes(StandardCharsets.UTF_8);
         byte[] signatureBytes = algorithm.sign(contentBytes);
-        String jwtSignature = Base64.encodeBase64URLSafeString(signatureBytes);
+        String jwtSignature = Base64Wrapper.getInstance().encode(signatureBytes);
         String jwt = String.format("%s.%s", jwtContent, jwtSignature);
         String expectedSignature = "Jx1PaTBnjd_U56MNjifFcY7w9ImDbseg0y8Ijr2pSiA1_wzQb_wy9undaWfzR5YqdIAXvjS8AGuZUAzIoTG4KMgOgdVyYDz3l2jzj6wI-lgqfR5hTy1w1ruMUQ4_wobpdxAiJ4fEbg8Mi_GljOiCO-P1HilxKnpiOJZidR8MQGwTInsf71tOUkK4x5UsdmUueuZbaU-CL5kPnRfXmJj9CcdxZbD9oMlbo23dwkP5BNMrS2LwGGzc9C_-ypxrBIOVilG3WZxcSmuG86LjcZbnL6LBEfph5NmKBgQav147uipb_7umBEr1m2dYiB_9u606n3bcoo3rnsYYK_Xfi1GAEQ";
 
@@ -388,7 +389,7 @@ public class RSAAlgorithmTest {
         String jwtContent = String.format("%s.%s", RS384Header, auth0IssPayload);
         byte[] contentBytes = jwtContent.getBytes(StandardCharsets.UTF_8);
         byte[] signatureBytes = algorithm.sign(contentBytes);
-        String jwtSignature = Base64.encodeBase64URLSafeString(signatureBytes);
+        String jwtSignature = Base64Wrapper.getInstance().encode(signatureBytes);
         String jwt = String.format("%s.%s", jwtContent, jwtSignature);
 
         assertThat(signatureBytes, is(notNullValue()));
@@ -427,7 +428,7 @@ public class RSAAlgorithmTest {
         String jwtContent = String.format("%s.%s", RS512Header, auth0IssPayload);
         byte[] contentBytes = jwtContent.getBytes(StandardCharsets.UTF_8);
         byte[] signatureBytes = algorithmSign.sign(contentBytes);
-        String jwtSignature = Base64.encodeBase64URLSafeString(signatureBytes);
+        String jwtSignature = Base64Wrapper.getInstance().encode(signatureBytes);
         String jwt = String.format("%s.%s", jwtContent, jwtSignature);
         String expectedSignature = "THIPVYzNZ1Yo_dm0k1UELqV0txs3SzyMopCyHcLXOOdgYXF4MlGvBqu0CFvgSga72Sp5LpuC1Oesj40v_QDsp2GTGDeWnvvcv_eo-b0LPSpmT2h1Ibrmu-z70u2rKf28pkN-AJiMFqi8sit2kMIp1bwIVOovPvMTQKGFmova4Xwb3G526y_PeLlflW1h69hQTIVcI67ACEkAC-byjDnnYIklA-B4GWcggEoFwQRTdRjAUpifA6HOlvnBbZZlUd6KXwEydxVS-eh1odwPjB2_sfbyy5HnLsvNdaniiZQwX7QbwLNT4F72LctYdHHM1QCrID6bgfgYp9Ij9CRX__XDEA";
 
@@ -443,7 +444,7 @@ public class RSAAlgorithmTest {
         String jwtContent = String.format("%s.%s", RS512Header, auth0IssPayload);
         byte[] contentBytes = jwtContent.getBytes(StandardCharsets.UTF_8);
         byte[] signatureBytes = algorithm.sign(contentBytes);
-        String jwtSignature = Base64.encodeBase64URLSafeString(signatureBytes);
+        String jwtSignature = Base64Wrapper.getInstance().encode(signatureBytes);
         String jwt = String.format("%s.%s", jwtContent, jwtSignature);
         String expectedSignature = "THIPVYzNZ1Yo_dm0k1UELqV0txs3SzyMopCyHcLXOOdgYXF4MlGvBqu0CFvgSga72Sp5LpuC1Oesj40v_QDsp2GTGDeWnvvcv_eo-b0LPSpmT2h1Ibrmu-z70u2rKf28pkN-AJiMFqi8sit2kMIp1bwIVOovPvMTQKGFmova4Xwb3G526y_PeLlflW1h69hQTIVcI67ACEkAC-byjDnnYIklA-B4GWcggEoFwQRTdRjAUpifA6HOlvnBbZZlUd6KXwEydxVS-eh1odwPjB2_sfbyy5HnLsvNdaniiZQwX7QbwLNT4F72LctYdHHM1QCrID6bgfgYp9Ij9CRX__XDEA";
 
@@ -463,7 +464,7 @@ public class RSAAlgorithmTest {
         String jwtContent = String.format("%s.%s", RS512Header, auth0IssPayload);
         byte[] contentBytes = jwtContent.getBytes(StandardCharsets.UTF_8);
         byte[] signatureBytes = algorithm.sign(contentBytes);
-        String jwtSignature = Base64.encodeBase64URLSafeString(signatureBytes);
+        String jwtSignature = Base64Wrapper.getInstance().encode(signatureBytes);
         String jwt = String.format("%s.%s", jwtContent, jwtSignature);
 
         assertThat(signatureBytes, is(notNullValue()));

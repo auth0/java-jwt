@@ -4,7 +4,8 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.exceptions.SignatureGenerationException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import org.apache.commons.codec.binary.Base64;
+import com.auth0.jwt.wrapper.Base64Wrapper;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -164,7 +165,7 @@ public class HMACAlgorithmTest {
         String jwtContent = String.format("%s.%s", HS256Header, auth0IssPayload);
         byte[] contentBytes = jwtContent.getBytes(StandardCharsets.UTF_8);
         byte[] signatureBytes = algorithm.sign(contentBytes);
-        String jwtSignature = Base64.encodeBase64URLSafeString(signatureBytes);
+        String jwtSignature = Base64Wrapper.getInstance().encode(signatureBytes);
         String jwt = String.format("%s.%s", jwtContent, jwtSignature);
         String expectedSignature = "s69x7Mmu4JqwmdxiK6sesALO7tcedbFsKEEITUxw9ho";
 
@@ -180,7 +181,7 @@ public class HMACAlgorithmTest {
         String jwtContent = String.format("%s.%s", HS384Header, auth0IssPayload);
         byte[] contentBytes = jwtContent.getBytes(StandardCharsets.UTF_8);
         byte[] signatureBytes = algorithm.sign(contentBytes);
-        String jwtSignature = Base64.encodeBase64URLSafeString(signatureBytes);
+        String jwtSignature = Base64Wrapper.getInstance().encode(signatureBytes);
         String jwt = String.format("%s.%s", jwtContent, jwtSignature);
         String expectedSignature = "4-y2Gxz_foN0jAOFimmBPF7DWxf4AsjM20zxNkHg8Zah5Q64G42P9GfjmUp4Hldt";
 
@@ -196,7 +197,7 @@ public class HMACAlgorithmTest {
         String jwtContent = String.format("%s.%s", HS512Header, auth0IssPayload);
         byte[] contentBytes = jwtContent.getBytes(StandardCharsets.UTF_8);
         byte[] signatureBytes = algorithm.sign(contentBytes);
-        String jwtSignature = Base64.encodeBase64URLSafeString(signatureBytes);
+        String jwtSignature = Base64Wrapper.getInstance().encode(signatureBytes);
         String jwt = String.format("%s.%s", jwtContent, jwtSignature);
         String expectedSignature = "OXWyxmf-VcVo8viOiTFfLaEy6mrQqLEos5R82Xsx8mtFxQadJAQ1aVniIWN8qT2GNE_pMQPcdzk4x7Cqxsp1dw";
 
@@ -212,7 +213,7 @@ public class HMACAlgorithmTest {
         String jwtContent = String.format("%s.%s", HS256Header, auth0IssPayload);
         byte[] contentBytes = jwtContent.getBytes(StandardCharsets.UTF_8);
         byte[] signatureBytes = algorithm.sign(contentBytes);
-        String jwtSignature = Base64.encodeBase64URLSafeString(signatureBytes);
+        String jwtSignature = Base64Wrapper.getInstance().encode(signatureBytes);
         String jwt = String.format("%s.%s", jwtContent, jwtSignature);
         String expectedSignature = "s69x7Mmu4JqwmdxiK6sesALO7tcedbFsKEEITUxw9ho";
 
@@ -228,7 +229,7 @@ public class HMACAlgorithmTest {
         String jwtContent = String.format("%s.%s", HS384Header, auth0IssPayload);
         byte[] contentBytes = jwtContent.getBytes(StandardCharsets.UTF_8);
         byte[] signatureBytes = algorithm.sign(contentBytes);
-        String jwtSignature = Base64.encodeBase64URLSafeString(signatureBytes);
+        String jwtSignature = Base64Wrapper.getInstance().encode(signatureBytes);
         String jwt = String.format("%s.%s", jwtContent, jwtSignature);
         String expectedSignature = "4-y2Gxz_foN0jAOFimmBPF7DWxf4AsjM20zxNkHg8Zah5Q64G42P9GfjmUp4Hldt";
 
@@ -244,7 +245,7 @@ public class HMACAlgorithmTest {
         String jwtContent = String.format("%s.%s", HS512Header, auth0IssPayload);
         byte[] contentBytes = jwtContent.getBytes(StandardCharsets.UTF_8);
         byte[] signatureBytes = algorithm.sign(contentBytes);
-        String jwtSignature = Base64.encodeBase64URLSafeString(signatureBytes);
+        String jwtSignature = Base64Wrapper.getInstance().encode(signatureBytes);
         String jwt = String.format("%s.%s", jwtContent, jwtSignature);
         String expectedSignature = "OXWyxmf-VcVo8viOiTFfLaEy6mrQqLEos5R82Xsx8mtFxQadJAQ1aVniIWN8qT2GNE_pMQPcdzk4x7Cqxsp1dw";
 

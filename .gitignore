@@ -34,6 +34,7 @@ Temporary Items
 # Intellij
 .idea/
 *.iml
+/local.properties
 
 ## File-based project format:
 *.iws
