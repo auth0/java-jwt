@@ -56,4 +56,13 @@ class BasicHeader implements Header {
     public Claim getHeaderClaim(String name) {
         return extractClaim(name, tree);
     }
+
+    @Override
+    public Map<String, Claim> getHeaderClaims() {
+        Map<String, Claim> claims = new HashMap<>();
+        for (String name : tree.keySet()) {
+            claims.put(name, extractClaim(name, tree));
+        }
+        return Collections.unmodifiableMap(claims);
+    }
 }

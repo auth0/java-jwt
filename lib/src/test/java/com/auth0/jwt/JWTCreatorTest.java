@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
@@ -51,6 +52,52 @@ public class JWTCreatorTest {
         String[] parts = signed.split("\\.");
         String headerJson = new String(Base64.decodeBase64(parts[0]), StandardCharsets.UTF_8);
         assertThat(headerJson, JsonMatcher.hasEntry("asd", 123));
+    }
+
+    @Test
+    public void shouldAddArrayAsHeaderClaim() throws Exception {
+        Map<String, Object> header = new HashMap<String, Object>();
+        header.put("crit", new String[] {"b64",  "http://openbanking.org.uk/iat", "http://openbanking.org.uk/iss"});
+        String signed = JWTCreator.init()
+            .withHeader(header)
+            .sign(Algorithm.HMAC256("secret"));
+
+        assertThat(signed, is(notNullValue()));
+        String[] parts = signed.split("\\.");
+        String headerJson = new String(Base64.decodeBase64(parts[0]), StandardCharsets.UTF_8);
+        assertThat(headerJson, JsonMatcher.hasEntry("crit", is(notNullValue())));
+        assertThat(headerJson, JsonMatcher.hasJsonPath("crit",
+                                                       containsInAnyOrder("b64",
+                                                                          "http://openbanking.org.uk/iat",
+                                                                          "http://openbanking.org.uk/iss")));
+    }
+
+    @Test
+    public void shouldAddBooleanAsHeaderClaim() throws Exception {
+        Map<String, Object> header = new HashMap<String, Object>();
+        header.put("b64", false);
+        String signed = JWTCreator.init()
+            .withHeader(header)
+            .sign(Algorithm.HMAC256("secret123456790"));
+
+        assertThat(signed, is(notNullValue()));
+        String[] parts = signed.split("\\.");
+        String headerJson = new String(Base64.decodeBase64(parts[0]), StandardCharsets.UTF_8);
+        assertThat(headerJson, JsonMatcher.hasEntry("b64", false));
+    }
+
+    @Test
+    public void shouldAddHeaderClaimWithUrlName() throws Exception {
+        Map<String, Object> header = new HashMap<String, Object>();
+        header.put("http://openbanking.org.uk/iat", "2017-06-12T20:05:50+00:00");
+        String signed = JWTCreator.init()
+            .withHeader(header)
+            .sign(Algorithm.HMAC256("secret123456789"));
+
+        assertThat(signed, is(notNullValue()));
+        String[] parts = signed.split("\\.");
+        String headerJson = new String(Base64.decodeBase64(parts[0]), StandardCharsets.UTF_8);
+        assertThat(headerJson, JsonMatcher.hasEntry("http://openbanking.org.uk/iat", "2017-06-12T20:05:50+00:00"));
     }
 
     @Test

@@ -76,6 +76,18 @@ public final class JWTCreator {
         }
 
         /**
+         * Add one specific Claim to the Header.
+         *
+         * @param name the name of the header Claim to add.
+         * @param value the value of the header Claim to add.
+         * @return this same Builder instance.
+         */
+        public Builder withHeader(String name, Object value) {
+            addHeaderClaim(name, value);
+            return this;
+        }
+
+        /**
          * Add a specific Key Id ("kid") claim to the Header.
          * If the {@link Algorithm} used to sign this token was instantiated with a KeyProvider, the 'kid' value will be taken from that provider and this one will be ignored.
          *
@@ -323,6 +335,14 @@ public final class JWTCreator {
                 return;
             }
             payloadClaims.put(name, value);
+        }
+
+        private void addHeaderClaim(String name, Object value) {
+            if (value == null) {
+                headerClaims.remove(name);
+                return;
+            }
+            headerClaims.put(name, value);
         }
     }
 

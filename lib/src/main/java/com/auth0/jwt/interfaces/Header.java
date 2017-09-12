@@ -1,5 +1,7 @@
 package com.auth0.jwt.interfaces;
 
+import java.util.Map;
+
 /**
  * The Header class represents the 1st part of the JWT, where the Header value is hold.
  */
@@ -40,4 +42,11 @@ public interface Header {
      * @return a non-null Claim.
      */
     Claim getHeaderClaim(String name);
+
+    /**
+     * Get the Claims defined in the header of the Token.
+     *
+     * @return a non-null Map containing the Claims defined in the Header of the Token.
+     */
+    Map<String, Claim> getHeaderClaims();
 }

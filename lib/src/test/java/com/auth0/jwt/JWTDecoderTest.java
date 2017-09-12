@@ -15,6 +15,7 @@ import org.junit.rules.ExpectedException;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.Map;
+import java.util.Arrays;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -287,6 +288,29 @@ public class JWTDecoderTest {
         assertThat(jwt.getClaims().get("sub"), is(notNullValue()));
         assertThat(jwt.getClaims().get("iss"), is(notNullValue()));
         assertThat(jwt.getClaims().get("extraClaim"), is(notNullValue()));
+    }
+
+
+    @Test
+    public void shouldGetHeaderClaims() throws Exception {
+        DecodedJWT jwt = JWT.decode("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOiIxMjM0NTY3ODkwIiwiaWF0IjoiMTIzNDU2Nzg5MCIsIm5iZiI6IjEyMzQ1Njc4OTAiLCJqdGkiOiJodHRwczovL2p3dC5pby8iLCJhdWQiOiJodHRwczovL2RvbWFpbi5hdXRoMC5jb20iLCJzdWIiOiJsb2dpbiIsImlzcyI6ImF1dGgwIiwiZXh0cmFDbGFpbSI6IkpvaG4gRG9lIn0.TX9Ct4feGp9YyeGK9Zl91tO0YBOrguJ4As9jeqgHdZQ");
+        assertThat(jwt, is(notNullValue()));
+        assertThat(jwt.getHeaderClaims(), is(notNullValue()));
+        assertThat(jwt.getHeaderClaims().size(), is(2));
+        assertThat(jwt.getHeaderClaims().get("alg").asString(), is("HS256"));
+        assertThat(jwt.getHeaderClaims().get("typ").asString(), is("JWT"));
+    }
+
+    @Test
+    public void shouldGetHeaderClaimsWithArray() throws Exception {
+        DecodedJWT jwt = JWT.decode("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImI2NCI6ZmFsc2UsImh0dHA6Ly9vcGVuYmFua2luZy5vcmcudWsvaXNzIjoiQz1VSywgU1Q9RW5nbGFuZCwgTD1Mb25kb24sIE89QWNtZSBMdGQuIiwiaHR0cDovL29wZW5iYW5raW5nLm9yZy51ay9pYXQiOiIyMDE3LTA2LTEyVDIwOjA1OjUwKzAwOjAwIiwiY3JpdCI6WyJiNjQiLCJodHRwOi8vb3BlbmJhbmtpbmcub3JnLnVrL2lzcyIsImh0dHA6Ly9vcGVuYmFua2luZy5vcmcudWsvaWF0Il19.eyJpc3MiOiJiYXIiLCJkYXRhIjp7InBvdGVudGlhbCI6ImhpZ2giLCJhY2N0aWQiOiJBQTdGOUY5Qi1DREY1LTRDRDAtOTQ5RS04MjlBQzg3OUUyMDEifSwicmlzayI6eyJzZXZlbiI6NX0sImlhdCI6MTUwNTE2ODY5NH0.b_Q8aPkRu7Pmv8_9IS5vqIrWCYa-VK_ZK__HIeHLyBY");
+        assertThat(jwt, is(notNullValue()));
+        assertThat(jwt.getHeaderClaims(), is(notNullValue()));
+        assertThat(jwt.getHeaderClaims().size(), is(6));
+        assertThat(jwt.getHeaderClaims().get("crit"), is(notNullValue()));
+        String[] crit = jwt.getHeaderClaims().get("crit").asArray(String.class);
+        assertThat(crit.length, is(3));
+        assertThat(Arrays.asList(crit), hasItems("b64",  "http://openbanking.org.uk/iat", "http://openbanking.org.uk/iss"));
     }
 
     //Helper Methods

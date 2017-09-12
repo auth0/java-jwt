@@ -64,6 +64,11 @@ final class JWTDecoder implements DecodedJWT {
     }
 
     @Override
+    public Map<String, Claim> getHeaderClaims() {
+        return header.getHeaderClaims();
+    }
+
+    @Override
     public String getIssuer() {
         return payload.getIssuer();
     }

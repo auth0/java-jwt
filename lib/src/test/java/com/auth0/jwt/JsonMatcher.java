@@ -4,6 +4,8 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeDiagnosingMatcher;
 
+import com.jayway.jsonassert.JsonAssert;
+
 import java.lang.reflect.Array;
 import java.util.Iterator;
 import java.util.List;
@@ -14,10 +16,12 @@ public class JsonMatcher extends TypeSafeDiagnosingMatcher<String> {
     private final String entry;
     private final String key;
     private final Matcher matcher;
+    private final Matcher entryMatcher;
 
-    private JsonMatcher(String key, Object value, Matcher valueMatcher) {
+    private JsonMatcher(String key, Object value, Matcher valueMatcher, Matcher entryMatcher) {
         this.key = key;
         this.matcher = valueMatcher;
+        this.entryMatcher = entryMatcher;
         if (value != null) {
             String stringValue = objectToString(value);
             entry = getStringKey(key) + stringValue;
@@ -32,6 +36,19 @@ public class JsonMatcher extends TypeSafeDiagnosingMatcher<String> {
             mismatchDescription.appendText("JSON was null");
             return false;
         }
+        if (entryMatcher != null) {
+            try {
+                JsonAssert.with(item).assertThat(key, entryMatcher);
+                return true;
+            } catch (AssertionError ae) {
+                matcher.describeMismatch(item, mismatchDescription);
+                return false;
+            } catch (Exception e) {
+                matcher.describeMismatch(item, mismatchDescription);
+                return false;
+            }
+        }
+
         if (matcher != null) {
             if (!matcher.matches(item)) {
                 matcher.describeMismatch(item, mismatchDescription);
@@ -61,11 +78,15 @@ public class JsonMatcher extends TypeSafeDiagnosingMatcher<String> {
     }
 
     public static JsonMatcher hasEntry(String key, Object value) {
-        return new JsonMatcher(key, value, null);
+        return new JsonMatcher(key, value, null, null);
     }
 
     public static JsonMatcher hasEntry(String key, Matcher valueMatcher) {
-        return new JsonMatcher(key, null, valueMatcher);
+        return new JsonMatcher(key, null, valueMatcher, null);
+    }
+
+    public static JsonMatcher hasJsonPath(String jsonPath, Matcher entryMatcher) {
+        return new JsonMatcher(jsonPath, null, null, entryMatcher);
     }
 
     private String getStringKey(String key) {
