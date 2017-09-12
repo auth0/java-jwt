@@ -1,5 +1,6 @@
 package com.auth0.jwt;
 
+
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.SignatureGenerationException;
@@ -10,12 +11,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import org.apache.commons.codec.binary.Base64;
-
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import org.apache.commons.codec.binary.Base64;
 
 /**
  * The JWTCreator class holds the sign method to generate a complete JWT (with Signature) from a given Header and Payload content.
@@ -259,6 +260,19 @@ public final class JWTCreator {
             addClaim(name, value);
             return this;
         }
+        /**
+         * Add a custom Claim value.
+         *
+         * @param name  the Claim's name.
+         * @param value the Claim's value.
+         * @return this same Builder instance.
+         * @throws IllegalArgumentException if the name is null.
+         */
+        public Builder withClaim(String name, Map<String,Object> value) throws IllegalArgumentException {
+            assertNonNull(name);
+            addClaim(name, value);
+            return this;
+        }
 
         /**
          * Add a custom Array Claim with the given items.
@@ -297,6 +311,20 @@ public final class JWTCreator {
          * @throws IllegalArgumentException if the name is null.
          */
         public Builder withArrayClaim(String name, Long[] items) throws IllegalArgumentException {
+            assertNonNull(name);
+            addClaim(name, items);
+            return this;
+        }
+
+        /**
+         * Add a custom Array Claim with the given items.
+         *
+         * @param name  the Claim's name.
+         * @param items the Claim's value.
+         * @return this same Builder instance.
+         * @throws IllegalArgumentException if the name is null.
+         */
+        public Builder withListClaim(String name, List<Map<String,Object>> items) throws IllegalArgumentException {
             assertNonNull(name);
             addClaim(name, items);
             return this;

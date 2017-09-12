@@ -1,21 +1,24 @@
 package com.auth0.jwt;
 
+
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.ECDSAKeyProvider;
 import com.auth0.jwt.interfaces.RSAKeyProvider;
+import java.nio.charset.StandardCharsets;
+import java.security.interfaces.ECPrivateKey;
+import java.security.interfaces.RSAPrivateKey;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.apache.commons.codec.binary.Base64;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import java.nio.charset.StandardCharsets;
-import java.security.interfaces.ECPrivateKey;
-import java.security.interfaces.RSAPrivateKey;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
@@ -257,6 +260,24 @@ public class JWTCreatorTest {
     }
 
     @Test
+    public void shouldAddMapClaim() throws Exception {
+        Map <String, Object> map1 = new HashMap<String,Object>();
+        map1.put("level", 13);
+        map1.put("signatoryId", "E32EE06A-742B-44C0-834A-EA0C8508B6C8");
+        map1.put("isExecuted", false);
+        String signed = JWTCreator.init()
+            .withClaim("data", map1)
+            .sign(Algorithm.HMAC256("secret123456"));
+
+        assertThat(signed, is(notNullValue()));
+        String[] parts = signed.split("\\.");
+        String claimsJson = new String(Base64.decodeBase64(parts[1]), StandardCharsets.UTF_8);
+        assertThat(claimsJson, JsonMatcher.hasJsonPath("data.level", is(13)));
+        assertThat(claimsJson, JsonMatcher.hasJsonPath("data.signatoryId", is("E32EE06A-742B-44C0-834A-EA0C8508B6C8")));
+        assertThat(claimsJson, JsonMatcher.hasJsonPath("data.isExecuted", is(false)));
+    }
+
+    @Test
     public void shouldRemoveClaimWhenPassingNull() throws Exception {
         String signed = JWTCreator.init()
                 .withIssuer("iss")
@@ -404,4 +425,30 @@ public class JWTCreatorTest {
         String[] parts = jwt.split("\\.");
         assertThat(parts[1], is("eyJuYW1lIjpbMSwyLDNdfQ"));
     }
+
+    @Test
+    public void shouldAcceptCustomListClaimOfTypeMap() throws Exception {
+        List<Map<String,Object>> list = new ArrayList<Map<String,Object>>();
+        for(int i=0; i< 3; i++){
+            Map <String, Object> map1 = new HashMap<String,Object>();
+            map1.put("level", i*10);
+            map1.put("signatoryId", java.util.UUID.randomUUID());
+            map1.put("isExecuted", false);
+            list.add(map1);
+        }
+
+        String signed = JWTCreator.init()
+            .withListClaim("data", list)
+            .sign(Algorithm.HMAC256("secret123456"));
+
+        assertThat(signed, is(notNullValue()));
+        String[] parts = signed.split("\\.");
+        String claimsJson = new String(Base64.decodeBase64(parts[1]), StandardCharsets.UTF_8);
+        assertThat(claimsJson, JsonMatcher.hasJsonPath("data[0].level", is(0)));
+        assertThat(claimsJson, JsonMatcher.hasJsonPath("data[1].level", is(10)));
+        assertThat(claimsJson, JsonMatcher.hasJsonPath("data[2].level", is(20)));
+        assertThat(claimsJson, JsonMatcher.hasJsonPath("data[0].isExecuted", is(false)));
+        assertThat(claimsJson, JsonMatcher.hasJsonPath("data[1].isExecuted", is(false)));
+    }
+
 }
