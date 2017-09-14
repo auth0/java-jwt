@@ -427,6 +427,17 @@ public class JWTCreatorTest {
     }
 
     @Test
+    public void shouldAcceptCustomArrayClaimOfTypeDouble() throws Exception {
+        String jwt = JWTCreator.init()
+                .withArrayClaim("double-values", new Double[]{1982922.23039, -920.398398212, 239892.98494803})
+                .sign(Algorithm.HMAC256("secret1234567890ABCDEFGH"));
+
+        assertThat(jwt, is(notNullValue()));
+        String[] parts = jwt.split("\\.");
+        assertThat(parts[1], is("eyJkb3VibGUtdmFsdWVzIjpbMTk4MjkyMi4yMzAzOSwtOTIwLjM5ODM5ODIxMiwyMzk4OTIuOTg0OTQ4MDNdfQ"));
+    }
+
+    @Test
     public void shouldAcceptCustomListClaimOfTypeMap() throws Exception {
         List<Map<String,Object>> list = new ArrayList<Map<String,Object>>();
         for(int i=0; i< 3; i++){
