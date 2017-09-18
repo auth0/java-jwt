@@ -57,7 +57,9 @@ test {
     }
 }
 
-task clean(type: Delete) {
+task cleanupJWTproject(type: Delete) {
     delete rootProject.buildDir
     delete 'CHANGELOG.md.release'
 }
+
+clean.dependsOn cleanupJWTproject
