@@ -42,6 +42,11 @@ public class NullClaim implements Claim {
     }
 
     @Override
+    public String asRawValue() {
+        return null;
+    }
+
+    @Override
     public Date asDate() {
         return null;
     }

@@ -247,6 +247,14 @@ public class JWTDecoderTest {
     }
 
     @Test
+    public void shouldGetCustomClaimOfTypeRawValue() throws Exception {
+        String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYW1lIjp7Im5hbWUiOiJHZW9yZ2UiLCJpZCI6MX19.lbRLPEQEcHChKTproSQnrI6iQywfDHTjbF5iR4VvhEA";
+        DecodedJWT jwt = JWT.decode(token);
+        Assert.assertThat(jwt, is(notNullValue()));
+        Assert.assertThat(jwt.getClaim("name").asRawValue(), is("{\"name\":\"George\",\"id\":1}"));
+    }
+
+    @Test
     public void shouldGetCustomArrayClaimOfTypeString() throws Exception {
         String token = "eyJhbGciOiJIUzI1NiJ9.eyJuYW1lIjpbInRleHQiLCIxMjMiLCJ0cnVlIl19.lxM8EcmK1uSZRAPd0HUhXGZJdauRmZmLjoeqz4J9yAA";
         DecodedJWT jwt = JWT.decode(token);

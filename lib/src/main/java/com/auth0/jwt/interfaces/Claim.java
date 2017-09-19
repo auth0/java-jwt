@@ -59,6 +59,14 @@ public interface Claim {
     String asString();
 
     /**
+     * Get this Claim as a raw value.
+     * The value will be returned as a raw String if present.
+     *
+     * @return the value as a raw String or null.
+     */
+	String asRawValue();
+
+    /**
      * Get this Claim as a Date.
      * If the value can't be converted to a Date, null will be returned.
      *
