@@ -141,6 +141,42 @@ public class JsonNodeClaimTest {
     }
 
     @Test
+    public void shouldGetRawValue() throws Exception {
+        JsonNode value = mapper.valueToTree(new UserPojo("George", 1));
+        Claim claim = claimFromNode(value);
+
+        assertThat(claim.asRawValue(), is(notNullValue()));
+        assertThat(claim.asRawValue(), is("{\"name\":\"George\",\"id\":1}"));
+    }
+
+    @Test
+    public void shouldGetRawValueWithArray() throws Exception {
+        JsonNode value = mapper.valueToTree(new UserPojo[]{new UserPojo("George", 1), new UserPojo("Mark", 2)});
+        Claim claim = claimFromNode(value);
+
+        assertThat(claim.asRawValue(), is(notNullValue()));
+        assertThat(claim.asRawValue(), is("[{\"name\":\"George\",\"id\":1},{\"name\":\"Mark\",\"id\":2}]"));
+    }
+
+    @Test
+    public void shouldGetRawValueWithInteger() throws Exception {
+        JsonNode value = mapper.valueToTree(1);
+        Claim claim = claimFromNode(value);
+
+        assertThat(claim.asRawValue(), is(notNullValue()));
+        assertThat(claim.asRawValue(), is("1"));
+    }
+
+    @Test
+    public void shouldGetRawValueWithBoolean() throws Exception {
+        JsonNode value = mapper.valueToTree(true);
+        Claim claim = claimFromNode(value);
+
+        assertThat(claim.asRawValue(), is(notNullValue()));
+        assertThat(claim.asRawValue(), is("true"));
+    }
+
+    @Test
     public void shouldGetArrayValueOfCustomClass() throws Exception {
         JsonNode value = mapper.valueToTree(new UserPojo[]{new UserPojo("George", 1), new UserPojo("Mark", 2)});
         Claim claim = claimFromNode(value);

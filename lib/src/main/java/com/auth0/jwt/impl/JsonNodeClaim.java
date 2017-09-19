@@ -51,6 +51,11 @@ class JsonNodeClaim implements Claim {
     }
 
     @Override
+    public String asRawValue() {
+        return data.toString();
+    }
+
+    @Override
     public Date asDate() {
         if (!data.canConvertToLong()) {
             return null;
