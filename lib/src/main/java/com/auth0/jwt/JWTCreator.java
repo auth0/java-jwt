@@ -10,6 +10,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.util.RawValue;
+
 import org.apache.commons.codec.binary.Base64;
 
 import java.nio.charset.StandardCharsets;
@@ -287,6 +289,20 @@ public final class JWTCreator {
         public Builder withArrayClaim(String name, Long[] items) throws IllegalArgumentException {
             assertNonNull(name);
             addClaim(name, items);
+            return this;
+        }
+
+        /**
+         * Add a custom Claim value as {@link RawValue}. It will not be escaped to a string this way. 
+         *
+         * @param name  the Claim's name.
+         * @param value the Claim's value.
+         * @return this same Builder instance.
+         * @throws IllegalArgumentException if the name is null.
+         */
+        public Builder withRawClaim(String name, String value) throws IllegalArgumentException {
+            assertNonNull(name);
+            addClaim(name, new RawValue(value));
             return this;
         }
 

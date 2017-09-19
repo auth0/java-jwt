@@ -357,4 +357,15 @@ public class JWTCreatorTest {
         String[] parts = jwt.split("\\.");
         assertThat(parts[1], is("eyJuYW1lIjpbMSwyLDNdfQ"));
     }
+
+    @Test
+    public void shouldAcceptCustomRawClaim() throws Exception {
+        String jwt = JWTCreator.init()
+                .withRawClaim("name", "{\"key\":\"value\"}")
+                .sign(Algorithm.HMAC256("secret"));
+
+        assertThat(jwt, is(notNullValue()));
+        String[] parts = jwt.split("\\.");
+        assertThat(parts[1], is("eyJuYW1lIjp7ImtleSI6InZhbHVlIn19"));
+    }
 }
