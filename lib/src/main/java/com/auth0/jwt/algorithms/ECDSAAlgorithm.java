@@ -44,10 +44,7 @@ class ECDSAAlgorithm extends Algorithm {
             if (publicKey == null) {
                 throw new IllegalStateException("The given Public Key is null.");
             }
-            if (!isDERSignature(signatureBytes)) {
-                signatureBytes = JOSEToDER(signatureBytes);
-            }
-            boolean valid = crypto.verifySignatureFor(getDescription(), publicKey, contentBytes, signatureBytes);
+            boolean valid = crypto.verifySignatureFor(getDescription(), publicKey, contentBytes, JOSEToDER(signatureBytes));
 
             if (!valid) {
                 throw new SignatureVerificationException(this);
@@ -64,7 +61,8 @@ class ECDSAAlgorithm extends Algorithm {
             if (privateKey == null) {
                 throw new IllegalStateException("The given Private Key is null.");
             }
-            return crypto.createSignatureFor(getDescription(), privateKey, contentBytes);
+            byte[] signature = crypto.createSignatureFor(getDescription(), privateKey, contentBytes);
+            return DERToJOSE(signature);
         } catch (NoSuchAlgorithmException | SignatureException | InvalidKeyException | IllegalStateException e) {
             throw new SignatureGenerationException(this, e);
         }
@@ -75,15 +73,60 @@ class ECDSAAlgorithm extends Algorithm {
         return keyProvider.getPrivateKeyId();
     }
 
-    private boolean isDERSignature(byte[] signature) {
+    //Visible for testing
+    byte[] DERToJOSE(byte[] derSignature) throws SignatureException {
         // DER Structure: http://crypto.stackexchange.com/a/1797
-        // Should begin with 0x30 and have exactly the expected length
-        return signature[0] == 0x30 && signature.length != ecNumberSize * 2;
+        boolean derEncoded = derSignature[0] == 0x30 && derSignature.length != ecNumberSize * 2;
+        if (!derEncoded) {
+            throw new SignatureException("Invalid DER signature format.");
+        }
+
+        final byte[] joseSignature = new byte[ecNumberSize * 2];
+
+        //Skip 0x30
+        int offset = 1;
+        if (derSignature[1] == (byte) 0x81) {
+            //Skip sign
+            offset++;
+        }
+
+        //Convert to unsigned. Should match DER length - offset
+        int encodedLength = derSignature[offset++] & 0xff;
+        if (encodedLength != derSignature.length - offset) {
+            throw new SignatureException("Invalid DER signature format.");
+        }
+
+        //Skip 0x02
+        offset++;
+
+        //Obtain R number length (Includes padding) and skip it
+        int rLength = derSignature[offset++];
+        if (rLength > ecNumberSize + 1) {
+            throw new SignatureException("Invalid DER signature format.");
+        }
+        int rPadding = ecNumberSize - rLength;
+        //Retrieve R number
+        System.arraycopy(derSignature, offset + Math.max(-rPadding, 0), joseSignature, Math.max(rPadding, 0), rLength + Math.min(rPadding, 0));
+
+        //Skip R number and 0x02
+        offset += rLength + 1;
+
+        //Obtain S number length. (Includes padding)
+        int sLength = derSignature[offset++];
+        if (sLength > ecNumberSize + 1) {
+            throw new SignatureException("Invalid DER signature format.");
+        }
+        int sPadding = ecNumberSize - sLength;
+        //Retrieve R number
+        System.arraycopy(derSignature, offset + Math.max(-sPadding, 0), joseSignature, ecNumberSize + Math.max(sPadding, 0), sLength + Math.min(sPadding, 0));
+
+        return joseSignature;
     }
 
-    private byte[] JOSEToDER(byte[] joseSignature) throws SignatureException {
+    //Visible for testing
+    byte[] JOSEToDER(byte[] joseSignature) throws SignatureException {
         if (joseSignature.length != ecNumberSize * 2) {
-            throw new SignatureException(String.format("The signature length was invalid. Expected %d bytes but received %d", ecNumberSize * 2, joseSignature.length));
+            throw new SignatureException("Invalid JOSE signature format.");
         }
 
         // Retrieve R and S number's length and padding.
@@ -94,10 +137,10 @@ class ECDSAAlgorithm extends Algorithm {
 
         int length = 2 + rLength + 2 + sLength;
         if (length > 255) {
-            throw new SignatureException("Invalid ECDSA signature format");
+            throw new SignatureException("Invalid JOSE signature format.");
         }
 
-        byte[] derSignature;
+        final byte[] derSignature;
         int offset;
         if (length > 0x7f) {
             derSignature = new byte[3 + length];
@@ -109,22 +152,38 @@ class ECDSAAlgorithm extends Algorithm {
         }
 
         // DER Structure: http://crypto.stackexchange.com/a/1797
-        // Header with length info
+        // Header with signature length info
         derSignature[0] = (byte) 0x30;
-        derSignature[offset++] = (byte) length;
+        derSignature[offset++] = (byte) (length & 0xff);
+
+        // Header with "min R" number length
         derSignature[offset++] = (byte) 0x02;
         derSignature[offset++] = (byte) rLength;
 
         // R number
-        System.arraycopy(joseSignature, 0, derSignature, offset + (rLength - ecNumberSize), ecNumberSize);
-        offset += rLength;
+        if (rPadding < 0) {
+            //Sign
+            derSignature[offset++] = (byte) 0x00;
+            System.arraycopy(joseSignature, 0, derSignature, offset, ecNumberSize);
+            offset += ecNumberSize;
+        } else {
+            int copyLength = Math.min(ecNumberSize, rLength);
+            System.arraycopy(joseSignature, rPadding, derSignature, offset, copyLength);
+            offset += copyLength;
+        }
 
-        // S number length
+        // Header with "min S" number length
         derSignature[offset++] = (byte) 0x02;
         derSignature[offset++] = (byte) sLength;
 
         // S number
-        System.arraycopy(joseSignature, ecNumberSize, derSignature, offset + (sLength - ecNumberSize), ecNumberSize);
+        if (sPadding < 0) {
+            //Sign
+            derSignature[offset++] = (byte) 0x00;
+            System.arraycopy(joseSignature, ecNumberSize, derSignature, offset, ecNumberSize);
+        } else {
+            System.arraycopy(joseSignature, ecNumberSize + sPadding, derSignature, offset, Math.min(ecNumberSize, sLength));
+        }
 
         return derSignature;
     }
@@ -134,7 +193,7 @@ class ECDSAAlgorithm extends Algorithm {
         while (fromIndex + padding < toIndex && bytes[fromIndex + padding] == 0) {
             padding++;
         }
-        return bytes[fromIndex + padding] > 0x7f ? padding : padding - 1;
+        return (bytes[fromIndex + padding] & 0xff) > 0x7f ? padding - 1 : padding;
     }
 
     //Visible for testing
