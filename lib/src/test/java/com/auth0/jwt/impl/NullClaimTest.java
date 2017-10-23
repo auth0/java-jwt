@@ -2,7 +2,6 @@ package com.auth0.jwt.impl;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.omg.CORBA.Object;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
