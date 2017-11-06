@@ -2,6 +2,7 @@ package com.auth0.jwt.impl;
 
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.interfaces.Claim;
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -66,11 +67,10 @@ class JsonNodeClaim implements Claim {
             return null;
         }
 
-        ObjectMapper mapper = new ObjectMapper();
         T[] arr = (T[]) Array.newInstance(tClazz, data.size());
         for (int i = 0; i < data.size(); i++) {
             try {
-                arr[i] = mapper.treeToValue(data.get(i), tClazz);
+                arr[i] = getObjectMapper().treeToValue(data.get(i), tClazz);
             } catch (JsonProcessingException e) {
                 throw new JWTDecodeException("Couldn't map the Claim's array contents to " + tClazz.getSimpleName(), e);
             }
@@ -84,11 +84,10 @@ class JsonNodeClaim implements Claim {
             return null;
         }
 
-        ObjectMapper mapper = new ObjectMapper();
         List<T> list = new ArrayList<>();
         for (int i = 0; i < data.size(); i++) {
             try {
-                list.add(mapper.treeToValue(data.get(i), tClazz));
+                list.add(getObjectMapper().treeToValue(data.get(i), tClazz));
             } catch (JsonProcessingException e) {
                 throw new JWTDecodeException("Couldn't map the Claim's array contents to " + tClazz.getSimpleName(), e);
             }
@@ -102,11 +101,12 @@ class JsonNodeClaim implements Claim {
             return null;
         }
 
-        ObjectMapper mapper = new ObjectMapper();
         try {
             TypeReference<Map<String, Object>> mapType = new TypeReference<Map<String, Object>>() {
             };
-            return mapper.treeAsTokens(data).readValueAs(mapType);
+            ObjectMapper thisMapper = getObjectMapper();
+            JsonParser thisParser = thisMapper.treeAsTokens(data);
+            return thisParser.readValueAs(mapType);
         } catch (IOException e) {
             throw new JWTDecodeException("Couldn't map the Claim value to Map", e);
         }
@@ -114,9 +114,8 @@ class JsonNodeClaim implements Claim {
 
     @Override
     public <T> T as(Class<T> tClazz) throws JWTDecodeException {
-        ObjectMapper mapper = new ObjectMapper();
         try {
-            return mapper.treeAsTokens(data).readValueAs(tClazz);
+            return getObjectMapper().treeAsTokens(data).readValueAs(tClazz);
         } catch (IOException e) {
             throw new JWTDecodeException("Couldn't map the Claim value to " + tClazz.getSimpleName(), e);
         }
@@ -150,5 +149,10 @@ class JsonNodeClaim implements Claim {
             return new NullClaim();
         }
         return new JsonNodeClaim(node);
+    }
+
+    //Visible for testing
+    ObjectMapper getObjectMapper() {
+        return new ObjectMapper();
     }
 }
