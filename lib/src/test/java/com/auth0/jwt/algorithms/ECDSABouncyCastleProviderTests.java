@@ -5,9 +5,9 @@ import com.auth0.jwt.exceptions.SignatureGenerationException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.interfaces.ECDSAKeyProvider;
 import org.apache.commons.codec.binary.Base64;
-import org.hamcrest.Matchers;
-import org.hamcrest.collection.IsIn;
-import org.junit.Assert;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -17,10 +17,10 @@ import java.security.*;
 import java.security.interfaces.ECKey;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
-import java.util.Arrays;
 
 import static com.auth0.jwt.PemUtils.readPrivateKeyFromFile;
 import static com.auth0.jwt.PemUtils.readPublicKeyFromFile;
+import static com.auth0.jwt.algorithms.ECDSAAlgorithmTest.*;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
@@ -30,8 +30,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@SuppressWarnings("deprecation")
-public class ECDSAAlgorithmTest {
+public class ECDSABouncyCastleProviderTests {
 
     private static final String PRIVATE_KEY_FILE_256 = "src/test/resources/ec256-key-private.pem";
     private static final String PUBLIC_KEY_FILE_256 = "src/test/resources/ec256-key-public.pem";
@@ -47,11 +46,29 @@ public class ECDSAAlgorithmTest {
 
     @Rule
     public ExpectedException exception = ExpectedException.none();
+    private static final Provider bcProvider = new BouncyCastleProvider();
 
     //JOSE Signatures obtained using Node 'jwa' lib: https://github.com/brianloveswords/node-jwa
     //DER Signatures obtained from source JOSE signature using 'ecdsa-sig-formatter' lib: https://github.com/Brightspace/node-ecdsa-sig-formatter
 
-    //These tests use the default preferred SecurityProvider to handle ECDSA algorithms
+
+    //These tests add and use the BouncyCastle SecurityProvider to handle ECDSA algorithms
+
+    @BeforeClass
+    public static void setUp() throws Exception {
+        //Set BC as the preferred bcProvider
+        Security.insertProviderAt(bcProvider, 1);
+    }
+
+    @AfterClass
+    public static void tearDown() throws Exception {
+        Security.removeProvider(bcProvider.getName());
+    }
+
+    @Test
+    public void shouldPreferBouncyCastleProvider() throws Exception {
+        assertThat(Security.getProviders()[0], is(equalTo(bcProvider)));
+    }
 
     // Verify
 
@@ -1035,133 +1052,6 @@ public class ECDSAAlgorithmTest {
         derSignature = createDERSignature(66, true, true);
         joseSignature = algorithm512.DERToJOSE(derSignature);
         assertValidJOSESignature(joseSignature, 66, true, true);
-    }
-
-
-    //Test Helpers
-    static void assertValidJOSESignature(byte[] joseSignature, int numberSize, boolean withRPadding, boolean withSPadding) {
-        Assert.assertThat(joseSignature, is(Matchers.notNullValue()));
-        Assert.assertThat(numberSize, is(IsIn.oneOf(32, 48, 66)));
-
-        Assert.assertThat(joseSignature.length, is(numberSize * 2));
-
-        byte[] rCopy = Arrays.copyOfRange(joseSignature, 0, numberSize);
-        byte[] sCopy = Arrays.copyOfRange(joseSignature, numberSize, numberSize * 2);
-
-        byte[] rNumber = new byte[numberSize];
-        byte[] sNumber = new byte[numberSize];
-        Arrays.fill(rNumber, (byte) 0x11);
-        Arrays.fill(sNumber, (byte) 0x22);
-        if (withRPadding) {
-            rNumber[0] = (byte) 0;
-        }
-        if (withSPadding) {
-            sNumber[0] = (byte) 0;
-        }
-        Assert.assertThat(Arrays.equals(rNumber, rCopy), is(true));
-        Assert.assertThat(Arrays.equals(sNumber, sCopy), is(true));
-    }
-
-    static byte[] createDERSignature(int numberSize, boolean withRPadding, boolean withSPadding) {
-        Assert.assertThat(numberSize, is(IsIn.oneOf(32, 48, 66)));
-
-        int rLength = withRPadding ? numberSize - 1 : numberSize;
-        int sLength = withSPadding ? numberSize - 1 : numberSize;
-        int totalLength = 2 + (2 + rLength) + (2 + sLength);
-
-        byte[] rNumber = new byte[rLength];
-        byte[] sNumber = new byte[sLength];
-        Arrays.fill(rNumber, (byte) 0x11);
-        Arrays.fill(sNumber, (byte) 0x22);
-
-        byte[] derSignature;
-        int offset = 0;
-        if (totalLength > 0x7f) {
-            totalLength++;
-            derSignature = new byte[totalLength];
-            //Start sequence and sign
-            derSignature[offset++] = (byte) 0x30;
-            derSignature[offset++] = (byte) 0x81;
-        } else {
-            derSignature = new byte[totalLength];
-            //Start sequence
-            derSignature[offset++] = (byte) 0x30;
-        }
-
-        //Sequence length
-        derSignature[offset++] = (byte) (totalLength - offset);
-
-        //R number
-        derSignature[offset++] = (byte) 0x02;
-        derSignature[offset++] = (byte) rLength;
-        System.arraycopy(rNumber, 0, derSignature, offset, rLength);
-        offset += rLength;
-
-        //S number
-        derSignature[offset++] = (byte) 0x02;
-        derSignature[offset++] = (byte) sLength;
-        System.arraycopy(sNumber, 0, derSignature, offset, sLength);
-
-        return derSignature;
-    }
-
-    static byte[] createJOSESignature(int numberSize, boolean withRPadding, boolean withSPadding) {
-        Assert.assertThat(numberSize, is(IsIn.oneOf(32, 48, 66)));
-
-        byte[] rNumber = new byte[numberSize];
-        byte[] sNumber = new byte[numberSize];
-        Arrays.fill(rNumber, (byte) 0x11);
-        Arrays.fill(sNumber, (byte) 0x22);
-        if (withRPadding) {
-            rNumber[0] = (byte) 0;
-        }
-        if (withSPadding) {
-            sNumber[0] = (byte) 0;
-        }
-        byte[] joseSignature = new byte[numberSize * 2];
-        System.arraycopy(rNumber, 0, joseSignature, 0, numberSize);
-        System.arraycopy(sNumber, 0, joseSignature, numberSize, numberSize);
-        return joseSignature;
-    }
-
-    static void assertValidDERSignature(byte[] derSignature, int numberSize, boolean withRPadding, boolean withSPadding) {
-        Assert.assertThat(derSignature, is(Matchers.notNullValue()));
-        Assert.assertThat(numberSize, is(IsIn.oneOf(32, 48, 66)));
-
-        int rLength = withRPadding ? numberSize - 1 : numberSize;
-        int sLength = withSPadding ? numberSize - 1 : numberSize;
-        int totalLength = 2 + (2 + rLength) + (2 + sLength);
-        int offset = 0;
-
-        //Start sequence
-        Assert.assertThat(derSignature[offset++], is((byte) 0x30));
-        if (totalLength > 0x7f) {
-            //Add sign before sequence length
-            totalLength++;
-            Assert.assertThat(derSignature[offset++], is((byte) 0x81));
-        }
-        //Sequence length
-        Assert.assertThat(derSignature[offset++], is((byte) (totalLength - offset)));
-
-        //R number
-        Assert.assertThat(derSignature[offset++], is((byte) 0x02));
-        Assert.assertThat(derSignature[offset++], is((byte) rLength));
-        byte[] rCopy = Arrays.copyOfRange(derSignature, offset, offset + rLength);
-        offset += rLength;
-
-        //S number
-        Assert.assertThat(derSignature[offset++], is((byte) 0x02));
-        Assert.assertThat(derSignature[offset++], is((byte) sLength));
-        byte[] sCopy = Arrays.copyOfRange(derSignature, offset, offset + sLength);
-
-
-        byte[] rNumber = new byte[rLength];
-        byte[] sNumber = new byte[sLength];
-        Arrays.fill(rNumber, (byte) 0x11);
-        Arrays.fill(sNumber, (byte) 0x22);
-        Assert.assertThat(Arrays.equals(rNumber, rCopy), is(true));
-        Assert.assertThat(Arrays.equals(sNumber, sCopy), is(true));
-        Assert.assertThat(derSignature.length, is(totalLength));
     }
 
 }
