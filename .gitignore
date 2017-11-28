@@ -42,6 +42,7 @@ Temporary Items
 
 # IntelliJ
 /out/
+/lib/out/
 
 # mpeltonen/sbt-idea plugin
 .idea_modules/

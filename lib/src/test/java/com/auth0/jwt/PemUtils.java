@@ -3,12 +3,14 @@ package com.auth0.jwt;
 import org.bouncycastle.util.io.pem.PemObject;
 import org.bouncycastle.util.io.pem.PemReader;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.security.interfaces.ECPublicKey;
 import java.security.spec.EncodedKeySpec;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
@@ -22,7 +24,9 @@ public class PemUtils {
         }
         PemReader reader = new PemReader(new FileReader(pemFile));
         PemObject pemObject = reader.readPemObject();
-        return pemObject.getContent();
+        byte[] content = pemObject.getContent();
+        reader.close();
+        return content;
     }
 
     private static PublicKey getPublicKey(byte[] keyBytes, String algorithm) {
