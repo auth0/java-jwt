@@ -78,7 +78,7 @@ class PayloadImpl implements Payload {
 
     @Override
     public Map<String, Claim> getClaims() {
-        Map<String, Claim> claims = new HashMap<>();
+        Map<String, Claim> claims = new HashMap<String, Claim>();
         for (String name : tree.keySet()) {
             claims.put(name, extractClaim(name, tree));
         }
