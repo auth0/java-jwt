@@ -246,7 +246,7 @@ public class JsonNodeClaimTest {
 
     @Test
     public void shouldGetMapValue() throws Exception {
-        Map<String, Object> map = new HashMap<>();
+        Map<String, Object> map = new HashMap<String, Object>();
         map.put("text", "extraValue");
         map.put("number", 12);
         map.put("boolean", true);

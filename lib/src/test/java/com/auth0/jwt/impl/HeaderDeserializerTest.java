@@ -1,5 +1,23 @@
 package com.auth0.jwt.impl;
 
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.io.StringReader;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.interfaces.Header;
 import com.fasterxml.jackson.core.JsonFactory;
@@ -12,21 +30,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.TextNode;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-
-import java.io.StringReader;
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class HeaderDeserializerTest {
 
@@ -88,7 +91,7 @@ public class HeaderDeserializerTest {
 
     @Test
     public void shouldGetNullStringWhenParsingNullNode() throws Exception {
-        Map<String, JsonNode> tree = new HashMap<>();
+        Map<String, JsonNode> tree = new HashMap<String, JsonNode>();
         NullNode node = NullNode.getInstance();
         tree.put("key", node);
 
@@ -98,7 +101,7 @@ public class HeaderDeserializerTest {
 
     @Test
     public void shouldGetNullStringWhenParsingNull() throws Exception {
-        Map<String, JsonNode> tree = new HashMap<>();
+        Map<String, JsonNode> tree = new HashMap<String, JsonNode>();
         tree.put("key", null);
 
         String text = deserializer.getString(tree, "key");
@@ -107,7 +110,7 @@ public class HeaderDeserializerTest {
 
     @Test
     public void shouldGetStringWhenParsingTextNode() throws Exception {
-        Map<String, JsonNode> tree = new HashMap<>();
+		Map<String, JsonNode> tree = new HashMap<String, JsonNode>();
         TextNode node = new TextNode("something here");
         tree.put("key", node);
 
