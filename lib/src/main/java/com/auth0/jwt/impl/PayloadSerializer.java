@@ -11,13 +11,13 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 
 public class PayloadSerializer extends StdSerializer<ClaimsHolder> {
 
-	public PayloadSerializer() {
-		this(null);
-	}
+    public PayloadSerializer() {
+        this(null);
+    }
 
-	private PayloadSerializer(Class<ClaimsHolder> t) {
-		super(t);
-	}
+    private PayloadSerializer(Class<ClaimsHolder> t) {
+        super(t);
+    }
 
 	@Override
 	public void serialize(ClaimsHolder holder, JsonGenerator gen, SerializerProvider provider) throws IOException {
@@ -46,10 +46,10 @@ public class PayloadSerializer extends StdSerializer<ClaimsHolder> {
 			}
 		}
 
-		gen.writeObject(safePayload);
-	}
+        gen.writeObject(safePayload);
+    }
 
-	private long dateToSeconds(Date date) {
-		return date.getTime() / 1000;
-	}
+    private long dateToSeconds(Date date) {
+        return date.getTime() / 1000;
+    }
 }
