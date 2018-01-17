@@ -1,16 +1,15 @@
 package com.auth0.jwt.algorithms;
 
-import java.nio.charset.Charset;
-import java.security.SignatureException;
-import java.security.interfaces.ECPrivateKey;
-import java.security.interfaces.ECPublicKey;
-
-import org.apache.commons.codec.binary.Base64;
-
 import com.auth0.jwt.exceptions.SignatureGenerationException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.ECDSAKeyProvider;
+import org.apache.commons.codec.binary.Base64;
+
+import java.nio.charset.Charset;
+import java.security.SignatureException;
+import java.security.interfaces.ECPrivateKey;
+import java.security.interfaces.ECPublicKey;
 
 class ECDSAAlgorithm extends Algorithm {
 
@@ -35,7 +34,7 @@ class ECDSAAlgorithm extends Algorithm {
 
     @Override
     public void verify(DecodedJWT jwt) throws SignatureVerificationException {
-    	byte[] contentBytes = String.format("%s.%s", jwt.getHeader(), jwt.getPayload()).getBytes(Charset.forName("UTF-8"));
+        byte[] contentBytes = String.format("%s.%s", jwt.getHeader(), jwt.getPayload()).getBytes(Charset.forName("UTF-8"));
         byte[] signatureBytes = Base64.decodeBase64(jwt.getSignature());
 
         try {

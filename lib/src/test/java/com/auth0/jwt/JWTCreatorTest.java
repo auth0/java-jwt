@@ -1,10 +1,12 @@
 package com.auth0.jwt;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.ECDSAKeyProvider;
+import com.auth0.jwt.interfaces.RSAKeyProvider;
+import org.apache.commons.codec.binary.Base64;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import java.nio.charset.Charset;
 import java.security.interfaces.ECPrivateKey;
@@ -13,14 +15,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.codec.binary.Base64;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-
-import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.interfaces.ECDSAKeyProvider;
-import com.auth0.jwt.interfaces.RSAKeyProvider;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class JWTCreatorTest {
 

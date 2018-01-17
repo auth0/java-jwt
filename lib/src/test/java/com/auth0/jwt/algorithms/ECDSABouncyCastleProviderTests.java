@@ -1,36 +1,9 @@
 package com.auth0.jwt.algorithms;
 
-import static com.auth0.jwt.PemUtils.readPrivateKeyFromFile;
-import static com.auth0.jwt.PemUtils.readPublicKeyFromFile;
-import static com.auth0.jwt.algorithms.ECDSAAlgorithmTest.assertValidDERSignature;
-import static com.auth0.jwt.algorithms.ECDSAAlgorithmTest.assertValidJOSESignature;
-import static com.auth0.jwt.algorithms.ECDSAAlgorithmTest.createDERSignature;
-import static com.auth0.jwt.algorithms.ECDSAAlgorithmTest.createJOSESignature;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.isA;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
-import static org.junit.internal.matchers.ThrowableMessageMatcher.hasMessage;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import java.nio.charset.Charset;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
-import java.security.Provider;
-import java.security.PublicKey;
-import java.security.SecureRandom;
-import java.security.Security;
-import java.security.SignatureException;
-import java.security.interfaces.ECKey;
-import java.security.interfaces.ECPrivateKey;
-import java.security.interfaces.ECPublicKey;
-
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.exceptions.SignatureGenerationException;
+import com.auth0.jwt.exceptions.SignatureVerificationException;
+import com.auth0.jwt.interfaces.ECDSAKeyProvider;
 import org.apache.commons.codec.binary.Base64;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.AfterClass;
@@ -39,10 +12,23 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.exceptions.SignatureGenerationException;
-import com.auth0.jwt.exceptions.SignatureVerificationException;
-import com.auth0.jwt.interfaces.ECDSAKeyProvider;
+import java.nio.charset.Charset;
+import java.security.*;
+import java.security.interfaces.ECKey;
+import java.security.interfaces.ECPrivateKey;
+import java.security.interfaces.ECPublicKey;
+
+import static com.auth0.jwt.PemUtils.readPrivateKeyFromFile;
+import static com.auth0.jwt.PemUtils.readPublicKeyFromFile;
+import static com.auth0.jwt.algorithms.ECDSAAlgorithmTest.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
+import static org.junit.internal.matchers.ThrowableMessageMatcher.hasMessage;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class ECDSABouncyCastleProviderTests {
 

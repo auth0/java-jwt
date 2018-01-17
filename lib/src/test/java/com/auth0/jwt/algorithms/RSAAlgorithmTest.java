@@ -1,37 +1,29 @@
 package com.auth0.jwt.algorithms;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.exceptions.SignatureGenerationException;
+import com.auth0.jwt.exceptions.SignatureVerificationException;
+import com.auth0.jwt.interfaces.RSAKeyProvider;
+import org.apache.commons.codec.binary.Base64;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+
+import java.nio.charset.Charset;
+import java.security.*;
+import java.security.interfaces.RSAKey;
+import java.security.interfaces.RSAPrivateKey;
+import java.security.interfaces.RSAPublicKey;
+
 import static com.auth0.jwt.PemUtils.readPrivateKeyFromFile;
 import static com.auth0.jwt.PemUtils.readPublicKeyFromFile;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.isA;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static org.junit.internal.matchers.ThrowableMessageMatcher.hasMessage;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-
-import java.nio.charset.Charset;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
-import java.security.PublicKey;
-import java.security.SignatureException;
-import java.security.interfaces.RSAKey;
-import java.security.interfaces.RSAPrivateKey;
-import java.security.interfaces.RSAPublicKey;
-
-import org.apache.commons.codec.binary.Base64;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.exceptions.SignatureGenerationException;
-import com.auth0.jwt.exceptions.SignatureVerificationException;
-import com.auth0.jwt.interfaces.RSAKeyProvider;
 
 @SuppressWarnings("deprecation")
 public class RSAAlgorithmTest {
@@ -298,12 +290,12 @@ public class RSAAlgorithmTest {
     public void shouldDoRSA256SigningWithBothKeys() throws Exception {
         Algorithm algorithm = Algorithm.RSA256((RSAPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE, "RSA"), (RSAPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE, "RSA"));
 
-		String jwtContent = String.format("%s.%s", RS256Header, auth0IssPayload);
-		byte[] contentBytes = jwtContent.getBytes(Charset.forName("UTF-8"));
-		byte[] signatureBytes = algorithm.sign(contentBytes);
-		String jwtSignature = Base64.encodeBase64URLSafeString(signatureBytes);
-		String jwt = String.format("%s.%s", jwtContent, jwtSignature);
-		String expectedSignature = "ZB-Tr0vLtnf8I9fhSdSjU6HZei5xLYZQ6nZqM5O6Va0W9PgAqgRT7ShI9CjeYulRXPHvVmSl5EQuYuXdBzM0-H_3p_Nsl6tSMy4EyX2kkhEm6T0HhvarTh8CG0PCjn5p6FP5ZxWwhLcmRN70ItP6Z5MMO4CcJh1JrNxR4Fi4xQgt-CK2aVDMFXd-Br5yQiLVx1CX83w28OD9wssW3Rdltl5e66vCef0Ql6Q5I5e5F0nqGYT989a9fkNgLIx2F8k_az5x07BY59FV2SZg59nSiY7TZNjP8ot11Ew7HKRfPXOdh9eKRUVdhcxzqDePhyzKabU8TG5FP0SiWH5qVPfAgw";
+        String jwtContent = String.format("%s.%s", RS256Header, auth0IssPayload);
+        byte[] contentBytes = jwtContent.getBytes(Charset.forName("UTF-8"));
+        byte[] signatureBytes = algorithm.sign(contentBytes);
+        String jwtSignature = Base64.encodeBase64URLSafeString(signatureBytes);
+        String jwt = String.format("%s.%s", jwtContent, jwtSignature);
+        String expectedSignature = "ZB-Tr0vLtnf8I9fhSdSjU6HZei5xLYZQ6nZqM5O6Va0W9PgAqgRT7ShI9CjeYulRXPHvVmSl5EQuYuXdBzM0-H_3p_Nsl6tSMy4EyX2kkhEm6T0HhvarTh8CG0PCjn5p6FP5ZxWwhLcmRN70ItP6Z5MMO4CcJh1JrNxR4Fi4xQgt-CK2aVDMFXd-Br5yQiLVx1CX83w28OD9wssW3Rdltl5e66vCef0Ql6Q5I5e5F0nqGYT989a9fkNgLIx2F8k_az5x07BY59FV2SZg59nSiY7TZNjP8ot11Ew7HKRfPXOdh9eKRUVdhcxzqDePhyzKabU8TG5FP0SiWH5qVPfAgw";
 
         assertThat(signatureBytes, is(notNullValue()));
         assertThat(jwtSignature, is(expectedSignature));

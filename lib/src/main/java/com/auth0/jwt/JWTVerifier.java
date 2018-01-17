@@ -1,23 +1,14 @@
 package com.auth0.jwt;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.exceptions.AlgorithmMismatchException;
-import com.auth0.jwt.exceptions.InvalidClaimException;
-import com.auth0.jwt.exceptions.JWTVerificationException;
-import com.auth0.jwt.exceptions.SignatureVerificationException;
-import com.auth0.jwt.exceptions.TokenExpiredException;
+import com.auth0.jwt.exceptions.*;
 import com.auth0.jwt.impl.PublicClaims;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.Clock;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.Verification;
+
+import java.util.*;
 
 /**
  * The JWTVerifier class holds the verify method to assert that a given Token has not only a proper JWT format, but also it's signature matches.
@@ -371,28 +362,28 @@ public final class JWTVerifier {
         }
     }
 
-	private void verifyClaims(DecodedJWT jwt, Map<String, Object> claims) throws TokenExpiredException, InvalidClaimException {
-		for (Map.Entry<String, Object> entry : claims.entrySet()) {
-			if (PublicClaims.AUDIENCE.equals(entry.getKey())) {
-				// noinspection unchecked
-				assertValidAudienceClaim(jwt.getAudience(), (List<String>) entry.getValue());
-			} else if (PublicClaims.EXPIRES_AT.equals(entry.getKey())) {
-				assertValidDateClaim(jwt.getExpiresAt(), (Long) entry.getValue(), true);
-			} else if (PublicClaims.ISSUED_AT.equals(entry.getKey())) {
-				assertValidDateClaim(jwt.getIssuedAt(), (Long) entry.getValue(), false);
-			} else if (PublicClaims.NOT_BEFORE.equals(entry.getKey())) {
-				assertValidDateClaim(jwt.getNotBefore(), (Long) entry.getValue(), false);
-			} else if (PublicClaims.ISSUER.equals(entry.getKey())) {
-				assertValidStringClaim(entry.getKey(), jwt.getIssuer(), (String) entry.getValue());
-			} else if (PublicClaims.JWT_ID.equals(entry.getKey())) {
-				assertValidStringClaim(entry.getKey(), jwt.getId(), (String) entry.getValue());
-			} else if (PublicClaims.SUBJECT.equals(entry.getKey())) {
-				assertValidStringClaim(entry.getKey(), jwt.getSubject(), (String) entry.getValue());
-			} else {
-				assertValidClaim(jwt.getClaim(entry.getKey()), entry.getKey(), entry.getValue());
-			}
-		}
-	}
+    private void verifyClaims(DecodedJWT jwt, Map<String, Object> claims) throws TokenExpiredException, InvalidClaimException {
+        for (Map.Entry<String, Object> entry : claims.entrySet()) {
+            if (PublicClaims.AUDIENCE.equals(entry.getKey())) {
+                // noinspection unchecked
+                assertValidAudienceClaim(jwt.getAudience(), (List<String>) entry.getValue());
+            } else if (PublicClaims.EXPIRES_AT.equals(entry.getKey())) {
+                assertValidDateClaim(jwt.getExpiresAt(), (Long) entry.getValue(), true);
+            } else if (PublicClaims.ISSUED_AT.equals(entry.getKey())) {
+                assertValidDateClaim(jwt.getIssuedAt(), (Long) entry.getValue(), false);
+            } else if (PublicClaims.NOT_BEFORE.equals(entry.getKey())) {
+                assertValidDateClaim(jwt.getNotBefore(), (Long) entry.getValue(), false);
+            } else if (PublicClaims.ISSUER.equals(entry.getKey())) {
+                assertValidStringClaim(entry.getKey(), jwt.getIssuer(), (String) entry.getValue());
+            } else if (PublicClaims.JWT_ID.equals(entry.getKey())) {
+                assertValidStringClaim(entry.getKey(), jwt.getId(), (String) entry.getValue());
+            } else if (PublicClaims.SUBJECT.equals(entry.getKey())) {
+                assertValidStringClaim(entry.getKey(), jwt.getSubject(), (String) entry.getValue());
+            } else {
+                assertValidClaim(jwt.getClaim(entry.getKey()), entry.getKey(), entry.getValue());
+            }
+        }
+    }
 
     private void assertValidClaim(Claim claim, String claimName, Object value) {
         boolean isValid = false;

@@ -1,14 +1,13 @@
 package com.auth0.jwt.algorithms;
 
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.Charset;
-
-import org.apache.commons.codec.CharEncoding;
-import org.apache.commons.codec.binary.Base64;
-
 import com.auth0.jwt.exceptions.SignatureGenerationException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import org.apache.commons.codec.CharEncoding;
+import org.apache.commons.codec.binary.Base64;
+
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 
 class HMACAlgorithm extends Algorithm {
 

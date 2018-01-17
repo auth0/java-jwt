@@ -1,15 +1,14 @@
 package com.auth0.jwt.algorithms;
 
-import java.nio.charset.Charset;
-import java.security.interfaces.RSAPrivateKey;
-import java.security.interfaces.RSAPublicKey;
-
-import org.apache.commons.codec.binary.Base64;
-
 import com.auth0.jwt.exceptions.SignatureGenerationException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.RSAKeyProvider;
+import org.apache.commons.codec.binary.Base64;
+
+import java.nio.charset.Charset;
+import java.security.interfaces.RSAPrivateKey;
+import java.security.interfaces.RSAPublicKey;
 
 class RSAAlgorithm extends Algorithm {
 
