@@ -1042,7 +1042,7 @@ public class ECDSAAlgorithmTest {
     //Test Helpers
     static void assertValidJOSESignature(byte[] joseSignature, int numberSize, boolean withRPadding, boolean withSPadding) {
         Assert.assertThat(joseSignature, is(Matchers.notNullValue()));
-        Assert.assertThat(numberSize, is(IsIn.oneOf(32, 48, 66)));
+        Assert.assertThat(numberSize, is(IsIn.isOneOf(32, 48, 66)));
 
         Assert.assertThat(joseSignature.length, is(numberSize * 2));
 
@@ -1064,7 +1064,7 @@ public class ECDSAAlgorithmTest {
     }
 
     static byte[] createDERSignature(int numberSize, boolean withRPadding, boolean withSPadding) {
-        Assert.assertThat(numberSize, is(IsIn.oneOf(32, 48, 66)));
+        Assert.assertThat(numberSize, is(IsIn.isOneOf(32, 48, 66)));
 
         int rLength = withRPadding ? numberSize - 1 : numberSize;
         int sLength = withSPadding ? numberSize - 1 : numberSize;
@@ -1107,7 +1107,7 @@ public class ECDSAAlgorithmTest {
     }
 
     static byte[] createJOSESignature(int numberSize, boolean withRPadding, boolean withSPadding) {
-        Assert.assertThat(numberSize, is(IsIn.oneOf(32, 48, 66)));
+        Assert.assertThat(numberSize, is(IsIn.isOneOf(32, 48, 66)));
 
         byte[] rNumber = new byte[numberSize];
         byte[] sNumber = new byte[numberSize];
@@ -1127,7 +1127,7 @@ public class ECDSAAlgorithmTest {
 
     static void assertValidDERSignature(byte[] derSignature, int numberSize, boolean withRPadding, boolean withSPadding) {
         Assert.assertThat(derSignature, is(Matchers.notNullValue()));
-        Assert.assertThat(numberSize, is(IsIn.oneOf(32, 48, 66)));
+        Assert.assertThat(numberSize, is(IsIn.isOneOf(32, 48, 66)));
 
         int rLength = withRPadding ? numberSize - 1 : numberSize;
         int sLength = withSPadding ? numberSize - 1 : numberSize;
