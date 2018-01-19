@@ -34,7 +34,7 @@ public class PayloadImplTest {
         expiresAt = Mockito.mock(Date.class);
         notBefore = Mockito.mock(Date.class);
         issuedAt = Mockito.mock(Date.class);
-        Map<String, JsonNode> tree = new HashMap<>();
+        Map<String, JsonNode> tree = new HashMap<String, JsonNode>();
         tree.put("extraClaim", new TextNode("extraValue"));
         payload = new PayloadImpl("issuer", "subject", Collections.singletonList("audience"), expiresAt, notBefore, issuedAt, "jwtId", tree);
     }
@@ -157,7 +157,7 @@ public class PayloadImplTest {
 
     @Test
     public void shouldGetClaims() throws Exception {
-        Map<String, JsonNode> tree = new HashMap<>();
+        Map<String, JsonNode> tree = new HashMap<String, JsonNode>();
         tree.put("extraClaim", new TextNode("extraValue"));
         tree.put("sub", new TextNode("auth0"));
         PayloadImpl payload = new PayloadImpl(null, null, null, null, null, null, null, tree);

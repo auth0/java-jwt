@@ -2,6 +2,7 @@ package com.auth0.jwt;
 
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.impl.NullClaim;
+import com.auth0.jwt.interfaces.Charsets;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import org.apache.commons.codec.binary.Base64;
@@ -12,7 +13,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import java.nio.charset.StandardCharsets;
+import java.nio.charset.Charset;
 import java.util.Date;
 import java.util.Map;
 
@@ -292,8 +293,8 @@ public class JWTDecoderTest {
     //Helper Methods
 
     private DecodedJWT customJWT(String jsonHeader, String jsonPayload, String signature) {
-        String header = Base64.encodeBase64URLSafeString(jsonHeader.getBytes(StandardCharsets.UTF_8));
-        String body = Base64.encodeBase64URLSafeString(jsonPayload.getBytes(StandardCharsets.UTF_8));
+        String header = Base64.encodeBase64URLSafeString(jsonHeader.getBytes(Charset.forName(Charsets.UTF_8)));
+        String body = Base64.encodeBase64URLSafeString(jsonPayload.getBytes(Charset.forName(Charsets.UTF_8)));
         return JWT.decode(String.format("%s.%s.%s", header, body, signature));
     }
 

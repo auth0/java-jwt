@@ -84,7 +84,7 @@ class JsonNodeClaim implements Claim {
             return null;
         }
 
-        List<T> list = new ArrayList<>();
+        List<T> list = new ArrayList<T>();
         for (int i = 0; i < data.size(); i++) {
             try {
                 list.add(getObjectMapper().treeToValue(data.get(i), tClazz));

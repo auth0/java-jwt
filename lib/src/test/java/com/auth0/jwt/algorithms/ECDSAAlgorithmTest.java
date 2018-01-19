@@ -3,6 +3,7 @@ package com.auth0.jwt.algorithms;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.exceptions.SignatureGenerationException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
+import com.auth0.jwt.interfaces.Charsets;
 import com.auth0.jwt.interfaces.ECDSAKeyProvider;
 import org.apache.commons.codec.binary.Base64;
 import org.hamcrest.Matchers;
@@ -12,7 +13,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import java.nio.charset.StandardCharsets;
+import java.nio.charset.Charset;
 import java.security.*;
 import java.security.interfaces.ECKey;
 import java.security.interfaces.ECPrivateKey;
@@ -514,7 +515,7 @@ public class ECDSAAlgorithmTest {
         Algorithm algorithmSign = Algorithm.ECDSA256((ECKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_256, "EC"));
         Algorithm algorithmVerify = Algorithm.ECDSA256((ECKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC"));
         String jwtContent = String.format("%s.%s", ES256Header, auth0IssPayload);
-        byte[] contentBytes = jwtContent.getBytes(StandardCharsets.UTF_8);
+        byte[] contentBytes = jwtContent.getBytes(Charset.forName(Charsets.UTF_8));
         byte[] signatureBytes = algorithmSign.sign(contentBytes);
         String jwtSignature = Base64.encodeBase64URLSafeString(signatureBytes);
         String jwt = String.format("%s.%s", jwtContent, jwtSignature);
@@ -527,7 +528,7 @@ public class ECDSAAlgorithmTest {
     public void shouldDoECDSA256SigningWithBothKeys() throws Exception {
         Algorithm algorithm = Algorithm.ECDSA256((ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC"), (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_256, "EC"));
         String jwtContent = String.format("%s.%s", ES256Header, auth0IssPayload);
-        byte[] contentBytes = jwtContent.getBytes(StandardCharsets.UTF_8);
+        byte[] contentBytes = jwtContent.getBytes(Charset.forName(Charsets.UTF_8));
         byte[] signatureBytes = algorithm.sign(contentBytes);
         String jwtSignature = Base64.encodeBase64URLSafeString(signatureBytes);
         String jwt = String.format("%s.%s", jwtContent, jwtSignature);
@@ -545,7 +546,7 @@ public class ECDSAAlgorithmTest {
         when(provider.getPublicKeyById(null)).thenReturn((ECPublicKey) publicKey);
         Algorithm algorithm = Algorithm.ECDSA256(provider);
         String jwtContent = String.format("%s.%s", ES256Header, auth0IssPayload);
-        byte[] contentBytes = jwtContent.getBytes(StandardCharsets.UTF_8);
+        byte[] contentBytes = jwtContent.getBytes(Charset.forName(Charsets.UTF_8));
         byte[] signatureBytes = algorithm.sign(contentBytes);
         String jwtSignature = Base64.encodeBase64URLSafeString(signatureBytes);
         String jwt = String.format("%s.%s", jwtContent, jwtSignature);
@@ -583,7 +584,7 @@ public class ECDSAAlgorithmTest {
         Algorithm algorithmSign = Algorithm.ECDSA384((ECKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_384, "EC"));
         Algorithm algorithmVerify = Algorithm.ECDSA384((ECKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_384, "EC"));
         String jwtContent = String.format("%s.%s", ES384Header, auth0IssPayload);
-        byte[] contentBytes = jwtContent.getBytes(StandardCharsets.UTF_8);
+        byte[] contentBytes = jwtContent.getBytes(Charset.forName(Charsets.UTF_8));
         byte[] signatureBytes = algorithmSign.sign(contentBytes);
         String jwtSignature = Base64.encodeBase64URLSafeString(signatureBytes);
         String jwt = String.format("%s.%s", jwtContent, jwtSignature);
@@ -596,7 +597,7 @@ public class ECDSAAlgorithmTest {
     public void shouldDoECDSA384SigningWithBothKeys() throws Exception {
         Algorithm algorithm = Algorithm.ECDSA384((ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_384, "EC"), (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_384, "EC"));
         String jwtContent = String.format("%s.%s", ES384Header, auth0IssPayload);
-        byte[] contentBytes = jwtContent.getBytes(StandardCharsets.UTF_8);
+        byte[] contentBytes = jwtContent.getBytes(Charset.forName(Charsets.UTF_8));
         byte[] signatureBytes = algorithm.sign(contentBytes);
         String jwtSignature = Base64.encodeBase64URLSafeString(signatureBytes);
         String jwt = String.format("%s.%s", jwtContent, jwtSignature);
@@ -614,7 +615,7 @@ public class ECDSAAlgorithmTest {
         when(provider.getPublicKeyById(null)).thenReturn((ECPublicKey) publicKey);
         Algorithm algorithm = Algorithm.ECDSA384(provider);
         String jwtContent = String.format("%s.%s", ES384Header, auth0IssPayload);
-        byte[] contentBytes = jwtContent.getBytes(StandardCharsets.UTF_8);
+        byte[] contentBytes = jwtContent.getBytes(Charset.forName(Charsets.UTF_8));
         byte[] signatureBytes = algorithm.sign(contentBytes);
         String jwtSignature = Base64.encodeBase64URLSafeString(signatureBytes);
         String jwt = String.format("%s.%s", jwtContent, jwtSignature);
@@ -652,7 +653,7 @@ public class ECDSAAlgorithmTest {
         Algorithm algorithmSign = Algorithm.ECDSA512((ECKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_512, "EC"));
         Algorithm algorithmVerify = Algorithm.ECDSA512((ECKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_512, "EC"));
         String jwtContent = String.format("%s.%s", ES512Header, auth0IssPayload);
-        byte[] contentBytes = jwtContent.getBytes(StandardCharsets.UTF_8);
+        byte[] contentBytes = jwtContent.getBytes(Charset.forName(Charsets.UTF_8));
         byte[] signatureBytes = algorithmSign.sign(contentBytes);
         String jwtSignature = Base64.encodeBase64URLSafeString(signatureBytes);
         String jwt = String.format("%s.%s", jwtContent, jwtSignature);
@@ -665,7 +666,7 @@ public class ECDSAAlgorithmTest {
     public void shouldDoECDSA512SigningWithBothKeys() throws Exception {
         Algorithm algorithm = Algorithm.ECDSA512((ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_512, "EC"), (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_512, "EC"));
         String jwtContent = String.format("%s.%s", ES512Header, auth0IssPayload);
-        byte[] contentBytes = jwtContent.getBytes(StandardCharsets.UTF_8);
+        byte[] contentBytes = jwtContent.getBytes(Charset.forName(Charsets.UTF_8));
         byte[] signatureBytes = algorithm.sign(contentBytes);
         String jwtSignature = Base64.encodeBase64URLSafeString(signatureBytes);
         String jwt = String.format("%s.%s", jwtContent, jwtSignature);
@@ -684,7 +685,7 @@ public class ECDSAAlgorithmTest {
         when(provider.getPublicKeyById(null)).thenReturn((ECPublicKey) publicKey);
         Algorithm algorithm = Algorithm.ECDSA512(provider);
         String jwtContent = String.format("%s.%s", ES512Header, auth0IssPayload);
-        byte[] contentBytes = jwtContent.getBytes(StandardCharsets.UTF_8);
+        byte[] contentBytes = jwtContent.getBytes(Charset.forName(Charsets.UTF_8));
         byte[] signatureBytes = algorithm.sign(contentBytes);
         String jwtSignature = Base64.encodeBase64URLSafeString(signatureBytes);
         String jwt = String.format("%s.%s", jwtContent, jwtSignature);
@@ -731,7 +732,7 @@ public class ECDSAAlgorithmTest {
         ECPrivateKey privateKey = mock(ECPrivateKey.class);
         ECDSAKeyProvider provider = ECDSAAlgorithm.providerForKeys(publicKey, privateKey);
         Algorithm algorithm = new ECDSAAlgorithm(crypto, "some-alg", "some-algorithm", 32, provider);
-        algorithm.sign(ES256Header.getBytes(StandardCharsets.UTF_8));
+        algorithm.sign(ES256Header.getBytes(Charset.forName(Charsets.UTF_8)));
     }
 
     @Test
@@ -748,7 +749,7 @@ public class ECDSAAlgorithmTest {
         ECPrivateKey privateKey = mock(ECPrivateKey.class);
         ECDSAKeyProvider provider = ECDSAAlgorithm.providerForKeys(publicKey, privateKey);
         Algorithm algorithm = new ECDSAAlgorithm(crypto, "some-alg", "some-algorithm", 32, provider);
-        algorithm.sign(ES256Header.getBytes(StandardCharsets.UTF_8));
+        algorithm.sign(ES256Header.getBytes(Charset.forName(Charsets.UTF_8)));
     }
 
     @Test
@@ -765,7 +766,7 @@ public class ECDSAAlgorithmTest {
         ECPrivateKey privateKey = mock(ECPrivateKey.class);
         ECDSAKeyProvider provider = ECDSAAlgorithm.providerForKeys(publicKey, privateKey);
         Algorithm algorithm = new ECDSAAlgorithm(crypto, "some-alg", "some-algorithm", 32, provider);
-        algorithm.sign(ES256Header.getBytes(StandardCharsets.UTF_8));
+        algorithm.sign(ES256Header.getBytes(Charset.forName(Charsets.UTF_8)));
     }
 
     @Test
@@ -1041,7 +1042,7 @@ public class ECDSAAlgorithmTest {
     //Test Helpers
     static void assertValidJOSESignature(byte[] joseSignature, int numberSize, boolean withRPadding, boolean withSPadding) {
         Assert.assertThat(joseSignature, is(Matchers.notNullValue()));
-        Assert.assertThat(numberSize, is(IsIn.oneOf(32, 48, 66)));
+        Assert.assertThat(numberSize, is(IsIn.isOneOf(32, 48, 66)));
 
         Assert.assertThat(joseSignature.length, is(numberSize * 2));
 
@@ -1063,7 +1064,7 @@ public class ECDSAAlgorithmTest {
     }
 
     static byte[] createDERSignature(int numberSize, boolean withRPadding, boolean withSPadding) {
-        Assert.assertThat(numberSize, is(IsIn.oneOf(32, 48, 66)));
+        Assert.assertThat(numberSize, is(IsIn.isOneOf(32, 48, 66)));
 
         int rLength = withRPadding ? numberSize - 1 : numberSize;
         int sLength = withSPadding ? numberSize - 1 : numberSize;
@@ -1106,7 +1107,7 @@ public class ECDSAAlgorithmTest {
     }
 
     static byte[] createJOSESignature(int numberSize, boolean withRPadding, boolean withSPadding) {
-        Assert.assertThat(numberSize, is(IsIn.oneOf(32, 48, 66)));
+        Assert.assertThat(numberSize, is(IsIn.isOneOf(32, 48, 66)));
 
         byte[] rNumber = new byte[numberSize];
         byte[] sNumber = new byte[numberSize];
@@ -1126,7 +1127,7 @@ public class ECDSAAlgorithmTest {
 
     static void assertValidDERSignature(byte[] derSignature, int numberSize, boolean withRPadding, boolean withSPadding) {
         Assert.assertThat(derSignature, is(Matchers.notNullValue()));
-        Assert.assertThat(numberSize, is(IsIn.oneOf(32, 48, 66)));
+        Assert.assertThat(numberSize, is(IsIn.isOneOf(32, 48, 66)));
 
         int rLength = withRPadding ? numberSize - 1 : numberSize;
         int sLength = withSPadding ? numberSize - 1 : numberSize;

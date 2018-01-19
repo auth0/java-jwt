@@ -14,7 +14,7 @@ public class ClaimsHolderTest {
     @SuppressWarnings("RedundantCast")
     @Test
     public void shouldGetClaims() throws Exception {
-        HashMap<String, Object> claims = new HashMap<>();
+        HashMap<String, Object> claims = new HashMap<String, Object>();
         claims.put("iss", "auth0");
         ClaimsHolder holder = new ClaimsHolder(claims);
         assertThat(holder, is(notNullValue()));

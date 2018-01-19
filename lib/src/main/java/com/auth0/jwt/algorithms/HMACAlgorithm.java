@@ -2,14 +2,16 @@ package com.auth0.jwt.algorithms;
 
 import com.auth0.jwt.exceptions.SignatureGenerationException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
+import com.auth0.jwt.interfaces.Charsets;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import org.apache.commons.codec.CharEncoding;
 import org.apache.commons.codec.binary.Base64;
 
 import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
+import java.nio.charset.Charset;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.security.SignatureException;
 
 class HMACAlgorithm extends Algorithm {
 
@@ -44,7 +46,7 @@ class HMACAlgorithm extends Algorithm {
 
     @Override
     public void verify(DecodedJWT jwt) throws SignatureVerificationException {
-        byte[] contentBytes = String.format("%s.%s", jwt.getHeader(), jwt.getPayload()).getBytes(StandardCharsets.UTF_8);
+        byte[] contentBytes = String.format("%s.%s", jwt.getHeader(), jwt.getPayload()).getBytes(Charset.forName(Charsets.UTF_8));
         byte[] signatureBytes = Base64.decodeBase64(jwt.getSignature());
 
         try {
@@ -52,7 +54,11 @@ class HMACAlgorithm extends Algorithm {
             if (!valid) {
                 throw new SignatureVerificationException(this);
             }
-        } catch (IllegalStateException | InvalidKeyException | NoSuchAlgorithmException e) {
+        } catch (IllegalStateException e) {
+            throw new SignatureVerificationException(this, e);
+        } catch (InvalidKeyException e) {
+            throw new SignatureVerificationException(this, e);
+        } catch (NoSuchAlgorithmException e) {
             throw new SignatureVerificationException(this, e);
         }
     }
@@ -61,7 +67,9 @@ class HMACAlgorithm extends Algorithm {
     public byte[] sign(byte[] contentBytes) throws SignatureGenerationException {
         try {
             return crypto.createSignatureFor(getDescription(), secret, contentBytes);
-        } catch (NoSuchAlgorithmException | InvalidKeyException e) {
+        } catch (NoSuchAlgorithmException e) {
+            throw new SignatureGenerationException(this, e);
+        } catch (InvalidKeyException e) {
             throw new SignatureGenerationException(this, e);
         }
     }

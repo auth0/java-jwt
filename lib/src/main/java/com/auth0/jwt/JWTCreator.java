@@ -6,13 +6,14 @@ import com.auth0.jwt.exceptions.SignatureGenerationException;
 import com.auth0.jwt.impl.ClaimsHolder;
 import com.auth0.jwt.impl.PayloadSerializer;
 import com.auth0.jwt.impl.PublicClaims;
+import com.auth0.jwt.interfaces.Charsets;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.apache.commons.codec.binary.Base64;
 
-import java.nio.charset.StandardCharsets;
+import java.nio.charset.Charset;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -60,8 +61,8 @@ public final class JWTCreator {
         private Map<String, Object> headerClaims;
 
         Builder() {
-            this.payloadClaims = new HashMap<>();
-            this.headerClaims = new HashMap<>();
+            this.payloadClaims = new HashMap<String, Object>();
+            this.headerClaims = new HashMap<String, Object>();
         }
 
         /**
@@ -71,7 +72,7 @@ public final class JWTCreator {
          * @return this same Builder instance.
          */
         public Builder withHeader(Map<String, Object> headerClaims) {
-            this.headerClaims = new HashMap<>(headerClaims);
+            this.headerClaims = new HashMap<String, Object>(headerClaims);
             return this;
         }
 
@@ -327,11 +328,11 @@ public final class JWTCreator {
     }
 
     private String sign() throws SignatureGenerationException {
-        String header = Base64.encodeBase64URLSafeString(headerJson.getBytes(StandardCharsets.UTF_8));
-        String payload = Base64.encodeBase64URLSafeString(payloadJson.getBytes(StandardCharsets.UTF_8));
+        String header = Base64.encodeBase64URLSafeString(headerJson.getBytes(Charset.forName(Charsets.UTF_8)));
+        String payload = Base64.encodeBase64URLSafeString(payloadJson.getBytes(Charset.forName(Charsets.UTF_8)));
         String content = String.format("%s.%s", header, payload);
 
-        byte[] signatureBytes = algorithm.sign(content.getBytes(StandardCharsets.UTF_8));
+        byte[] signatureBytes = algorithm.sign(content.getBytes(Charset.forName(Charsets.UTF_8)));
         String signature = Base64.encodeBase64URLSafeString((signatureBytes));
 
         return String.format("%s.%s", content, signature);

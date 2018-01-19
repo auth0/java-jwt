@@ -195,7 +195,7 @@ public class JWTVerifierTest {
         exception.expect(InvalidClaimException.class);
         exception.expectMessage("The Claim 'name' value doesn't match the required one.");
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjpbInNvbWV0aGluZyJdfQ.3ENLez6tU_fG0SVFrGmISltZPiXLSHaz_dyn-XFTEGQ";
-        Map<String, Object> map = new HashMap<>();
+        Map<String, Object> map = new HashMap<String, Object>();
         map.put("name", new Object());
         JWTVerifier verifier = new JWTVerifier(Algorithm.HMAC256("secret"), map, new ClockImpl());
         verifier.verify(token);

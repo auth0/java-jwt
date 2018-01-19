@@ -52,7 +52,7 @@ class PayloadDeserializer extends StdDeserializer<Payload> {
         }
 
         ObjectMapper mapper = new ObjectMapper();
-        List<String> list = new ArrayList<>(node.size());
+        List<String> list = new ArrayList<String>(node.size());
         for (int i = 0; i < node.size(); i++) {
             try {
                 list.add(mapper.treeToValue(node.get(i), String.class));

@@ -36,7 +36,7 @@ public class BasicHeaderTest {
 
     @Test
     public void shouldHaveTree() throws Exception {
-        HashMap<String, JsonNode> map = new HashMap<>();
+        HashMap<String, JsonNode> map = new HashMap<String, JsonNode>();
         JsonNode node = NullNode.getInstance();
         map.put("key", node);
         BasicHeader header = new BasicHeader(null, null, null, null, map);
@@ -115,7 +115,7 @@ public class BasicHeaderTest {
 
     @Test
     public void shouldGetExtraClaim() throws Exception {
-        Map<String, JsonNode> tree = new HashMap<>();
+        Map<String, JsonNode> tree = new HashMap<String, JsonNode>();
         tree.put("extraClaim", new TextNode("extraValue"));
         BasicHeader header = new BasicHeader(null, null, null, null, tree);
 
@@ -126,7 +126,7 @@ public class BasicHeaderTest {
 
     @Test
     public void shouldGetNotNullExtraClaimIfMissing() throws Exception {
-        Map<String, JsonNode> tree = new HashMap<>();
+        Map<String, JsonNode> tree = new HashMap<String, JsonNode>();
         BasicHeader header = new BasicHeader(null, null, null, null, tree);
 
         assertThat(header, is(notNullValue()));

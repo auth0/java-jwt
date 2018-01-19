@@ -21,33 +21,28 @@ public class PayloadSerializer extends StdSerializer<ClaimsHolder> {
 
     @Override
     public void serialize(ClaimsHolder holder, JsonGenerator gen, SerializerProvider provider) throws IOException {
-        HashMap<Object, Object> safePayload = new HashMap<>();
+        HashMap<Object, Object> safePayload = new HashMap<Object, Object>();
         for (Map.Entry<String, Object> e : holder.getClaims().entrySet()) {
-            switch (e.getKey()) {
-                case PublicClaims.AUDIENCE:
-                    if (e.getValue() instanceof String) {
-                        safePayload.put(e.getKey(), e.getValue());
-                        break;
-                    }
+            if (PublicClaims.AUDIENCE.equals(e.getKey())) {
+                if (e.getValue() instanceof String) {
+                    safePayload.put(e.getKey(), e.getValue());
+                }
+                if (e.getValue() instanceof String[]) {
                     String[] audArray = (String[]) e.getValue();
                     if (audArray.length == 1) {
                         safePayload.put(e.getKey(), audArray[0]);
                     } else if (audArray.length > 1) {
                         safePayload.put(e.getKey(), audArray);
                     }
-                    break;
-                case PublicClaims.EXPIRES_AT:
-                case PublicClaims.ISSUED_AT:
-                case PublicClaims.NOT_BEFORE:
+                }
+            } else if (PublicClaims.EXPIRES_AT.equals(e.getKey()) || PublicClaims.ISSUED_AT.equals(e.getKey()) || PublicClaims.NOT_BEFORE.equals(e.getKey())) {
+                safePayload.put(e.getKey(), dateToSeconds((Date) e.getValue()));
+            } else {
+                if (e.getValue() instanceof Date) {
                     safePayload.put(e.getKey(), dateToSeconds((Date) e.getValue()));
-                    break;
-                default:
-                    if (e.getValue() instanceof Date) {
-                        safePayload.put(e.getKey(), dateToSeconds((Date) e.getValue()));
-                    } else {
-                        safePayload.put(e.getKey(), e.getValue());
-                    }
-                    break;
+                } else {
+                    safePayload.put(e.getKey(), e.getValue());
+                }
             }
         }
 

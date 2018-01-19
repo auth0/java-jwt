@@ -88,7 +88,7 @@ public class HeaderDeserializerTest {
 
     @Test
     public void shouldGetNullStringWhenParsingNullNode() throws Exception {
-        Map<String, JsonNode> tree = new HashMap<>();
+        Map<String, JsonNode> tree = new HashMap<String, JsonNode>();
         NullNode node = NullNode.getInstance();
         tree.put("key", node);
 
@@ -98,7 +98,7 @@ public class HeaderDeserializerTest {
 
     @Test
     public void shouldGetNullStringWhenParsingNull() throws Exception {
-        Map<String, JsonNode> tree = new HashMap<>();
+        Map<String, JsonNode> tree = new HashMap<String, JsonNode>();
         tree.put("key", null);
 
         String text = deserializer.getString(tree, "key");
@@ -107,7 +107,7 @@ public class HeaderDeserializerTest {
 
     @Test
     public void shouldGetStringWhenParsingTextNode() throws Exception {
-        Map<String, JsonNode> tree = new HashMap<>();
+		Map<String, JsonNode> tree = new HashMap<String, JsonNode>();
         TextNode node = new TextNode("something here");
         tree.put("key", node);
 

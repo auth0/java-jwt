@@ -3,13 +3,14 @@ package com.auth0.jwt.algorithms;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.exceptions.SignatureGenerationException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
+import com.auth0.jwt.interfaces.Charsets;
 import com.auth0.jwt.interfaces.RSAKeyProvider;
 import org.apache.commons.codec.binary.Base64;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import java.nio.charset.StandardCharsets;
+import java.nio.charset.Charset;
 import java.security.*;
 import java.security.interfaces.RSAKey;
 import java.security.interfaces.RSAPrivateKey;
@@ -275,7 +276,7 @@ public class RSAAlgorithmTest {
         Algorithm algorithmVerify = Algorithm.RSA256((RSAKey) readPublicKeyFromFile(PUBLIC_KEY_FILE, "RSA"));
 
         String jwtContent = String.format("%s.%s", RS256Header, auth0IssPayload);
-        byte[] contentBytes = jwtContent.getBytes(StandardCharsets.UTF_8);
+        byte[] contentBytes = jwtContent.getBytes(Charset.forName(Charsets.UTF_8));
         byte[] signatureBytes = algorithmSign.sign(contentBytes);
         String jwtSignature = Base64.encodeBase64URLSafeString(signatureBytes);
         String jwt = String.format("%s.%s", jwtContent, jwtSignature);
@@ -291,7 +292,7 @@ public class RSAAlgorithmTest {
         Algorithm algorithm = Algorithm.RSA256((RSAPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE, "RSA"), (RSAPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE, "RSA"));
 
         String jwtContent = String.format("%s.%s", RS256Header, auth0IssPayload);
-        byte[] contentBytes = jwtContent.getBytes(StandardCharsets.UTF_8);
+        byte[] contentBytes = jwtContent.getBytes(Charset.forName(Charsets.UTF_8));
         byte[] signatureBytes = algorithm.sign(contentBytes);
         String jwtSignature = Base64.encodeBase64URLSafeString(signatureBytes);
         String jwt = String.format("%s.%s", jwtContent, jwtSignature);
@@ -311,7 +312,7 @@ public class RSAAlgorithmTest {
         when(provider.getPublicKeyById(null)).thenReturn((RSAPublicKey) publicKey);
         Algorithm algorithm = Algorithm.RSA256(provider);
         String jwtContent = String.format("%s.%s", RS256Header, auth0IssPayload);
-        byte[] contentBytes = jwtContent.getBytes(StandardCharsets.UTF_8);
+        byte[] contentBytes = jwtContent.getBytes(Charset.forName(Charsets.UTF_8));
         byte[] signatureBytes = algorithm.sign(contentBytes);
         String jwtSignature = Base64.encodeBase64URLSafeString(signatureBytes);
         String jwt = String.format("%s.%s", jwtContent, jwtSignature);
@@ -350,7 +351,7 @@ public class RSAAlgorithmTest {
         Algorithm algorithmVerify = Algorithm.RSA384((RSAKey) readPublicKeyFromFile(PUBLIC_KEY_FILE, "RSA"));
 
         String jwtContent = String.format("%s.%s", RS384Header, auth0IssPayload);
-        byte[] contentBytes = jwtContent.getBytes(StandardCharsets.UTF_8);
+        byte[] contentBytes = jwtContent.getBytes(Charset.forName(Charsets.UTF_8));
         byte[] signatureBytes = algorithmSign.sign(contentBytes);
         String jwtSignature = Base64.encodeBase64URLSafeString(signatureBytes);
         String jwt = String.format("%s.%s", jwtContent, jwtSignature);
@@ -366,7 +367,7 @@ public class RSAAlgorithmTest {
         Algorithm algorithm = Algorithm.RSA384((RSAPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE, "RSA"), (RSAPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE, "RSA"));
 
         String jwtContent = String.format("%s.%s", RS384Header, auth0IssPayload);
-        byte[] contentBytes = jwtContent.getBytes(StandardCharsets.UTF_8);
+        byte[] contentBytes = jwtContent.getBytes(Charset.forName(Charsets.UTF_8));
         byte[] signatureBytes = algorithm.sign(contentBytes);
         String jwtSignature = Base64.encodeBase64URLSafeString(signatureBytes);
         String jwt = String.format("%s.%s", jwtContent, jwtSignature);
@@ -386,7 +387,7 @@ public class RSAAlgorithmTest {
         when(provider.getPublicKeyById(null)).thenReturn((RSAPublicKey) publicKey);
         Algorithm algorithm = Algorithm.RSA384(provider);
         String jwtContent = String.format("%s.%s", RS384Header, auth0IssPayload);
-        byte[] contentBytes = jwtContent.getBytes(StandardCharsets.UTF_8);
+        byte[] contentBytes = jwtContent.getBytes(Charset.forName(Charsets.UTF_8));
         byte[] signatureBytes = algorithm.sign(contentBytes);
         String jwtSignature = Base64.encodeBase64URLSafeString(signatureBytes);
         String jwt = String.format("%s.%s", jwtContent, jwtSignature);
@@ -425,7 +426,7 @@ public class RSAAlgorithmTest {
         Algorithm algorithmVerify = Algorithm.RSA512((RSAKey) readPublicKeyFromFile(PUBLIC_KEY_FILE, "RSA"));
 
         String jwtContent = String.format("%s.%s", RS512Header, auth0IssPayload);
-        byte[] contentBytes = jwtContent.getBytes(StandardCharsets.UTF_8);
+        byte[] contentBytes = jwtContent.getBytes(Charset.forName(Charsets.UTF_8));
         byte[] signatureBytes = algorithmSign.sign(contentBytes);
         String jwtSignature = Base64.encodeBase64URLSafeString(signatureBytes);
         String jwt = String.format("%s.%s", jwtContent, jwtSignature);
@@ -441,7 +442,7 @@ public class RSAAlgorithmTest {
         Algorithm algorithm = Algorithm.RSA512((RSAPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE, "RSA"), (RSAPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE, "RSA"));
 
         String jwtContent = String.format("%s.%s", RS512Header, auth0IssPayload);
-        byte[] contentBytes = jwtContent.getBytes(StandardCharsets.UTF_8);
+        byte[] contentBytes = jwtContent.getBytes(Charset.forName(Charsets.UTF_8));
         byte[] signatureBytes = algorithm.sign(contentBytes);
         String jwtSignature = Base64.encodeBase64URLSafeString(signatureBytes);
         String jwt = String.format("%s.%s", jwtContent, jwtSignature);
@@ -461,7 +462,7 @@ public class RSAAlgorithmTest {
         when(provider.getPublicKeyById(null)).thenReturn((RSAPublicKey) publicKey);
         Algorithm algorithm = Algorithm.RSA512(provider);
         String jwtContent = String.format("%s.%s", RS512Header, auth0IssPayload);
-        byte[] contentBytes = jwtContent.getBytes(StandardCharsets.UTF_8);
+        byte[] contentBytes = jwtContent.getBytes(Charset.forName(Charsets.UTF_8));
         byte[] signatureBytes = algorithm.sign(contentBytes);
         String jwtSignature = Base64.encodeBase64URLSafeString(signatureBytes);
         String jwt = String.format("%s.%s", jwtContent, jwtSignature);
@@ -508,7 +509,7 @@ public class RSAAlgorithmTest {
         RSAPrivateKey privateKey = mock(RSAPrivateKey.class);
         RSAKeyProvider provider = RSAAlgorithm.providerForKeys(publicKey, privateKey);
         Algorithm algorithm = new RSAAlgorithm(crypto, "some-alg", "some-algorithm", provider);
-        algorithm.sign(RS256Header.getBytes(StandardCharsets.UTF_8));
+        algorithm.sign(RS256Header.getBytes(Charset.forName(Charsets.UTF_8)));
     }
 
     @Test
@@ -525,7 +526,7 @@ public class RSAAlgorithmTest {
         RSAPrivateKey privateKey = mock(RSAPrivateKey.class);
         RSAKeyProvider provider = RSAAlgorithm.providerForKeys(publicKey, privateKey);
         Algorithm algorithm = new RSAAlgorithm(crypto, "some-alg", "some-algorithm", provider);
-        algorithm.sign(RS256Header.getBytes(StandardCharsets.UTF_8));
+        algorithm.sign(RS256Header.getBytes(Charset.forName(Charsets.UTF_8)));
     }
 
     @Test
@@ -542,7 +543,7 @@ public class RSAAlgorithmTest {
         RSAPrivateKey privateKey = mock(RSAPrivateKey.class);
         RSAKeyProvider provider = RSAAlgorithm.providerForKeys(publicKey, privateKey);
         Algorithm algorithm = new RSAAlgorithm(crypto, "some-alg", "some-algorithm", provider);
-        algorithm.sign(RS256Header.getBytes(StandardCharsets.UTF_8));
+        algorithm.sign(RS256Header.getBytes(Charset.forName(Charsets.UTF_8)));
     }
 
     @Test

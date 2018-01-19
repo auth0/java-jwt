@@ -2,11 +2,12 @@ package com.auth0.jwt.algorithms;
 
 import com.auth0.jwt.exceptions.SignatureGenerationException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
+import com.auth0.jwt.interfaces.Charsets;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.RSAKeyProvider;
 import org.apache.commons.codec.binary.Base64;
 
-import java.nio.charset.StandardCharsets;
+import java.nio.charset.Charset;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
@@ -34,7 +35,7 @@ class RSAAlgorithm extends Algorithm {
 
     @Override
     public void verify(DecodedJWT jwt) throws SignatureVerificationException {
-        byte[] contentBytes = String.format("%s.%s", jwt.getHeader(), jwt.getPayload()).getBytes(StandardCharsets.UTF_8);
+        byte[] contentBytes = String.format("%s.%s", jwt.getHeader(), jwt.getPayload()).getBytes(Charset.forName(Charsets.UTF_8));
         byte[] signatureBytes = Base64.decodeBase64(jwt.getSignature());
 
         try {
@@ -46,7 +47,13 @@ class RSAAlgorithm extends Algorithm {
             if (!valid) {
                 throw new SignatureVerificationException(this);
             }
-        } catch (NoSuchAlgorithmException | SignatureException | InvalidKeyException | IllegalStateException e) {
+        } catch (NoSuchAlgorithmException e) {
+            throw new SignatureVerificationException(this, e);
+        } catch (SignatureException e) {
+            throw new SignatureVerificationException(this, e);
+        } catch (InvalidKeyException e) {
+            throw new SignatureVerificationException(this, e);
+        } catch (IllegalStateException  e) {
             throw new SignatureVerificationException(this, e);
         }
     }
@@ -59,8 +66,14 @@ class RSAAlgorithm extends Algorithm {
                 throw new IllegalStateException("The given Private Key is null.");
             }
             return crypto.createSignatureFor(getDescription(), privateKey, contentBytes);
-        } catch (NoSuchAlgorithmException | SignatureException | InvalidKeyException | IllegalStateException e) {
-            throw new SignatureGenerationException(this, e);
+        } catch (NoSuchAlgorithmException e) {
+        	throw new SignatureGenerationException(this, e);
+        } catch (SignatureException e) {
+        	throw new SignatureGenerationException(this, e);
+        } catch (InvalidKeyException e) {
+        	throw new SignatureGenerationException(this, e);
+        } catch (IllegalStateException  e) {
+        	throw new SignatureGenerationException(this, e);
         }
     }
 

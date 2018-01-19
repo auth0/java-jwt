@@ -1,12 +1,13 @@
 package com.auth0.jwt.algorithms;
 
+import com.auth0.jwt.interfaces.Charsets;
 import com.auth0.jwt.interfaces.ECDSAKeyProvider;
 import com.auth0.jwt.interfaces.RSAKeyProvider;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import java.nio.charset.StandardCharsets;
+import java.nio.charset.Charset;
 import java.security.interfaces.*;
 
 import static org.hamcrest.Matchers.*;
@@ -208,7 +209,7 @@ public class AlgorithmTest {
 
     @Test
     public void shouldCreateHMAC256AlgorithmWithBytes() throws Exception {
-        Algorithm algorithm = Algorithm.HMAC256("secret".getBytes(StandardCharsets.UTF_8));
+        Algorithm algorithm = Algorithm.HMAC256("secret".getBytes(Charset.forName(Charsets.UTF_8)));
 
         assertThat(algorithm, is(notNullValue()));
         assertThat(algorithm, is(instanceOf(HMACAlgorithm.class)));
@@ -218,7 +219,7 @@ public class AlgorithmTest {
 
     @Test
     public void shouldCreateHMAC384AlgorithmWithBytes() throws Exception {
-        Algorithm algorithm = Algorithm.HMAC384("secret".getBytes(StandardCharsets.UTF_8));
+        Algorithm algorithm = Algorithm.HMAC384("secret".getBytes(Charset.forName(Charsets.UTF_8)));
 
         assertThat(algorithm, is(notNullValue()));
         assertThat(algorithm, is(instanceOf(HMACAlgorithm.class)));
@@ -228,7 +229,7 @@ public class AlgorithmTest {
 
     @Test
     public void shouldCreateHMAC512AlgorithmWithBytes() throws Exception {
-        Algorithm algorithm = Algorithm.HMAC512("secret".getBytes(StandardCharsets.UTF_8));
+        Algorithm algorithm = Algorithm.HMAC512("secret".getBytes(Charset.forName(Charsets.UTF_8)));
 
         assertThat(algorithm, is(notNullValue()));
         assertThat(algorithm, is(instanceOf(HMACAlgorithm.class)));
