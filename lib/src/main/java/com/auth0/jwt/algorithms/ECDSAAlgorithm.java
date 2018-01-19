@@ -8,6 +8,8 @@ import com.auth0.jwt.interfaces.ECDSAKeyProvider;
 import org.apache.commons.codec.binary.Base64;
 
 import java.nio.charset.Charset;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
@@ -48,9 +50,15 @@ class ECDSAAlgorithm extends Algorithm {
             if (!valid) {
                 throw new SignatureVerificationException(this);
             }
-        } catch (Exception e) {
+        } catch (NoSuchAlgorithmException e) {
             throw new SignatureVerificationException(this, e);
-        }
+        } catch (SignatureException e) {
+            throw new SignatureVerificationException(this, e);
+        } catch (InvalidKeyException e) {
+            throw new SignatureVerificationException(this, e);
+        } catch (IllegalStateException  e) {
+            throw new SignatureVerificationException(this, e);
+        } 
     }
 
     @Override
@@ -62,8 +70,14 @@ class ECDSAAlgorithm extends Algorithm {
             }
             byte[] signature = crypto.createSignatureFor(getDescription(), privateKey, contentBytes);
             return DERToJOSE(signature);
-        } catch (Exception e) {
-            throw new SignatureGenerationException(this, e);
+        } catch (NoSuchAlgorithmException e) {
+        	throw new SignatureGenerationException(this, e);
+        } catch (SignatureException e) {
+        	throw new SignatureGenerationException(this, e);
+        } catch (InvalidKeyException e) {
+        	throw new SignatureGenerationException(this, e);
+        } catch (IllegalStateException  e) {
+        	throw new SignatureGenerationException(this, e);
         }
     }
 

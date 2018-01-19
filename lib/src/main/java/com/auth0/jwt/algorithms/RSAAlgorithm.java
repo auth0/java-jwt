@@ -8,6 +8,9 @@ import com.auth0.jwt.interfaces.RSAKeyProvider;
 import org.apache.commons.codec.binary.Base64;
 
 import java.nio.charset.Charset;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SignatureException;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 
@@ -44,7 +47,13 @@ class RSAAlgorithm extends Algorithm {
             if (!valid) {
                 throw new SignatureVerificationException(this);
             }
-        } catch (Exception e) {
+        } catch (NoSuchAlgorithmException e) {
+            throw new SignatureVerificationException(this, e);
+        } catch (SignatureException e) {
+            throw new SignatureVerificationException(this, e);
+        } catch (InvalidKeyException e) {
+            throw new SignatureVerificationException(this, e);
+        } catch (IllegalStateException  e) {
             throw new SignatureVerificationException(this, e);
         }
     }
@@ -57,8 +66,14 @@ class RSAAlgorithm extends Algorithm {
                 throw new IllegalStateException("The given Private Key is null.");
             }
             return crypto.createSignatureFor(getDescription(), privateKey, contentBytes);
-        } catch (Exception e) {
-            throw new SignatureGenerationException(this, e);
+        } catch (NoSuchAlgorithmException e) {
+        	throw new SignatureGenerationException(this, e);
+        } catch (SignatureException e) {
+        	throw new SignatureGenerationException(this, e);
+        } catch (InvalidKeyException e) {
+        	throw new SignatureGenerationException(this, e);
+        } catch (IllegalStateException  e) {
+        	throw new SignatureGenerationException(this, e);
         }
     }
 

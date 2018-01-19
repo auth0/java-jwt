@@ -9,6 +9,9 @@ import org.apache.commons.codec.binary.Base64;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SignatureException;
 
 class HMACAlgorithm extends Algorithm {
 
@@ -51,7 +54,11 @@ class HMACAlgorithm extends Algorithm {
             if (!valid) {
                 throw new SignatureVerificationException(this);
             }
-        } catch (Exception e) {
+        } catch (IllegalStateException e) {
+            throw new SignatureVerificationException(this, e);
+        } catch (InvalidKeyException e) {
+            throw new SignatureVerificationException(this, e);
+        } catch (NoSuchAlgorithmException e) {
             throw new SignatureVerificationException(this, e);
         }
     }
@@ -60,7 +67,9 @@ class HMACAlgorithm extends Algorithm {
     public byte[] sign(byte[] contentBytes) throws SignatureGenerationException {
         try {
             return crypto.createSignatureFor(getDescription(), secret, contentBytes);
-        } catch (Exception e) {
+        } catch (NoSuchAlgorithmException e) {
+            throw new SignatureGenerationException(this, e);
+        } catch (InvalidKeyException e) {
             throw new SignatureGenerationException(this, e);
         }
     }
