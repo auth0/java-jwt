@@ -317,7 +317,7 @@ public final class JWTCreator {
             }
         }
 
-        private void addClaim(String name, Object value) {
+        public void addClaim(String name, Object value) {
             if (value == null) {
                 payloadClaims.remove(name);
                 return;
