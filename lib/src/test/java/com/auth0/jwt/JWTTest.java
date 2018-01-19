@@ -1,6 +1,7 @@
 package com.auth0.jwt;
 
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.Charsets;
 import com.auth0.jwt.interfaces.Clock;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import org.apache.commons.codec.binary.Base64;
@@ -359,7 +360,7 @@ public class JWTTest {
         assertThat(signed, is(notNullValue()));
 
         String[] parts = signed.split("\\.");
-        String headerJson = new String(Base64.decodeBase64(parts[0]), Charset.forName("UTF-8"));
+        String headerJson = new String(Base64.decodeBase64(parts[0]), Charset.forName(Charsets.UTF_8));
         assertThat(headerJson, JsonMatcher.hasEntry("alg", "HS256"));
         assertThat(headerJson, JsonMatcher.hasEntry("typ", "JWT"));
         assertThat(parts[1], is("e30"));
@@ -375,7 +376,7 @@ public class JWTTest {
         assertThat(signed, is(notNullValue()));
 
         String[] parts = signed.split("\\.");
-        String headerJson = new String(Base64.decodeBase64(parts[0]), Charset.forName("UTF-8"));
+        String headerJson = new String(Base64.decodeBase64(parts[0]), Charset.forName(Charsets.UTF_8));
         assertThat(headerJson, JsonMatcher.hasEntry("alg", "HS384"));
         assertThat(headerJson, JsonMatcher.hasEntry("typ", "JWT"));
         assertThat(parts[1], is("e30"));
@@ -391,7 +392,7 @@ public class JWTTest {
         assertThat(signed, is(notNullValue()));
 
         String[] parts = signed.split("\\.");
-        String headerJson = new String(Base64.decodeBase64(parts[0]), Charset.forName("UTF-8"));
+        String headerJson = new String(Base64.decodeBase64(parts[0]), Charset.forName(Charsets.UTF_8));
         assertThat(headerJson, JsonMatcher.hasEntry("alg", "HS512"));
         assertThat(headerJson, JsonMatcher.hasEntry("typ", "JWT"));
         assertThat(parts[1], is("e30"));
@@ -407,7 +408,7 @@ public class JWTTest {
         assertThat(signed, is(notNullValue()));
 
         String[] parts = signed.split("\\.");
-        String headerJson = new String(Base64.decodeBase64(parts[0]), Charset.forName("UTF-8"));
+        String headerJson = new String(Base64.decodeBase64(parts[0]), Charset.forName(Charsets.UTF_8));
         assertThat(headerJson, JsonMatcher.hasEntry("alg", "RS256"));
         assertThat(headerJson, JsonMatcher.hasEntry("typ", "JWT"));
         assertThat(parts[1], is("e30"));
@@ -423,7 +424,7 @@ public class JWTTest {
         assertThat(signed, is(notNullValue()));
 
         String[] parts = signed.split("\\.");
-        String headerJson = new String(Base64.decodeBase64(parts[0]), Charset.forName("UTF-8"));
+        String headerJson = new String(Base64.decodeBase64(parts[0]), Charset.forName(Charsets.UTF_8));
         assertThat(headerJson, JsonMatcher.hasEntry("alg", "RS384"));
         assertThat(headerJson, JsonMatcher.hasEntry("typ", "JWT"));
         assertThat(parts[1], is("e30"));
@@ -439,7 +440,7 @@ public class JWTTest {
         assertThat(signed, is(notNullValue()));
 
         String[] parts = signed.split("\\.");
-        String headerJson = new String(Base64.decodeBase64(parts[0]), Charset.forName("UTF-8"));
+        String headerJson = new String(Base64.decodeBase64(parts[0]), Charset.forName(Charsets.UTF_8));
         assertThat(headerJson, JsonMatcher.hasEntry("alg", "RS512"));
         assertThat(headerJson, JsonMatcher.hasEntry("typ", "JWT"));
         assertThat(parts[1], is("e30"));
@@ -455,7 +456,7 @@ public class JWTTest {
         assertThat(signed, is(notNullValue()));
 
         String[] parts = signed.split("\\.");
-        String headerJson = new String(Base64.decodeBase64(parts[0]), Charset.forName("UTF-8"));
+        String headerJson = new String(Base64.decodeBase64(parts[0]), Charset.forName(Charsets.UTF_8));
         assertThat(headerJson, JsonMatcher.hasEntry("alg", "ES256"));
         assertThat(headerJson, JsonMatcher.hasEntry("typ", "JWT"));
         assertThat(parts[1], is("e30"));
@@ -471,7 +472,7 @@ public class JWTTest {
         assertThat(signed, is(notNullValue()));
 
         String[] parts = signed.split("\\.");
-        String headerJson = new String(Base64.decodeBase64(parts[0]), Charset.forName("UTF-8"));
+        String headerJson = new String(Base64.decodeBase64(parts[0]), Charset.forName(Charsets.UTF_8));
         assertThat(headerJson, JsonMatcher.hasEntry("alg", "ES384"));
         assertThat(headerJson, JsonMatcher.hasEntry("typ", "JWT"));
         assertThat(parts[1], is("e30"));
@@ -487,7 +488,7 @@ public class JWTTest {
         assertThat(signed, is(notNullValue()));
 
         String[] parts = signed.split("\\.");
-        String headerJson = new String(Base64.decodeBase64(parts[0]), Charset.forName("UTF-8"));
+        String headerJson = new String(Base64.decodeBase64(parts[0]), Charset.forName(Charsets.UTF_8));
         assertThat(headerJson, JsonMatcher.hasEntry("alg", "ES512"));
         assertThat(headerJson, JsonMatcher.hasEntry("typ", "JWT"));
         assertThat(parts[1], is("e30"));

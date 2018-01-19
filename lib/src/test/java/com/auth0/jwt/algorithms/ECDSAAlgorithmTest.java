@@ -3,6 +3,7 @@ package com.auth0.jwt.algorithms;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.exceptions.SignatureGenerationException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
+import com.auth0.jwt.interfaces.Charsets;
 import com.auth0.jwt.interfaces.ECDSAKeyProvider;
 import org.apache.commons.codec.binary.Base64;
 import org.hamcrest.Matchers;
@@ -514,7 +515,7 @@ public class ECDSAAlgorithmTest {
         Algorithm algorithmSign = Algorithm.ECDSA256((ECKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_256, "EC"));
         Algorithm algorithmVerify = Algorithm.ECDSA256((ECKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC"));
         String jwtContent = String.format("%s.%s", ES256Header, auth0IssPayload);
-        byte[] contentBytes = jwtContent.getBytes(Charset.forName("UTF-8"));
+        byte[] contentBytes = jwtContent.getBytes(Charset.forName(Charsets.UTF_8));
         byte[] signatureBytes = algorithmSign.sign(contentBytes);
         String jwtSignature = Base64.encodeBase64URLSafeString(signatureBytes);
         String jwt = String.format("%s.%s", jwtContent, jwtSignature);
@@ -527,7 +528,7 @@ public class ECDSAAlgorithmTest {
     public void shouldDoECDSA256SigningWithBothKeys() throws Exception {
         Algorithm algorithm = Algorithm.ECDSA256((ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC"), (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_256, "EC"));
         String jwtContent = String.format("%s.%s", ES256Header, auth0IssPayload);
-        byte[] contentBytes = jwtContent.getBytes(Charset.forName("UTF-8"));
+        byte[] contentBytes = jwtContent.getBytes(Charset.forName(Charsets.UTF_8));
         byte[] signatureBytes = algorithm.sign(contentBytes);
         String jwtSignature = Base64.encodeBase64URLSafeString(signatureBytes);
         String jwt = String.format("%s.%s", jwtContent, jwtSignature);
@@ -545,7 +546,7 @@ public class ECDSAAlgorithmTest {
         when(provider.getPublicKeyById(null)).thenReturn((ECPublicKey) publicKey);
         Algorithm algorithm = Algorithm.ECDSA256(provider);
         String jwtContent = String.format("%s.%s", ES256Header, auth0IssPayload);
-        byte[] contentBytes = jwtContent.getBytes(Charset.forName("UTF-8"));
+        byte[] contentBytes = jwtContent.getBytes(Charset.forName(Charsets.UTF_8));
         byte[] signatureBytes = algorithm.sign(contentBytes);
         String jwtSignature = Base64.encodeBase64URLSafeString(signatureBytes);
         String jwt = String.format("%s.%s", jwtContent, jwtSignature);
@@ -583,7 +584,7 @@ public class ECDSAAlgorithmTest {
         Algorithm algorithmSign = Algorithm.ECDSA384((ECKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_384, "EC"));
         Algorithm algorithmVerify = Algorithm.ECDSA384((ECKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_384, "EC"));
         String jwtContent = String.format("%s.%s", ES384Header, auth0IssPayload);
-        byte[] contentBytes = jwtContent.getBytes(Charset.forName("UTF-8"));
+        byte[] contentBytes = jwtContent.getBytes(Charset.forName(Charsets.UTF_8));
         byte[] signatureBytes = algorithmSign.sign(contentBytes);
         String jwtSignature = Base64.encodeBase64URLSafeString(signatureBytes);
         String jwt = String.format("%s.%s", jwtContent, jwtSignature);
@@ -596,7 +597,7 @@ public class ECDSAAlgorithmTest {
     public void shouldDoECDSA384SigningWithBothKeys() throws Exception {
         Algorithm algorithm = Algorithm.ECDSA384((ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_384, "EC"), (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_384, "EC"));
         String jwtContent = String.format("%s.%s", ES384Header, auth0IssPayload);
-        byte[] contentBytes = jwtContent.getBytes(Charset.forName("UTF-8"));
+        byte[] contentBytes = jwtContent.getBytes(Charset.forName(Charsets.UTF_8));
         byte[] signatureBytes = algorithm.sign(contentBytes);
         String jwtSignature = Base64.encodeBase64URLSafeString(signatureBytes);
         String jwt = String.format("%s.%s", jwtContent, jwtSignature);
@@ -614,7 +615,7 @@ public class ECDSAAlgorithmTest {
         when(provider.getPublicKeyById(null)).thenReturn((ECPublicKey) publicKey);
         Algorithm algorithm = Algorithm.ECDSA384(provider);
         String jwtContent = String.format("%s.%s", ES384Header, auth0IssPayload);
-        byte[] contentBytes = jwtContent.getBytes(Charset.forName("UTF-8"));
+        byte[] contentBytes = jwtContent.getBytes(Charset.forName(Charsets.UTF_8));
         byte[] signatureBytes = algorithm.sign(contentBytes);
         String jwtSignature = Base64.encodeBase64URLSafeString(signatureBytes);
         String jwt = String.format("%s.%s", jwtContent, jwtSignature);
@@ -652,7 +653,7 @@ public class ECDSAAlgorithmTest {
         Algorithm algorithmSign = Algorithm.ECDSA512((ECKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_512, "EC"));
         Algorithm algorithmVerify = Algorithm.ECDSA512((ECKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_512, "EC"));
         String jwtContent = String.format("%s.%s", ES512Header, auth0IssPayload);
-        byte[] contentBytes = jwtContent.getBytes(Charset.forName("UTF-8"));
+        byte[] contentBytes = jwtContent.getBytes(Charset.forName(Charsets.UTF_8));
         byte[] signatureBytes = algorithmSign.sign(contentBytes);
         String jwtSignature = Base64.encodeBase64URLSafeString(signatureBytes);
         String jwt = String.format("%s.%s", jwtContent, jwtSignature);
@@ -665,7 +666,7 @@ public class ECDSAAlgorithmTest {
     public void shouldDoECDSA512SigningWithBothKeys() throws Exception {
         Algorithm algorithm = Algorithm.ECDSA512((ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_512, "EC"), (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_512, "EC"));
         String jwtContent = String.format("%s.%s", ES512Header, auth0IssPayload);
-        byte[] contentBytes = jwtContent.getBytes(Charset.forName("UTF-8"));
+        byte[] contentBytes = jwtContent.getBytes(Charset.forName(Charsets.UTF_8));
         byte[] signatureBytes = algorithm.sign(contentBytes);
         String jwtSignature = Base64.encodeBase64URLSafeString(signatureBytes);
         String jwt = String.format("%s.%s", jwtContent, jwtSignature);
@@ -684,7 +685,7 @@ public class ECDSAAlgorithmTest {
         when(provider.getPublicKeyById(null)).thenReturn((ECPublicKey) publicKey);
         Algorithm algorithm = Algorithm.ECDSA512(provider);
         String jwtContent = String.format("%s.%s", ES512Header, auth0IssPayload);
-        byte[] contentBytes = jwtContent.getBytes(Charset.forName("UTF-8"));
+        byte[] contentBytes = jwtContent.getBytes(Charset.forName(Charsets.UTF_8));
         byte[] signatureBytes = algorithm.sign(contentBytes);
         String jwtSignature = Base64.encodeBase64URLSafeString(signatureBytes);
         String jwt = String.format("%s.%s", jwtContent, jwtSignature);
@@ -731,7 +732,7 @@ public class ECDSAAlgorithmTest {
         ECPrivateKey privateKey = mock(ECPrivateKey.class);
         ECDSAKeyProvider provider = ECDSAAlgorithm.providerForKeys(publicKey, privateKey);
         Algorithm algorithm = new ECDSAAlgorithm(crypto, "some-alg", "some-algorithm", 32, provider);
-        algorithm.sign(ES256Header.getBytes(Charset.forName("UTF-8")));
+        algorithm.sign(ES256Header.getBytes(Charset.forName(Charsets.UTF_8)));
     }
 
     @Test
@@ -748,7 +749,7 @@ public class ECDSAAlgorithmTest {
         ECPrivateKey privateKey = mock(ECPrivateKey.class);
         ECDSAKeyProvider provider = ECDSAAlgorithm.providerForKeys(publicKey, privateKey);
         Algorithm algorithm = new ECDSAAlgorithm(crypto, "some-alg", "some-algorithm", 32, provider);
-        algorithm.sign(ES256Header.getBytes(Charset.forName("UTF-8")));
+        algorithm.sign(ES256Header.getBytes(Charset.forName(Charsets.UTF_8)));
     }
 
     @Test
@@ -765,7 +766,7 @@ public class ECDSAAlgorithmTest {
         ECPrivateKey privateKey = mock(ECPrivateKey.class);
         ECDSAKeyProvider provider = ECDSAAlgorithm.providerForKeys(publicKey, privateKey);
         Algorithm algorithm = new ECDSAAlgorithm(crypto, "some-alg", "some-algorithm", 32, provider);
-        algorithm.sign(ES256Header.getBytes(Charset.forName("UTF-8")));
+        algorithm.sign(ES256Header.getBytes(Charset.forName(Charsets.UTF_8)));
     }
 
     @Test
