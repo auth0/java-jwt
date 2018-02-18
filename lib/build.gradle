@@ -28,6 +28,12 @@ auth0 {
     }
 }
 
+jar {
+    manifest {
+        attributes("Automatic-Module-Name": "${project.group}.jwt")
+    }
+}
+
 compileJava {
     sourceCompatibility '1.7'
     targetCompatibility '1.7'
