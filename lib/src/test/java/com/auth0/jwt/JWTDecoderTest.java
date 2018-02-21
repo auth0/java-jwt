@@ -275,7 +275,7 @@ public class JWTDecoderTest {
 
     @Test
     public void shouldGetAvailableClaims() throws Exception {
-        DecodedJWT jwt = JWT.decode("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOiIxMjM0NTY3ODkwIiwiaWF0IjoiMTIzNDU2Nzg5MCIsIm5iZiI6IjEyMzQ1Njc4OTAiLCJqdGkiOiJodHRwczovL2p3dC5pby8iLCJhdWQiOiJodHRwczovL2RvbWFpbi5hdXRoMC5jb20iLCJzdWIiOiJsb2dpbiIsImlzcyI6ImF1dGgwIiwiZXh0cmFDbGFpbSI6IkpvaG4gRG9lIn0.TX9Ct4feGp9YyeGK9Zl91tO0YBOrguJ4As9jeqgHdZQ");
+        DecodedJWT jwt = JWT.decode("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjEyMzQ1Njc4OTAsImlhdCI6MTIzNDU2Nzg5MCwibmJmIjoxMjM0NTY3ODkwLCJqdGkiOiJodHRwczovL2p3dC5pby8iLCJhdWQiOiJodHRwczovL2RvbWFpbi5hdXRoMC5jb20iLCJzdWIiOiJsb2dpbiIsImlzcyI6ImF1dGgwIiwiZXh0cmFDbGFpbSI6IkpvaG4gRG9lIn0.2_0nxDPJwOk64U5V5V9pt8U92jTPJbGsHYQ35HYhbdE");
         assertThat(jwt, is(notNullValue()));
         assertThat(jwt.getClaims(), is(notNullValue()));
         assertThat(jwt.getClaims(), is(instanceOf(Map.class)));
