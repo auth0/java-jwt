@@ -15,6 +15,7 @@ import org.apache.commons.codec.binary.Base64;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -233,6 +234,20 @@ public final class JWTCreator {
             addClaim(name, value);
             return this;
         }
+        
+        /**
+         * Add a custom Claim value.
+         *
+         * @param name  the Claim's name.
+         * @param value the Claim's value.
+         * @return this same Builder instance.
+         * @throws IllegalArgumentException if the name is null.
+         */
+        public Builder withClaim(String name, Object value) throws IllegalArgumentException {
+            assertNonNull(name);
+            addClaim(name, value);
+            return this;
+        }        
 
         /**
          * Add a custom Claim value.
@@ -247,7 +262,35 @@ public final class JWTCreator {
             addClaim(name, value);
             return this;
         }
+        
+        /**
+         * Add a custom Claim value.
+         *
+         * @param name  the Claim's name.
+         * @param value the Claim's value.
+         * @return this same Builder instance.
+         * @throws IllegalArgumentException if the name is null.
+         */
+        public Builder withClaim(String name, List<?> value) throws IllegalArgumentException {
+            assertNonNull(name);
+            addClaim(name, value);
+            return this;
+        }
 
+        /**
+         * Add a custom Claim value.
+         *
+         * @param name  the Claim's name.
+         * @param value the Claim's value.
+         * @return this same Builder instance.
+         * @throws IllegalArgumentException if the name is null.
+         */
+        public Builder withClaim(String name, Object[] value) throws IllegalArgumentException {
+            assertNonNull(name);
+            addClaim(name, value);
+            return this;
+        }
+        
         /**
          * Add a custom Array Claim with the given items.
          *

@@ -272,6 +272,26 @@ public class JWTDecoderTest {
         Assert.assertThat(map, hasEntry("number", (Object) 1));
         Assert.assertThat(map, hasEntry("boolean", (Object) true));
     }
+    
+    @Test
+    public void shouldGetCustomMapClaim2() throws Exception {
+        String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYW1lIjp7InRlc3QyIjoiZGVmIiwidGVzdDEiOiJhYmMifX0.BR0WMOEyFBJ7oZP8W5oLPTLmLaXGjKjJUa-BTa6lfIY";
+        DecodedJWT jwt = JWT.decode(token);
+        Assert.assertThat(jwt, is(notNullValue()));
+        Map<String, Object> map = jwt.getClaim("name").asMap();
+        Assert.assertThat(map, hasEntry("test1", "abc"));
+        Assert.assertThat(map, hasEntry("test2", "def"));
+    }
+    
+    @Test
+    public void shouldGetCustomUserPojo() throws Exception{
+    	String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwb2pvIjp7ImlkIjoyNTUsIm5hbWUiOiJNaWNoYWVsIn19._WnoWtkLT7IUR8pE1ytOlvi6ArxS02WHLdUqTrA3ySg";
+    	DecodedJWT jwt = JWT.decode(token);
+    	Assert.assertThat(jwt, is(notNullValue()));
+    	UserPojo pojo = jwt.getClaim("pojo").as(UserPojo.class);
+    	Assert.assertThat("Michael", is(pojo.getName()));
+    	Assert.assertThat(255, is(255));
+    }
 
     @Test
     public void shouldGetAvailableClaims() throws Exception {

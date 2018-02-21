@@ -251,6 +251,22 @@ public final class JWTVerifier {
             requireClaim(name, value);
             return this;
         }
+        
+        /**
+         * Require a specific Claim value.
+         *
+         * @param name  the Claim's name.
+         * @param value the Claim's value.
+         * @return this same Verification instance.
+         * @throws IllegalArgumentException if the name is null.
+         */
+        @Override
+        
+        public Verification withClaim(String name, Object value) throws IllegalArgumentException{
+        	assertNonNull(name);
+        	requireClaim(name, value);
+        	return this;
+        }
 
         /**
          * Require a specific Array Claim to contain at least the given items.
@@ -280,6 +296,21 @@ public final class JWTVerifier {
             assertNonNull(name);
             requireClaim(name, items);
             return this;
+        }
+        
+        /**
+         * Require a specific Array Claim to contain at least the given items.
+         *
+         * @param name  the Claim's name.
+         * @param items the items the Claim must contain.
+         * @return this same Verification instance.
+         * @throws IllegalArgumentException if the name is null.
+         */
+        @Override
+        public Verification withArrayClaim(String name, Object... items) throws IllegalArgumentException{
+        	  assertNonNull(name);
+              requireClaim(name, items);
+              return this;
         }
 
         /**
@@ -412,8 +443,13 @@ public final class JWTVerifier {
             List<Object> claimArr = Arrays.asList(claim.as(Object[].class));
             List<Object> valueArr = Arrays.asList((Object[]) value);
             isValid = claimArr.containsAll(valueArr);
+        } else{
+        	try{
+        		isValid = value.equals(claim.as(value.getClass()));
+        	}catch(Exception e){
+        		//ignore
+        	}
         }
-
         if (!isValid) {
             throw new InvalidClaimException(String.format("The Claim '%s' value doesn't match the required one.", claimName));
         }
