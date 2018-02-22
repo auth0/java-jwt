@@ -5,6 +5,7 @@ import com.auth0.jwt.interfaces.Header;
 import com.auth0.jwt.interfaces.JWTPartsParser;
 import com.auth0.jwt.interfaces.Payload;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
@@ -44,6 +45,7 @@ public class JWTParser implements JWTPartsParser {
         ObjectMapper mapper = new ObjectMapper();
         mapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
         mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
+        mapper.configure(MapperFeature.CAN_OVERRIDE_ACCESS_MODIFIERS, false); 
         return mapper;
     }
 
