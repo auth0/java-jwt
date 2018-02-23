@@ -171,98 +171,7 @@ public final class JWTVerifier {
          * @throws IllegalArgumentException if the name is null.
          */
         @Override
-        public Verification withClaim(String name, Boolean value) throws IllegalArgumentException {
-            assertNonNull(name);
-            requireClaim(name, value);
-            return this;
-        }
-
-        /**
-         * Require a specific Claim value.
-         *
-         * @param name  the Claim's name.
-         * @param value the Claim's value.
-         * @return this same Verification instance.
-         * @throws IllegalArgumentException if the name is null.
-         */
-        @Override
-        public Verification withClaim(String name, Integer value) throws IllegalArgumentException {
-            assertNonNull(name);
-            requireClaim(name, value);
-            return this;
-        }
-
-        /**
-         * Require a specific Claim value.
-         *
-         * @param name  the Claim's name.
-         * @param value the Claim's value.
-         * @return this same Verification instance.
-         * @throws IllegalArgumentException if the name is null.
-         */
-        @Override
-        public Verification withClaim(String name, Long value) throws IllegalArgumentException {
-            assertNonNull(name);
-            requireClaim(name, value);
-            return this;
-        }
-
-        /**
-         * Require a specific Claim value.
-         *
-         * @param name  the Claim's name.
-         * @param value the Claim's value.
-         * @return this same Verification instance.
-         * @throws IllegalArgumentException if the name is null.
-         */
-        @Override
-        public Verification withClaim(String name, Double value) throws IllegalArgumentException {
-            assertNonNull(name);
-            requireClaim(name, value);
-            return this;
-        }
-
-        /**
-         * Require a specific Claim value.
-         *
-         * @param name  the Claim's name.
-         * @param value the Claim's value.
-         * @return this same Verification instance.
-         * @throws IllegalArgumentException if the name is null.
-         */
-        @Override
-        public Verification withClaim(String name, String value) throws IllegalArgumentException {
-            assertNonNull(name);
-            requireClaim(name, value);
-            return this;
-        }
-
-        /**
-         * Require a specific Claim value.
-         *
-         * @param name  the Claim's name.
-         * @param value the Claim's value.
-         * @return this same Verification instance.
-         * @throws IllegalArgumentException if the name is null.
-         */
-        @Override
-        public Verification withClaim(String name, Date value) throws IllegalArgumentException {
-            assertNonNull(name);
-            requireClaim(name, value);
-            return this;
-        }
-        
-        /**
-         * Require a specific Claim value.
-         *
-         * @param name  the Claim's name.
-         * @param value the Claim's value.
-         * @return this same Verification instance.
-         * @throws IllegalArgumentException if the name is null.
-         */
-        @Override
-        
-        public Verification withClaim(String name, Object value) throws IllegalArgumentException{
+        public <T> Verification withClaim(String name, T value) throws IllegalArgumentException{
         	assertNonNull(name);
         	requireClaim(name, value);
         	return this;
@@ -277,40 +186,10 @@ public final class JWTVerifier {
          * @throws IllegalArgumentException if the name is null.
          */
         @Override
-        public Verification withArrayClaim(String name, String... items) throws IllegalArgumentException {
+        public Verification withArrayClaim(String name, Object... items) throws IllegalArgumentException {
             assertNonNull(name);
             requireClaim(name, items);
             return this;
-        }
-
-        /**
-         * Require a specific Array Claim to contain at least the given items.
-         *
-         * @param name  the Claim's name.
-         * @param items the items the Claim must contain.
-         * @return this same Verification instance.
-         * @throws IllegalArgumentException if the name is null.
-         */
-        @Override
-        public Verification withArrayClaim(String name, Integer... items) throws IllegalArgumentException {
-            assertNonNull(name);
-            requireClaim(name, items);
-            return this;
-        }
-        
-        /**
-         * Require a specific Array Claim to contain at least the given items.
-         *
-         * @param name  the Claim's name.
-         * @param items the items the Claim must contain.
-         * @return this same Verification instance.
-         * @throws IllegalArgumentException if the name is null.
-         */
-        @Override
-        public Verification withArrayClaim(String name, Object... items) throws IllegalArgumentException{
-        	  assertNonNull(name);
-              requireClaim(name, items);
-              return this;
         }
 
         /**

@@ -15,7 +15,6 @@ import org.apache.commons.codec.binary.Base64;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -173,119 +172,7 @@ public final class JWTCreator {
          * @return this same Builder instance.
          * @throws IllegalArgumentException if the name is null.
          */
-        public Builder withClaim(String name, Boolean value) throws IllegalArgumentException {
-            assertNonNull(name);
-            addClaim(name, value);
-            return this;
-        }
-
-        /**
-         * Add a custom Claim value.
-         *
-         * @param name  the Claim's name.
-         * @param value the Claim's value.
-         * @return this same Builder instance.
-         * @throws IllegalArgumentException if the name is null.
-         */
-        public Builder withClaim(String name, Integer value) throws IllegalArgumentException {
-            assertNonNull(name);
-            addClaim(name, value);
-            return this;
-        }
-
-        /**
-         * Add a custom Claim value.
-         *
-         * @param name  the Claim's name.
-         * @param value the Claim's value.
-         * @return this same Builder instance.
-         * @throws IllegalArgumentException if the name is null.
-         */
-        public Builder withClaim(String name, Long value) throws IllegalArgumentException {
-            assertNonNull(name);
-            addClaim(name, value);
-            return this;
-        }
-
-        /**
-         * Add a custom Claim value.
-         *
-         * @param name  the Claim's name.
-         * @param value the Claim's value.
-         * @return this same Builder instance.
-         * @throws IllegalArgumentException if the name is null.
-         */
-        public Builder withClaim(String name, Double value) throws IllegalArgumentException {
-            assertNonNull(name);
-            addClaim(name, value);
-            return this;
-        }
-
-        /**
-         * Add a custom Claim value.
-         *
-         * @param name  the Claim's name.
-         * @param value the Claim's value.
-         * @return this same Builder instance.
-         * @throws IllegalArgumentException if the name is null.
-         */
-        public Builder withClaim(String name, String value) throws IllegalArgumentException {
-            assertNonNull(name);
-            addClaim(name, value);
-            return this;
-        }
-        
-        /**
-         * Add a custom Claim value.
-         *
-         * @param name  the Claim's name.
-         * @param value the Claim's value.
-         * @return this same Builder instance.
-         * @throws IllegalArgumentException if the name is null.
-         */
-        public Builder withClaim(String name, Object value) throws IllegalArgumentException {
-            assertNonNull(name);
-            addClaim(name, value);
-            return this;
-        }        
-
-        /**
-         * Add a custom Claim value.
-         *
-         * @param name  the Claim's name.
-         * @param value the Claim's value.
-         * @return this same Builder instance.
-         * @throws IllegalArgumentException if the name is null.
-         */
-        public Builder withClaim(String name, Date value) throws IllegalArgumentException {
-            assertNonNull(name);
-            addClaim(name, value);
-            return this;
-        }
-        
-        /**
-         * Add a custom Claim value.
-         *
-         * @param name  the Claim's name.
-         * @param value the Claim's value.
-         * @return this same Builder instance.
-         * @throws IllegalArgumentException if the name is null.
-         */
-        public Builder withClaim(String name, List<?> value) throws IllegalArgumentException {
-            assertNonNull(name);
-            addClaim(name, value);
-            return this;
-        }
-
-        /**
-         * Add a custom Claim value.
-         *
-         * @param name  the Claim's name.
-         * @param value the Claim's value.
-         * @return this same Builder instance.
-         * @throws IllegalArgumentException if the name is null.
-         */
-        public Builder withClaim(String name, Object[] value) throws IllegalArgumentException {
+        public <T> Builder withClaim(String name, T value) throws IllegalArgumentException {
             assertNonNull(name);
             addClaim(name, value);
             return this;
@@ -299,40 +186,12 @@ public final class JWTCreator {
          * @return this same Builder instance.
          * @throws IllegalArgumentException if the name is null.
          */
-        public Builder withArrayClaim(String name, String[] items) throws IllegalArgumentException {
+        public Builder withArrayClaim(String name, Object... items) throws IllegalArgumentException {
             assertNonNull(name);
             addClaim(name, items);
             return this;
         }
-
-        /**
-         * Add a custom Array Claim with the given items.
-         *
-         * @param name  the Claim's name.
-         * @param items the Claim's value.
-         * @return this same Builder instance.
-         * @throws IllegalArgumentException if the name is null.
-         */
-        public Builder withArrayClaim(String name, Integer[] items) throws IllegalArgumentException {
-            assertNonNull(name);
-            addClaim(name, items);
-            return this;
-        }
-
-        /**
-         * Add a custom Array Claim with the given items.
-         *
-         * @param name  the Claim's name.
-         * @param items the Claim's value.
-         * @return this same Builder instance.
-         * @throws IllegalArgumentException if the name is null.
-         */
-        public Builder withArrayClaim(String name, Long[] items) throws IllegalArgumentException {
-            assertNonNull(name);
-            addClaim(name, items);
-            return this;
-        }
-
+        
         /**
          * Creates a new JWT and signs is with the given algorithm
          *
