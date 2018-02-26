@@ -186,7 +186,7 @@ public final class JWTCreator {
          * @return this same Builder instance.
          * @throws IllegalArgumentException if the name is null.
          */
-        public Builder withArrayClaim(String name, Object... items) throws IllegalArgumentException {
+        public <T> Builder withArrayClaim(String name, @SuppressWarnings("unchecked") T... items) throws IllegalArgumentException {
             assertNonNull(name);
             addClaim(name, items);
             return this;

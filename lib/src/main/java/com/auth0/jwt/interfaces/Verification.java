@@ -21,7 +21,7 @@ public interface Verification {
 
     <T> Verification withClaim(String name, T value) throws IllegalArgumentException;
     
-    Verification withArrayClaim(String name, Object... values) throws IllegalArgumentException;
+    <T> Verification withArrayClaim(String name, @SuppressWarnings("unchecked") T... values) throws IllegalArgumentException;
 
     JWTVerifier build();
 }

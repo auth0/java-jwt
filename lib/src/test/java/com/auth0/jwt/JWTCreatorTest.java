@@ -354,7 +354,7 @@ public class JWTCreatorTest {
     @Test
     public void shouldAcceptCustomArrayClaimOfTypeString() throws Exception {
         String jwt = JWTCreator.init()
-                .withClaim("name", new String[]{"text", "123", "true"})
+                .withArrayClaim("name", new String[]{"text", "123", "true"})
                 .sign(Algorithm.HMAC256("secret"));
 
         assertThat(jwt, is(notNullValue()));
@@ -365,7 +365,7 @@ public class JWTCreatorTest {
     @Test
     public void shouldAcceptCustomArrayClaimOfTypeInteger() throws Exception {
         String jwt = JWTCreator.init()
-                .withClaim("name", new Integer[]{1, 2, 3})
+                .withArrayClaim("name", new Integer[]{1, 2, 3})
                 .sign(Algorithm.HMAC256("secret"));
 
         assertThat(jwt, is(notNullValue()));
@@ -376,7 +376,7 @@ public class JWTCreatorTest {
     @Test
     public void shouldAcceptCustomArrayClaimOfTypeLong() throws Exception {
         String jwt = JWTCreator.init()
-                .withClaim("name", new Long[]{1L, 2L, 3L})
+                .withArrayClaim("name", new Long[]{1L, 2L, 3L})
                 .sign(Algorithm.HMAC256("secret"));
 
         assertThat(jwt, is(notNullValue()));

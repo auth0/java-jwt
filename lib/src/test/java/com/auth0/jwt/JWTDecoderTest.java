@@ -279,8 +279,8 @@ public class JWTDecoderTest {
         DecodedJWT jwt = JWT.decode(token);
         Assert.assertThat(jwt, is(notNullValue()));
         Map<String, Object> map = jwt.getClaim("name").asMap();
-        Assert.assertThat(map, hasEntry("test1", "abc"));
-        Assert.assertThat(map, hasEntry("test2", "def"));
+        Assert.assertThat(map, hasEntry("test1",(Object) "abc"));
+        Assert.assertThat(map, hasEntry("test2",(Object) "def"));
     }
     
     @Test
@@ -289,8 +289,8 @@ public class JWTDecoderTest {
     	DecodedJWT jwt = JWT.decode(token);
     	Assert.assertThat(jwt, is(notNullValue()));
     	UserPojo pojo = jwt.getClaim("pojo").as(UserPojo.class);
-    	Assert.assertThat("Michael", is(pojo.getName()));
-    	Assert.assertThat(255, is(255));
+    	Assert.assertThat(pojo.getName(), is("Michael"));
+    	Assert.assertThat(pojo.getId(), is(255));
     }
 
     @Test
