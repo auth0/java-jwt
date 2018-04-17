@@ -30,7 +30,7 @@ public interface Message {
      * @return a jwt String
      * @throws InvalidClaimsException
      */
-    String toJwt(Key key, Algorithm algorithm) throws InvalidClaimsException;
+    String toJwt(Key key, Algorithm algorithm) throws InvalidClaimsException, SerializationException;
 
     /**
      * Serialize the content of this instance (the claims map) into a jwt string
@@ -39,7 +39,7 @@ public interface Message {
      * @return a jwt String
      * @throws InvalidClaimsException
      */
-    String toJwt(KeyJar jar, Algorithm algorithm) throws InvalidClaimsException;
+    String toJwt(KeyJar jar, Algorithm algorithm) throws InvalidClaimsException, SerializationException;
 
     /**
      * Logic to extract from the string the values

@@ -10,6 +10,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * This abstract class provides basic processing of messages
+ */
 public abstract class AbstractMessage implements Message {
     private Map<String, Object> claims;
     private String input;
@@ -18,19 +21,6 @@ public abstract class AbstractMessage implements Message {
 
     protected AbstractMessage(Map<String, Object> claims) {
         this.claims = claims;
-    }
-
-    /**
-     * Returns a hashmap representation of the contents of the urlEncoded string
-     * which is passed in as a parameter
-     *
-     * @param urlEncoded the urlEncoded String representation of a message
-     * @return a map of the key value pairs encoded in the string parameter
-     */
-    private static Map<String, Object> claimsFromUrlEncoded(String urlEncoded) throws Exception {
-        //Logic to extract from the string the values
-        Map<String, Object> values = new HashMap<String, Object>();
-        return values;
     }
 
     /**
@@ -49,13 +39,14 @@ public abstract class AbstractMessage implements Message {
      *
      * @return an urlEncoded string
      */
-    public String toUrlEncoded() {
+    public String toUrlEncoded() throws SerializationException {
+        // TODO
         // Serialize the content of this instance (the claims map) into an UrlEncoded string
         return "";
     }
 
     /**
-     * Logic to extract from the string the values
+     * Logic to extract from the JSON string the values
      *
      * @param input The JSON String representation of a message
      * @return a Message representation of the Json
@@ -72,7 +63,7 @@ public abstract class AbstractMessage implements Message {
      *
      * @return a JSON String representation in the form of a hashMap mapping string -> string
      */
-    public String toJson() {
+    public String toJson() throws SerializationException {
         if (this.error != null) {
             //This should be custom exception
             throw new InvalidClaimsException("Error present cannot serialize message");
@@ -83,7 +74,7 @@ public abstract class AbstractMessage implements Message {
     /**
      * @param input the jwt String representation of a message
      * @param Key   that might contain the necessary key
-     * @return a ResponseMessage representation of the JWT
+     * @return a Message representation of the JWT
      */
     public Message fromJwt(String input, Key key) {
         this.input = input;
@@ -110,7 +101,7 @@ public abstract class AbstractMessage implements Message {
      * @throws InvalidClaimsException
      */
     public String toJwt(KeyJar keyjar, Algorithm algorithm) throws
-            InvalidClaimsException {
+            InvalidClaimsException, SerializationException {
         return null;
     }
 
@@ -121,7 +112,7 @@ public abstract class AbstractMessage implements Message {
      * @return a jwt String
      * @throws InvalidClaimsException
      */
-    public String toJwt(Key key, Algorithm algorithm) throws InvalidClaimsException {
+    public String toJwt(Key key, Algorithm algorithm) throws InvalidClaimsException, SerializationException {
         return null;
     }
 
