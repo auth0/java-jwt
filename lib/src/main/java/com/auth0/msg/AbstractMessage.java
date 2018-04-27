@@ -1,12 +1,14 @@
 package com.auth0.msg;
 
 import com.auth0.jwt.algorithms.Algorithm;
-import org.apache.commons.codec.binary.Hex;
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -14,12 +16,13 @@ import java.util.Map;
  * This abstract class provides basic processing of messages
  */
 public abstract class AbstractMessage implements Message {
-    private Map<String, Object> claims;
+    private Map<ClaimType, Object> claims;
     private String input;
     private Error error = null;
     private boolean verified = false;
+    ObjectMapper mapper = new ObjectMapper();
 
-    protected AbstractMessage(Map<String, Object> claims) {
+    protected AbstractMessage(Map<ClaimType, Object> claims) {
         this.claims = claims;
     }
 
@@ -27,10 +30,9 @@ public abstract class AbstractMessage implements Message {
      * @param input the urlEncoded String representation of a message
      * @return a Message representation of the UrlEncoded string
      */
-    public Message fromUrlEncoded(String input) {
-        this.input = input;
-        //This will have logic to parse urlencoded to claims
-        return this;
+    public Message fromUrlEncoded(String input) throws MalformedURLException, IOException {
+        AbstractMessage msg = mapper.readValue(new URL(input), AbstractMessage.class);
+        return msg;
     }
 
     /**
@@ -53,8 +55,18 @@ public abstract class AbstractMessage implements Message {
      */
     public Message fromJson(String input) {
         this.input = input;
-        //This will have logic to parse json to claims
-        return this;
+        try {
+            // Convert JSON string to Object
+            AbstractMessage msg = mapper.readValue(input, AbstractMessage.class);
+            return msg;
+        } catch (JsonGenerationException e) {
+            e.printStackTrace();
+        } catch (JsonMappingException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     /**
@@ -136,7 +148,7 @@ public abstract class AbstractMessage implements Message {
     }
 
     /**
-     * @param endpoint to base the request url on
+     * @param String endpoint to base the request url on
      * @return a String for the representation of the formatted request
      */
     public String getRequestWithEndpoint(String authorizationEndpoint) {
@@ -150,6 +162,12 @@ public abstract class AbstractMessage implements Message {
         return error;
     }
 
+    /**
+     * @return List of the list of claims for this messsage
+     */
+    public Map<ClaimType, Object> getClaims(){
+        return this.claims;
+    }
 
     /**
      * @return List of the list of standard optional claims for this messsage type

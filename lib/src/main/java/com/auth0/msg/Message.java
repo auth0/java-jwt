@@ -2,6 +2,8 @@ package com.auth0.msg;
 
 import com.auth0.jwt.algorithms.Algorithm;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.Map;
 
 /**
@@ -52,7 +54,7 @@ public interface Message {
      * @param input the urlEncoded String representation of a message
      * @return a Message representation of the UrlEncoded string
      */
-    Message fromUrlEncoded(String input);
+    Message fromUrlEncoded(String input) throws MalformedURLException, IOException;
 
     /**
      *
