@@ -11,9 +11,17 @@ public class MessageUtil {
      * @param urlEncoded the urlEncoded String representation of a message
      * @return a map of the key value pairs encoded in the string parameter
      */
+    private Map<Claim, Object> claims;
+    public MessageUtil(Map<Claim, Object> claims){
+        this.claims = claims;
+    }
     public static Map<String, Object> claimsFromUrlEncoded(String urlEncoded) throws Exception {
         //Logic to extract from the string the values
         Map<String, Object> values = new HashMap<String, Object>();
         return values;
     }
+    public Map<Claim, Object> getClaims(){
+        return this.claims;
+    }
+
 }

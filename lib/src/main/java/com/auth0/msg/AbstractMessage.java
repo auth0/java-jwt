@@ -1,14 +1,25 @@
 package com.auth0.msg;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTCreator;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTCreationException;
+import com.auth0.jwt.impl.PublicClaims;
 import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.codec.binary.StringUtils;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -16,23 +27,33 @@ import java.util.Map;
  * This abstract class provides basic processing of messages
  */
 public abstract class AbstractMessage implements Message {
-    private Map<ClaimType, Object> claims;
+    private Map<Claim, Object> claims;
+    private Map<String, Object> header; // There are only headers when fromJwt/ToJwt is called
     private String input;
     private Error error = null;
     private boolean verified = false;
     ObjectMapper mapper = new ObjectMapper();
 
-    protected AbstractMessage(Map<ClaimType, Object> claims) {
+    protected AbstractMessage() {
+        this(Collections.<Claim, Object>emptyMap());
+    }
+
+    protected AbstractMessage(Map<Claim, Object> claims) {
         this.claims = claims;
+        SimpleModule simpleModule = new SimpleModule();
+        simpleModule.addKeyDeserializer(Claim.class, new ClaimDeserializer());
+        mapper.registerModule(simpleModule);
     }
 
     /**
      * @param input the urlEncoded String representation of a message
-     * @return a Message representation of the UrlEncoded string
      */
-    public Message fromUrlEncoded(String input) throws MalformedURLException, IOException {
-        AbstractMessage msg = mapper.readValue(new URL(input), AbstractMessage.class);
-        return msg;
+    public void fromUrlEncoded(String input) throws MalformedURLException, IOException {
+        this.input = input;
+        String msgJson = StringUtils.newStringUtf8(Base64.decodeBase64(input));
+        // Convert JSON string to Object
+        AbstractMessage msg = mapper.readValue(msgJson, this.getClass());
+        this.claims = msg.getClaims();
     }
 
     /**
@@ -41,24 +62,24 @@ public abstract class AbstractMessage implements Message {
      *
      * @return an urlEncoded string
      */
-    public String toUrlEncoded() throws SerializationException {
-        // TODO
-        // Serialize the content of this instance (the claims map) into an UrlEncoded string
-        return "";
+    public String toUrlEncoded() throws SerializationException, JsonProcessingException {
+        String jsonMsg = mapper.writeValueAsString(this);
+        String urlEncodedMsg = Base64.encodeBase64URLSafeString(jsonMsg.getBytes(StandardCharsets.UTF_8));
+        return urlEncodedMsg;
     }
 
     /**
      * Logic to extract from the JSON string the values
-     *
      * @param input The JSON String representation of a message
-     * @return a Message representation of the Json
      */
-    public Message fromJson(String input) {
+    public void fromJson(String input) {
         this.input = input;
         try {
             // Convert JSON string to Object
-            AbstractMessage msg = mapper.readValue(input, AbstractMessage.class);
-            return msg;
+            TypeReference<HashMap<Claim, String>> typeRef
+                    = new TypeReference<HashMap<Claim, String>>() {};
+            AbstractMessage msg = mapper.readValue(input, this.getClass());
+            this.claims = msg.getClaims();
         } catch (JsonGenerationException e) {
             e.printStackTrace();
         } catch (JsonMappingException e) {
@@ -66,7 +87,6 @@ public abstract class AbstractMessage implements Message {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return null;
     }
 
     /**
@@ -75,34 +95,22 @@ public abstract class AbstractMessage implements Message {
      *
      * @return a JSON String representation in the form of a hashMap mapping string -> string
      */
-    public String toJson() throws SerializationException {
+    public String toJson() throws SerializationException, JsonProcessingException {
+        String jsonMsg = mapper.writeValueAsString(this);
         if (this.error != null) {
-            //This should be custom exception
             throw new InvalidClaimsException("Error present cannot serialize message");
         }
-        return "";
-    }
-
-    /**
-     * @param input the jwt String representation of a message
-     * @param Key   that might contain the necessary key
-     * @return a Message representation of the JWT
-     */
-    public Message fromJwt(String input, Key key) {
-        this.input = input;
-        //This will have logic to parse Jwt to claims
-        return this;
+        return jsonMsg;
     }
 
     /**
      * @param input the jwt String representation of a message
      * @param KeyJar that might contain the necessary key
-     * @return a Message representation of the JWT
      */
-    public Message fromJwt(String input, KeyJar jar) {
+    public void fromJwt(String input, KeyJar jar) {
         this.input = input;
+
         //This will have logic to parse Jwt to claims
-        return this;
     }
 
     /**
@@ -114,6 +122,16 @@ public abstract class AbstractMessage implements Message {
      */
     public String toJwt(KeyJar keyjar, Algorithm algorithm) throws
             InvalidClaimsException, SerializationException {
+        header.put("alg", algorithm.getName());
+        header.put("typ", "JWT");
+        String signingKeyId = algorithm.getSigningKeyId();
+        if (signingKeyId != null) {
+            header.put("kid", signingKeyId);
+        }
+//        JWTCreator.Builder newBuilder = JWT.create().withHeader(this.header);
+//        for (Claim claimKey: claims.keySet()){
+//            newBuilder.withClaim(claimKey.name, (claimKey.type) claims.get(claimKey));
+//        }
         return null;
     }
 
@@ -139,11 +157,11 @@ public abstract class AbstractMessage implements Message {
 
     /**
      * add the claim to this instance of message
-     * @param ClaimType the name of the claim
+     * @param String the name of the claim
      * @param Object the value of the claim to add to this instance of Message
      * @return a Message representation of the Json
      */
-    public void addClaim(ClaimType name, Object value) {
+    public void addClaim(Claim name, Object value) {
         // verify 'name’ is a valid claim and then check the type is valid before adding
     }
 
@@ -165,21 +183,22 @@ public abstract class AbstractMessage implements Message {
     /**
      * @return List of the list of claims for this messsage
      */
-    public Map<ClaimType, Object> getClaims(){
+    public Map<Claim, Object> getClaims(){
+        verify();
         return this.claims;
     }
 
     /**
      * @return List of the list of standard optional claims for this messsage type
      */
-    protected List<ClaimType> getOptionalClaims(){
+    protected List<String> getOptionalClaims(){
         return Collections.emptyList();
     }
 
     /**
      * @return List of the list of standard required claims for this messsage type
      */
-    abstract protected List<ClaimType> getRequiredClaims();
+    abstract protected List<Claim> getRequiredClaims();
 
     @Override
     public String toString() {

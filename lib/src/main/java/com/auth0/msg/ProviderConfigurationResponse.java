@@ -5,18 +5,22 @@ import java.util.Map;
 
 public class ProviderConfigurationResponse extends AbstractMessage{
 
-    public ProviderConfigurationResponse(Map<ClaimType, Object> claims){
+    public ProviderConfigurationResponse() {
+    }
+
+
+    public ProviderConfigurationResponse(Map<Claim, Object> claims){
         super(claims);
     }
 
     @Override
-    protected List<ClaimType> getRequiredClaims() {
+    protected List<Claim> getRequiredClaims() {
         return null;
     }
 
     @Override
-    public Map<ClaimType, Object> getClaims() throws InvalidClaimsException {
-        return null;
+    public Map<Claim, Object> getClaims() throws InvalidClaimsException {
+        return super.getClaims();
     }
 
     @Override

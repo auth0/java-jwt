@@ -5,17 +5,17 @@ import java.util.Map;
 
 public class RegistrationRequest extends AbstractMessage{
 
-    public RegistrationRequest(Map<ClaimType, Object> claims){
+    public RegistrationRequest(Map<Claim, Object> claims){
         super(claims);
     }
 
     @Override
-    protected List<ClaimType> getRequiredClaims() {
+    protected List<Claim> getRequiredClaims() {
         return null;
     }
 
     @Override
-    public Map<ClaimType, Object> getClaims() throws InvalidClaimsException {
+    public Map<Claim, Object> getClaims() throws InvalidClaimsException {
         return null;
     }
 

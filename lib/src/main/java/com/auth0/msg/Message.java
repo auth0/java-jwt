@@ -1,6 +1,7 @@
 package com.auth0.msg;
 
 import com.auth0.jwt.algorithms.Algorithm;
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -16,14 +17,14 @@ public interface Message {
      * @return a JSON String representation of the message
      * @throws SerializationException
      */
-    String toJson() throws SerializationException;
+    String toJson() throws SerializationException, JsonProcessingException;
 
     /**
      * Serialize the content of the claims map into an UrlEncoded string
      * @return a urlEncoded string
      * @throws SerializationException
      */
-    String toUrlEncoded() throws SerializationException;
+    String toUrlEncoded() throws SerializationException, JsonProcessingException;
 
     /**
      * Serialize the content of this instance (the claims map) into a jwt string
@@ -46,31 +47,20 @@ public interface Message {
     /**
      * Logic to extract from the string the values
      * @param input The JSON String representation of a message
-     * @return a Message representation of the Json
      */
-    Message fromJson(String input);
+    void fromJson(String input);
 
     /**
      * @param input the urlEncoded String representation of a message
-     * @return a Message representation of the UrlEncoded string
      */
-    Message fromUrlEncoded(String input) throws MalformedURLException, IOException;
-
-    /**
-     *
-     * @param input the jwt String representation of a message
-     * @param key that might contain the necessary key
-     * @return a Message representation of the JWT
-     */
-    Message fromJwt(String input, Key key);
+    void fromUrlEncoded(String input) throws MalformedURLException, IOException;
 
     /**
      *
      * @param input the jwt String representation of a message
      * @param KeyJar that might contain the necessary key
-     * @return a Message representation of the JWT
      */
-    Message fromJwt(String input, KeyJar jar);
+    void fromJwt(String input, KeyJar jar);
 
     /**
      * verify that the required claims are present
@@ -83,14 +73,14 @@ public interface Message {
      * @param name of the claim
      * @param value of the claim
      */
-    void addClaim(ClaimType name, Object value);
+    void addClaim(Claim name, Object value);
 
     /**
      *
      * @return Map of claims
      * @throws InvalidClaimsException
      */
-    Map<ClaimType, Object> getClaims() throws InvalidClaimsException;
+    Map<Claim, Object> getClaims() throws InvalidClaimsException;
 
     /**
      *
