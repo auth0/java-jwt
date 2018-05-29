@@ -18,14 +18,14 @@ If you're looking for an **Android** version of the JWT Decoder take a look at o
 <dependency>
     <groupId>com.auth0</groupId>
     <artifactId>java-jwt</artifactId>
-    <version>3.2.0</version>
+    <version>3.3.0</version>
 </dependency>
 ```
 
 ### Gradle
 
 ```gradle
-compile 'com.auth0:java-jwt:3.2.0'
+compile 'com.auth0:java-jwt:3.3.0'
 ```
 
 ## Available Algorithms
@@ -120,8 +120,6 @@ try {
     String token = JWT.create()
         .withIssuer("auth0")
         .sign(algorithm);
-} catch (UnsupportedEncodingException exception){
-    //UTF-8 encoding not supported
 } catch (JWTCreationException exception){
     //Invalid Signing configuration / Couldn't convert Claims.
 }
@@ -159,8 +157,6 @@ try {
         .withIssuer("auth0")
         .build(); //Reusable verifier instance
     DecodedJWT jwt = verifier.verify(token);
-} catch (UnsupportedEncodingException exception){
-    //UTF-8 encoding not supported
 } catch (JWTVerificationException exception){
     //Invalid signature/claims
 }

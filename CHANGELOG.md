@@ -1,5 +1,14 @@
 # Change Log
 
+## [3.3.0](https://github.com/auth0/java-jwt/tree/3.3.0) (2017-11-06)
+[Full Changelog](https://github.com/auth0/java-jwt/compare/3.2.0...3.3.0)
+**Closed issues**
+- Wrong ES256 signature length [\#187](https://github.com/auth0/java-jwt/issues/187)
+
+**Fixed**
+- Rework ECDSA [\#212](https://github.com/auth0/java-jwt/pull/212) ([lbalmaceda](https://github.com/lbalmaceda))
+- Instantiate exception only when required [\#198](https://github.com/auth0/java-jwt/pull/198) ([rumdidumdum](https://github.com/rumdidumdum))
+
 ## [3.2.0](https://github.com/auth0/java-jwt/tree/3.2.0) (2017-05-04)
 [Full Changelog](https://github.com/auth0/java-jwt/compare/3.1.0...3.2.0)
 **Closed issues**

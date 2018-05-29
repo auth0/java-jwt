@@ -3,10 +3,8 @@ package com.auth0.jwt.algorithms;
 import com.auth0.jwt.exceptions.SignatureGenerationException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import org.apache.commons.codec.CharEncoding;
 import org.apache.commons.codec.binary.Base64;
 
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -30,16 +28,16 @@ class HMACAlgorithm extends Algorithm {
         this(new CryptoHelper(), id, algorithm, secretBytes);
     }
 
-    HMACAlgorithm(String id, String algorithm, String secret) throws IllegalArgumentException, UnsupportedEncodingException {
+    HMACAlgorithm(String id, String algorithm, String secret) throws IllegalArgumentException {
         this(new CryptoHelper(), id, algorithm, getSecretBytes(secret));
     }
 
     //Visible for testing
-    static byte[] getSecretBytes(String secret) throws IllegalArgumentException, UnsupportedEncodingException {
+    static byte[] getSecretBytes(String secret) throws IllegalArgumentException {
         if (secret == null) {
             throw new IllegalArgumentException("The Secret cannot be null");
         }
-        return secret.getBytes(CharEncoding.UTF_8);
+        return secret.getBytes(StandardCharsets.UTF_8);
     }
 
     @Override

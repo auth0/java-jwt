@@ -3,6 +3,8 @@ package com.auth0.jwt.impl;
 import com.auth0.jwt.UserPojo;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.interfaces.Claim;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
@@ -14,6 +16,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.mockito.ArgumentMatchers;
 
 import java.io.IOException;
 import java.util.*;
@@ -24,8 +27,7 @@ import static org.hamcrest.Matchers.*;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class JsonNodeClaimTest {
 
@@ -267,11 +269,17 @@ public class JsonNodeClaimTest {
     public void shouldThrowIfAnExtraordinaryExceptionHappensWhenParsingAsGenericMap() throws Exception {
         JsonNode value = mock(ObjectNode.class);
         when(value.getNodeType()).thenReturn(JsonNodeType.OBJECT);
-        when(value.fields()).thenThrow(IOException.class);
-        Claim claim = claimFromNode(value);
+
+        JsonNodeClaim claim = (JsonNodeClaim) claimFromNode(value);
+        JsonNodeClaim spiedClaim = spy(claim);
+        ObjectMapper mockedMapper = mock(ObjectMapper.class);
+        when(spiedClaim.getObjectMapper()).thenReturn(mockedMapper);
+        JsonParser mockedParser = mock(JsonParser.class);
+        when(mockedMapper.treeAsTokens(value)).thenReturn(mockedParser);
+        when(mockedParser.readValueAs(ArgumentMatchers.any(TypeReference.class))).thenThrow(IOException.class);
 
         exception.expect(JWTDecodeException.class);
-        claim.asMap();
+        spiedClaim.asMap();
     }
 
     @Test

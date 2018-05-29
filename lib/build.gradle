@@ -34,13 +34,13 @@ compileJava {
 }
 
 dependencies {
-    compile 'com.fasterxml.jackson.core:jackson-databind:2.8.4'
-    compile 'commons-codec:commons-codec:1.10'
-    compile 'org.bouncycastle:bcprov-jdk15on:1.55'
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.9.2'
+    compile 'commons-codec:commons-codec:1.11'
+    testCompile 'org.bouncycastle:bcprov-jdk15on:1.58'
     testCompile 'junit:junit:4.12'
-    testCompile 'net.jodah:concurrentunit:0.4.2'
-    testCompile 'org.hamcrest:hamcrest-library:1.3'
-    testCompile 'org.mockito:mockito-core:2.2.8'
+    testCompile 'net.jodah:concurrentunit:0.4.3'
+    testCompile 'org.hamcrest:java-hamcrest:2.0.0.0'
+    testCompile 'org.mockito:mockito-core:2.11.0'
 }
 
 jacocoTestReport {
