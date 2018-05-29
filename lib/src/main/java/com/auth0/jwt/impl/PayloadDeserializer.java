@@ -69,7 +69,7 @@ class PayloadDeserializer extends StdDeserializer<Payload> {
             return null;
         }
         if (!node.canConvertToLong()) {
-            throw new JWTDecodeException(String.format("The claim '%s' contained an unexpected value.", claimName));
+            throw new JWTDecodeException(String.format("The claim '%s' contained a non-numeric date value.", claimName));
         }
         final long ms = node.asLong() * 1000;
         return new Date(ms);
