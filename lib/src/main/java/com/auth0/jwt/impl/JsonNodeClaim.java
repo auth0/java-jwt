@@ -7,6 +7,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
 
 import java.io.IOException;
 import java.lang.reflect.Array;
@@ -20,10 +21,12 @@ import java.util.Map;
  */
 class JsonNodeClaim implements Claim {
 
+    private final ObjectReader objectReader;
     private final JsonNode data;
 
-    private JsonNodeClaim(JsonNode node) {
+    private JsonNodeClaim(JsonNode node, ObjectReader objectReader) {
         this.data = node;
+        this.objectReader = objectReader;
     }
 
     @Override
@@ -70,7 +73,7 @@ class JsonNodeClaim implements Claim {
         T[] arr = (T[]) Array.newInstance(tClazz, data.size());
         for (int i = 0; i < data.size(); i++) {
             try {
-                arr[i] = getObjectMapper().treeToValue(data.get(i), tClazz);
+                arr[i] = objectReader.treeToValue(data.get(i), tClazz);
             } catch (JsonProcessingException e) {
                 throw new JWTDecodeException("Couldn't map the Claim's array contents to " + tClazz.getSimpleName(), e);
             }
@@ -87,7 +90,7 @@ class JsonNodeClaim implements Claim {
         List<T> list = new ArrayList<>();
         for (int i = 0; i < data.size(); i++) {
             try {
-                list.add(getObjectMapper().treeToValue(data.get(i), tClazz));
+                list.add(objectReader.treeToValue(data.get(i), tClazz));
             } catch (JsonProcessingException e) {
                 throw new JWTDecodeException("Couldn't map the Claim's array contents to " + tClazz.getSimpleName(), e);
             }
@@ -104,8 +107,7 @@ class JsonNodeClaim implements Claim {
         try {
             TypeReference<Map<String, Object>> mapType = new TypeReference<Map<String, Object>>() {
             };
-            ObjectMapper thisMapper = getObjectMapper();
-            JsonParser thisParser = thisMapper.treeAsTokens(data);
+            JsonParser thisParser = objectReader.treeAsTokens(data);
             return thisParser.readValueAs(mapType);
         } catch (IOException e) {
             throw new JWTDecodeException("Couldn't map the Claim value to Map", e);
@@ -115,7 +117,7 @@ class JsonNodeClaim implements Claim {
     @Override
     public <T> T as(Class<T> tClazz) throws JWTDecodeException {
         try {
-            return getObjectMapper().treeAsTokens(data).readValueAs(tClazz);
+            return objectReader.treeAsTokens(data).readValueAs(tClazz);
         } catch (IOException e) {
             throw new JWTDecodeException("Couldn't map the Claim value to " + tClazz.getSimpleName(), e);
         }
@@ -133,9 +135,9 @@ class JsonNodeClaim implements Claim {
      * @param tree      the JsonNode tree to search the Claim in.
      * @return a valid non-null Claim.
      */
-    static Claim extractClaim(String claimName, Map<String, JsonNode> tree) {
+    static Claim extractClaim(String claimName, Map<String, JsonNode> tree, ObjectReader objectReader) {
         JsonNode node = tree.get(claimName);
-        return claimFromNode(node);
+        return claimFromNode(node, objectReader);
     }
 
     /**
@@ -144,15 +146,16 @@ class JsonNodeClaim implements Claim {
      * @param node the JsonNode to convert into a Claim.
      * @return a valid Claim instance. If the node is null or missing, a NullClaim will be returned.
      */
-    static Claim claimFromNode(JsonNode node) {
+    static Claim claimFromNode(JsonNode node, ObjectReader objectReader) {
         if (node == null || node.isNull() || node.isMissingNode()) {
             return new NullClaim();
         }
-        return new JsonNodeClaim(node);
+        return new JsonNodeClaim(node, objectReader);
     }
 
     //Visible for testing
-    ObjectMapper getObjectMapper() {
-        return new ObjectMapper();
+    ObjectReader getObjectReader() {
+        return objectReader;
     }
+
 }

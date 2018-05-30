@@ -6,7 +6,6 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.ECDSAKeyProvider;
 import com.auth0.jwt.interfaces.RSAKeyProvider;
 
-import java.io.UnsupportedEncodingException;
 import java.security.interfaces.*;
 
 /**
@@ -138,9 +137,8 @@ public abstract class Algorithm {
      * @param secret the secret to use in the verify or signing instance.
      * @return a valid HMAC256 Algorithm.
      * @throws IllegalArgumentException     if the provided Secret is null.
-     * @throws UnsupportedEncodingException if the current Java platform implementation doesn't support the UTF-8 character encoding.
      */
-    public static Algorithm HMAC256(String secret) throws IllegalArgumentException, UnsupportedEncodingException {
+    public static Algorithm HMAC256(String secret) throws IllegalArgumentException {
         return new HMACAlgorithm("HS256", "HmacSHA256", secret);
     }
 
@@ -150,9 +148,8 @@ public abstract class Algorithm {
      * @param secret the secret to use in the verify or signing instance.
      * @return a valid HMAC384 Algorithm.
      * @throws IllegalArgumentException     if the provided Secret is null.
-     * @throws UnsupportedEncodingException if the current Java platform implementation doesn't support the UTF-8 character encoding.
      */
-    public static Algorithm HMAC384(String secret) throws IllegalArgumentException, UnsupportedEncodingException {
+    public static Algorithm HMAC384(String secret) throws IllegalArgumentException {
         return new HMACAlgorithm("HS384", "HmacSHA384", secret);
     }
 
@@ -162,9 +159,8 @@ public abstract class Algorithm {
      * @param secret the secret to use in the verify or signing instance.
      * @return a valid HMAC512 Algorithm.
      * @throws IllegalArgumentException     if the provided Secret is null.
-     * @throws UnsupportedEncodingException if the current Java platform implementation doesn't support the UTF-8 character encoding.
      */
-    public static Algorithm HMAC512(String secret) throws IllegalArgumentException, UnsupportedEncodingException {
+    public static Algorithm HMAC512(String secret) throws IllegalArgumentException {
         return new HMACAlgorithm("HS512", "HmacSHA512", secret);
     }
 
@@ -368,9 +364,21 @@ public abstract class Algorithm {
     /**
      * Sign the given content using this Algorithm instance.
      *
-     * @param contentBytes an array of bytes representing the base64 encoded content to be verified against the signature.
+     * @param headerBytes an array of bytes representing the base64 encoded header content to be verified against the signature.
+     * @param payloadBytes an array of bytes representing the base64 encoded payload content to be verified against the signature.
      * @return the signature in a base64 encoded array of bytes
      * @throws SignatureGenerationException if the Key is invalid.
      */
+    public abstract byte[] sign(byte[] headerBytes, byte[] payloadBytes) throws SignatureGenerationException;
+    
+    /**
+     * Sign the given content using this Algorithm instance.
+     *
+     * @param contentBytes an array of bytes representing the base64 encoded content to be verified against the signature.
+     * @return the signature in a base64 encoded array of bytes
+     * @throws SignatureGenerationException if the Key is invalid.
+     * @deprecated
+     */
     public abstract byte[] sign(byte[] contentBytes) throws SignatureGenerationException;
+    
 }

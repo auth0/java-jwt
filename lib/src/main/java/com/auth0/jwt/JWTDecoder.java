@@ -24,8 +24,11 @@ final class JWTDecoder implements DecodedJWT {
     private final Payload payload;
 
     JWTDecoder(String jwt) throws JWTDecodeException {
+        this(new JWTParser(), jwt);
+    }
+
+    JWTDecoder(JWTParser converter, String jwt) throws JWTDecodeException {
         parts = TokenUtils.splitToken(jwt);
-        final JWTParser converter = new JWTParser();
         String headerJson;
         String payloadJson;
         try {
