@@ -7,7 +7,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 
 import java.io.IOException;
@@ -15,12 +15,16 @@ import java.util.*;
 
 class PayloadDeserializer extends StdDeserializer<Payload> {
 
-    PayloadDeserializer() {
-        this(null);
+    private final ObjectReader objectReader;
+    
+    PayloadDeserializer(ObjectReader reader) {
+        this(null, reader);
     }
 
-    private PayloadDeserializer(Class<?> vc) {
+    private PayloadDeserializer(Class<?> vc, ObjectReader reader) {
         super(vc);
+        
+        this.objectReader = reader;
     }
 
     @Override
@@ -39,7 +43,7 @@ class PayloadDeserializer extends StdDeserializer<Payload> {
         Date issuedAt = getDateFromSeconds(tree, PublicClaims.ISSUED_AT);
         String jwtId = getString(tree, PublicClaims.JWT_ID);
 
-        return new PayloadImpl(issuer, subject, audience, expiresAt, notBefore, issuedAt, jwtId, tree);
+        return new PayloadImpl(issuer, subject, audience, expiresAt, notBefore, issuedAt, jwtId, tree, objectReader);
     }
 
     List<String> getStringOrArray(Map<String, JsonNode> tree, String claimName) throws JWTDecodeException {
@@ -51,11 +55,10 @@ class PayloadDeserializer extends StdDeserializer<Payload> {
             return Collections.singletonList(node.asText());
         }
 
-        ObjectMapper mapper = new ObjectMapper();
         List<String> list = new ArrayList<>(node.size());
         for (int i = 0; i < node.size(); i++) {
             try {
-                list.add(mapper.treeToValue(node.get(i), String.class));
+                list.add(objectReader.treeToValue(node.get(i), String.class));
             } catch (JsonProcessingException e) {
                 throw new JWTDecodeException("Couldn't map the Claim's array contents to String", e);
             }

@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import org.junit.Before;
@@ -33,11 +34,11 @@ public class HeaderDeserializerTest {
     @Rule
     public ExpectedException exception = ExpectedException.none();
     private HeaderDeserializer deserializer;
-
+    private ObjectReader objectReader = new ObjectMapper().reader();
 
     @Before
     public void setUp() throws Exception {
-        deserializer = new HeaderDeserializer();
+        deserializer = new HeaderDeserializer(objectReader);
     }
 
     @Test
@@ -45,7 +46,7 @@ public class HeaderDeserializerTest {
         exception.expect(JWTDecodeException.class);
         exception.expectMessage("Parsing the Header's JSON resulted on a Null map");
 
-        JsonDeserializer deserializer = new HeaderDeserializer();
+        JsonDeserializer deserializer = new HeaderDeserializer(objectReader);
         JsonParser parser = mock(JsonParser.class);
         ObjectCodec codec = mock(ObjectCodec.class);
         DeserializationContext context = mock(DeserializationContext.class);

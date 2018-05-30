@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 
 import java.io.IOException;
@@ -12,12 +13,16 @@ import java.util.Map;
 
 class HeaderDeserializer extends StdDeserializer<BasicHeader> {
 
-    HeaderDeserializer() {
-        this(null);
+    private final ObjectReader objectReader;
+    
+    HeaderDeserializer(ObjectReader objectReader) {
+        this(null, objectReader);
     }
 
-    private HeaderDeserializer(Class<?> vc) {
+    private HeaderDeserializer(Class<?> vc, ObjectReader objectReader) {
         super(vc);
+        
+        this.objectReader = objectReader;
     }
 
     @Override
@@ -32,7 +37,7 @@ class HeaderDeserializer extends StdDeserializer<BasicHeader> {
         String type = getString(tree, PublicClaims.TYPE);
         String contentType = getString(tree, PublicClaims.CONTENT_TYPE);
         String keyId = getString(tree, PublicClaims.KEY_ID);
-        return new BasicHeader(algorithm, type, contentType, keyId, tree);
+        return new BasicHeader(algorithm, type, contentType, keyId, tree, objectReader);
     }
 
     String getString(Map<String, JsonNode> tree, String claimName) {

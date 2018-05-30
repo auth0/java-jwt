@@ -34,7 +34,6 @@ class RSAAlgorithm extends Algorithm {
 
     @Override
     public void verify(DecodedJWT jwt) throws SignatureVerificationException {
-        byte[] contentBytes = String.format("%s.%s", jwt.getHeader(), jwt.getPayload()).getBytes(StandardCharsets.UTF_8);
         byte[] signatureBytes = Base64.decodeBase64(jwt.getSignature());
 
         try {
@@ -42,7 +41,7 @@ class RSAAlgorithm extends Algorithm {
             if (publicKey == null) {
                 throw new IllegalStateException("The given Public Key is null.");
             }
-            boolean valid = crypto.verifySignatureFor(getDescription(), publicKey, contentBytes, signatureBytes);
+            boolean valid = crypto.verifySignatureFor(getDescription(), publicKey, jwt.getHeader(), jwt.getPayload(), signatureBytes);
             if (!valid) {
                 throw new SignatureVerificationException(this);
             }
@@ -51,19 +50,20 @@ class RSAAlgorithm extends Algorithm {
         }
     }
 
+
     @Override
-    public byte[] sign(byte[] contentBytes) throws SignatureGenerationException {
+    public byte[] sign(byte[] headerBytes, byte[] payloadBytes) throws SignatureGenerationException {
         try {
             RSAPrivateKey privateKey = keyProvider.getPrivateKey();
             if (privateKey == null) {
                 throw new IllegalStateException("The given Private Key is null.");
             }
-            return crypto.createSignatureFor(getDescription(), privateKey, contentBytes);
+            return crypto.createSignatureFor(getDescription(), privateKey, headerBytes, payloadBytes);
         } catch (NoSuchAlgorithmException | SignatureException | InvalidKeyException | IllegalStateException e) {
             throw new SignatureGenerationException(this, e);
         }
     }
-
+    
     @Override
     public String getSigningKeyId() {
         return keyProvider.getPrivateKeyId();

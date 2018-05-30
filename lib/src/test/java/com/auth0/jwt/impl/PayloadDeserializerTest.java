@@ -36,7 +36,7 @@ public class PayloadDeserializerTest {
 
     @Before
     public void setUp() throws Exception {
-        deserializer = new PayloadDeserializer();
+        deserializer = new PayloadDeserializer(new ObjectMapper().reader());
     }
 
     @Test
