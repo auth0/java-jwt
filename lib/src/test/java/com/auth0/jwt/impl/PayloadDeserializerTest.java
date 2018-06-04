@@ -198,13 +198,15 @@ public class PayloadDeserializerTest {
     }
 
     @Test
-    public void shouldGetNullDateWhenParsingNonNumericNode() throws Exception {
+    public void shouldThrowWhenParsingNonNumericNode() throws Exception {
+        exception.expect(JWTDecodeException.class);
+        exception.expectMessage("The claim 'key' contained a non-numeric date value.");
+
         Map<String, JsonNode> tree = new HashMap<>();
         TextNode node = new TextNode("123456789");
         tree.put("key", node);
 
-        Date date = deserializer.getDateFromSeconds(tree, "key");
-        assertThat(date, is(nullValue()));
+        deserializer.getDateFromSeconds(tree, "key");
     }
 
     @Test
