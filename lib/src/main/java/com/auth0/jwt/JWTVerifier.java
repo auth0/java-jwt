@@ -8,6 +8,7 @@ import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.Clock;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.Verification;
+import com.auth0.jwt.interfaces.VerificationFeature;
 
 import java.util.*;
 
@@ -18,12 +19,14 @@ import java.util.*;
 public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
     private final Algorithm algorithm;
     final Map<String, Object> claims;
+    final Set<VerificationFeature> features;
     private final Clock clock;
     private final JWTParser parser;
 
-    JWTVerifier(Algorithm algorithm, Map<String, Object> claims, Clock clock) {
+    JWTVerifier(Algorithm algorithm, Map<String, Object> claims, Set<VerificationFeature> features, Clock clock) {
         this.algorithm = algorithm;
         this.claims = Collections.unmodifiableMap(claims);
+        this.features = Collections.unmodifiableSet(features);
         this.clock = clock;
         this.parser = new JWTParser();
     }
@@ -45,6 +48,7 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
     public static class BaseVerification implements Verification {
         private final Algorithm algorithm;
         private final Map<String, Object> claims;
+        private final Set<VerificationFeature> features;
         private long defaultLeeway;
         private boolean ignoreIssuedAt;
 
@@ -55,7 +59,20 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
 
             this.algorithm = algorithm;
             this.claims = new HashMap<>();
+            this.features = new HashSet<>();
             this.defaultLeeway = 0;
+        }
+
+        /**
+         * enable one or more verification features
+         *
+         * @param features one ore more features (see {@link VerificationFeature}) that should be enabled
+         * @return this same Verification instance.
+         */
+        @Override
+        public Verification withFeature(VerificationFeature... features) {
+            this.features.addAll(Arrays.asList(features));
+            return this;
         }
 
         /**
@@ -313,7 +330,7 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
          */
         public JWTVerifier build(Clock clock) {
             addLeewayToDateClaims();
-            return new JWTVerifier(algorithm, claims, clock);
+            return new JWTVerifier(algorithm, claims, features, clock);
         }
 
         private void assertPositive(long leeway) {
@@ -481,7 +498,7 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
     }
 
     private void assertValidAudienceClaim(List<String> audience, List<String> value) {
-        if (audience == null || !audience.containsAll(value)) {
+        if (audience == null || !isValidAudience(audience, value)) {
             throw new InvalidClaimException("The Claim 'aud' value doesn't contain the required audience.");
         }
     }
@@ -489,6 +506,19 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
     private void assertValidIssuerClaim(String issuer, List<String> value) {
         if (issuer == null || !value.contains(issuer)) {
             throw new InvalidClaimException("The Claim 'iss' value doesn't match the required issuer.");
+        }
+    }
+
+    private boolean isValidAudience(List<String> audience, List<String> value) {
+        if (this.features.contains(VerificationFeature.AT_LEAST_ONE_AUDIENCE_REQUIRED)) {
+            for (String audienceEntry : audience) {
+                if (value.contains(audienceEntry)) {
+                    return true;
+                }
+            }
+            return false;
+        } else {
+            return audience.containsAll(value);
         }
     }
 }

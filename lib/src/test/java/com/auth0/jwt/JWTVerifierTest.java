@@ -6,12 +6,14 @@ import com.auth0.jwt.exceptions.InvalidClaimException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.Clock;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.auth0.jwt.interfaces.VerificationFeature;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 import static org.hamcrest.Matchers.*;
@@ -140,6 +142,32 @@ public class JWTVerifierTest {
     }
 
     @Test
+    public void shouldAcceptAtLeastOneAudienceMatch() throws Exception {
+        //Token 'aud' = ["Mark", "David", "John"]
+        String tokenArr = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOlsiTWFyayIsIkRhdmlkIiwiSm9obiJdfQ.DX5xXiCaYvr54x_iL0LZsJhK7O6HhAdHeDYkgDeb0Rw";
+        DecodedJWT jwtArr = JWTVerifier.init(Algorithm.HMAC256("secret"))
+                .withAudience("Peter", "David")
+                .withFeature(VerificationFeature.AT_LEAST_ONE_AUDIENCE_REQUIRED)
+                .build()
+                .verify(tokenArr);
+
+        assertThat(jwtArr, is(notNullValue()));
+    }
+
+    @Test
+    public void shouldThrowOnInvalidAudienceWithAtLeastOneAudienceMatch() throws Exception {
+        //Token 'aud' = ["Mark", "David", "John"]
+        exception.expect(InvalidClaimException.class);
+        exception.expectMessage("The Claim 'aud' value doesn't contain the required audience.");
+        String tokenArr = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOlsiTWFyayIsIkRhdmlkIiwiSm9obiJdfQ.DX5xXiCaYvr54x_iL0LZsJhK7O6HhAdHeDYkgDeb0Rw";
+        DecodedJWT jwtArr = JWTVerifier.init(Algorithm.HMAC256("secret"))
+                .withAudience("Peter", "Paul")
+                .withFeature(VerificationFeature.AT_LEAST_ONE_AUDIENCE_REQUIRED)
+                .build()
+                .verify(tokenArr);
+    }
+
+    @Test
     public void shouldThrowOnInvalidAudience() throws Exception {
         exception.expect(InvalidClaimException.class);
         exception.expectMessage("The Claim 'aud' value doesn't contain the required audience.");
@@ -233,7 +261,7 @@ public class JWTVerifierTest {
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjpbInNvbWV0aGluZyJdfQ.3ENLez6tU_fG0SVFrGmISltZPiXLSHaz_dyn-XFTEGQ";
         Map<String, Object> map = new HashMap<>();
         map.put("name", new Object());
-        JWTVerifier verifier = new JWTVerifier(Algorithm.HMAC256("secret"), map, new ClockImpl());
+        JWTVerifier verifier = new JWTVerifier(Algorithm.HMAC256("secret"), map, new HashSet<>(), new ClockImpl());
         verifier.verify(token);
     }
 
