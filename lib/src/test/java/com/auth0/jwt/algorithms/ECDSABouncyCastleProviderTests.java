@@ -1016,4 +1016,5 @@ public class ECDSABouncyCastleProviderTests {
         assertValidJOSESignature(joseSignature, 66, true, true);
     }
 
+    
 }

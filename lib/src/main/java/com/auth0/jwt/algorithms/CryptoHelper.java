@@ -48,5 +48,4 @@ class CryptoHelper {
         s.update(payloadBytes);
         return s.sign();
     }
-
 }

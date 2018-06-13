@@ -62,5 +62,5 @@ class HMACAlgorithm extends Algorithm {
             throw new SignatureGenerationException(this, e);
         }
     }
-   
+
 }

@@ -23,5 +23,5 @@ class NoneAlgorithm extends Algorithm {
     public byte[] sign(byte[] headerBytes, byte[] payloadBytes) throws SignatureGenerationException {
         return new byte[0];
     }
-    
+
 }

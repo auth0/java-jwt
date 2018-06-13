@@ -370,5 +370,5 @@ public abstract class Algorithm {
      * @throws SignatureGenerationException if the Key is invalid.
      */
     public abstract byte[] sign(byte[] headerBytes, byte[] payloadBytes) throws SignatureGenerationException;
-        
+
 }
