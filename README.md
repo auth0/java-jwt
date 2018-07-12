@@ -187,7 +187,7 @@ If the token has an invalid signature or the Claim requirement is not met, a `JW
 The JWT token may include DateNumber fields that can be used to validate that:
 * The token was issued in a past date `"iat" < TODAY`
 * The token hasn't expired yet `"exp" > TODAY` and
-* The token can already be used. `"nbf" > TODAY`
+* The token can already be used. `"nbf" < TODAY`
 
 When verifying a token the time validation occurs automatically, resulting in a `JWTVerificationException` being throw when the values are invalid. If any of the previous fields are missing they won't be considered in this validation.
 
