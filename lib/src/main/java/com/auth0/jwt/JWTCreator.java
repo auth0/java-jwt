@@ -290,6 +290,20 @@ public final class JWTCreator {
             return this;
         }
 
+	/**
+         * Add a custom Map Claim with the given items.
+         *
+         * @param name  the Claim's name.
+         * @param map 	the Claim's value.
+         * @return this same Builder instance.
+         * @throws IllegalArgumentException if the name is null.
+         */
+        public Builder withMapClaim(String name, Map<String, Object> map) throws IllegalArgumentException {
+            assertNonNull(name);
+            addClaim(name, map);
+            return this;
+        }
+
         /**
          * Creates a new JWT and signs is with the given algorithm
          *
