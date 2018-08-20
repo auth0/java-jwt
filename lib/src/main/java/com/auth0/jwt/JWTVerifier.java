@@ -168,6 +168,21 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
             requireClaim(name, items);
             return this;
         }
+        
+        /**
+         * Require a specific Array Claim to contain at least the given items.
+         *
+         * @param name  the Claim's name.
+         * @param items the items the Claim must contain.
+         * @return this same Verification instance.
+         * @throws IllegalArgumentException if the name is null.
+         */
+        @Override
+        public Verification withArrayClaim(String name, Long ... items) throws IllegalArgumentException {
+            assertNonNull(name);
+            requireClaim(name, items);
+            return this;
+        }        
 
         @Override
         public JWTVerifier build() {
