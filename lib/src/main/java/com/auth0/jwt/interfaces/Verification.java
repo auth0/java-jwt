@@ -161,14 +161,17 @@ public interface Verification {
     Verification withArrayClaim(String name, Integer... items) throws IllegalArgumentException;
 
     /**
-     * Skip the Issued At ("iat") date verification. By default, the verification is performed.
-     */
-    Verification ignoreIssuedAt();
-
-    /**
      * Creates a new and reusable instance of the JWTVerifier with the configuration already provided.
      *
      * @return a new JWTVerifier instance.
      */
+    Verification withArrayClaim(String name, Long ... items) throws IllegalArgumentException;
+
+    
+    /**
+     * Skip the Issued At ("iat") date verification. By default, the verification is performed.
+     */
+    Verification ignoreIssuedAt();
+
     JWTVerifier build();
 }
