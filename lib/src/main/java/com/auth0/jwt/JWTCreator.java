@@ -15,7 +15,9 @@ import org.apache.commons.codec.binary.Base64;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * The JWTCreator class holds the sign method to generate a complete JWT (with Signature) from a given Header and Payload content.
@@ -301,6 +303,94 @@ public final class JWTCreator {
             assertNonNull(name);
             addClaim(name, items);
             return this;
+        }
+
+        /**
+         * Add a custom Map Claim with the given items.<br><br>
+         * 
+         * Accepted nested types are {@linkplain Map} and {@linkplain List} with basic types 
+         * Boolean, Integer, Long, Double, String and Date.
+         * 
+         * @param name  the Claim's name.
+         * @param items the Claim's key-values. 
+         * @return this same Builder instance.
+         * @throws IllegalArgumentException if the name is null.
+         */
+        public Builder withClaim(String name, Map<String, Object> map) throws IllegalArgumentException {
+            assertNonNull(name);
+            if(!validateClaim(map)) {
+                throw new IllegalArgumentException("Expected map containing Map, List, Boolean, Integer, Long, Double, String and Date");
+            }
+            addClaim(name, map);
+            return this;
+        }      
+        
+        /**
+         * Add a custom List Claim with the given items.
+         *
+         * Accepted nested types are {@linkplain Map} and {@linkplain List} with basic types 
+         * Boolean, Integer, Long, Double, String and Date.
+         * 
+         * @param name  the Claim's name.
+         * @param items the Claim's list of values.
+         * @return this same Builder instance.
+         * @throws IllegalArgumentException if the name is null.
+         */
+        
+        public Builder withClaim(String name, List<Object> map) throws IllegalArgumentException {
+            assertNonNull(name);
+            // validate map contents
+            if(!validateClaim(map)) {
+                throw new IllegalArgumentException("Expected list containing Map, List, Boolean, Integer, Long, Double, String and Date");
+            }
+            addClaim(name, map);
+            return this;
+        }         
+
+        private static boolean validateClaim(Map<?, Object> map) {
+            for (Entry<?, Object> entry : map.entrySet()) {
+                Object value = entry.getValue();
+                if(value != null && !isSupported(value)) {
+                    return false;
+                }
+                
+                if(entry.getKey() == null || !(entry.getKey() instanceof String)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        
+        private static boolean validateClaim(List<?> list) {
+            for (Object object : list) {
+                if(object != null && !isSupported(object)) {
+                    return false;
+                }
+            }
+            return true;
+        }        
+
+        @SuppressWarnings("unchecked")
+        private static boolean isSupported(Object value) {
+            if(value != null) {
+                if(value instanceof List) {
+                    return validateClaim((List<?>)value);
+                } else if(value instanceof Map) {
+                    return validateClaim((Map<Object, Object>)value);
+                } else {
+                    return isBasicType(value);
+                }
+            }
+            return true;
+        }
+
+        private static boolean isBasicType(Object value) {
+            Class<?> c = value.getClass();
+            
+            if(c.isArray()) {
+                return c == Integer[].class || c == Long[].class || c == String[].class;
+            }
+            return c == String.class || c == Integer.class || c == Long.class || c == Double.class || c == Date.class || c == Boolean.class;
         }
 
         /**
