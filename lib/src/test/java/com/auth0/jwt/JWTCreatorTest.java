@@ -431,4 +431,31 @@ public class JWTCreatorTest {
         String[] parts = jwt.split("\\.");
         assertThat(parts[1], is("eyJuYW1lIjpbMSwyLDNdfQ"));
     }
+    
+    @Test
+    public void shouldAcceptCustomClaimOfTypeObject() throws Exception {
+        Map<String, Object> data = new HashMap<>();
+        data.put("test1", "abc");
+        data.put("test2", "def");
+        String jwt = JWTCreator.init()
+                .withClaim("data", data)
+                .sign(Algorithm.HMAC256("secret"));
+
+        assertThat(jwt, is(notNullValue()));
+        String[] parts = jwt.split("\\.");
+        assertThat(parts[1], is("eyJkYXRhIjp7InRlc3QyIjoiZGVmIiwidGVzdDEiOiJhYmMifX0"));
+    }
+    
+    @Test
+    public void shouldRefuseCustomClaimOfTypeUserPojo() throws Exception{
+    	Map<String, Object> data = new HashMap<>();
+        data.put("test1", new UserPojo("Michael", 255));
+        
+        exception.expect(IllegalArgumentException.class);
+
+    	JWTCreator.init()
+                 .withClaim("pojo", data)
+                 .sign(Algorithm.HMAC256("secret"));
+    }
+    
 }
