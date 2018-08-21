@@ -59,6 +59,18 @@ public class JWTTest {
     // Verify
 
     @Test
+    public void shouldVerifyDecodedJWTToken() throws Exception {
+        String token = "eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJpc3MiOiJhdXRoMCJ9.";
+        DecodedJWT decodedJWT = JWT.decode(token);
+
+        DecodedJWT jwt = JWT.require(Algorithm.none())
+                .build()
+                .verify(decodedJWT);
+
+        assertThat(jwt, is(notNullValue()));
+    }
+
+    @Test
     public void shouldAcceptNoneAlgorithm() throws Exception {
         String token = "eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJpc3MiOiJhdXRoMCJ9.";
         DecodedJWT jwt = JWT.require(Algorithm.none())

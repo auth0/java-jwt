@@ -350,10 +350,24 @@ public final class JWTVerifier {
      */
     public DecodedJWT verify(String token) throws JWTVerificationException {
         DecodedJWT jwt = JWT.decode(token);
-        verifyAlgorithm(jwt, algorithm);
-        algorithm.verify(jwt);
-        verifyClaims(jwt, claims);
-        return jwt;
+        return verify(jwt);
+    }
+
+    /**
+     * Perform the verification against the given decoded JWT Token, using any previous configured options.
+     *
+     * @param decodedJWT token to verify.
+     * @return a received decodedJWT token.
+     * @throws AlgorithmMismatchException     if the algorithm stated in the token's header it's not equal to the one defined in the {@link JWTVerifier}.
+     * @throws SignatureVerificationException if the signature is invalid.
+     * @throws TokenExpiredException          if the token has expired.
+     * @throws InvalidClaimException          if a claim contained a different value than the expected one.
+     */
+    public DecodedJWT verify(DecodedJWT decodedJWT) throws JWTVerificationException {
+        verifyAlgorithm(decodedJWT, algorithm);
+        algorithm.verify(decodedJWT);
+        verifyClaims(decodedJWT, claims);
+        return decodedJWT;
     }
 
     private void verifyAlgorithm(DecodedJWT jwt, Algorithm expectedAlgorithm) throws AlgorithmMismatchException {
