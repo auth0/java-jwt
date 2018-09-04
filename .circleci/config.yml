@@ -1,33 +1,10 @@
 version: 2
 jobs:
-  java_7_build:
-    docker:
-      - image: openjdk:7u121-jdk
-    steps:
-      - checkout
-      - run: chmod +x gradlew
-      # Download and cache dependencies
-      - restore_cache:
-          keys:
-          - v1-dependencies-{{ checksum "build.gradle" }}
-          # fallback to using the latest cache if no exact match is found
-          - v1-dependencies-
-      # run tests!
-      - run: ./gradlew clean check jacocoTestReport --continue --console=plain
-      - run:
-          name: Upload Coverage
-          when: on_success
-          command: bash <(curl -s https://codecov.io/bash)
-      - save_cache:
-          paths:
-            - ~/.m2
-          key: v1-dependencies-{{ checksum "build.gradle" }}
+  build:
     environment:
       GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx2048m -XX:+HeapDumpOnOutOfMemoryError"'
       _JAVA_OPTIONS: "-Xms512m -Xmx1024m"
       TERM: dumb
-
-  java_8_build:
     docker:
       - image: openjdk:8-jdk
     steps:
@@ -49,14 +26,3 @@ jobs:
           paths:
             - ~/.m2
           key: v1-dependencies-{{ checksum "build.gradle" }}
-    environment:
-      GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx2048m -XX:+HeapDumpOnOutOfMemoryError"'
-      _JAVA_OPTIONS: "-Xms512m -Xmx1024m"
-      TERM: dumb
-      
-workflows:
-  version: 2
-  build:
-    jobs:
-      - java_7_build
-      - java_8_build
