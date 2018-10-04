@@ -52,9 +52,20 @@ public class JWTVerifierTest {
     }
 
     @Test
+    public void shouldValidateMultipleIssuers() {
+        String token = "eyJhbGciOiJIUzI1NiIsImN0eSI6IkpXVCJ9.eyJpc3MiOiJhdXRoMCJ9.mZ0m_N1J4PgeqWmi903JuUoDRZDBPB7HwkS4nVyWH1M";
+        DecodedJWT jwt = JWTVerifier.init(Algorithm.HMAC256("secret"))
+                .withIssuer("otherIssuer", "auth0")
+                .build()
+                .verify(token);
+
+        assertThat(jwt, is(notNullValue()));
+    }
+
+    @Test
     public void shouldThrowOnInvalidIssuer() throws Exception {
         exception.expect(InvalidClaimException.class);
-        exception.expectMessage("The Claim 'iss' value doesn't match the required one.");
+        exception.expectMessage("The Claim 'iss' value doesn't match the required issuer.");
         String token = "eyJhbGciOiJIUzI1NiIsImN0eSI6IkpXVCJ9.eyJpc3MiOiJhdXRoMCJ9.mZ0m_N1J4PgeqWmi903JuUoDRZDBPB7HwkS4nVyWH1M";
         JWTVerifier.init(Algorithm.HMAC256("secret"))
                 .withIssuer("invalid")
@@ -554,7 +565,7 @@ public class JWTVerifierTest {
     }
 
     @Test
-    public void shouldRemoveClaimWhenPassingNull() throws Exception {
+    public void shouldRemoveIssuerClaimWhenPassingNull() throws Exception {
         Algorithm algorithm = mock(Algorithm.class);
         JWTVerifier verifier = JWTVerifier.init(algorithm)
                 .withIssuer("iss")
@@ -563,6 +574,18 @@ public class JWTVerifierTest {
 
         assertThat(verifier.claims, is(notNullValue()));
         assertThat(verifier.claims, not(hasKey("iss")));
+    }
+
+    @Test
+    public void shouldRemoveAudienceClaimWhenPassingNull() throws Exception {
+        Algorithm algorithm = mock(Algorithm.class);
+        JWTVerifier verifier = JWTVerifier.init(algorithm)
+                .withAudience("Mark")
+                .withAudience(null)
+                .build();
+
+        assertThat(verifier.claims, is(notNullValue()));
+        assertThat(verifier.claims, not(hasKey("aud")));
     }
 
     @Test

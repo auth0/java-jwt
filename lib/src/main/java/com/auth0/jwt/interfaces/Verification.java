@@ -5,7 +5,7 @@ import com.auth0.jwt.JWTVerifier;
 import java.util.Date;
 
 public interface Verification {
-    Verification withIssuer(String issuer);
+    Verification withIssuer(String... issuer);
 
     Verification withSubject(String subject);
 
