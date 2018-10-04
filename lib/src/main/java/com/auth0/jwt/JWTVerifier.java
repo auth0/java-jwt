@@ -61,8 +61,8 @@ public final class JWTVerifier {
          * @return this same Verification instance.
          */
         @Override
-        public Verification withIssuer(String issuer) {
-            requireClaim(PublicClaims.ISSUER, issuer);
+        public Verification withIssuer(String... issuer) {
+            requireClaim(PublicClaims.ISSUER, asList(issuer));
             return this;
         }
 
@@ -86,7 +86,7 @@ public final class JWTVerifier {
          */
         @Override
         public Verification withAudience(String... audience) {
-            requireClaim(PublicClaims.AUDIENCE, Arrays.asList(audience));
+            requireClaim(PublicClaims.AUDIENCE, asList(audience));
             return this;
         }
 
@@ -316,6 +316,10 @@ public final class JWTVerifier {
             }
         }
 
+        private List<String> asList(String... issuer) {
+            return issuer == null ? null : Arrays.asList(issuer);
+        }
+
         private void addLeewayToDateClaims() {
             if (!claims.containsKey(PublicClaims.EXPIRES_AT)) {
                 claims.put(PublicClaims.EXPIRES_AT, defaultLeeway);
@@ -379,7 +383,8 @@ public final class JWTVerifier {
                     assertValidDateClaim(jwt.getNotBefore(), (Long) entry.getValue(), false);
                     break;
                 case PublicClaims.ISSUER:
-                    assertValidStringClaim(entry.getKey(), jwt.getIssuer(), (String) entry.getValue());
+                    //noinspection unchecked
+                    assertValidIssuerClaim(jwt.getIssuer(), (List<String>) entry.getValue());
                     break;
                 case PublicClaims.JWT_ID:
                     assertValidStringClaim(entry.getKey(), jwt.getId(), (String) entry.getValue());
@@ -451,7 +456,13 @@ public final class JWTVerifier {
 
     private void assertValidAudienceClaim(List<String> audience, List<String> value) {
         if (audience == null || !audience.containsAll(value)) {
-            throw new InvalidClaimException("The Claim 'aud' value doesn't contain the required audience.");
+            throw new InvalidClaimException(String.format("The Claim '%s' value doesn't contain the required audience.", PublicClaims.AUDIENCE));
+        }
+    }
+
+    private void assertValidIssuerClaim(String issuer, List<String> value) {
+        if (issuer == null || !value.contains(issuer)) {
+            throw new InvalidClaimException(String.format("The Claim '%s' value doesn't match the required issuer.", PublicClaims.ISSUER));
         }
     }
 }
