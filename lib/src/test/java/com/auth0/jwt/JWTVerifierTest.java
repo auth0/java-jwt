@@ -3,13 +3,16 @@ package com.auth0.jwt;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.AlgorithmMismatchException;
 import com.auth0.jwt.exceptions.InvalidClaimException;
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.Clock;
+import com.auth0.jwt.interfaces.CustomValidation;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -197,7 +200,7 @@ public class JWTVerifierTest {
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjpbInNvbWV0aGluZyJdfQ.3ENLez6tU_fG0SVFrGmISltZPiXLSHaz_dyn-XFTEGQ";
         Map<String, Object> map = new HashMap<>();
         map.put("name", new Object());
-        JWTVerifier verifier = new JWTVerifier(Algorithm.HMAC256("secret"), map, new ClockImpl());
+        JWTVerifier verifier = new JWTVerifier(Algorithm.HMAC256("secret"), map, Collections.emptyList(), new ClockImpl());
         verifier.verify(token);
     }
 
@@ -573,5 +576,25 @@ public class JWTVerifierTest {
                 .verify(token);
 
         assertThat(jwt, is(notNullValue()));
+    }
+
+    @Test
+    public void shouldThrowFromCustomValidator() throws Exception {
+        exception.expect(InvalidClaimException.class);
+        exception.expectMessage("Claim 'foo' must be 'bar'.");
+        String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmb28iOiJiYXoifQ._HaggjoHKMHartYJRaPdF-XoLVGOMxU-oDRF8ZLM7UI";
+        JWTVerifier.init(Algorithm.HMAC256("secret"))
+                .withCustomValidation(jwt -> {
+                    if(! "baz".equals(jwt.getClaim("foo").asString())) {
+                        throw new InvalidClaimException("Claim 'foo' must be 'baz'.");
+                    }
+                })
+                .withCustomValidation(jwt -> {
+                    if(! "bar".equals(jwt.getClaim("foo").asString())) {
+                        throw new InvalidClaimException("Claim 'foo' must be 'bar'.");
+                    }
+                })
+                .build()
+                .verify(token);
     }
 }

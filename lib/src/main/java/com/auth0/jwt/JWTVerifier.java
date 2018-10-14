@@ -3,10 +3,7 @@ package com.auth0.jwt;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.*;
 import com.auth0.jwt.impl.PublicClaims;
-import com.auth0.jwt.interfaces.Claim;
-import com.auth0.jwt.interfaces.Clock;
-import com.auth0.jwt.interfaces.DecodedJWT;
-import com.auth0.jwt.interfaces.Verification;
+import com.auth0.jwt.interfaces.*;
 
 import java.util.*;
 
@@ -17,11 +14,18 @@ import java.util.*;
 public final class JWTVerifier {
     private final Algorithm algorithm;
     final Map<String, Object> claims;
+    final List<CustomValidation> customValidations;
     private final Clock clock;
 
+    @Deprecated
     JWTVerifier(Algorithm algorithm, Map<String, Object> claims, Clock clock) {
+        this(algorithm, claims, Collections.<CustomValidation>emptyList(), clock);
+    }
+
+    JWTVerifier(Algorithm algorithm, Map<String, Object> claims, List<CustomValidation> customValidations, Clock clock) {
         this.algorithm = algorithm;
         this.claims = Collections.unmodifiableMap(claims);
+        this.customValidations = Collections.unmodifiableList(customValidations);
         this.clock = clock;
     }
 
@@ -42,6 +46,7 @@ public final class JWTVerifier {
     public static class BaseVerification implements Verification {
         private final Algorithm algorithm;
         private final Map<String, Object> claims;
+        private final List<CustomValidation> customValidations;
         private long defaultLeeway;
 
         BaseVerification(Algorithm algorithm) throws IllegalArgumentException {
@@ -52,6 +57,7 @@ public final class JWTVerifier {
             this.algorithm = algorithm;
             this.claims = new HashMap<>();
             this.defaultLeeway = 0;
+            this.customValidations = new ArrayList<>();
         }
 
         /**
@@ -283,6 +289,20 @@ public final class JWTVerifier {
         }
 
         /**
+         * Add a custom validation.
+         *
+         * @param validation the {@link CustomValidation} instance that will be called as part of the verification sequence.
+         * @return this same Verification instance.
+         * @throws IllegalArgumentException if the value is null.
+         */
+        @Override
+        public Verification withCustomValidation(CustomValidation validation) throws IllegalArgumentException {
+            assertNonNull(validation);
+            requireCustomValidation(validation);
+            return this;
+        }
+
+        /**
          * Creates a new and reusable instance of the JWTVerifier with the configuration already provided.
          *
          * @return a new JWTVerifier instance.
@@ -301,7 +321,7 @@ public final class JWTVerifier {
          */
         public JWTVerifier build(Clock clock) {
             addLeewayToDateClaims();
-            return new JWTVerifier(algorithm, claims, clock);
+            return new JWTVerifier(algorithm, claims, customValidations, clock);
         }
 
         private void assertPositive(long leeway) {
@@ -313,6 +333,12 @@ public final class JWTVerifier {
         private void assertNonNull(String name) {
             if (name == null) {
                 throw new IllegalArgumentException("The Custom Claim's name can't be null.");
+            }
+        }
+
+        private void assertNonNull(CustomValidation validation) {
+            if (validation == null) {
+                throw new IllegalArgumentException("The Custom validation can't be null.");
             }
         }
 
@@ -335,6 +361,10 @@ public final class JWTVerifier {
             }
             claims.put(name, value);
         }
+
+        private void requireCustomValidation(CustomValidation validation) {
+            customValidations.add(validation);
+        }
     }
 
 
@@ -353,6 +383,7 @@ public final class JWTVerifier {
         verifyAlgorithm(jwt, algorithm);
         algorithm.verify(jwt);
         verifyClaims(jwt, claims);
+        verifyCustomValidations(jwt);
         return jwt;
     }
 
@@ -452,6 +483,12 @@ public final class JWTVerifier {
     private void assertValidAudienceClaim(List<String> audience, List<String> value) {
         if (audience == null || !audience.containsAll(value)) {
             throw new InvalidClaimException("The Claim 'aud' value doesn't contain the required audience.");
+        }
+    }
+
+    private void verifyCustomValidations(DecodedJWT jwt) {
+        for(CustomValidation validation : this.customValidations) {
+            validation.validate(jwt);
         }
     }
 }
