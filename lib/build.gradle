@@ -1,30 +1,27 @@
-apply plugin: 'jacoco'
-apply plugin: 'java'
-apply from: '../scripts/release.gradle'
-apply from: '../scripts/maven.gradle'
-apply from: '../scripts/bintray.gradle'
+apply plugin: "com.auth0.gradle.oss-library.java"
+apply plugin: "jacoco"
 
 logger.lifecycle("Using version ${version} for ${group}.${name}")
 
-auth0 {
+oss {
     name "java jwt"
-    repo "java-jwt"
+    repository "java-jwt"
+    organization "auth0"
     description "Java implementation of JSON Web Token (JWT)"
-    url  'http://www.jwt.io'
-    developer {
-        id = "auth0"
-        name = "Auth0"
-        email = "oss@auth0.com"
-    }
-    developer {
-        id = "lbalmaceda"
-        name = "Luciano Balmaceda"
-        email = "luciano.balmaceda@auth0.com"
-    }
-    developer {
-        id = "hzalaz"
-        name = "Hernan Zalazar"
-        email = "hernan@auth0.com"
+
+    developers {
+        auth0 {
+            displayName = "Auth0"
+            email = "oss@auth0.com"
+        }
+        lbalmaceda {
+            displayName = "Luciano Balmaceda"
+            email = "luciano.balmaceda@auth0.com"
+        }
+        hzalaz {
+            displayName = "Hernan Zalazar"
+            email = "hernan@auth0.com"
+        }
     }
 }
 
@@ -34,13 +31,13 @@ compileJava {
 }
 
 dependencies {
-    compile 'com.fasterxml.jackson.core:jackson-databind:2.9.7'
-    compile 'commons-codec:commons-codec:1.11'
-    testCompile 'org.bouncycastle:bcprov-jdk15on:1.59'
-    testCompile 'junit:junit:4.12'
-    testCompile 'net.jodah:concurrentunit:0.4.3'
-    testCompile 'org.hamcrest:java-hamcrest:2.0.0.0'
-    testCompile 'org.mockito:mockito-core:2.18.3'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.9.7'
+    implementation 'commons-codec:commons-codec:1.11'
+    testImplementation 'org.bouncycastle:bcprov-jdk15on:1.59'
+    testImplementation 'junit:junit:4.12'
+    testImplementation 'net.jodah:concurrentunit:0.4.3'
+    testImplementation 'org.hamcrest:java-hamcrest:2.0.0.0'
+    testImplementation 'org.mockito:mockito-core:2.18.3'
 }
 
 jacocoTestReport {
@@ -55,9 +52,4 @@ test {
         events "skipped", "failed", "standardError"
         exceptionFormat "short"
     }
-}
-
-task clean(type: Delete) {
-    delete rootProject.buildDir
-    delete 'CHANGELOG.md.release'
 }
