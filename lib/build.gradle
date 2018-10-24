@@ -1,5 +1,8 @@
-apply plugin: "com.auth0.gradle.oss-library.java"
-apply plugin: "jacoco"
+plugins {
+    id "com.jfrog.bintray" version "1.8.4"
+    id "com.auth0.gradle.oss-library.java" version "0.8.0"
+    id "jacoco"
+}
 
 logger.lifecycle("Using version ${version} for ${group}.${name}")
 
