@@ -427,7 +427,7 @@ public final class JWTVerifier {
 
     private void assertValidDateClaim(Date date, long leeway, boolean shouldBeFuture) {
         Date today = clock.getToday();
-        today.setTime((long) Math.floor((today.getTime() / 1000) * 1000)); // truncate millis
+        today.setTime(today.getTime() / 1000 * 1000); // truncate millis
         if (shouldBeFuture) {
             assertDateIsFuture(date, leeway, today);
         } else {
