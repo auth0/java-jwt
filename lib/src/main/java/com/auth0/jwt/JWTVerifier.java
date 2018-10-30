@@ -43,6 +43,7 @@ public final class JWTVerifier {
         private final Algorithm algorithm;
         private final Map<String, Object> claims;
         private long defaultLeeway;
+        private boolean ignoreIssuedAt;
 
         BaseVerification(Algorithm algorithm) throws IllegalArgumentException {
             if (algorithm == null) {
@@ -149,6 +150,10 @@ public final class JWTVerifier {
             requireClaim(PublicClaims.ISSUED_AT, leeway);
             return this;
         }
+
+		public void ignoreIssuedAt() {
+			this.ignoreIssuedAt = true;
+		}
 
         /**
          * Require a specific JWT Id ("jti") claim.
@@ -316,17 +321,17 @@ public final class JWTVerifier {
             }
         }
 
-        private void addLeewayToDateClaims() {
-            if (!claims.containsKey(PublicClaims.EXPIRES_AT)) {
-                claims.put(PublicClaims.EXPIRES_AT, defaultLeeway);
-            }
-            if (!claims.containsKey(PublicClaims.NOT_BEFORE)) {
-                claims.put(PublicClaims.NOT_BEFORE, defaultLeeway);
-            }
-            if (!claims.containsKey(PublicClaims.ISSUED_AT)) {
-                claims.put(PublicClaims.ISSUED_AT, defaultLeeway);
-            }
-        }
+		private void addLeewayToDateClaims() {
+			if (!claims.containsKey(PublicClaims.EXPIRES_AT)) {
+				claims.put(PublicClaims.EXPIRES_AT, defaultLeeway);
+			}
+			if (!claims.containsKey(PublicClaims.NOT_BEFORE)) {
+				claims.put(PublicClaims.NOT_BEFORE, defaultLeeway);
+			}
+			if (!ignoreIssuedAt && !claims.containsKey(PublicClaims.ISSUED_AT)) {
+				claims.put(PublicClaims.ISSUED_AT, defaultLeeway);
+			}
+		}
 
         private void requireClaim(String name, Object value) {
             if (value == null) {
