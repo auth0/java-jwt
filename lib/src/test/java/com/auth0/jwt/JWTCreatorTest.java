@@ -195,7 +195,6 @@ public class JWTCreatorTest {
                 .withIssuedAt(new Date(1477592000))
                 .sign(Algorithm.HMAC256("secret"));
 
-        System.out.println(signed);
         assertThat(signed, is(notNullValue()));
         assertThat(TokenUtils.splitToken(signed)[1], is("eyJpYXQiOjE0Nzc1OTJ9"));
     }
