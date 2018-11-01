@@ -1,4 +1,4 @@
-# Java JWT
+# Java JWT Example
 
 [![Build Status](https://travis-ci.org/auth0/java-jwt.svg?branch=master)](https://travis-ci.org/auth0/java-jwt)
 [![Coverage Status](https://img.shields.io/codecov/c/github/auth0/java-jwt/master.svg?style=flat-square)](https://codecov.io/github/auth0/java-jwt)
