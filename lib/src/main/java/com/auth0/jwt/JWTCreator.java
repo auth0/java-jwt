@@ -291,6 +291,17 @@ public final class JWTCreator {
         }
 
         /**
+         * Add some Claims with the given map
+         *
+         * @param payload a claim's Map(key->value)
+         * @return this same Builder instance.
+         */
+        public Builder withPayload(Map<String, Object> payload) throws IllegalArgumentException {
+            payload.forEach(this::addClaim);
+            return this;
+        }
+
+        /**
          * Creates a new JWT and signs is with the given algorithm
          *
          * @param algorithm used to sign the JWT
