@@ -65,8 +65,11 @@ class PayloadDeserializer extends StdDeserializer<Payload> {
 
     Date getDateFromSeconds(Map<String, JsonNode> tree, String claimName) {
         JsonNode node = tree.get(claimName);
-        if (node == null || node.isNull() || !node.canConvertToLong()) {
+        if (node == null || node.isNull()) {
             return null;
+        }
+        if (!node.canConvertToLong()) {
+            throw new JWTDecodeException(String.format("The claim '%s' contained a non-numeric date value.", claimName));
         }
         final long ms = node.asLong() * 1000;
         return new Date(ms);

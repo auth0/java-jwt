@@ -6,7 +6,7 @@
 [![Coverage Status](https://img.shields.io/codecov/c/github/auth0/java-jwt/v3.svg?style=flat-square)](https://codecov.io/github/auth0/java-jwt)
 [![License](http://img.shields.io/:license-mit-blue.svg?style=flat)](http://doge.mit-license.org)
 
-A Java implementation of [JSON Web Tokens (draft-ietf-oauth-json-web-token-08)](http://self-issued.info/docs/draft-ietf-oauth-json-web-token.html).
+A Java implementation of [JSON Web Token (JWT) - RFC 7519](https://tools.ietf.org/html/rfc7519).
 
 If you're looking for an **Android** version of the JWT Decoder take a look at our [JWTDecode.Android](https://github.com/auth0/JWTDecode.Android) library.
 
@@ -18,14 +18,14 @@ If you're looking for an **Android** version of the JWT Decoder take a look at o
 <dependency>
     <groupId>com.auth0</groupId>
     <artifactId>java-jwt</artifactId>
-    <version>3.3.0</version>
+    <version>3.4.1</version>
 </dependency>
 ```
 
 ### Gradle
 
 ```gradle
-compile 'com.auth0:java-jwt:3.3.0'
+compile 'com.auth0:java-jwt:3.4.1'
 ```
 
 ## Available Algorithms
@@ -120,8 +120,6 @@ try {
     String token = JWT.create()
         .withIssuer("auth0")
         .sign(algorithm);
-} catch (UnsupportedEncodingException exception){
-    //UTF-8 encoding not supported
 } catch (JWTCreationException exception){
     //Invalid Signing configuration / Couldn't convert Claims.
 }
@@ -159,8 +157,6 @@ try {
         .withIssuer("auth0")
         .build(); //Reusable verifier instance
     DecodedJWT jwt = verifier.verify(token);
-} catch (UnsupportedEncodingException exception){
-    //UTF-8 encoding not supported
 } catch (JWTVerificationException exception){
     //Invalid signature/claims
 }
