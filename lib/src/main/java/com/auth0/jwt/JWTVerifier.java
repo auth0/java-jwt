@@ -14,7 +14,7 @@ import java.util.*;
  * The JWTVerifier class holds the verify method to assert that a given Token has not only a proper JWT format, but also it's signature matches.
  */
 @SuppressWarnings("WeakerAccess")
-public final class JWTVerifier {
+public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
     private final Algorithm algorithm;
     final Map<String, Object> claims;
     private final Clock clock;
@@ -348,6 +348,7 @@ public final class JWTVerifier {
      * @throws TokenExpiredException          if the token has expired.
      * @throws InvalidClaimException          if a claim contained a different value than the expected one.
      */
+    @Override
     public DecodedJWT verify(String token) throws JWTVerificationException {
         DecodedJWT jwt = JWT.decode(token);
         verifyAlgorithm(jwt, algorithm);
