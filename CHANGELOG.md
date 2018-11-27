@@ -1,5 +1,11 @@
 # Change Log
 
+## [3.4.1](https://github.com/auth0/java-jwt/tree/3.4.1) (2018-10-24)
+[Full Changelog](https://github.com/auth0/java-jwt/compare/3.4.0...3.4.1)
+
+**Security**
+- Update jackson-databind dependency [\#292](https://github.com/auth0/java-jwt/pull/292) ([lbalmaceda](https://github.com/lbalmaceda))
+
 ## [3.4.0](https://github.com/auth0/java-jwt/tree/3.4.0) (2018-06-13)
 [Full Changelog](https://github.com/auth0/java-jwt/compare/3.3.0...3.4.0)
 
