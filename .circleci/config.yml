@@ -1,10 +1,6 @@
 version: 2
 jobs:
   build:
-    environment:
-      GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx2048m -XX:+HeapDumpOnOutOfMemoryError"'
-      _JAVA_OPTIONS: "-Xms512m -Xmx1024m"
-      TERM: dumb
     docker:
       - image: openjdk:8-jdk
     steps:
@@ -21,8 +17,12 @@ jobs:
       - run:
           name: Upload Coverage
           when: on_success
-          command: bash <(curl -s https://codecov.io/bash)
+          command: bash <(curl -s https://codecov.io/bash) -Z -C $CIRCLE_SHA1
       - save_cache:
           paths:
             - ~/.m2
           key: v1-dependencies-{{ checksum "build.gradle" }}
+    environment:
+      GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx2048m -XX:+HeapDumpOnOutOfMemoryError"'
+      _JAVA_OPTIONS: "-Xms512m -Xmx1024m"
+      TERM: dumb
