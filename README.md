@@ -18,14 +18,14 @@ If you're looking for an **Android** version of the JWT Decoder take a look at o
 <dependency>
     <groupId>com.auth0</groupId>
     <artifactId>java-jwt</artifactId>
-    <version>3.4.0</version>
+    <version>3.4.1</version>
 </dependency>
 ```
 
 ### Gradle
 
 ```gradle
-compile 'com.auth0:java-jwt:3.4.0'
+compile 'com.auth0:java-jwt:3.4.1'
 ```
 
 ## Available Algorithms
@@ -74,8 +74,7 @@ By using a `KeyProvider` you can change in runtime the key used either to verify
 - `getPrivateKeyId()`: Its called during token signing and it should return the id of the key that identifies the one returned by `getPrivateKey()`. This value is preferred over the one set in the `JWTCreator.Builder#withKeyId(String)` method. If you don't need to set a `kid` value avoid instantiating an Algorithm using a `KeyProvider`.
 
 
-The following snippet uses example classes showing how this would work:
-
+The following example shows how this would work with `JwkStore`, an imaginary [JWK Set](https://auth0.com/docs/jwks) implementation. For simple key rotation using JWKS, try the [jwks-rsa-java](https://github.com/auth0/jwks-rsa-java) library.
 
 ```java
 final JwkStore jwkStore = new JwkStore("{JWKS_FILE_HOST}");
@@ -104,9 +103,6 @@ RSAKeyProvider keyProvider = new RSAKeyProvider() {
 Algorithm algorithm = Algorithm.RSA256(keyProvider);
 //Use the Algorithm to create and verify JWTs.
 ```
-
-> For simple key rotation using JWKs try the [jwks-rsa-java](https://github.com/auth0/jwks-rsa-java) library.
-
 
 ### Create and Sign a Token
 
