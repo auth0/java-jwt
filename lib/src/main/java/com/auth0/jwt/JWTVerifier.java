@@ -151,9 +151,13 @@ public final class JWTVerifier {
             return this;
         }
 
-		public void ignoreIssuedAt() {
-			this.ignoreIssuedAt = true;
-		}
+        /**
+         * Call this method to skip the default issued_at verification
+         */
+        public Verification ignoreIssuedAt() {
+            this.ignoreIssuedAt = true;
+            return this;
+        }
 
         /**
          * Require a specific JWT Id ("jti") claim.
@@ -328,8 +332,11 @@ public final class JWTVerifier {
 			if (!claims.containsKey(PublicClaims.NOT_BEFORE)) {
 				claims.put(PublicClaims.NOT_BEFORE, defaultLeeway);
 			}
-			if (!ignoreIssuedAt && !claims.containsKey(PublicClaims.ISSUED_AT)) {
+			if (!claims.containsKey(PublicClaims.ISSUED_AT)) {
 				claims.put(PublicClaims.ISSUED_AT, defaultLeeway);
+			}
+			if(ignoreIssuedAt) {
+				claims.remove(PublicClaims.ISSUED_AT);
 			}
 		}
 

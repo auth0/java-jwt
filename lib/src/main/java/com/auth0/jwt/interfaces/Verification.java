@@ -37,5 +37,7 @@ public interface Verification {
 
     Verification withArrayClaim(String name, Integer... items) throws IllegalArgumentException;
 
+    Verification ignoreIssuedAt();
+
     JWTVerifier build();
 }
