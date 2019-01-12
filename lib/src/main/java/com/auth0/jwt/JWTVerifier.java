@@ -152,7 +152,7 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
         }
 
         /**
-         * Call this method to skip the default issued_at verification
+         * Skip the Issued At ("iat") date verification. By default, the verification is performed.
          */
         public Verification ignoreIssuedAt() {
             this.ignoreIssuedAt = true;
@@ -325,20 +325,21 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
             }
         }
 
-		private void addLeewayToDateClaims() {
-			if (!claims.containsKey(PublicClaims.EXPIRES_AT)) {
-				claims.put(PublicClaims.EXPIRES_AT, defaultLeeway);
-			}
-			if (!claims.containsKey(PublicClaims.NOT_BEFORE)) {
-				claims.put(PublicClaims.NOT_BEFORE, defaultLeeway);
-			}
-			if (!claims.containsKey(PublicClaims.ISSUED_AT)) {
-				claims.put(PublicClaims.ISSUED_AT, defaultLeeway);
-			}
-			if(ignoreIssuedAt) {
-				claims.remove(PublicClaims.ISSUED_AT);
-			}
-		}
+        private void addLeewayToDateClaims() {
+            if (!claims.containsKey(PublicClaims.EXPIRES_AT)) {
+                claims.put(PublicClaims.EXPIRES_AT, defaultLeeway);
+            }
+            if (!claims.containsKey(PublicClaims.NOT_BEFORE)) {
+                claims.put(PublicClaims.NOT_BEFORE, defaultLeeway);
+            }
+            if(ignoreIssuedAt) {
+                claims.remove(PublicClaims.ISSUED_AT);
+                return;
+            }
+            if (!claims.containsKey(PublicClaims.ISSUED_AT)) {
+                claims.put(PublicClaims.ISSUED_AT, defaultLeeway);
+            }
+        }
 
         private void requireClaim(String name, Object value) {
             if (value == null) {
