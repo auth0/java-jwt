@@ -43,6 +43,7 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
         private final Algorithm algorithm;
         private final Map<String, Object> claims;
         private long defaultLeeway;
+        private boolean ignoreIssuedAt;
 
         BaseVerification(Algorithm algorithm) throws IllegalArgumentException {
             if (algorithm == null) {
@@ -147,6 +148,14 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
         public Verification acceptIssuedAt(long leeway) throws IllegalArgumentException {
             assertPositive(leeway);
             requireClaim(PublicClaims.ISSUED_AT, leeway);
+            return this;
+        }
+
+        /**
+         * Skip the Issued At ("iat") date verification. By default, the verification is performed.
+         */
+        public Verification ignoreIssuedAt() {
+            this.ignoreIssuedAt = true;
             return this;
         }
 
@@ -322,6 +331,10 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
             }
             if (!claims.containsKey(PublicClaims.NOT_BEFORE)) {
                 claims.put(PublicClaims.NOT_BEFORE, defaultLeeway);
+            }
+            if(ignoreIssuedAt) {
+                claims.remove(PublicClaims.ISSUED_AT);
+                return;
             }
             if (!claims.containsKey(PublicClaims.ISSUED_AT)) {
                 claims.put(PublicClaims.ISSUED_AT, defaultLeeway);
