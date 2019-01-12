@@ -41,6 +41,7 @@ Temporary Items
 ## Plugin-specific files:
 
 # IntelliJ
+bin/
 /out/
 /lib/out/
 
