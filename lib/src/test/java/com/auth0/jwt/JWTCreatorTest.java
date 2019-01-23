@@ -14,6 +14,9 @@ import java.security.interfaces.RSAPrivateKey;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
@@ -356,5 +359,271 @@ public class JWTCreatorTest {
         assertThat(jwt, is(notNullValue()));
         String[] parts = jwt.split("\\.");
         assertThat(parts[1], is("eyJuYW1lIjpbMSwyLDNdfQ"));
+    }
+
+    @Test
+    public void shouldAcceptCustomCollectionClaimOfBooleanType() throws Exception {
+        Collection<Object> collection = new ArrayList<>();
+        collection.add(true);
+        collection.add(false);
+
+        String jwt = JWTCreator.init().withClaim("name", collection).sign(Algorithm.HMAC256("secret"));
+        assertThat(jwt, is(notNullValue()));
+        String[] parts = jwt.split("\\.");
+        assertThat(parts[1], is("eyJuYW1lIjpbdHJ1ZSxmYWxzZV19"));
+    }
+
+    @Test
+    public void shouldAcceptCustomCollectionClaimOfIntegerType() throws Exception {
+        Collection<Object> collection = new ArrayList<>();
+        collection.add(1);
+        collection.add(2);
+
+        String jwt = JWTCreator.init().withClaim("name", collection).sign(Algorithm.HMAC256("secret"));
+        assertThat(jwt, is(notNullValue()));
+        String[] parts = jwt.split("\\.");
+        assertThat(parts[1], is("eyJuYW1lIjpbMSwyXX0"));
+    }
+
+    @Test
+    public void shouldAcceptCustomCollectionClaimOfLongType() throws Exception {
+        Collection<Object> collection = new ArrayList<>();
+        collection.add(1L);
+        collection.add(2L);
+
+        String jwt = JWTCreator.init().withClaim("name", collection).sign(Algorithm.HMAC256("secret"));
+        assertThat(jwt, is(notNullValue()));
+        String[] parts = jwt.split("\\.");
+        assertThat(parts[1], is("eyJuYW1lIjpbMSwyXX0"));
+    }
+
+    @Test
+    public void shouldAcceptCustomCollectionClaimOfStringType() throws Exception {
+        Collection<Object> collection = new ArrayList<>();
+        collection.add("1");
+        collection.add("2");
+
+        String jwt = JWTCreator.init().withClaim("name", collection).sign(Algorithm.HMAC256("secret"));
+        assertThat(jwt, is(notNullValue()));
+        String[] parts = jwt.split("\\.");
+        assertThat(parts[1], is("eyJuYW1lIjpbIjEiLCIyIl19"));
+    }
+
+    @Test
+    public void shouldAcceptCustomCollectionClaimOfDoubleType() throws Exception {
+        Collection<Object> collection = new ArrayList<>();
+        collection.add(1.2);
+        collection.add(3.4);
+
+        String jwt = JWTCreator.init().withClaim("name", collection).sign(Algorithm.HMAC256("secret"));
+        assertThat(jwt, is(notNullValue()));
+        String[] parts = jwt.split("\\.");
+        assertThat(parts[1], is("eyJuYW1lIjpbMS4yLDMuNF19"));
+    }
+
+    @Test
+    public void shouldAcceptCustomCollectionClaimOfDateType() throws Exception {
+        Collection<Object> collection = new ArrayList<>();
+        collection.add(new Date(123456));
+        collection.add(new Date(7890123));
+
+        String jwt = JWTCreator.init().withClaim("name", collection).sign(Algorithm.HMAC256("secret"));
+        assertThat(jwt, is(notNullValue()));
+        String[] parts = jwt.split("\\.");
+        assertThat(parts[1], is("eyJuYW1lIjpbMTIzNDU2LDc4OTAxMjNdfQ"));
+    }
+
+    @Test
+    public void shouldAcceptCustomCollectionClaimOfIntegerArrayType() throws Exception {
+        Collection<Object> collection = new ArrayList<>();
+        collection.add(new Integer[] { 1, 2 });
+
+        String jwt = JWTCreator.init().withClaim("name", collection).sign(Algorithm.HMAC256("secret"));
+        assertThat(jwt, is(notNullValue()));
+        String[] parts = jwt.split("\\.");
+        assertThat(parts[1], is("eyJuYW1lIjpbWzEsMl1dfQ"));
+    }
+
+    @Test
+    public void shouldAcceptCustomCollectionClaimOfLongArrayType() throws Exception {
+        Collection<Object> collection = new ArrayList<>();
+        collection.add(new Long[] { 3L, 4L });
+
+        String jwt = JWTCreator.init().withClaim("name", collection).sign(Algorithm.HMAC256("secret"));
+        assertThat(jwt, is(notNullValue()));
+        String[] parts = jwt.split("\\.");
+        assertThat(parts[1], is("eyJuYW1lIjpbWzMsNF1dfQ"));
+    }
+
+    @Test
+    public void shouldAcceptCustomCollectionClaimOfStringArrayType() throws Exception {
+        Collection<Object> collection = new ArrayList<>();
+        collection.add(new String[] { "5", "6" });
+
+        String jwt = JWTCreator.init().withClaim("name", collection).sign(Algorithm.HMAC256("secret"));
+        assertThat(jwt, is(notNullValue()));
+        String[] parts = jwt.split("\\.");
+        assertThat(parts[1], is("eyJuYW1lIjpbWyI1IiwiNiJdXX0"));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldNotAcceptCustomCollectionClaimOfUnSupportedType() throws Exception {
+        Collection<Object> collection = new ArrayList<>();
+        collection.add(new JWTTest());
+
+        JWTCreator.init().withClaim("name", collection);
+    }
+
+    @Test
+    public void shouldAcceptCustomCollectionClaimOfArrayType() throws Exception {
+        Collection<Object> collection = new ArrayList<>();
+        collection.add(new Integer[] { 1, 2, 3 });
+        collection.add(new Long[] { 1L, 2L, 3L });
+        collection.add(new String[] { "1", "2", "3" });
+
+        String jwt = JWTCreator.init().withClaim("name", collection).sign(Algorithm.HMAC256("secret"));
+        assertThat(jwt, is(notNullValue()));
+        String[] parts = jwt.split("\\.");
+        assertThat(parts[1], is("eyJuYW1lIjpbWzEsMiwzXSxbMSwyLDNdLFsiMSIsIjIiLCIzIl1dfQ"));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldNotAcceptCustomCollectionClaimOfUnSupportedArrayType() throws Exception {
+        Collection<Object> collection = new ArrayList<>();
+        collection.add(new Boolean[] { true });
+
+        JWTCreator.init().withClaim("name", collection);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldNotAcceptNullCustomCollectionClaim() throws Exception {
+        Collection<Object> collection = null;
+        JWTCreator.init().withClaim("name", collection);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldAcceptEmptyCustomCollectionClaim() throws Exception {
+        Collection<Object> collection = new ArrayList<>();
+        JWTCreator.init().withClaim("name", collection);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldNotAcceptNullCustomMapClaim() throws Exception {
+        Map<String, Object> map = null;
+        JWTCreator.init().withClaim("name", map);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldAcceptEmptyCustomMapClaim() throws Exception {
+        Map<String, Object> map = new HashMap<>();
+        JWTCreator.init().withClaim("name", map);
+    }
+
+    @Test
+    public void shouldAcceptCustomMapClaimOfTypeLong() throws Exception {
+        Map<String, Object> map = new HashMap<>();
+        map.put("first", 1L);
+        map.put("two", Long.MAX_VALUE);
+        map.put("three", null);
+
+        String jwt = JWTCreator.init().withClaim("name", map).sign(Algorithm.HMAC256("secret"));
+        assertThat(jwt, is(notNullValue()));
+        String[] parts = jwt.split("\\.");
+        assertThat(parts[1], is("eyJuYW1lIjp7InR3byI6OTIyMzM3MjAzNjg1NDc3NTgwNywidGhyZWUiOm51bGwsImZpcnN0IjoxfX0"));
+    }
+
+    @Test
+    public void shouldAcceptCustomMapClaimOfTypeInteger() throws Exception {
+        Map<String, Object> map = new HashMap<>();
+        map.put("first", 1);
+        map.put("two", Integer.MAX_VALUE);
+        map.put("three", null);
+
+        String jwt = JWTCreator.init().withClaim("name", map).sign(Algorithm.HMAC256("secret"));
+        assertThat(jwt, is(notNullValue()));
+        String[] parts = jwt.split("\\.");
+        assertThat(parts[1], is("eyJuYW1lIjp7InR3byI6MjE0NzQ4MzY0NywidGhyZWUiOm51bGwsImZpcnN0IjoxfX0"));
+    }
+
+    @Test
+    public void shouldAcceptCustomMapClaimOfTypeDouble() throws Exception {
+        Map<String, Object> map = new HashMap<>();
+        map.put("first", 12.34);
+        map.put("two", Double.MAX_VALUE);
+        map.put("three", null);
+
+        String jwt = JWTCreator.init().withClaim("name", map).sign(Algorithm.HMAC256("secret"));
+        assertThat(jwt, is(notNullValue()));
+        String[] parts = jwt.split("\\.");
+        assertThat(parts[1],
+                is("eyJuYW1lIjp7InR3byI6MS43OTc2OTMxMzQ4NjIzMTU3RTMwOCwidGhyZWUiOm51bGwsImZpcnN0IjoxMi4zNH19"));
+    }
+
+    @Test
+    public void shouldAcceptCustomMapClaimOfTypeString() throws Exception {
+        Map<String, Object> map = new HashMap<>();
+        map.put("first", "test");
+        map.put("two", "name");
+        map.put("three", null);
+
+        String jwt = JWTCreator.init().withClaim("name", map).sign(Algorithm.HMAC256("secret"));
+        assertThat(jwt, is(notNullValue()));
+        String[] parts = jwt.split("\\.");
+        assertThat(parts[1], is("eyJuYW1lIjp7InR3byI6Im5hbWUiLCJ0aHJlZSI6bnVsbCwiZmlyc3QiOiJ0ZXN0In19"));
+    }
+
+    @Test
+    public void shouldAcceptCustomMapClaimOfTypeDate() throws Exception {
+        Map<String, Object> map = new HashMap<>();
+        map.put("first", new Date(1478891521000L));
+        map.put("two", null);
+
+        String jwt = JWTCreator.init().withClaim("name", map).sign(Algorithm.HMAC256("secret"));
+        assertThat(jwt, is(notNullValue()));
+        String[] parts = jwt.split("\\.");
+        assertThat(parts[1], is("eyJuYW1lIjp7InR3byI6bnVsbCwiZmlyc3QiOjE0Nzg4OTE1MjEwMDB9fQ"));
+    }
+
+    @Test
+    public void shouldAcceptCustomMapClaimOfTypeBoolean() throws Exception {
+        Map<String, Object> map = new HashMap<>();
+        map.put("first", true);
+        map.put("two", false);
+        map.put("three", null);
+
+        String jwt = JWTCreator.init().withClaim("name", map).sign(Algorithm.HMAC256("secret"));
+        assertThat(jwt, is(notNullValue()));
+        String[] parts = jwt.split("\\.");
+        assertThat(parts[1], is("eyJuYW1lIjp7InR3byI6ZmFsc2UsInRocmVlIjpudWxsLCJmaXJzdCI6dHJ1ZX19"));
+    }
+
+    @Test
+    public void shouldAcceptCustomMapClaimOfArrayType() throws Exception {
+        Map<String, Object> map = new HashMap<>();
+        map.put("first", new Integer[] { 1, 2, 3 });
+        map.put("two", new Long[] { 4L, 5L, 6L });
+        map.put("three", new String[] { "1", "2", "3" });
+
+        String jwt = JWTCreator.init().withClaim("name", map).sign(Algorithm.HMAC256("secret"));
+        assertThat(jwt, is(notNullValue()));
+        String[] parts = jwt.split("\\.");
+        assertThat(parts[1], is("eyJuYW1lIjp7InR3byI6WzQsNSw2XSwidGhyZWUiOlsiMSIsIjIiLCIzIl0sImZpcnN0IjpbMSwyLDNdfX0"));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldNotAcceptCustomMapClaimOfTypeCollection() throws Exception {
+        Map<String, Object> map = new HashMap<>();
+        map.put("first", Arrays.asList(new Integer[] { 1, 2, 3 }));
+        map.put("two", new Integer[] { 2, 3, 4 });
+
+        JWTCreator.init().withClaim("name", map);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldNotAcceptWhenNonSerializedCustomClassIsUsed() throws Exception {
+        Map<String, Object> map = new HashMap<>();
+        map.put("first", new JWTCreatorTest());
+
+        JWTCreator.init().withClaim("name", map);
     }
 }

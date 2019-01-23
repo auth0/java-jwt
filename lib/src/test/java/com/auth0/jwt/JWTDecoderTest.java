@@ -15,10 +15,15 @@ import org.junit.rules.ExpectedException;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.Map;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
+@SuppressWarnings("unchecked")
 public class JWTDecoderTest {
     @Rule
     public ExpectedException exception = ExpectedException.none();
@@ -289,7 +294,176 @@ public class JWTDecoderTest {
         assertThat(jwt.getClaims().get("extraClaim"), is(notNullValue()));
     }
 
-    //Helper Methods
+    @Test
+    public void shouldGetMapOfListIntegerClaimValue() throws Exception {
+        String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYW1lIjp7InR3byI6WzIsMyw0XSwiZmlyc3QiOlsxLDIsM119fQ.25extEOljDo2RDMGI1C9s8dy-0OYcSbf__rCX-7O8ig";
+        DecodedJWT jwt = JWT.decode(token);
+        Assert.assertThat(jwt, is(notNullValue()));
+        Map<String, Object> map = jwt.getClaim("name").asMap();
+        Assert.assertThat((List<Integer>) map.get("first"), contains(1, 2, 3));
+        Assert.assertThat((List<Integer>) map.get("two"), contains(2, 3, 4));
+    }
+
+    @Test
+    public void shouldGetMapOfBooleanClaimValue() throws Exception {
+        String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYW1lIjp7InR3byI6ZmFsc2UsInRocmVlIjpudWxsLCJmaXJzdCI6dHJ1ZX19.1tXW692Iq-7OVj1248_vKCvpoR6K_6dHcfH-K9OWg7s";
+        DecodedJWT jwt = JWT.decode(token);
+        Assert.assertThat(jwt, is(notNullValue()));
+        Map<String, Object> map = jwt.getClaim("name").asMap();
+        Assert.assertTrue((Boolean) map.get("first"));
+        Assert.assertFalse((Boolean) map.get("two"));
+    }
+
+    @Test
+    public void shouldGetMapOfDateClaimValue() throws Exception {
+        String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYW1lIjp7InR3byI6bnVsbCwiZmlyc3QiOjE0Nzg4OTE1MjEwMDB9fQ.xckuzg5t5zheqoWhQD5hStMmYE1pgbtv7fDj_v-shqw";
+        DecodedJWT jwt = JWT.decode(token);
+        Assert.assertThat(jwt, is(notNullValue()));
+        Map<String, Object> map = jwt.getClaim("name").asMap();
+        Date date = new Date(1478891521000L);
+        Assert.assertThat(map.get("first"), is(date.getTime()));
+    }
+
+    @Test
+    public void shouldGetMapOfStringClaimValue() throws Exception {
+        String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYW1lIjp7InR3byI6Im5hbWUiLCJ0aHJlZSI6bnVsbCwiZmlyc3QiOiJ0ZXN0In19.vfTKLWeuC3yOeh6olaBjcj4bPoVo9huW-NERdak1A5Q";
+        DecodedJWT jwt = JWT.decode(token);
+        Assert.assertThat(jwt, is(notNullValue()));
+        Map<String, Object> map = jwt.getClaim("name").asMap();
+        Assert.assertThat(map.get("first"), is("test"));
+        Assert.assertThat(map.get("two"), is("name"));
+    }
+
+    @Test
+    public void shouldGetMapOfDoubleClaimValue() throws Exception {
+        String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYW1lIjp7InR3byI6MS43OTc2OTMxMzQ4NjIzMTU3RTMwOCwidGhyZWUiOm51bGwsImZpcnN0IjoxMi4zNH19.Q7xT-5kca5tB9VrmyLU7P9-Ezjt1TEEFGrZnd46u3A4";
+        DecodedJWT jwt = JWT.decode(token);
+        Assert.assertThat(jwt, is(notNullValue()));
+        Map<String, Object> map = jwt.getClaim("name").asMap();
+        Assert.assertThat(map.get("first"), is(12.34));
+        Assert.assertThat(map.get("two"), is(Double.MAX_VALUE));
+    }
+
+    @Test
+    public void shouldGetMapOfIntegerClaimValue() throws Exception {
+        String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYW1lIjp7InR3byI6MjE0NzQ4MzY0NywidGhyZWUiOm51bGwsImZpcnN0IjoxfX0.9a6g-D1nYSDeDb9vW6cLYW4tUgHh4S2JE07E26pcMeE";
+        DecodedJWT jwt = JWT.decode(token);
+        Assert.assertThat(jwt, is(notNullValue()));
+        Map<String, Object> map = jwt.getClaim("name").asMap();
+        Assert.assertThat(map.get("first"), is(1));
+        Assert.assertThat(map.get("two"), is(Integer.MAX_VALUE));
+    }
+
+    @Test
+    public void shouldGetMapOfLongClaimValue() throws Exception {
+        String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYW1lIjp7InR3byI6OTIyMzM3MjAzNjg1NDc3NTgwNywidGhyZWUiOm51bGwsImZpcnN0IjoxfX0.SWbYSAdyczKPQS_lMSNThNZDINd7MXygnpEKnGD6e9I";
+        DecodedJWT jwt = JWT.decode(token);
+        Assert.assertThat(jwt, is(notNullValue()));
+        Map<String, Object> map = jwt.getClaim("name").asMap();
+        Assert.assertThat(map.get("first"), is(1));
+        Assert.assertThat(map.get("two"), is(Long.MAX_VALUE));
+    }
+
+    @Test
+    public void shouldGetCustomCollectionClaimOfBooleanType() throws Exception {
+        String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYW1lIjpbdHJ1ZSxmYWxzZV19.qhhvteWitJkKbLWBvIyVTSEPQyg0zYxvdbqAG_BxPwE";
+        DecodedJWT jwt = JWT.decode(token);
+        Assert.assertThat(jwt, is(notNullValue()));
+        Collection<Object> collection = jwt.getClaim("name").as(ArrayList.class);
+        Assert.assertThat(collection, contains(true, false));
+    }
+
+    @Test
+    public void shouldGetCustomCollectionClaimOfIntegerType() throws Exception {
+        String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYW1lIjpbMSwyXX0.7UnsF12puwoNHdzSbGkKqtx_KEW33kqWZxBHlIT8vFA";
+        DecodedJWT jwt = JWT.decode(token);
+        Assert.assertThat(jwt, is(notNullValue()));
+        Collection<Object> collection = jwt.getClaim("name").as(ArrayList.class);
+        Assert.assertThat(collection, contains(1, 2));
+    }
+
+    @Test
+    public void shouldGetCustomCollectionClaimOfLongType() throws Exception {
+        String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYW1lIjpbMSwyXX0.7UnsF12puwoNHdzSbGkKqtx_KEW33kqWZxBHlIT8vFA";
+        DecodedJWT jwt = JWT.decode(token);
+        Assert.assertThat(jwt, is(notNullValue()));
+        Collection<Object> collection = jwt.getClaim("name").as(ArrayList.class);
+        Assert.assertThat(collection, contains(1, 2));
+    }
+
+    @Test
+    public void shouldGetCustomCollectionClaimOfStringType() throws Exception {
+        String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYW1lIjpbIjEiLCIyIl19.bLhvAR2OqHu9IAKG0ABgY63noD9ItlBWWJ3ZNjby8BI";
+        DecodedJWT jwt = JWT.decode(token);
+        Assert.assertThat(jwt, is(notNullValue()));
+        Collection<Object> collection = jwt.getClaim("name").as(ArrayList.class);
+        Assert.assertThat(collection, contains("1", "2"));
+    }
+
+    @Test
+    public void shouldGetCustomCollectionClaimOfDoubleType() throws Exception {
+        String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYW1lIjpbMS4yLDMuNF19.pxiRelpYpibcJY-rFisSTbfr-QiIEVS5hTmDXlLdTsM";
+        DecodedJWT jwt = JWT.decode(token);
+        Assert.assertThat(jwt, is(notNullValue()));
+        Collection<Object> collection = jwt.getClaim("name").as(ArrayList.class);
+        Assert.assertThat(collection, contains(1.2, 3.4));
+    }
+
+    @Test
+    public void shouldGetCustomCollectionClaimOfDateType() throws Exception {
+        String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYW1lIjpbMTIzNDU2LDc4OTAxMjNdfQ.pqp27qUJQkM5QwZyMCyHxJOEQ47kZisrquLlHIc2SYg";
+        DecodedJWT jwt = JWT.decode(token);
+        Assert.assertThat(jwt, is(notNullValue()));
+        Collection<Long> collection = jwt.getClaim("name").asList(Long.class);
+        Date date1 = new Date(123456L);
+        Date date2 = new Date(7890123L);
+
+        Assert.assertTrue(collection.containsAll(Arrays.asList(date1.getTime(), date2.getTime())));
+    }
+
+    @Test
+    public void shouldGetCustomCollectionClaimOfIntegerArrayType() throws Exception {
+        String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYW1lIjpbWzEsMl1dfQ.ZYBv7vFg71YsD1Sq_QWcvEABUTYfMvba7fl1pO3TaS8";
+        DecodedJWT jwt = JWT.decode(token);
+        Assert.assertThat(jwt, is(notNullValue()));
+        List<Object> collection = jwt.getClaim("name").asList(Object.class);
+        List<Object> expected = (ArrayList<Object>) collection.get(0);
+
+        Assert.assertTrue(expected.containsAll(Arrays.asList(1, 2)));
+    }
+
+    @Test
+    public void shouldGetCustomCollectionClaimOfLongArrayType() throws Exception {
+        String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYW1lIjpbWzMsNF1dfQ.eN4lyqCSFT9TbpC7j6x4ZsLUPYAUOHGvoRHahjjpvJE";
+        DecodedJWT jwt = JWT.decode(token);
+        Assert.assertThat(jwt, is(notNullValue()));
+        List<Object> collection = jwt.getClaim("name").asList(Object.class);
+        List<Object> expected = (ArrayList<Object>) collection.get(0);
+
+        Assert.assertTrue(expected.containsAll(Arrays.asList(3, 4)));
+    }
+
+    @Test
+    public void shouldGetCustomCollectionClaimOfStringArrayType() throws Exception {
+        String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYW1lIjpbWyI1IiwiNiJdXX0.5XhPlStgVHMhnqYuJ2WWnbZclTMXJbU1Npy1A5tWkT4";
+        DecodedJWT jwt = JWT.decode(token);
+        Assert.assertThat(jwt, is(notNullValue()));
+        List<Object> collection = jwt.getClaim("name").asList(Object.class);
+        List<Object> expected = (ArrayList<Object>) collection.get(0);
+
+        Assert.assertTrue(expected.containsAll(Arrays.asList("5", "6")));
+    }
+
+    @Test
+    public void shouldGetMapOfArrayClaimValue() throws Exception {
+        String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYW1lIjp7InR3byI6WzQsNSw2XSwidGhyZWUiOlsiMSIsIjIiLCIzIl0sImZpcnN0IjpbMSwyLDNdfX0.mhQ6n5tgcjAsNfpn8Ye8Bxq4EmP4CIYy2SYrHiCa-UU";
+        DecodedJWT jwt = JWT.decode(token);
+        Assert.assertThat(jwt, is(notNullValue()));
+        Map<String, Object> map = jwt.getClaim("name").asMap();
+        Assert.assertThat((List<Integer>) map.get("first"), contains(1, 2, 3));
+        Assert.assertThat((List<Long>) map.get("two"), contains(4, 5, 6));
+        Assert.assertThat((List<String>) map.get("three"), contains("1", "2", "3"));
+    }
 
     private DecodedJWT customJWT(String jsonHeader, String jsonPayload, String signature) {
         String header = Base64.encodeBase64URLSafeString(jsonHeader.getBytes(StandardCharsets.UTF_8));

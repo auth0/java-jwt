@@ -16,6 +16,10 @@ import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * The JWTCreator class holds the sign method to generate a complete JWT (with Signature) from a given Header and Payload content.
@@ -58,6 +62,14 @@ public final class JWTCreator {
     public static class Builder {
         private final Map<String, Object> payloadClaims;
         private Map<String, Object> headerClaims;
+
+        private static final Set<Class<?>> SUPPORTED_TYPES = new HashSet<>();
+        private static final Set<Class<?>> SUPPORTED_ARRAY_TYPES = new HashSet<>();
+        static {
+            SUPPORTED_ARRAY_TYPES.addAll(Arrays.asList(Integer[].class, Long[].class, String[].class));
+            SUPPORTED_TYPES.addAll(
+                    Arrays.asList(String.class, Integer.class, Double.class, Long.class, Date.class, Boolean.class));
+        }
 
         Builder() {
             this.payloadClaims = new HashMap<>();
@@ -162,6 +174,78 @@ public final class JWTCreator {
         public Builder withJWTId(String jwtId) {
             addClaim(PublicClaims.JWT_ID, jwtId);
             return this;
+        }
+
+        /**
+         * Add a Map of Claim values. Only primitives and collections are supported as
+         * values in the map. Warning: Custom classes are not allowed.
+         *
+         * @param name
+         * @param values
+         * @throws IllegalArgumentException
+         */
+        public Builder withClaim(String name, Map<String, Object> values) throws IllegalArgumentException {
+            assertNonNull(name);
+            if (!validateClaim(values)) {
+                throw new IllegalArgumentException(
+                        "Unsupported claim type found in passed collection. Refer supported types.");
+            }
+            addClaim(name, values);
+            return this;
+        }
+
+        /**
+         * Add a Collection of Claim values. Only primitives and supported array types
+         * are supported as values in the Collection. Warning: Custom classes are not
+         * allowed.
+         *
+         * @param name
+         * @param values
+         * @throws IllegalArgumentException
+         */
+        public Builder withClaim(String name, Collection<Object> values) throws IllegalArgumentException {
+            assertNonNull(name);
+            if (!validateClaim(values)) {
+                throw new IllegalArgumentException(
+                        "Unsupported claim type found in passed collection. Refer supported types.");
+            }
+            addClaim(name, values);
+            return this;
+        }
+
+        private static boolean validateClaim(Map<String, Object> claim) {
+            if (claim == null || claim.isEmpty()) {
+                return false;
+            }
+            Collection<Object> values = claim.values();
+            return validateClaim(values);
+        }
+
+        private static boolean validateClaim(Collection<Object> values) {
+            if (values == null || values.isEmpty()) {
+                return false;
+            }
+            for (Object value : values) {
+                if (!isValidClaimValue(value)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        /**
+         * We are allowing value can be null at this point which will be handled at
+         * {@link #addClaim(String, Object)}
+         */
+        private static boolean isValidClaimValue(Object value) {
+            if (value == null) {
+                return true;
+            }
+            Class<?> clazz = value.getClass();
+            if (clazz.isArray() && SUPPORTED_ARRAY_TYPES.contains(clazz)) {
+                return true;
+            }
+            return SUPPORTED_TYPES.contains(clazz);
         }
 
         /**

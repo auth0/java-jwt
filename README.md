@@ -357,6 +357,8 @@ Claim claim = jwt.getClaim("isAdmin");
 ```
 
 When creating a Token with the `JWT.create()` you can specify a custom Claim by calling `withClaim()` and passing both the name and the value.
+withClaim() can be used to pass Map of <String, Object>. Only primitives and collections are allowed here. 
+Warning: Using custom classes is not guranteed to serialize without issues.
 
 ```java
 String token = JWT.create()
