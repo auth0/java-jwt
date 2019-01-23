@@ -53,13 +53,14 @@ public class JWTVerifierTest {
 
     @Test
     public void shouldValidateMultipleIssuers() {
-        String token = "eyJhbGciOiJIUzI1NiIsImN0eSI6IkpXVCJ9.eyJpc3MiOiJhdXRoMCJ9.mZ0m_N1J4PgeqWmi903JuUoDRZDBPB7HwkS4nVyWH1M";
-        DecodedJWT jwt = JWTVerifier.init(Algorithm.HMAC256("secret"))
+        String auth0Token = "eyJhbGciOiJIUzI1NiIsImN0eSI6IkpXVCJ9.eyJpc3MiOiJhdXRoMCJ9.mZ0m_N1J4PgeqWmi903JuUoDRZDBPB7HwkS4nVyWH1M";
+        String otherIssuertoken = "eyJhbGciOiJIUzI1NiIsImN0eSI6IkpXVCJ9.eyJpc3MiOiJvdGhlcklzc3VlciJ9.k4BCOJJl-c0_Y-49VD_mtt-u0QABKSV5i3W-RKc74co";
+        JWTVerifier verifier = JWTVerifier.init(Algorithm.HMAC256("secret"))
                 .withIssuer("otherIssuer", "auth0")
-                .build()
-                .verify(token);
+                .build();
 
-        assertThat(jwt, is(notNullValue()));
+        assertThat(verifier.verify(auth0Token), is(notNullValue()));
+        assertThat(verifier.verify(otherIssuertoken), is(notNullValue()));
     }
 
     @Test

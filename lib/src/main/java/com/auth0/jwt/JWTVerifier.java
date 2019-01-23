@@ -58,7 +58,7 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
         /**
          * Require a specific Issuer ("iss") claim.
          *
-         * @param issuer the required Issuer value
+         * @param issuer the required Issuer value. If multiple values are given, the claim must at least match one of them
          * @return this same Verification instance.
          */
         @Override
@@ -481,13 +481,13 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
 
     private void assertValidAudienceClaim(List<String> audience, List<String> value) {
         if (audience == null || !audience.containsAll(value)) {
-            throw new InvalidClaimException(String.format("The Claim '%s' value doesn't contain the required audience.", PublicClaims.AUDIENCE));
+            throw new InvalidClaimException("The Claim 'aud' value doesn't contain the required audience.");
         }
     }
 
     private void assertValidIssuerClaim(String issuer, List<String> value) {
         if (issuer == null || !value.contains(issuer)) {
-            throw new InvalidClaimException(String.format("The Claim '%s' value doesn't match the required issuer.", PublicClaims.ISSUER));
+            throw new InvalidClaimException("The Claim 'iss' value doesn't match the required issuer.");
         }
     }
 }
