@@ -1,5 +1,26 @@
 # Change Log
 
+## [3.5.0](https://github.com/auth0/java-jwt/tree/3.5.0) (2019-01-03)
+[Full Changelog](https://github.com/auth0/java-jwt/compare/3.4.1...3.5.0)
+
+**Added**
+- Verify a DecodedJWT  [\#308](https://github.com/auth0/java-jwt/pull/308) ([martinoconnor](https://github.com/martinoconnor))
+
+**Changed**
+- Add an interface for JWTVerifier. [\#205](https://github.com/auth0/java-jwt/pull/205) ([jebbench](https://github.com/jebbench))
+
+**Fixed**
+- Remove unnecessary cast between long/double and floor call [\#296](https://github.com/auth0/java-jwt/pull/296) ([jhorstmann](https://github.com/jhorstmann))
+
+**Security**
+- Bump jackson-databind to patch security issues [\#309](https://github.com/auth0/java-jwt/pull/309) ([lbalmaceda](https://github.com/lbalmaceda))
+
+## [3.4.1](https://github.com/auth0/java-jwt/tree/3.4.1) (2018-10-24)
+[Full Changelog](https://github.com/auth0/java-jwt/compare/3.4.0...3.4.1)
+
+**Security**
+- Update jackson-databind dependency [\#292](https://github.com/auth0/java-jwt/pull/292) ([lbalmaceda](https://github.com/lbalmaceda))
+
 ## [3.4.0](https://github.com/auth0/java-jwt/tree/3.4.0) (2018-06-13)
 [Full Changelog](https://github.com/auth0/java-jwt/compare/3.3.0...3.4.0)
 
