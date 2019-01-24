@@ -66,7 +66,7 @@ public final class JWTCreator {
 
         /**
          * Add specific Claims to set as the Header.
-         * If provided map is null then nothing
+         * If provided map is null then nothing is changed
          * If provided map contains a header with null value then that header will be removed from the header claims
          *
          * @param headerClaims the values to use as Claims in the token's Header.
