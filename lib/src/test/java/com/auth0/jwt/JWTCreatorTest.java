@@ -54,6 +54,49 @@ public class JWTCreatorTest {
     }
 
     @Test
+    public void shouldReturnBuilderIfNullMapIsProvided() throws Exception {
+        String signed = JWTCreator.init()
+                                  .withHeader(null)
+                                  .sign(Algorithm.HMAC256("secret"));
+
+        assertThat(signed, is(notNullValue()));
+    }
+
+    @Test
+    public void shouldOverwriteExistingIfHeadersMapContainsTheSameKey() throws Exception {
+        Map<String, Object> header = new HashMap<String, Object>();
+        header.put("test", 456);
+
+        String signed = JWTCreator.init()
+                                  .withClaim("test", 123)
+                                  .withHeader(header)
+                                  .sign(Algorithm.HMAC256("secret"));
+
+        assertThat(signed, is(notNullValue()));
+        String[] parts = signed.split("\\.");
+        String headerJson = new String(Base64.decodeBase64(parts[0]), StandardCharsets.UTF_8);
+        assertThat(headerJson, JsonMatcher.hasEntry("test", 456));
+    }
+
+    @Test
+    public void shouldRemoveHeaderIfTheValueIsNull() throws Exception {
+        Map<String, Object> header = new HashMap<String, Object>();
+        header.put("test", null);
+        header.put("test2", "isSet");
+
+        String signed = JWTCreator.init()
+                                  .withClaim("test", 123)
+                                  .withHeader(header)
+                                  .sign(Algorithm.HMAC256("secret"));
+
+        assertThat(signed, is(notNullValue()));
+        String[] parts = signed.split("\\.");
+        String headerJson = new String(Base64.decodeBase64(parts[0]), StandardCharsets.UTF_8);
+        assertThat(headerJson, JsonMatcher.hasEntry("test", null));
+        assertThat(headerJson, JsonMatcher.hasEntry("test2", "isSet"));
+    }
+
+    @Test
     public void shouldAddKeyId() throws Exception {
         String signed = JWTCreator.init()
                 .withKeyId("56a8bd44da435300010000015f5ed")
