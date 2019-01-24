@@ -71,7 +71,7 @@ public final class JWTCreator {
          * @return this same Builder instance.
          */
         public Builder withHeader(Map<String, Object> headerClaims) {
-            this.headerClaims = new HashMap<>(headerClaims);
+            this.headerClaims.putAll(headerClaims);
             return this;
         }
 
