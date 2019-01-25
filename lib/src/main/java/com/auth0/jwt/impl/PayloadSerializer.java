@@ -43,15 +43,9 @@ public class PayloadSerializer extends StdSerializer<ClaimsHolder> {
                         gen.writeEndArray();
                     }
                     break;
-                case PublicClaims.EXPIRES_AT:
-                case PublicClaims.ISSUED_AT:
-                case PublicClaims.NOT_BEFORE:
-                    gen.writeFieldName(e.getKey());
-                    gen.writeNumber(dateToSeconds((Date) e.getValue()));
-                    break;
                 default:
                     gen.writeFieldName(e.getKey());
-                    if (e.getValue() instanceof Date) {
+                    if (e.getValue() instanceof Date) { // true for EXPIRES_AT, ISSUED_AT, NOT_BEFORE
                         gen.writeNumber(dateToSeconds((Date) e.getValue()));
                     } else {
                         gen.writeObject(e.getValue());
