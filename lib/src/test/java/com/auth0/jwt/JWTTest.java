@@ -77,6 +77,18 @@ public class JWTTest {
     // Verify
 
     @Test
+    public void shouldVerifyDecodedToken() throws Exception {
+        String token = "eyJhbGciOiJSUzUxMiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhdXRoMCJ9.mvL5LoMyIrWYjk5umEXZTmbyIrkbbcVPUkvdGZbu0qFBxGOf0nXP5PZBvPcOu084lvpwVox5n3VaD4iqzW-PsJyvKFgi5TnwmsbKchAp7JexQEsQOnTSGcfRqeUUiBZqRQdYsho71oAB3T4FnalDdFEpM-fztcZY9XqKyayqZLreTeBjqJm4jfOWH7KfGBHgZExQhe96NLq1UA9eUyQwdOA1Z0SgXe4Ja5PxZ6Fm37KnVDtDlNnY4JAAGFo6y74aGNnp_BKgpaVJCGFu1f1S5xCQ1HSvs8ZSdVWs5NgawW3wRd0kRt_GJ_Y3mIwiF4qUyHWGtsSHu_qjVdCTtbFyow";
+        DecodedJWT decodedJWT = JWT.decode(token);
+        RSAKey key = (RSAKey) PemUtils.readPublicKeyFromFile(PUBLIC_KEY_FILE_RSA, "RSA");
+        DecodedJWT jwt = JWT.require(Algorithm.RSA512(key))
+            .build()
+            .verify(decodedJWT);
+
+        assertThat(jwt, is(notNullValue()));
+    }
+
+    @Test
     public void shouldAcceptNoneAlgorithm() throws Exception {
         String token = "eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJpc3MiOiJhdXRoMCJ9.";
         DecodedJWT jwt = JWT.require(Algorithm.none())
