@@ -67,8 +67,7 @@ public final class JWTCreator {
         private static final Set<Class<?>> SUPPORTED_ARRAY_TYPES = new HashSet<>();
         static {
             SUPPORTED_ARRAY_TYPES.addAll(Arrays.asList(Integer[].class, Long[].class, String[].class));
-            SUPPORTED_TYPES.addAll(
-                    Arrays.asList(String.class, Integer.class, Double.class, Long.class, Date.class, Boolean.class));
+            SUPPORTED_TYPES.addAll(Arrays.asList(String.class, Integer.class, Double.class, Long.class, Date.class, Boolean.class));
         }
 
         Builder() {
@@ -187,8 +186,7 @@ public final class JWTCreator {
         public Builder withClaim(String name, Map<String, Object> values) throws IllegalArgumentException {
             assertNonNull(name);
             if (!validateClaim(values)) {
-                throw new IllegalArgumentException(
-                        "Unsupported claim type found in passed collection. Refer supported types.");
+                throw new IllegalArgumentException("Unsupported claim type found in passed collection. Refer supported types.");
             }
             addClaim(name, values);
             return this;
@@ -206,8 +204,7 @@ public final class JWTCreator {
         public Builder withClaim(String name, Collection<Object> values) throws IllegalArgumentException {
             assertNonNull(name);
             if (!validateClaim(values)) {
-                throw new IllegalArgumentException(
-                        "Unsupported claim type found in passed collection. Refer supported types.");
+                throw new IllegalArgumentException("Unsupported claim type found in passed collection. Refer supported types.");
             }
             addClaim(name, values);
             return this;
@@ -245,7 +242,10 @@ public final class JWTCreator {
             if (clazz.isArray() && SUPPORTED_ARRAY_TYPES.contains(clazz)) {
                 return true;
             }
-            return SUPPORTED_TYPES.contains(clazz);
+            if(SUPPORTED_TYPES.contains(clazz))
+                return true;
+
+            throw new IllegalArgumentException("For the claim, of value {" + value + "}, it's type {" + clazz + "} is not supported");
         }
 
         /**
