@@ -223,9 +223,7 @@ public final class JWTCreator {
                 return false;
             }
             for (Object value : values) {
-                if (!isValidClaimValue(value)) {
-                    return false;
-                }
+                isValidClaimValue(value);
             }
             return true;
         }
