@@ -211,7 +211,7 @@ public final class JWTCreator {
         }
 
         private static boolean validateClaim(Map<String, Object> claim) {
-            if (claim == null || claim.isEmpty()) {
+            if (claim == null) {
                 return false;
             }
             Collection<Object> values = claim.values();
@@ -219,7 +219,7 @@ public final class JWTCreator {
         }
 
         private static boolean validateClaim(Collection<Object> values) {
-            if (values == null || values.isEmpty()) {
+            if (values == null) {
                 return false;
             }
             for (Object value : values) {

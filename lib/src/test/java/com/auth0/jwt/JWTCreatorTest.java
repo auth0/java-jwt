@@ -501,7 +501,7 @@ public class JWTCreatorTest {
         JWTCreator.init().withClaim("name", collection);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldAcceptEmptyCustomCollectionClaim() throws Exception {
         Collection<Object> collection = new ArrayList<>();
         JWTCreator.init().withClaim("name", collection);
@@ -513,7 +513,7 @@ public class JWTCreatorTest {
         JWTCreator.init().withClaim("name", map);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldAcceptEmptyCustomMapClaim() throws Exception {
         Map<String, Object> map = new HashMap<>();
         JWTCreator.init().withClaim("name", map);
