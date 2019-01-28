@@ -6,6 +6,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.ECDSAKeyProvider;
 import com.auth0.jwt.interfaces.RSAKeyProvider;
 
+import java.io.ByteArrayOutputStream;
 import java.security.interfaces.*;
 
 /**
@@ -369,6 +370,27 @@ public abstract class Algorithm {
      * @return the signature in a base64 encoded array of bytes
      * @throws SignatureGenerationException if the Key is invalid.
      */
-    public abstract byte[] sign(byte[] headerBytes, byte[] payloadBytes) throws SignatureGenerationException;
+    public byte[] sign(byte[] headerBytes, byte[] payloadBytes) throws SignatureGenerationException {
+    	// default implementation; keep around until sign(byte[]) method is removed
+    	byte[] contentBytes = new byte[headerBytes.length + 1 + payloadBytes.length];
+    	
+    	System.arraycopy(headerBytes, 0, contentBytes, 0, headerBytes.length);
+    	contentBytes[headerBytes.length] = (byte)'.';
+    	System.arraycopy(payloadBytes, 0, contentBytes, headerBytes.length + 1, payloadBytes.length);
+    	
+    	return sign(contentBytes);
+    }
+
+    /**
+     * Sign the given content using this Algorithm instance.
+     *
+     * @param contentBytes an array of bytes representing the base64 encoded content to be verified against the signature.
+     * @return the signature in a base64 encoded array of bytes
+     * @throws SignatureGenerationException if the Key is invalid.
+     * @deprecated Rather use {@linkplain #sign(byte[], byte[])}
+     */
+    
+    @Deprecated
+    public abstract byte[] sign(byte[] contentBytes) throws SignatureGenerationException;
 
 }

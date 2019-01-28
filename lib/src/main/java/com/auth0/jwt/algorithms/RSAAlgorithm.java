@@ -50,7 +50,6 @@ class RSAAlgorithm extends Algorithm {
         }
     }
 
-
     @Override
     public byte[] sign(byte[] headerBytes, byte[] payloadBytes) throws SignatureGenerationException {
         try {
@@ -64,6 +63,19 @@ class RSAAlgorithm extends Algorithm {
         }
     }
     
+    @Override
+    public byte[] sign(byte[] contentBytes) throws SignatureGenerationException {
+        try {
+            RSAPrivateKey privateKey = keyProvider.getPrivateKey();
+            if (privateKey == null) {
+                throw new IllegalStateException("The given Private Key is null.");
+            }
+            return crypto.createSignatureFor(getDescription(), privateKey, contentBytes);
+        } catch (NoSuchAlgorithmException | SignatureException | InvalidKeyException | IllegalStateException e) {
+            throw new SignatureGenerationException(this, e);
+        }
+    }
+
     @Override
     public String getSigningKeyId() {
         return keyProvider.getPrivateKeyId();

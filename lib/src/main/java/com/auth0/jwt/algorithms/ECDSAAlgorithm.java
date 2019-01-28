@@ -67,6 +67,21 @@ class ECDSAAlgorithm extends Algorithm {
     }
     
     @Override
+    @Deprecated
+    public byte[] sign(byte[] contentBytes) throws SignatureGenerationException {
+        try {
+            ECPrivateKey privateKey = keyProvider.getPrivateKey();
+            if (privateKey == null) {
+                throw new IllegalStateException("The given Private Key is null.");
+            }
+            byte[] signature = crypto.createSignatureFor(getDescription(), privateKey, contentBytes);
+            return DERToJOSE(signature);
+        } catch (NoSuchAlgorithmException | SignatureException | InvalidKeyException | IllegalStateException e) {
+            throw new SignatureGenerationException(this, e);
+        }
+    }    
+
+    @Override
     public String getSigningKeyId() {
         return keyProvider.getPrivateKeyId();
     }

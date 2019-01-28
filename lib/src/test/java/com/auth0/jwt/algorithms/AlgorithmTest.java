@@ -13,6 +13,8 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.withSettings;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 public class AlgorithmTest {
 
@@ -546,4 +548,16 @@ public class AlgorithmTest {
         assertThat(algorithm.getName(), is("none"));
     }
 
+    @Test
+    public void shouldForwardHeaderPayloadSignatureToDeprecatedMethodForBackwardsCompatibility() throws Exception {
+        Algorithm algorithm = mock(Algorithm.class);
+        
+        byte[] signature = new byte[]{0x00, 0x01, 0x02};
+        when(algorithm.sign(any(byte[].class), any(byte[].class))).thenCallRealMethod();
+        when(algorithm.sign(any(byte[].class))).thenReturn(signature);
+        
+        byte[] sign = algorithm.sign(new byte[0], new byte[0]);
+        
+        assertThat(sign, is(signature));
+    }
 }

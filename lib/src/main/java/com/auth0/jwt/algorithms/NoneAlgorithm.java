@@ -24,4 +24,8 @@ class NoneAlgorithm extends Algorithm {
         return new byte[0];
     }
 
+    @Override
+    public byte[] sign(byte[] contentBytes) throws SignatureGenerationException {
+        return new byte[0];
+    }
 }
