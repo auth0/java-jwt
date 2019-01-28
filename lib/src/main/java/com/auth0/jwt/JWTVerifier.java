@@ -54,7 +54,7 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
             }
 
             this.algorithm = algorithm;
-            this.claims = new HashMap<>(48);
+            this.claims = new HashMap<>();
             this.defaultLeeway = 0;
         }
 
