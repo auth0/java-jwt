@@ -387,7 +387,7 @@ public abstract class Algorithm {
      * @param contentBytes an array of bytes representing the base64 encoded content to be verified against the signature.
      * @return the signature in a base64 encoded array of bytes
      * @throws SignatureGenerationException if the Key is invalid.
-     * @deprecated Rather use {@linkplain #sign(byte[], byte[])}
+     * @deprecated Please use the {@linkplain #sign(byte[], byte[])} method instead.
      */
     
     @Deprecated

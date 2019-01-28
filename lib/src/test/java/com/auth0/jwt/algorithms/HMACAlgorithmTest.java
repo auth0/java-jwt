@@ -9,12 +9,16 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.security.interfaces.RSAPrivateKey;
+import java.security.interfaces.RSAPublicKey;
 import java.util.Arrays;
 
-
+import static com.auth0.jwt.PemUtils.readPrivateKeyFromFile;
+import static com.auth0.jwt.PemUtils.readPublicKeyFromFile;
 import static com.auth0.jwt.algorithms.CryptoTestHelper.asJWT;
 import static com.auth0.jwt.algorithms.CryptoTestHelper.assertSignaturePresent;
 import static com.auth0.jwt.algorithms.CryptoTestHelper.assertSignatureValue;
@@ -264,6 +268,21 @@ public class HMACAlgorithmTest {
     @Test
     public void shouldReturnNullSigningKeyId() throws Exception {
         assertThat(Algorithm.HMAC256("secret").getSigningKeyId(), is(nullValue()));
+    }
+
+    @Test
+    public void shouldBeEqualSignatureMethodResults() throws Exception {
+        Algorithm algorithm = Algorithm.HMAC256("secret");
+
+        byte[] header = new byte[]{0x00, 0x01, 0x02};
+        byte[] payload = new byte[]{0x04, 0x05, 0x06};
+
+        ByteArrayOutputStream bout = new ByteArrayOutputStream();
+        bout.write(header);
+        bout.write('.');
+        bout.write(payload);
+
+        assertThat(algorithm.sign(bout.toByteArray()), is(algorithm.sign(header, payload)));
     }
 
 }

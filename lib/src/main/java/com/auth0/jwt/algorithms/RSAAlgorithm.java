@@ -51,6 +51,7 @@ class RSAAlgorithm extends Algorithm {
     }
 
     @Override
+    @Deprecated
     public byte[] sign(byte[] headerBytes, byte[] payloadBytes) throws SignatureGenerationException {
         try {
             RSAPrivateKey privateKey = keyProvider.getPrivateKey();

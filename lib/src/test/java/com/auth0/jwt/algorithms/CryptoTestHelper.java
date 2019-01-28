@@ -17,7 +17,6 @@ public abstract class CryptoTestHelper {
 	public static String asJWT(Algorithm algorithm, String header, String payload) {
 	    byte[] signatureBytes = algorithm.sign(header.getBytes(Charsets.UTF_8), payload.getBytes(Charsets.UTF_8));
 	    String jwtSignature = Base64.encodeBase64URLSafeString(signatureBytes);
-	    System.out.println("\n" + jwtSignature);
 	    return String.format("%s.%s.%s", header, payload, jwtSignature);
 	}
 	

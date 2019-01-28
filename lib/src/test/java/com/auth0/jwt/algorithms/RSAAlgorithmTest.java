@@ -8,6 +8,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import java.io.ByteArrayOutputStream;
 import java.security.*;
 import java.security.interfaces.RSAKey;
 import java.security.interfaces.RSAPrivateKey;
@@ -529,4 +530,23 @@ public class RSAAlgorithmTest {
 
         assertThat(algorithm.getSigningKeyId(), is("keyId"));
     }
+
+    @Test
+    public void shouldBeEqualSignatureMethodResults() throws Exception {
+        RSAPrivateKey privateKey = (RSAPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE, "RSA");
+        RSAPublicKey publicKey = (RSAPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE, "RSA");
+
+        Algorithm algorithm = Algorithm.RSA256(publicKey, privateKey);
+
+        byte[] header = new byte[]{0x00, 0x01, 0x02};
+        byte[] payload = new byte[]{0x04, 0x05, 0x06};
+
+        ByteArrayOutputStream bout = new ByteArrayOutputStream();
+        bout.write(header);
+        bout.write('.');
+        bout.write(payload);
+
+        assertThat(algorithm.sign(bout.toByteArray()), is(algorithm.sign(header, payload)));
+    }
+
 }

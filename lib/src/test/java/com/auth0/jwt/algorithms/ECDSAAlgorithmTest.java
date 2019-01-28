@@ -4,6 +4,8 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.exceptions.SignatureGenerationException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.interfaces.ECDSAKeyProvider;
+
+import org.apache.commons.codec.Charsets;
 import org.apache.commons.codec.binary.Base64;
 import org.hamcrest.Matchers;
 import org.hamcrest.collection.IsIn;
@@ -12,6 +14,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.security.interfaces.ECKey;
@@ -1137,6 +1140,35 @@ public class ECDSAAlgorithmTest {
         Assert.assertThat(Arrays.equals(rNumber, rCopy), is(true));
         Assert.assertThat(Arrays.equals(sNumber, sCopy), is(true));
         Assert.assertThat(derSignature.length, is(totalLength));
+    }
+
+    @Test
+    public void shouldBeEqualSignatureMethodDecodeResults() throws Exception {
+        // signatures are not deterministic in value, so instead of directly comparing the signatures,
+        // check that both sign(..) methods can be used to create a jwt which can be
+        // verified
+        Algorithm algorithm = Algorithm.ECDSA256((ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC"), (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_256, "EC"));
+
+        String header = "eyJhbGciOiJFUzI1NiJ9";
+        String payload = "eyJpc3MiOiJhdXRoMCJ9";
+
+        byte[] headerBytes = header.getBytes(StandardCharsets.UTF_8);
+        byte[] payloadBytes = payload.getBytes(StandardCharsets.UTF_8);
+
+        ByteArrayOutputStream bout = new ByteArrayOutputStream();
+        bout.write(headerBytes);
+        bout.write('.');
+        bout.write(payloadBytes);
+
+        String jwtSignature1 = Base64.encodeBase64URLSafeString(algorithm.sign(bout.toByteArray()));
+        String jwt1 = String.format("%s.%s.%s", header, payload, jwtSignature1);
+
+        algorithm.verify(JWT.decode(jwt1));
+
+        String jwtSignature2 = Base64.encodeBase64URLSafeString(algorithm.sign(headerBytes, payloadBytes));
+        String jwt2 = String.format("%s.%s.%s", header, payload, jwtSignature2);
+
+        algorithm.verify(JWT.decode(jwt2));
     }
 
 }
