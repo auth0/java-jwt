@@ -325,7 +325,23 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
         } else if (value instanceof Date) {
             isValid = value.equals(claim.asDate());
         } else if (value instanceof Object[]) {
-            List<Object> claimArr = Arrays.asList(claim.as(Object[].class));
+            List<Object> claimArr;
+            Object[] claimAsObject = claim.as(Object[].class);
+
+            // Jackson uses 'natural' mapping which uses Integer if value fits in 32 bits.
+            if(value instanceof Long[]) {
+                // convert Integers to Longs for comparison with equals
+                claimArr = new ArrayList<>(claimAsObject.length);
+                for(Object cao : claimAsObject) {
+                    if(cao instanceof Integer) {
+                        claimArr.add(((Integer)cao).longValue());
+                    } else {
+                        claimArr.add(cao);
+                    }
+                }
+            } else {
+                claimArr = Arrays.asList(claim.as(Object[].class));
+            }
             List<Object> valueArr = Arrays.asList((Object[]) value);
             isValid = claimArr.containsAll(valueArr);
         }
