@@ -326,6 +326,38 @@ public class JWTVerifierTest {
         assertThat(jwt, is(notNullValue()));
     }
 
+    @Test
+    public void shouldValidateCustomArrayClaimOfTypeLong() throws Exception {
+        String token = "eyJhbGciOiJIUzI1NiJ9.eyJuYW1lIjpbNTAwMDAwMDAwMDAxLDUwMDAwMDAwMDAwMiw1MDAwMDAwMDAwMDNdfQ.vzV7S0gbV9ZAVxChuIt4XZuSVTxMH536rFmoHzxmayM";
+        DecodedJWT jwt = JWTVerifier.init(Algorithm.HMAC256("secret"))
+                .withArrayClaim("name", 500000000001L, 500000000002L, 500000000003L)
+                .build()
+                .verify(token);
+
+        assertThat(jwt, is(notNullValue()));
+    }
+
+    @Test
+    public void shouldValidateCustomArrayClaimOfTypeLongWhenValueIsInteger() throws Exception {
+        String token = "eyJhbGciOiJIUzI1NiJ9.eyJuYW1lIjpbMSwyLDNdfQ.UEuMKRQYrzKAiPpPLhIVawWkKWA1zj0_GderrWUIyFE";
+        DecodedJWT jwt = JWTVerifier.init(Algorithm.HMAC256("secret"))
+                .withArrayClaim("name", 1L, 2L, 3L)
+                .build()
+                .verify(token);
+
+        assertThat(jwt, is(notNullValue()));
+    }
+
+    @Test
+    public void shouldValidateCustomArrayClaimOfTypeLongWhenValueIsIntegerAndLong() throws Exception {
+        String token = "eyJhbGciOiJIUzI1NiJ9.eyJuYW1lIjpbMSw1MDAwMDAwMDAwMDIsNTAwMDAwMDAwMDAzXX0.PQjb2rPPpYjM2sItZEzZcjS2YbfPCp6xksTSPjpjTQA";
+        DecodedJWT jwt = JWTVerifier.init(Algorithm.HMAC256("secret"))
+                .withArrayClaim("name", 1L, 500000000002L, 500000000003L)
+                .build()
+                .verify(token);
+
+        assertThat(jwt, is(notNullValue()));
+    }
     // Generic Delta
     @SuppressWarnings("RedundantCast")
     @Test
