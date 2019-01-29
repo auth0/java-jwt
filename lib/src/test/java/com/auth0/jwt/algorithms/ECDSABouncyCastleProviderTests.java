@@ -837,7 +837,7 @@ public class ECDSABouncyCastleProviderTests {
         String body = "eyJpc3MiOiJhdXRoMCJ9";
 
         for (int i = 0; i < 10; i++) {
-        	String jwt = asJWT(algorithm256, header256, body);
+            String jwt = asJWT(algorithm256, header256, body);
             algorithm256.verify(JWT.decode(jwt));
         }
     }
@@ -849,7 +849,7 @@ public class ECDSABouncyCastleProviderTests {
         String body = "eyJpc3MiOiJhdXRoMCJ9";
 
         for (int i = 0; i < 10; i++) {
-        	String jwt = asJWT(algorithm384, header384, body);
+            String jwt = asJWT(algorithm384, header384, body);
             algorithm384.verify(JWT.decode(jwt));
         }
     }
@@ -861,7 +861,7 @@ public class ECDSABouncyCastleProviderTests {
         String body = "eyJpc3MiOiJhdXRoMCJ9";
 
         for (int i = 0; i < 10; i++) {
-        	String jwt = asJWT(algorithm512, header512, body);
+            String jwt = asJWT(algorithm512, header512, body);
             algorithm512.verify(JWT.decode(jwt));
         }
     }

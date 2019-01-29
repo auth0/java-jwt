@@ -5,7 +5,6 @@ import com.auth0.jwt.exceptions.SignatureGenerationException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.interfaces.ECDSAKeyProvider;
 
-import org.apache.commons.codec.Charsets;
 import org.apache.commons.codec.binary.Base64;
 import org.hamcrest.Matchers;
 import org.hamcrest.collection.IsIn;
@@ -27,7 +26,6 @@ import static com.auth0.jwt.PemUtils.readPrivateKeyFromFile;
 import static com.auth0.jwt.PemUtils.readPublicKeyFromFile;
 import static com.auth0.jwt.algorithms.CryptoTestHelper.asJWT;
 import static com.auth0.jwt.algorithms.CryptoTestHelper.assertSignaturePresent;
-import static com.auth0.jwt.algorithms.CryptoTestHelper.assertSignatureValue;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
@@ -836,7 +834,7 @@ public class ECDSAAlgorithmTest {
         String body = "eyJpc3MiOiJhdXRoMCJ9";
 
         for (int i = 0; i < 10; i++) {
-        	String jwt = asJWT(algorithm256, header256, body);
+            String jwt = asJWT(algorithm256, header256, body);
             algorithm256.verify(JWT.decode(jwt));
         }
     }
@@ -848,7 +846,7 @@ public class ECDSAAlgorithmTest {
         String body = "eyJpc3MiOiJhdXRoMCJ9";        
 
         for (int i = 0; i < 10; i++) {
-        	String jwt = asJWT(algorithm384, header384, body);
+            String jwt = asJWT(algorithm384, header384, body);
             algorithm384.verify(JWT.decode(jwt));
         }
     }
@@ -860,7 +858,7 @@ public class ECDSAAlgorithmTest {
         String body = "eyJpc3MiOiJhdXRoMCJ9";        
 
         for (int i = 0; i < 10; i++) {
-        	String jwt = asJWT(algorithm512, header512, body);
+            String jwt = asJWT(algorithm512, header512, body);
             algorithm512.verify(JWT.decode(jwt));
         }
     }

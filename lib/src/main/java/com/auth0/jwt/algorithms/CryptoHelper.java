@@ -3,8 +3,7 @@ package com.auth0.jwt.algorithms;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
-import org.apache.commons.codec.Charsets;
-
+import java.nio.charset.StandardCharsets;
 import java.security.*;
 
 class CryptoHelper {
@@ -25,7 +24,7 @@ class CryptoHelper {
      */
 
     boolean verifySignatureFor(String algorithm, byte[] secretBytes, String header, String payload, byte[] signatureBytes) throws NoSuchAlgorithmException, InvalidKeyException {
-        return verifySignatureFor(algorithm, secretBytes, header.getBytes(Charsets.UTF_8), payload.getBytes(Charsets.UTF_8), signatureBytes);
+        return verifySignatureFor(algorithm, secretBytes, header.getBytes(StandardCharsets.UTF_8), payload.getBytes(StandardCharsets.UTF_8), signatureBytes);
     }
 
     /**
@@ -79,7 +78,7 @@ class CryptoHelper {
      */
 
     boolean verifySignatureFor(String algorithm, PublicKey publicKey, String header, String payload, byte[] signatureBytes)  throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
-        return verifySignatureFor(algorithm, publicKey, header.getBytes(Charsets.UTF_8), payload.getBytes(Charsets.UTF_8), signatureBytes);
+        return verifySignatureFor(algorithm, publicKey, header.getBytes(StandardCharsets.UTF_8), payload.getBytes(StandardCharsets.UTF_8), signatureBytes);
     }
 
     /**
@@ -204,5 +203,5 @@ class CryptoHelper {
         s.initSign(privateKey);
         s.update(contentBytes);
         return s.sign();
-    }    
+    }
 }

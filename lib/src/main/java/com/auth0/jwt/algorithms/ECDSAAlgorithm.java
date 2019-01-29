@@ -79,7 +79,7 @@ class ECDSAAlgorithm extends Algorithm {
         } catch (NoSuchAlgorithmException | SignatureException | InvalidKeyException | IllegalStateException e) {
             throw new SignatureGenerationException(this, e);
         }
-    }    
+    }
 
     @Override
     public String getSigningKeyId() {
