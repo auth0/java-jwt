@@ -549,4 +549,24 @@ public class RSAAlgorithmTest {
         assertThat(algorithm.sign(bout.toByteArray()), is(algorithm.sign(header, payload)));
     }
 
+    /**
+     * Test deprecated signing method error handling.
+     * 
+     * @see {@linkplain #shouldFailOnRSA256SigningWhenProvidedPrivateKeyIsNull}
+     * @throws Exception expected exception
+     */
+    
+    @Test
+    public void shouldFailOnRSA256SigningWithDeprecatedMethodWhenProvidedPrivateKeyIsNull() throws Exception {
+        exception.expect(SignatureGenerationException.class);
+        exception.expectMessage("The Token's Signature couldn't be generated when signing using the Algorithm: SHA256withRSA");
+        exception.expectCause(isA(IllegalStateException.class));
+        exception.expectCause(hasMessage(is("The given Private Key is null.")));
+
+        RSAKeyProvider provider = mock(RSAKeyProvider.class);
+        when(provider.getPrivateKey()).thenReturn(null);
+        Algorithm algorithm = Algorithm.RSA256(provider);
+        algorithm.sign(new byte[0]);
+    }
+
 }

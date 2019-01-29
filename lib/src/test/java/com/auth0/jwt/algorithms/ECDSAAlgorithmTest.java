@@ -1171,4 +1171,24 @@ public class ECDSAAlgorithmTest {
         algorithm.verify(JWT.decode(jwt2));
     }
 
+    /**
+     * Test deprecated signing method error handling.
+     * 
+     * @see {@linkplain #shouldFailOnECDSA256SigningWhenProvidedPrivateKeyIsNull}
+     * @throws Exception expected exception
+     */
+
+    @Test
+    public void shouldFailOnECDSA256SigningWithDeprecatedMethodWhenProvidedPrivateKeyIsNull() throws Exception {
+        exception.expect(SignatureGenerationException.class);
+        exception.expectMessage("The Token's Signature couldn't be generated when signing using the Algorithm: SHA256withECDSA");
+        exception.expectCause(isA(IllegalStateException.class));
+        exception.expectCause(hasMessage(is("The given Private Key is null.")));
+
+        ECDSAKeyProvider provider = mock(ECDSAKeyProvider.class);
+        when(provider.getPrivateKey()).thenReturn(null);
+        Algorithm algorithm = Algorithm.ECDSA256(provider);
+        algorithm.sign(new byte[0]);
+    }
+
 }
