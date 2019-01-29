@@ -2,6 +2,7 @@ package com.auth0.jwt;
 
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.*;
+import com.auth0.jwt.impl.JWTParser;
 import com.auth0.jwt.impl.PublicClaims;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.Clock;
@@ -18,11 +19,13 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
     private final Algorithm algorithm;
     final Map<String, Object> claims;
     private final Clock clock;
+    private final JWTParser parser;
 
     JWTVerifier(Algorithm algorithm, Map<String, Object> claims, Clock clock) {
         this.algorithm = algorithm;
         this.claims = Collections.unmodifiableMap(claims);
         this.clock = clock;
+        this.parser = new JWTParser();
     }
 
     /**
@@ -363,7 +366,7 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
      */
     @Override
     public DecodedJWT verify(String token) throws JWTVerificationException {
-        DecodedJWT jwt = JWT.decode(token);
+        DecodedJWT jwt = new JWTDecoder(parser, token);
         return verify(jwt);
     }
 

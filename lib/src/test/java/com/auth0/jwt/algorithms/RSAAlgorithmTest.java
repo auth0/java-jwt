@@ -4,12 +4,11 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.exceptions.SignatureGenerationException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.interfaces.RSAKeyProvider;
-import org.apache.commons.codec.binary.Base64;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import java.nio.charset.StandardCharsets;
+import java.io.ByteArrayOutputStream;
 import java.security.*;
 import java.security.interfaces.RSAKey;
 import java.security.interfaces.RSAPrivateKey;
@@ -24,6 +23,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static com.auth0.jwt.algorithms.CryptoTestHelper.*;
 
 @SuppressWarnings("deprecation")
 public class RSAAlgorithmTest {
@@ -213,9 +213,9 @@ public class RSAAlgorithmTest {
         exception.expect(SignatureVerificationException.class);
         exception.expectMessage("The Token's Signature resulted invalid when verified using the Algorithm: some-alg");
         exception.expectCause(isA(NoSuchAlgorithmException.class));
-
+        
         CryptoHelper crypto = mock(CryptoHelper.class);
-        when(crypto.verifySignatureFor(anyString(), any(PublicKey.class), any(byte[].class), any(byte[].class)))
+        when(crypto.verifySignatureFor(anyString(), any(PublicKey.class), any(String.class), any(String.class), any(byte[].class)))
                 .thenThrow(NoSuchAlgorithmException.class);
 
         RSAPublicKey publicKey = mock(RSAPublicKey.class);
@@ -233,7 +233,7 @@ public class RSAAlgorithmTest {
         exception.expectCause(isA(InvalidKeyException.class));
 
         CryptoHelper crypto = mock(CryptoHelper.class);
-        when(crypto.verifySignatureFor(anyString(), any(PublicKey.class), any(byte[].class), any(byte[].class)))
+        when(crypto.verifySignatureFor(anyString(), any(PublicKey.class), any(String.class), any(String.class), any(byte[].class)))
                 .thenThrow(InvalidKeyException.class);
 
         RSAPublicKey publicKey = mock(RSAPublicKey.class);
@@ -251,7 +251,7 @@ public class RSAAlgorithmTest {
         exception.expectCause(isA(SignatureException.class));
 
         CryptoHelper crypto = mock(CryptoHelper.class);
-        when(crypto.verifySignatureFor(anyString(), any(PublicKey.class), any(byte[].class), any(byte[].class)))
+        when(crypto.verifySignatureFor(anyString(), any(PublicKey.class), any(String.class), any(String.class), any(byte[].class)))
                 .thenThrow(SignatureException.class);
 
         RSAPublicKey publicKey = mock(RSAPublicKey.class);
@@ -274,15 +274,11 @@ public class RSAAlgorithmTest {
         Algorithm algorithmSign = Algorithm.RSA256((RSAKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE, "RSA"));
         Algorithm algorithmVerify = Algorithm.RSA256((RSAKey) readPublicKeyFromFile(PUBLIC_KEY_FILE, "RSA"));
 
-        String jwtContent = String.format("%s.%s", RS256Header, auth0IssPayload);
-        byte[] contentBytes = jwtContent.getBytes(StandardCharsets.UTF_8);
-        byte[] signatureBytes = algorithmSign.sign(contentBytes);
-        String jwtSignature = Base64.encodeBase64URLSafeString(signatureBytes);
-        String jwt = String.format("%s.%s", jwtContent, jwtSignature);
+        String jwt = asJWT(algorithmSign, RS256Header, auth0IssPayload);
         String expectedSignature = "ZB-Tr0vLtnf8I9fhSdSjU6HZei5xLYZQ6nZqM5O6Va0W9PgAqgRT7ShI9CjeYulRXPHvVmSl5EQuYuXdBzM0-H_3p_Nsl6tSMy4EyX2kkhEm6T0HhvarTh8CG0PCjn5p6FP5ZxWwhLcmRN70ItP6Z5MMO4CcJh1JrNxR4Fi4xQgt-CK2aVDMFXd-Br5yQiLVx1CX83w28OD9wssW3Rdltl5e66vCef0Ql6Q5I5e5F0nqGYT989a9fkNgLIx2F8k_az5x07BY59FV2SZg59nSiY7TZNjP8ot11Ew7HKRfPXOdh9eKRUVdhcxzqDePhyzKabU8TG5FP0SiWH5qVPfAgw";
 
-        assertThat(signatureBytes, is(notNullValue()));
-        assertThat(jwtSignature, is(expectedSignature));
+        assertSignaturePresent(jwt);
+        assertSignatureValue(jwt, expectedSignature);
         algorithmVerify.verify(JWT.decode(jwt));
     }
 
@@ -290,15 +286,11 @@ public class RSAAlgorithmTest {
     public void shouldDoRSA256SigningWithBothKeys() throws Exception {
         Algorithm algorithm = Algorithm.RSA256((RSAPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE, "RSA"), (RSAPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE, "RSA"));
 
-        String jwtContent = String.format("%s.%s", RS256Header, auth0IssPayload);
-        byte[] contentBytes = jwtContent.getBytes(StandardCharsets.UTF_8);
-        byte[] signatureBytes = algorithm.sign(contentBytes);
-        String jwtSignature = Base64.encodeBase64URLSafeString(signatureBytes);
-        String jwt = String.format("%s.%s", jwtContent, jwtSignature);
+        String jwt = asJWT(algorithm, RS256Header, auth0IssPayload);
         String expectedSignature = "ZB-Tr0vLtnf8I9fhSdSjU6HZei5xLYZQ6nZqM5O6Va0W9PgAqgRT7ShI9CjeYulRXPHvVmSl5EQuYuXdBzM0-H_3p_Nsl6tSMy4EyX2kkhEm6T0HhvarTh8CG0PCjn5p6FP5ZxWwhLcmRN70ItP6Z5MMO4CcJh1JrNxR4Fi4xQgt-CK2aVDMFXd-Br5yQiLVx1CX83w28OD9wssW3Rdltl5e66vCef0Ql6Q5I5e5F0nqGYT989a9fkNgLIx2F8k_az5x07BY59FV2SZg59nSiY7TZNjP8ot11Ew7HKRfPXOdh9eKRUVdhcxzqDePhyzKabU8TG5FP0SiWH5qVPfAgw";
 
-        assertThat(signatureBytes, is(notNullValue()));
-        assertThat(jwtSignature, is(expectedSignature));
+        assertSignaturePresent(jwt);
+        assertSignatureValue(jwt, expectedSignature);
         algorithm.verify(JWT.decode(jwt));
     }
 
@@ -310,13 +302,10 @@ public class RSAAlgorithmTest {
         when(provider.getPrivateKey()).thenReturn((RSAPrivateKey) privateKey);
         when(provider.getPublicKeyById(null)).thenReturn((RSAPublicKey) publicKey);
         Algorithm algorithm = Algorithm.RSA256(provider);
-        String jwtContent = String.format("%s.%s", RS256Header, auth0IssPayload);
-        byte[] contentBytes = jwtContent.getBytes(StandardCharsets.UTF_8);
-        byte[] signatureBytes = algorithm.sign(contentBytes);
-        String jwtSignature = Base64.encodeBase64URLSafeString(signatureBytes);
-        String jwt = String.format("%s.%s", jwtContent, jwtSignature);
+        
+        String jwt = asJWT(algorithm, RS256Header, auth0IssPayload);
 
-        assertThat(signatureBytes, is(notNullValue()));
+        assertSignaturePresent(jwt);
         algorithm.verify(JWT.decode(jwt));
     }
 
@@ -330,7 +319,7 @@ public class RSAAlgorithmTest {
         RSAKeyProvider provider = mock(RSAKeyProvider.class);
         when(provider.getPrivateKey()).thenReturn(null);
         Algorithm algorithm = Algorithm.RSA256(provider);
-        algorithm.sign(new byte[0]);
+        algorithm.sign(new byte[0], new byte[0]);
     }
 
     @Test
@@ -341,7 +330,7 @@ public class RSAAlgorithmTest {
         exception.expectCause(hasMessage(is("The given Private Key is null.")));
 
         Algorithm algorithm = Algorithm.RSA256((RSAKey) readPublicKeyFromFile(PUBLIC_KEY_FILE, "RSA"));
-        algorithm.sign(new byte[0]);
+        algorithm.sign(new byte[0], new byte[0]);
     }
 
     @Test
@@ -349,15 +338,11 @@ public class RSAAlgorithmTest {
         Algorithm algorithmSign = Algorithm.RSA384((RSAKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE, "RSA"));
         Algorithm algorithmVerify = Algorithm.RSA384((RSAKey) readPublicKeyFromFile(PUBLIC_KEY_FILE, "RSA"));
 
-        String jwtContent = String.format("%s.%s", RS384Header, auth0IssPayload);
-        byte[] contentBytes = jwtContent.getBytes(StandardCharsets.UTF_8);
-        byte[] signatureBytes = algorithmSign.sign(contentBytes);
-        String jwtSignature = Base64.encodeBase64URLSafeString(signatureBytes);
-        String jwt = String.format("%s.%s", jwtContent, jwtSignature);
+        String jwt = asJWT(algorithmSign, RS384Header, auth0IssPayload);
         String expectedSignature = "Jx1PaTBnjd_U56MNjifFcY7w9ImDbseg0y8Ijr2pSiA1_wzQb_wy9undaWfzR5YqdIAXvjS8AGuZUAzIoTG4KMgOgdVyYDz3l2jzj6wI-lgqfR5hTy1w1ruMUQ4_wobpdxAiJ4fEbg8Mi_GljOiCO-P1HilxKnpiOJZidR8MQGwTInsf71tOUkK4x5UsdmUueuZbaU-CL5kPnRfXmJj9CcdxZbD9oMlbo23dwkP5BNMrS2LwGGzc9C_-ypxrBIOVilG3WZxcSmuG86LjcZbnL6LBEfph5NmKBgQav147uipb_7umBEr1m2dYiB_9u606n3bcoo3rnsYYK_Xfi1GAEQ";
 
-        assertThat(signatureBytes, is(notNullValue()));
-        assertThat(jwtSignature, is(expectedSignature));
+        assertSignaturePresent(jwt);
+        assertSignatureValue(jwt, expectedSignature);
         algorithmVerify.verify(JWT.decode(jwt));
     }
 
@@ -365,15 +350,11 @@ public class RSAAlgorithmTest {
     public void shouldDoRSA384SigningWithBothKeys() throws Exception {
         Algorithm algorithm = Algorithm.RSA384((RSAPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE, "RSA"), (RSAPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE, "RSA"));
 
-        String jwtContent = String.format("%s.%s", RS384Header, auth0IssPayload);
-        byte[] contentBytes = jwtContent.getBytes(StandardCharsets.UTF_8);
-        byte[] signatureBytes = algorithm.sign(contentBytes);
-        String jwtSignature = Base64.encodeBase64URLSafeString(signatureBytes);
-        String jwt = String.format("%s.%s", jwtContent, jwtSignature);
+        String jwt = asJWT(algorithm, RS384Header, auth0IssPayload);
         String expectedSignature = "Jx1PaTBnjd_U56MNjifFcY7w9ImDbseg0y8Ijr2pSiA1_wzQb_wy9undaWfzR5YqdIAXvjS8AGuZUAzIoTG4KMgOgdVyYDz3l2jzj6wI-lgqfR5hTy1w1ruMUQ4_wobpdxAiJ4fEbg8Mi_GljOiCO-P1HilxKnpiOJZidR8MQGwTInsf71tOUkK4x5UsdmUueuZbaU-CL5kPnRfXmJj9CcdxZbD9oMlbo23dwkP5BNMrS2LwGGzc9C_-ypxrBIOVilG3WZxcSmuG86LjcZbnL6LBEfph5NmKBgQav147uipb_7umBEr1m2dYiB_9u606n3bcoo3rnsYYK_Xfi1GAEQ";
 
-        assertThat(signatureBytes, is(notNullValue()));
-        assertThat(jwtSignature, is(expectedSignature));
+        assertSignaturePresent(jwt);
+        assertSignatureValue(jwt, expectedSignature);
         algorithm.verify(JWT.decode(jwt));
     }
 
@@ -385,13 +366,10 @@ public class RSAAlgorithmTest {
         when(provider.getPrivateKey()).thenReturn((RSAPrivateKey) privateKey);
         when(provider.getPublicKeyById(null)).thenReturn((RSAPublicKey) publicKey);
         Algorithm algorithm = Algorithm.RSA384(provider);
-        String jwtContent = String.format("%s.%s", RS384Header, auth0IssPayload);
-        byte[] contentBytes = jwtContent.getBytes(StandardCharsets.UTF_8);
-        byte[] signatureBytes = algorithm.sign(contentBytes);
-        String jwtSignature = Base64.encodeBase64URLSafeString(signatureBytes);
-        String jwt = String.format("%s.%s", jwtContent, jwtSignature);
+        
+        String jwt = asJWT(algorithm, RS384Header, auth0IssPayload);
 
-        assertThat(signatureBytes, is(notNullValue()));
+        assertSignaturePresent(jwt);
         algorithm.verify(JWT.decode(jwt));
     }
 
@@ -405,7 +383,7 @@ public class RSAAlgorithmTest {
         RSAKeyProvider provider = mock(RSAKeyProvider.class);
         when(provider.getPrivateKey()).thenReturn(null);
         Algorithm algorithm = Algorithm.RSA384(provider);
-        algorithm.sign(new byte[0]);
+        algorithm.sign(new byte[0], new byte[0]);
     }
 
     @Test
@@ -416,7 +394,7 @@ public class RSAAlgorithmTest {
         exception.expectCause(hasMessage(is("The given Private Key is null.")));
 
         Algorithm algorithm = Algorithm.RSA384((RSAKey) readPublicKeyFromFile(PUBLIC_KEY_FILE, "RSA"));
-        algorithm.sign(new byte[0]);
+        algorithm.sign(new byte[0], new byte[0]);
     }
 
     @Test
@@ -424,15 +402,11 @@ public class RSAAlgorithmTest {
         Algorithm algorithmSign = Algorithm.RSA512((RSAKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE, "RSA"));
         Algorithm algorithmVerify = Algorithm.RSA512((RSAKey) readPublicKeyFromFile(PUBLIC_KEY_FILE, "RSA"));
 
-        String jwtContent = String.format("%s.%s", RS512Header, auth0IssPayload);
-        byte[] contentBytes = jwtContent.getBytes(StandardCharsets.UTF_8);
-        byte[] signatureBytes = algorithmSign.sign(contentBytes);
-        String jwtSignature = Base64.encodeBase64URLSafeString(signatureBytes);
-        String jwt = String.format("%s.%s", jwtContent, jwtSignature);
+        String jwt = asJWT(algorithmSign, RS512Header, auth0IssPayload);
         String expectedSignature = "THIPVYzNZ1Yo_dm0k1UELqV0txs3SzyMopCyHcLXOOdgYXF4MlGvBqu0CFvgSga72Sp5LpuC1Oesj40v_QDsp2GTGDeWnvvcv_eo-b0LPSpmT2h1Ibrmu-z70u2rKf28pkN-AJiMFqi8sit2kMIp1bwIVOovPvMTQKGFmova4Xwb3G526y_PeLlflW1h69hQTIVcI67ACEkAC-byjDnnYIklA-B4GWcggEoFwQRTdRjAUpifA6HOlvnBbZZlUd6KXwEydxVS-eh1odwPjB2_sfbyy5HnLsvNdaniiZQwX7QbwLNT4F72LctYdHHM1QCrID6bgfgYp9Ij9CRX__XDEA";
 
-        assertThat(signatureBytes, is(notNullValue()));
-        assertThat(jwtSignature, is(expectedSignature));
+        assertSignaturePresent(jwt);
+        assertSignatureValue(jwt, expectedSignature);
         algorithmVerify.verify(JWT.decode(jwt));
     }
 
@@ -440,15 +414,11 @@ public class RSAAlgorithmTest {
     public void shouldDoRSA512SigningWithBothKeys() throws Exception {
         Algorithm algorithm = Algorithm.RSA512((RSAPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE, "RSA"), (RSAPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE, "RSA"));
 
-        String jwtContent = String.format("%s.%s", RS512Header, auth0IssPayload);
-        byte[] contentBytes = jwtContent.getBytes(StandardCharsets.UTF_8);
-        byte[] signatureBytes = algorithm.sign(contentBytes);
-        String jwtSignature = Base64.encodeBase64URLSafeString(signatureBytes);
-        String jwt = String.format("%s.%s", jwtContent, jwtSignature);
+        String jwt = asJWT(algorithm, RS512Header, auth0IssPayload);
         String expectedSignature = "THIPVYzNZ1Yo_dm0k1UELqV0txs3SzyMopCyHcLXOOdgYXF4MlGvBqu0CFvgSga72Sp5LpuC1Oesj40v_QDsp2GTGDeWnvvcv_eo-b0LPSpmT2h1Ibrmu-z70u2rKf28pkN-AJiMFqi8sit2kMIp1bwIVOovPvMTQKGFmova4Xwb3G526y_PeLlflW1h69hQTIVcI67ACEkAC-byjDnnYIklA-B4GWcggEoFwQRTdRjAUpifA6HOlvnBbZZlUd6KXwEydxVS-eh1odwPjB2_sfbyy5HnLsvNdaniiZQwX7QbwLNT4F72LctYdHHM1QCrID6bgfgYp9Ij9CRX__XDEA";
 
-        assertThat(signatureBytes, is(notNullValue()));
-        assertThat(jwtSignature, is(expectedSignature));
+        assertSignaturePresent(jwt);
+        assertSignatureValue(jwt, expectedSignature);
         algorithm.verify(JWT.decode(jwt));
     }
 
@@ -460,13 +430,10 @@ public class RSAAlgorithmTest {
         when(provider.getPrivateKey()).thenReturn((RSAPrivateKey) privateKey);
         when(provider.getPublicKeyById(null)).thenReturn((RSAPublicKey) publicKey);
         Algorithm algorithm = Algorithm.RSA512(provider);
-        String jwtContent = String.format("%s.%s", RS512Header, auth0IssPayload);
-        byte[] contentBytes = jwtContent.getBytes(StandardCharsets.UTF_8);
-        byte[] signatureBytes = algorithm.sign(contentBytes);
-        String jwtSignature = Base64.encodeBase64URLSafeString(signatureBytes);
-        String jwt = String.format("%s.%s", jwtContent, jwtSignature);
+        
+        String jwt = asJWT(algorithm, RS512Header, auth0IssPayload);
 
-        assertThat(signatureBytes, is(notNullValue()));
+        assertSignaturePresent(jwt);
         algorithm.verify(JWT.decode(jwt));
     }
 
@@ -480,7 +447,7 @@ public class RSAAlgorithmTest {
         RSAKeyProvider provider = mock(RSAKeyProvider.class);
         when(provider.getPrivateKey()).thenReturn(null);
         Algorithm algorithm = Algorithm.RSA512(provider);
-        algorithm.sign(new byte[0]);
+        algorithm.sign(new byte[0], new byte[0]);
     }
 
     @Test
@@ -491,7 +458,7 @@ public class RSAAlgorithmTest {
         exception.expectCause(hasMessage(is("The given Private Key is null.")));
 
         Algorithm algorithm = Algorithm.RSA512((RSAKey) readPublicKeyFromFile(PUBLIC_KEY_FILE, "RSA"));
-        algorithm.sign(new byte[0]);
+        algorithm.sign(new byte[0], new byte[0]);
     }
 
     @Test
@@ -501,14 +468,14 @@ public class RSAAlgorithmTest {
         exception.expectCause(isA(NoSuchAlgorithmException.class));
 
         CryptoHelper crypto = mock(CryptoHelper.class);
-        when(crypto.createSignatureFor(anyString(), any(PrivateKey.class), any(byte[].class)))
+        when(crypto.createSignatureFor(anyString(), any(PrivateKey.class), any(byte[].class), any(byte[].class)))
                 .thenThrow(NoSuchAlgorithmException.class);
 
         RSAPublicKey publicKey = mock(RSAPublicKey.class);
         RSAPrivateKey privateKey = mock(RSAPrivateKey.class);
         RSAKeyProvider provider = RSAAlgorithm.providerForKeys(publicKey, privateKey);
         Algorithm algorithm = new RSAAlgorithm(crypto, "some-alg", "some-algorithm", provider);
-        algorithm.sign(RS256Header.getBytes(StandardCharsets.UTF_8));
+        algorithm.sign(new byte[0], new byte[0]);
     }
 
     @Test
@@ -518,14 +485,14 @@ public class RSAAlgorithmTest {
         exception.expectCause(isA(InvalidKeyException.class));
 
         CryptoHelper crypto = mock(CryptoHelper.class);
-        when(crypto.createSignatureFor(anyString(), any(PrivateKey.class), any(byte[].class)))
+        when(crypto.createSignatureFor(anyString(), any(PrivateKey.class), any(byte[].class), any(byte[].class)))
                 .thenThrow(InvalidKeyException.class);
 
         RSAPublicKey publicKey = mock(RSAPublicKey.class);
         RSAPrivateKey privateKey = mock(RSAPrivateKey.class);
         RSAKeyProvider provider = RSAAlgorithm.providerForKeys(publicKey, privateKey);
         Algorithm algorithm = new RSAAlgorithm(crypto, "some-alg", "some-algorithm", provider);
-        algorithm.sign(RS256Header.getBytes(StandardCharsets.UTF_8));
+        algorithm.sign(new byte[0], new byte[0]);
     }
 
     @Test
@@ -535,14 +502,14 @@ public class RSAAlgorithmTest {
         exception.expectCause(isA(SignatureException.class));
 
         CryptoHelper crypto = mock(CryptoHelper.class);
-        when(crypto.createSignatureFor(anyString(), any(PrivateKey.class), any(byte[].class)))
+        when(crypto.createSignatureFor(anyString(), any(PrivateKey.class), any(byte[].class), any(byte[].class)))
                 .thenThrow(SignatureException.class);
 
         RSAPublicKey publicKey = mock(RSAPublicKey.class);
         RSAPrivateKey privateKey = mock(RSAPrivateKey.class);
         RSAKeyProvider provider = RSAAlgorithm.providerForKeys(publicKey, privateKey);
         Algorithm algorithm = new RSAAlgorithm(crypto, "some-alg", "some-algorithm", provider);
-        algorithm.sign(RS256Header.getBytes(StandardCharsets.UTF_8));
+        algorithm.sign(new byte[0], new byte[0]);
     }
 
     @Test
@@ -563,4 +530,43 @@ public class RSAAlgorithmTest {
 
         assertThat(algorithm.getSigningKeyId(), is("keyId"));
     }
+
+    @Test
+    public void shouldBeEqualSignatureMethodResults() throws Exception {
+        RSAPrivateKey privateKey = (RSAPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE, "RSA");
+        RSAPublicKey publicKey = (RSAPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE, "RSA");
+
+        Algorithm algorithm = Algorithm.RSA256(publicKey, privateKey);
+
+        byte[] header = new byte[]{0x00, 0x01, 0x02};
+        byte[] payload = new byte[]{0x04, 0x05, 0x06};
+
+        ByteArrayOutputStream bout = new ByteArrayOutputStream();
+        bout.write(header);
+        bout.write('.');
+        bout.write(payload);
+
+        assertThat(algorithm.sign(bout.toByteArray()), is(algorithm.sign(header, payload)));
+    }
+
+    /**
+     * Test deprecated signing method error handling.
+     * 
+     * @see {@linkplain #shouldFailOnRSA256SigningWhenProvidedPrivateKeyIsNull}
+     * @throws Exception expected exception
+     */
+    
+    @Test
+    public void shouldFailOnRSA256SigningWithDeprecatedMethodWhenProvidedPrivateKeyIsNull() throws Exception {
+        exception.expect(SignatureGenerationException.class);
+        exception.expectMessage("The Token's Signature couldn't be generated when signing using the Algorithm: SHA256withRSA");
+        exception.expectCause(isA(IllegalStateException.class));
+        exception.expectCause(hasMessage(is("The given Private Key is null.")));
+
+        RSAKeyProvider provider = mock(RSAKeyProvider.class);
+        when(provider.getPrivateKey()).thenReturn(null);
+        Algorithm algorithm = Algorithm.RSA256(provider);
+        algorithm.sign(new byte[0]);
+    }
+
 }

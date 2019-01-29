@@ -5,7 +5,9 @@ import com.auth0.jwt.interfaces.RSAKeyProvider;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.mockito.ArgumentCaptor;
 
+import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.interfaces.*;
 
@@ -13,6 +15,8 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.withSettings;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 public class AlgorithmTest {
 
@@ -546,4 +550,27 @@ public class AlgorithmTest {
         assertThat(algorithm.getName(), is("none"));
     }
 
+    @Test
+    public void shouldForwardHeaderPayloadSignatureToSiblingSignMethodForBackwardsCompatibility() throws Exception {
+        Algorithm algorithm = mock(Algorithm.class);
+
+        ArgumentCaptor<byte[]> contentCaptor = ArgumentCaptor.forClass(byte[].class);
+
+        byte[] header = new byte[]{0x00, 0x01, 0x02};
+        byte[] payload = new byte[]{0x04, 0x05, 0x06};
+
+        byte[] signature = new byte[]{0x10, 0x11, 0x12};
+        when(algorithm.sign(any(byte[].class), any(byte[].class))).thenCallRealMethod();
+        when(algorithm.sign(contentCaptor.capture())).thenReturn(signature);
+
+        byte[] sign = algorithm.sign(header, payload);
+
+        ByteArrayOutputStream bout = new ByteArrayOutputStream();
+        bout.write(header);
+        bout.write('.');
+        bout.write(payload);
+        
+        assertThat(sign, is(signature));
+        assertThat(contentCaptor.getValue(), is(bout.toByteArray()));
+    }
 }
