@@ -5,6 +5,7 @@ import com.auth0.jwt.interfaces.Header;
 import com.auth0.jwt.interfaces.Payload;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import org.junit.Before;
 import org.junit.Rule;
@@ -17,6 +18,7 @@ import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class JWTParserTest {
 
@@ -47,10 +49,12 @@ public class JWTParserTest {
     @Test
     public void shouldParsePayload() throws Exception {
         ObjectMapper mapper = mock(ObjectMapper.class);
+        ObjectReader reader = mock(ObjectReader.class);
+        when(mapper.readerFor(Payload.class)).thenReturn(reader);
         JWTParser parser = new JWTParser(mapper);
         parser.parsePayload("{}");
 
-        verify(mapper).readValue("{}", Payload.class);
+        verify(reader).readValue("{}");
     }
 
     @Test
@@ -65,10 +69,12 @@ public class JWTParserTest {
     @Test
     public void shouldParseHeader() throws Exception {
         ObjectMapper mapper = mock(ObjectMapper.class);
+        ObjectReader reader = mock(ObjectReader.class);
+        when(mapper.readerFor(Header.class)).thenReturn(reader);
         JWTParser parser = new JWTParser(mapper);
         parser.parseHeader("{}");
 
-        verify(mapper).readValue("{}", Header.class);
+        verify(reader).readValue("{}");
     }
 
     @Test
@@ -81,27 +87,30 @@ public class JWTParserTest {
     }
 
     @Test
-    public void shouldConvertFromValidJSON() throws Exception {
-        String json = "\r\n { \r\n } \r\n";
-        Object object = parser.convertFromJSON(json, Object.class);
-        assertThat(object, is(notNullValue()));
-    }
-
-    @Test
-    public void shouldThrowWhenConvertingIfNullJson() throws Exception {
+    public void shouldThrowWhenConvertingHeaderIfNullJson() throws Exception {
         exception.expect(JWTDecodeException.class);
         exception.expectMessage("The string 'null' doesn't have a valid JSON format.");
-        String json = null;
-        Object object = parser.convertFromJSON(json, Object.class);
-        assertThat(object, is(nullValue()));
+        parser.parseHeader(null);
     }
 
     @Test
-    public void shouldThrowWhenConvertingFromInvalidJson() throws Exception {
+    public void shouldThrowWhenConvertingHeaderFromInvalidJson() throws Exception {
         exception.expect(JWTDecodeException.class);
         exception.expectMessage("The string '}{' doesn't have a valid JSON format.");
-        String json = "}{";
-        Object object = parser.convertFromJSON(json, Object.class);
-        assertThat(object, is(nullValue()));
+        parser.parseHeader("}{");
+    }
+
+    @Test
+    public void shouldThrowWhenConvertingPayloadIfNullJson() throws Exception {
+        exception.expect(JWTDecodeException.class);
+        exception.expectMessage("The string 'null' doesn't have a valid JSON format.");
+        parser.parsePayload(null);
+    }
+
+    @Test
+    public void shouldThrowWhenConvertingPayloadFromInvalidJson() throws Exception {
+        exception.expect(JWTDecodeException.class);
+        exception.expectMessage("The string '}{' doesn't have a valid JSON format.");
+        parser.parsePayload("}{");
     }
 }

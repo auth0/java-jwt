@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 
 import java.io.IOException;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 
 public class PayloadSerializer extends StdSerializer<ClaimsHolder> {
@@ -21,37 +20,41 @@ public class PayloadSerializer extends StdSerializer<ClaimsHolder> {
 
     @Override
     public void serialize(ClaimsHolder holder, JsonGenerator gen, SerializerProvider provider) throws IOException {
-        HashMap<Object, Object> safePayload = new HashMap<>();
+        
+        gen.writeStartObject();
         for (Map.Entry<String, Object> e : holder.getClaims().entrySet()) {
             switch (e.getKey()) {
                 case PublicClaims.AUDIENCE:
                     if (e.getValue() instanceof String) {
-                        safePayload.put(e.getKey(), e.getValue());
+                        gen.writeFieldName(e.getKey());
+                        gen.writeString((String)e.getValue());
                         break;
                     }
                     String[] audArray = (String[]) e.getValue();
                     if (audArray.length == 1) {
-                        safePayload.put(e.getKey(), audArray[0]);
+                        gen.writeFieldName(e.getKey());
+                        gen.writeString(audArray[0]);
                     } else if (audArray.length > 1) {
-                        safePayload.put(e.getKey(), audArray);
+                        gen.writeFieldName(e.getKey());
+                        gen.writeStartArray();
+                        for(String aud : audArray) {
+                            gen.writeString(aud);
+                        }
+                        gen.writeEndArray();
                     }
                     break;
-                case PublicClaims.EXPIRES_AT:
-                case PublicClaims.ISSUED_AT:
-                case PublicClaims.NOT_BEFORE:
-                    safePayload.put(e.getKey(), dateToSeconds((Date) e.getValue()));
-                    break;
                 default:
-                    if (e.getValue() instanceof Date) {
-                        safePayload.put(e.getKey(), dateToSeconds((Date) e.getValue()));
+                    gen.writeFieldName(e.getKey());
+                    if (e.getValue() instanceof Date) { // true for EXPIRES_AT, ISSUED_AT, NOT_BEFORE
+                        gen.writeNumber(dateToSeconds((Date) e.getValue()));
                     } else {
-                        safePayload.put(e.getKey(), e.getValue());
+                        gen.writeObject(e.getValue());
                     }
                     break;
             }
         }
 
-        gen.writeObject(safePayload);
+        gen.writeEndObject();
     }
 
     private long dateToSeconds(Date date) {

@@ -7,6 +7,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
 import com.fasterxml.jackson.databind.node.MissingNode;
 import com.fasterxml.jackson.databind.node.NullNode;
@@ -32,12 +33,15 @@ import static org.mockito.Mockito.*;
 public class JsonNodeClaimTest {
 
     private ObjectMapper mapper;
+    private ObjectReader objectReader;
+
     @Rule
     public ExpectedException exception = ExpectedException.none();
 
     @Before
     public void setUp() throws Exception {
         mapper = getDefaultObjectMapper();
+        objectReader = mapper.reader();
     }
 
     @Test
@@ -47,6 +51,10 @@ public class JsonNodeClaimTest {
 
         assertThat(claim.asBoolean(), is(notNullValue()));
         assertThat(claim.asBoolean(), is(true));
+    }
+
+    private Claim claimFromNode(JsonNode value) {
+        return JsonNodeClaim.claimFromNode(value, objectReader);
     }
 
     @Test
@@ -270,10 +278,11 @@ public class JsonNodeClaimTest {
         JsonNode value = mock(ObjectNode.class);
         when(value.getNodeType()).thenReturn(JsonNodeType.OBJECT);
 
-        JsonNodeClaim claim = (JsonNodeClaim) claimFromNode(value);
+        ObjectReader mockedMapper = mock(ObjectReader.class);
+
+        JsonNodeClaim claim = (JsonNodeClaim) JsonNodeClaim.claimFromNode(value, mockedMapper);
         JsonNodeClaim spiedClaim = spy(claim);
-        ObjectMapper mockedMapper = mock(ObjectMapper.class);
-        when(spiedClaim.getObjectMapper()).thenReturn(mockedMapper);
+        
         JsonParser mockedParser = mock(JsonParser.class);
         when(mockedMapper.treeAsTokens(value)).thenReturn(mockedParser);
         when(mockedParser.readValueAs(ArgumentMatchers.any(TypeReference.class))).thenThrow(IOException.class);

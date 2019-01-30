@@ -69,7 +69,8 @@ public interface Claim {
     /**
      * Get this Claim as an Array of type T.
      * If the value isn't an Array, null will be returned.
-     *
+     * @param <T> type
+     * @param tClazz the type class
      * @return the value as an Array or null.
      * @throws JWTDecodeException if the values inside the Array can't be converted to a class T.
      */
@@ -79,6 +80,8 @@ public interface Claim {
      * Get this Claim as a List of type T.
      * If the value isn't an Array, null will be returned.
      *
+     * @param <T> type
+     * @param tClazz the type class
      * @return the value as a List or null.
      * @throws JWTDecodeException if the values inside the List can't be converted to a class T.
      */
@@ -95,6 +98,8 @@ public interface Claim {
     /**
      * Get this Claim as a custom type T.
      *
+     * @param <T> type
+     * @param tClazz the type class
      * @return the value as instance of T.
      * @throws JWTDecodeException if the value can't be converted to a class T.
      */

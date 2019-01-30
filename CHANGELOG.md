@@ -1,5 +1,11 @@
 # Change Log
 
+## [3.7.0](https://github.com/auth0/java-jwt/tree/3.7.0) (2019-01-29)
+[Full Changelog](https://github.com/auth0/java-jwt/compare/3.6.0...3.7.0)
+
+**Added**
+- Performance improvements [\#255](https://github.com/auth0/java-jwt/pull/255) ([skjolber](https://github.com/skjolber))
+
 ## [3.6.0](https://github.com/auth0/java-jwt/tree/3.6.0) (2019-01-24)
 [Full Changelog](https://github.com/auth0/java-jwt/compare/3.5.0...3.6.0)
 
