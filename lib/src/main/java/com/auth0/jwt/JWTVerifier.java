@@ -66,7 +66,7 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
          */
         @Override
         public Verification withIssuer(String... issuer) {
-            requireClaim(PublicClaims.ISSUER, Arrays.asList(issuer));
+            requireClaim(PublicClaims.ISSUER, issuer);
             return this;
         }
 
@@ -90,7 +90,7 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
          */
         @Override
         public Verification withAudience(String... audience) {
-            requireClaim(PublicClaims.AUDIENCE, Arrays.asList(audience));
+            requireClaim(PublicClaims.AUDIENCE, audience);
             return this;
         }
 
@@ -398,8 +398,7 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
         for (Map.Entry<String, Object> entry : claims.entrySet()) {
             switch (entry.getKey()) {
                 case PublicClaims.AUDIENCE:
-                    //noinspection unchecked
-                    assertValidAudienceClaim(jwt.getAudience(), (List<String>) entry.getValue());
+                    assertValidAudienceClaim(jwt.getAudience(), Arrays.asList((String[]) entry.getValue()));
                     break;
                 case PublicClaims.EXPIRES_AT:
                     assertValidDateClaim(jwt.getExpiresAt(), (Long) entry.getValue(), true);
@@ -411,8 +410,7 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
                     assertValidDateClaim(jwt.getNotBefore(), (Long) entry.getValue(), false);
                     break;
                 case PublicClaims.ISSUER:
-                    //noinspection unchecked
-                    assertValidIssuerClaim(jwt.getIssuer(), (List<String>) entry.getValue());
+                    assertValidIssuerClaim(jwt.getIssuer(), Arrays.asList((String[]) entry.getValue()));
                     break;
                 case PublicClaims.JWT_ID:
                     assertValidStringClaim(entry.getKey(), jwt.getId(), (String) entry.getValue());

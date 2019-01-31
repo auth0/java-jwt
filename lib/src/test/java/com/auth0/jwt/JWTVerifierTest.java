@@ -594,8 +594,8 @@ public class JWTVerifierTest {
     public void shouldRemoveClaimWhenPassingNull() throws Exception {
         Algorithm algorithm = mock(Algorithm.class);
         JWTVerifier verifier = JWTVerifier.init(algorithm)
-                .withSubject("1234567890")
-                .withSubject(null)
+                .withIssuer("iss")
+                .withIssuer(null)
                 .build();
 
         assertThat(verifier.claims, is(notNullValue()));
