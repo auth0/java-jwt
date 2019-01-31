@@ -4,6 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.exceptions.SignatureGenerationException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.interfaces.ECDSAKeyProvider;
+
 import org.apache.commons.codec.binary.Base64;
 import org.hamcrest.Matchers;
 import org.hamcrest.collection.IsIn;
@@ -12,6 +13,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.security.interfaces.ECKey;
@@ -19,8 +21,11 @@ import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
 import java.util.Arrays;
 
+
 import static com.auth0.jwt.PemUtils.readPrivateKeyFromFile;
 import static com.auth0.jwt.PemUtils.readPublicKeyFromFile;
+import static com.auth0.jwt.algorithms.CryptoTestHelper.asJWT;
+import static com.auth0.jwt.algorithms.CryptoTestHelper.assertSignaturePresent;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
@@ -456,7 +461,7 @@ public class ECDSAAlgorithmTest {
         exception.expectCause(isA(NoSuchAlgorithmException.class));
 
         CryptoHelper crypto = mock(CryptoHelper.class);
-        when(crypto.verifySignatureFor(anyString(), any(PublicKey.class), any(byte[].class), any(byte[].class)))
+        when(crypto.verifySignatureFor(anyString(), any(PublicKey.class), any(String.class), any(String.class), any(byte[].class)))
                 .thenThrow(NoSuchAlgorithmException.class);
 
         ECPublicKey publicKey = mock(ECPublicKey.class);
@@ -474,7 +479,7 @@ public class ECDSAAlgorithmTest {
         exception.expectCause(isA(InvalidKeyException.class));
 
         CryptoHelper crypto = mock(CryptoHelper.class);
-        when(crypto.verifySignatureFor(anyString(), any(PublicKey.class), any(byte[].class), any(byte[].class)))
+        when(crypto.verifySignatureFor(anyString(), any(PublicKey.class), any(String.class), any(String.class), any(byte[].class)))
                 .thenThrow(InvalidKeyException.class);
 
         ECPublicKey publicKey = mock(ECPublicKey.class);
@@ -492,7 +497,7 @@ public class ECDSAAlgorithmTest {
         exception.expectCause(isA(SignatureException.class));
 
         CryptoHelper crypto = mock(CryptoHelper.class);
-        when(crypto.verifySignatureFor(anyString(), any(PublicKey.class), any(byte[].class), any(byte[].class)))
+        when(crypto.verifySignatureFor(anyString(), any(PublicKey.class), any(String.class), any(String.class), any(byte[].class)))
                 .thenThrow(SignatureException.class);
 
         ECPublicKey publicKey = mock(ECPublicKey.class);
@@ -509,30 +514,30 @@ public class ECDSAAlgorithmTest {
     private static final String ES512Header = "eyJhbGciOiJFUzUxMiJ9";
     private static final String auth0IssPayload = "eyJpc3MiOiJhdXRoMCJ9";
 
+    private static final byte[] ES256HeaderBytes = ES256Header.getBytes(StandardCharsets.UTF_8);
+    private static final byte[] ES384HeaderBytes = ES384Header.getBytes(StandardCharsets.UTF_8);
+    private static final byte[] ES512HeaderBytes = ES512Header.getBytes(StandardCharsets.UTF_8);
+    private static final byte[] auth0IssPayloadBytes = auth0IssPayload.getBytes(StandardCharsets.UTF_8);
+
+    
     @Test
     public void shouldDoECDSA256Signing() throws Exception {
-        Algorithm algorithmSign = Algorithm.ECDSA256((ECKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_256, "EC"));
+        Algorithm algorithm = Algorithm.ECDSA256((ECKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_256, "EC"));
         Algorithm algorithmVerify = Algorithm.ECDSA256((ECKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC"));
-        String jwtContent = String.format("%s.%s", ES256Header, auth0IssPayload);
-        byte[] contentBytes = jwtContent.getBytes(StandardCharsets.UTF_8);
-        byte[] signatureBytes = algorithmSign.sign(contentBytes);
-        String jwtSignature = Base64.encodeBase64URLSafeString(signatureBytes);
-        String jwt = String.format("%s.%s", jwtContent, jwtSignature);
+        String jwt = asJWT(algorithm, ES256Header, auth0IssPayload);
 
-        assertThat(signatureBytes, is(notNullValue()));
+        assertSignaturePresent(jwt);
         algorithmVerify.verify(JWT.decode(jwt));
     }
 
     @Test
     public void shouldDoECDSA256SigningWithBothKeys() throws Exception {
         Algorithm algorithm = Algorithm.ECDSA256((ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC"), (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_256, "EC"));
-        String jwtContent = String.format("%s.%s", ES256Header, auth0IssPayload);
-        byte[] contentBytes = jwtContent.getBytes(StandardCharsets.UTF_8);
-        byte[] signatureBytes = algorithm.sign(contentBytes);
+        byte[] signatureBytes = algorithm.sign(ES256HeaderBytes, auth0IssPayloadBytes);
         String jwtSignature = Base64.encodeBase64URLSafeString(signatureBytes);
-        String jwt = String.format("%s.%s", jwtContent, jwtSignature);
+        String jwt = String.format("%s.%s.%s", ES256Header, auth0IssPayload, jwtSignature);
 
-        assertThat(signatureBytes, is(notNullValue()));
+        assertSignaturePresent(jwt);
         algorithm.verify(JWT.decode(jwt));
     }
 
@@ -544,13 +549,10 @@ public class ECDSAAlgorithmTest {
         when(provider.getPrivateKey()).thenReturn((ECPrivateKey) privateKey);
         when(provider.getPublicKeyById(null)).thenReturn((ECPublicKey) publicKey);
         Algorithm algorithm = Algorithm.ECDSA256(provider);
-        String jwtContent = String.format("%s.%s", ES256Header, auth0IssPayload);
-        byte[] contentBytes = jwtContent.getBytes(StandardCharsets.UTF_8);
-        byte[] signatureBytes = algorithm.sign(contentBytes);
-        String jwtSignature = Base64.encodeBase64URLSafeString(signatureBytes);
-        String jwt = String.format("%s.%s", jwtContent, jwtSignature);
+        
+        String jwt = asJWT(algorithm, ES256Header, auth0IssPayload);
 
-        assertThat(signatureBytes, is(notNullValue()));
+        assertSignaturePresent(jwt);
         algorithm.verify(JWT.decode(jwt));
     }
 
@@ -564,7 +566,7 @@ public class ECDSAAlgorithmTest {
         ECDSAKeyProvider provider = mock(ECDSAKeyProvider.class);
         when(provider.getPrivateKey()).thenReturn(null);
         Algorithm algorithm = Algorithm.ECDSA256(provider);
-        algorithm.sign(new byte[0]);
+        algorithm.sign(new byte[0], new byte[0]);
     }
 
     @Test
@@ -575,33 +577,25 @@ public class ECDSAAlgorithmTest {
         exception.expectCause(hasMessage(is("The given Private Key is null.")));
 
         Algorithm algorithm = Algorithm.ECDSA256((ECKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC"));
-        algorithm.sign(new byte[0]);
+        algorithm.sign(new byte[0], new byte[0]);
     }
 
     @Test
     public void shouldDoECDSA384Signing() throws Exception {
         Algorithm algorithmSign = Algorithm.ECDSA384((ECKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_384, "EC"));
         Algorithm algorithmVerify = Algorithm.ECDSA384((ECKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_384, "EC"));
-        String jwtContent = String.format("%s.%s", ES384Header, auth0IssPayload);
-        byte[] contentBytes = jwtContent.getBytes(StandardCharsets.UTF_8);
-        byte[] signatureBytes = algorithmSign.sign(contentBytes);
-        String jwtSignature = Base64.encodeBase64URLSafeString(signatureBytes);
-        String jwt = String.format("%s.%s", jwtContent, jwtSignature);
+        String jwt = asJWT(algorithmSign, ES384Header, auth0IssPayload);
 
-        assertThat(signatureBytes, is(notNullValue()));
+        assertSignaturePresent(jwt);
         algorithmVerify.verify(JWT.decode(jwt));
     }
 
     @Test
     public void shouldDoECDSA384SigningWithBothKeys() throws Exception {
         Algorithm algorithm = Algorithm.ECDSA384((ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_384, "EC"), (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_384, "EC"));
-        String jwtContent = String.format("%s.%s", ES384Header, auth0IssPayload);
-        byte[] contentBytes = jwtContent.getBytes(StandardCharsets.UTF_8);
-        byte[] signatureBytes = algorithm.sign(contentBytes);
-        String jwtSignature = Base64.encodeBase64URLSafeString(signatureBytes);
-        String jwt = String.format("%s.%s", jwtContent, jwtSignature);
+        String jwt = asJWT(algorithm, ES384Header, auth0IssPayload);
 
-        assertThat(signatureBytes, is(notNullValue()));
+        assertSignaturePresent(jwt);
         algorithm.verify(JWT.decode(jwt));
     }
 
@@ -613,13 +607,10 @@ public class ECDSAAlgorithmTest {
         when(provider.getPrivateKey()).thenReturn((ECPrivateKey) privateKey);
         when(provider.getPublicKeyById(null)).thenReturn((ECPublicKey) publicKey);
         Algorithm algorithm = Algorithm.ECDSA384(provider);
-        String jwtContent = String.format("%s.%s", ES384Header, auth0IssPayload);
-        byte[] contentBytes = jwtContent.getBytes(StandardCharsets.UTF_8);
-        byte[] signatureBytes = algorithm.sign(contentBytes);
-        String jwtSignature = Base64.encodeBase64URLSafeString(signatureBytes);
-        String jwt = String.format("%s.%s", jwtContent, jwtSignature);
+        
+        String jwt = asJWT(algorithm, ES384Header, auth0IssPayload);
 
-        assertThat(signatureBytes, is(notNullValue()));
+        assertSignaturePresent(jwt);
         algorithm.verify(JWT.decode(jwt));
     }
 
@@ -633,7 +624,7 @@ public class ECDSAAlgorithmTest {
         ECDSAKeyProvider provider = mock(ECDSAKeyProvider.class);
         when(provider.getPrivateKey()).thenReturn(null);
         Algorithm algorithm = Algorithm.ECDSA384(provider);
-        algorithm.sign(new byte[0]);
+        algorithm.sign(new byte[0], new byte[0]);
     }
 
     @Test
@@ -644,33 +635,27 @@ public class ECDSAAlgorithmTest {
         exception.expectCause(hasMessage(is("The given Private Key is null.")));
 
         Algorithm algorithm = Algorithm.ECDSA384((ECKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_384, "EC"));
-        algorithm.sign(new byte[0]);
+        algorithm.sign(new byte[0], new byte[0]);
     }
 
     @Test
     public void shouldDoECDSA512Signing() throws Exception {
         Algorithm algorithmSign = Algorithm.ECDSA512((ECKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_512, "EC"));
         Algorithm algorithmVerify = Algorithm.ECDSA512((ECKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_512, "EC"));
-        String jwtContent = String.format("%s.%s", ES512Header, auth0IssPayload);
-        byte[] contentBytes = jwtContent.getBytes(StandardCharsets.UTF_8);
-        byte[] signatureBytes = algorithmSign.sign(contentBytes);
-        String jwtSignature = Base64.encodeBase64URLSafeString(signatureBytes);
-        String jwt = String.format("%s.%s", jwtContent, jwtSignature);
+        
+        String jwt = asJWT(algorithmSign, ES512Header, auth0IssPayload);
 
-        assertThat(signatureBytes, is(notNullValue()));
+        assertSignaturePresent(jwt);
         algorithmVerify.verify(JWT.decode(jwt));
     }
 
     @Test
     public void shouldDoECDSA512SigningWithBothKeys() throws Exception {
         Algorithm algorithm = Algorithm.ECDSA512((ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_512, "EC"), (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_512, "EC"));
-        String jwtContent = String.format("%s.%s", ES512Header, auth0IssPayload);
-        byte[] contentBytes = jwtContent.getBytes(StandardCharsets.UTF_8);
-        byte[] signatureBytes = algorithm.sign(contentBytes);
-        String jwtSignature = Base64.encodeBase64URLSafeString(signatureBytes);
-        String jwt = String.format("%s.%s", jwtContent, jwtSignature);
+        
+        String jwt = asJWT(algorithm, ES512Header, auth0IssPayload);
 
-        assertThat(signatureBytes, is(notNullValue()));
+        assertSignaturePresent(jwt);
         algorithm.verify(JWT.decode(jwt));
     }
 
@@ -683,13 +668,10 @@ public class ECDSAAlgorithmTest {
         when(provider.getPrivateKey()).thenReturn((ECPrivateKey) privateKey);
         when(provider.getPublicKeyById(null)).thenReturn((ECPublicKey) publicKey);
         Algorithm algorithm = Algorithm.ECDSA512(provider);
-        String jwtContent = String.format("%s.%s", ES512Header, auth0IssPayload);
-        byte[] contentBytes = jwtContent.getBytes(StandardCharsets.UTF_8);
-        byte[] signatureBytes = algorithm.sign(contentBytes);
-        String jwtSignature = Base64.encodeBase64URLSafeString(signatureBytes);
-        String jwt = String.format("%s.%s", jwtContent, jwtSignature);
+        
+        String jwt = asJWT(algorithm, ES512Header, auth0IssPayload);
 
-        assertThat(signatureBytes, is(notNullValue()));
+        assertSignaturePresent(jwt);
         algorithm.verify(JWT.decode(jwt));
     }
 
@@ -703,7 +685,7 @@ public class ECDSAAlgorithmTest {
         ECDSAKeyProvider provider = mock(ECDSAKeyProvider.class);
         when(provider.getPrivateKey()).thenReturn(null);
         Algorithm algorithm = Algorithm.ECDSA512(provider);
-        algorithm.sign(new byte[0]);
+        algorithm.sign(new byte[0], new byte[0]);
     }
 
     @Test
@@ -714,7 +696,7 @@ public class ECDSAAlgorithmTest {
         exception.expectCause(hasMessage(is("The given Private Key is null.")));
 
         Algorithm algorithm = Algorithm.ECDSA512((ECKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_512, "EC"));
-        algorithm.sign(new byte[0]);
+        algorithm.sign(new byte[0], new byte[0]);
     }
 
     @Test
@@ -724,14 +706,14 @@ public class ECDSAAlgorithmTest {
         exception.expectCause(isA(NoSuchAlgorithmException.class));
 
         CryptoHelper crypto = mock(CryptoHelper.class);
-        when(crypto.createSignatureFor(anyString(), any(PrivateKey.class), any(byte[].class)))
+        when(crypto.createSignatureFor(anyString(), any(PrivateKey.class), any(byte[].class), any(byte[].class)))
                 .thenThrow(NoSuchAlgorithmException.class);
 
         ECPublicKey publicKey = mock(ECPublicKey.class);
         ECPrivateKey privateKey = mock(ECPrivateKey.class);
         ECDSAKeyProvider provider = ECDSAAlgorithm.providerForKeys(publicKey, privateKey);
         Algorithm algorithm = new ECDSAAlgorithm(crypto, "some-alg", "some-algorithm", 32, provider);
-        algorithm.sign(ES256Header.getBytes(StandardCharsets.UTF_8));
+        algorithm.sign(ES256HeaderBytes, new byte[0]);
     }
 
     @Test
@@ -741,14 +723,14 @@ public class ECDSAAlgorithmTest {
         exception.expectCause(isA(InvalidKeyException.class));
 
         CryptoHelper crypto = mock(CryptoHelper.class);
-        when(crypto.createSignatureFor(anyString(), any(PrivateKey.class), any(byte[].class)))
+        when(crypto.createSignatureFor(anyString(), any(PrivateKey.class), any(byte[].class), any(byte[].class)))
                 .thenThrow(InvalidKeyException.class);
 
         ECPublicKey publicKey = mock(ECPublicKey.class);
         ECPrivateKey privateKey = mock(ECPrivateKey.class);
         ECDSAKeyProvider provider = ECDSAAlgorithm.providerForKeys(publicKey, privateKey);
         Algorithm algorithm = new ECDSAAlgorithm(crypto, "some-alg", "some-algorithm", 32, provider);
-        algorithm.sign(ES256Header.getBytes(StandardCharsets.UTF_8));
+        algorithm.sign(ES256HeaderBytes, new byte[0]);
     }
 
     @Test
@@ -758,14 +740,14 @@ public class ECDSAAlgorithmTest {
         exception.expectCause(isA(SignatureException.class));
 
         CryptoHelper crypto = mock(CryptoHelper.class);
-        when(crypto.createSignatureFor(anyString(), any(PrivateKey.class), any(byte[].class)))
+        when(crypto.createSignatureFor(anyString(), any(PrivateKey.class), any(byte[].class), any(byte[].class)))
                 .thenThrow(SignatureException.class);
 
         ECPublicKey publicKey = mock(ECPublicKey.class);
         ECPrivateKey privateKey = mock(ECPrivateKey.class);
         ECDSAKeyProvider provider = ECDSAAlgorithm.providerForKeys(publicKey, privateKey);
         Algorithm algorithm = new ECDSAAlgorithm(crypto, "some-alg", "some-algorithm", 32, provider);
-        algorithm.sign(ES256Header.getBytes(StandardCharsets.UTF_8));
+        algorithm.sign(ES256HeaderBytes, new byte[0]);
     }
 
     @Test
@@ -795,7 +777,7 @@ public class ECDSAAlgorithmTest {
         ECDSAAlgorithm algorithm256 = (ECDSAAlgorithm) Algorithm.ECDSA256((ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC"), (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_256, "EC"));
         String content256 = "eyJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJhdXRoMCJ9";
 
-        byte[] signature = algorithm256.sign(content256.getBytes());
+        byte[] signature = algorithm256.sign(content256.getBytes(), new byte[0]);
         signature[0] = (byte) 0x02;
         algorithm256.DERToJOSE(signature);
     }
@@ -848,13 +830,11 @@ public class ECDSAAlgorithmTest {
     @Test
     public void shouldSignAndVerifyWithECDSA256() throws Exception {
         ECDSAAlgorithm algorithm256 = (ECDSAAlgorithm) Algorithm.ECDSA256((ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC"), (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_256, "EC"));
-        String content256 = "eyJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJhdXRoMCJ9";
+        String header256 = "eyJhbGciOiJFUzI1NiJ9";
+        String body = "eyJpc3MiOiJhdXRoMCJ9";
 
         for (int i = 0; i < 10; i++) {
-            byte[] signature = algorithm256.sign(content256.getBytes());
-            String signature256 = Base64.encodeBase64URLSafeString((signature));
-
-            String jwt = content256 + "." + signature256;
+            String jwt = asJWT(algorithm256, header256, body);
             algorithm256.verify(JWT.decode(jwt));
         }
     }
@@ -862,13 +842,11 @@ public class ECDSAAlgorithmTest {
     @Test
     public void shouldSignAndVerifyWithECDSA384() throws Exception {
         ECDSAAlgorithm algorithm384 = (ECDSAAlgorithm) Algorithm.ECDSA384((ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_384, "EC"), (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_384, "EC"));
-        String content384 = "eyJhbGciOiJFUzM4NCJ9.eyJpc3MiOiJhdXRoMCJ9";
+        String header384 = "eyJhbGciOiJFUzM4NCJ9";
+        String body = "eyJpc3MiOiJhdXRoMCJ9";        
 
         for (int i = 0; i < 10; i++) {
-            byte[] signature = algorithm384.sign(content384.getBytes());
-            String signature384 = Base64.encodeBase64URLSafeString((signature));
-
-            String jwt = content384 + "." + signature384;
+            String jwt = asJWT(algorithm384, header384, body);
             algorithm384.verify(JWT.decode(jwt));
         }
     }
@@ -876,13 +854,11 @@ public class ECDSAAlgorithmTest {
     @Test
     public void shouldSignAndVerifyWithECDSA512() throws Exception {
         ECDSAAlgorithm algorithm512 = (ECDSAAlgorithm) Algorithm.ECDSA512((ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_512, "EC"), (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_512, "EC"));
-        String content512 = "eyJhbGciOiJFUzUxMiJ9.eyJpc3MiOiJhdXRoMCJ9";
+        String header512 = "eyJhbGciOiJFUzUxMiJ9";
+        String body = "eyJpc3MiOiJhdXRoMCJ9";        
 
         for (int i = 0; i < 10; i++) {
-            byte[] signature = algorithm512.sign(content512.getBytes());
-            String signature512 = Base64.encodeBase64URLSafeString((signature));
-
-            String jwt = content512 + "." + signature512;
+            String jwt = asJWT(algorithm512, header512, body);
             algorithm512.verify(JWT.decode(jwt));
         }
     }
@@ -1162,6 +1138,55 @@ public class ECDSAAlgorithmTest {
         Assert.assertThat(Arrays.equals(rNumber, rCopy), is(true));
         Assert.assertThat(Arrays.equals(sNumber, sCopy), is(true));
         Assert.assertThat(derSignature.length, is(totalLength));
+    }
+
+    @Test
+    public void shouldBeEqualSignatureMethodDecodeResults() throws Exception {
+        // signatures are not deterministic in value, so instead of directly comparing the signatures,
+        // check that both sign(..) methods can be used to create a jwt which can be
+        // verified
+        Algorithm algorithm = Algorithm.ECDSA256((ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC"), (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_256, "EC"));
+
+        String header = "eyJhbGciOiJFUzI1NiJ9";
+        String payload = "eyJpc3MiOiJhdXRoMCJ9";
+
+        byte[] headerBytes = header.getBytes(StandardCharsets.UTF_8);
+        byte[] payloadBytes = payload.getBytes(StandardCharsets.UTF_8);
+
+        ByteArrayOutputStream bout = new ByteArrayOutputStream();
+        bout.write(headerBytes);
+        bout.write('.');
+        bout.write(payloadBytes);
+
+        String jwtSignature1 = Base64.encodeBase64URLSafeString(algorithm.sign(bout.toByteArray()));
+        String jwt1 = String.format("%s.%s.%s", header, payload, jwtSignature1);
+
+        algorithm.verify(JWT.decode(jwt1));
+
+        String jwtSignature2 = Base64.encodeBase64URLSafeString(algorithm.sign(headerBytes, payloadBytes));
+        String jwt2 = String.format("%s.%s.%s", header, payload, jwtSignature2);
+
+        algorithm.verify(JWT.decode(jwt2));
+    }
+
+    /**
+     * Test deprecated signing method error handling.
+     * 
+     * @see {@linkplain #shouldFailOnECDSA256SigningWhenProvidedPrivateKeyIsNull}
+     * @throws Exception expected exception
+     */
+
+    @Test
+    public void shouldFailOnECDSA256SigningWithDeprecatedMethodWhenProvidedPrivateKeyIsNull() throws Exception {
+        exception.expect(SignatureGenerationException.class);
+        exception.expectMessage("The Token's Signature couldn't be generated when signing using the Algorithm: SHA256withECDSA");
+        exception.expectCause(isA(IllegalStateException.class));
+        exception.expectCause(hasMessage(is("The given Private Key is null.")));
+
+        ECDSAKeyProvider provider = mock(ECDSAKeyProvider.class);
+        when(provider.getPrivateKey()).thenReturn(null);
+        Algorithm algorithm = Algorithm.ECDSA256(provider);
+        algorithm.sign(new byte[0]);
     }
 
 }
