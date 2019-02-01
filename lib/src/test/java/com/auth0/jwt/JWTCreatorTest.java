@@ -357,4 +357,22 @@ public class JWTCreatorTest {
         String[] parts = jwt.split("\\.");
         assertThat(parts[1], is("eyJuYW1lIjpbMSwyLDNdfQ"));
     }
+
+    @Test
+    public void shouldAcceptCustomArrayClaimOfTypeMap() throws Exception {
+        Map<String, Object> customClaim = new HashMap<>();
+        customClaim.put("string", "issuer");
+        customClaim.put("integer", 1);
+        customClaim.put("float", 0.5);
+        customClaim.put("boolean", true);
+        customClaim.put("arrayNumber", new Long[]{1L, 2L, 3L});
+        customClaim.put("arrayString", new String[]{"A", "B", "C"});
+        String jwt = JWTCreator.init()
+                .withCustomClaim(customClaim)
+                .sign(Algorithm.HMAC256("secret"));
+
+        assertThat(jwt, is(notNullValue()));
+        String[] parts = jwt.split("\\.");
+        assertThat(parts[1], is("eyJib29sZWFuIjp0cnVlLCJzdHJpbmciOiJpc3N1ZXIiLCJhcnJheU51bWJlciI6WzEsMiwzXSwiYXJyYXlTdHJpbmciOlsiQSIsIkIiLCJDIl0sImludGVnZXIiOjEsImZsb2F0IjowLjV9"));
+    }
 }
