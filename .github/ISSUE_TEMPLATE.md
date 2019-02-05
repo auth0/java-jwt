@@ -16,7 +16,7 @@ Description of the bug or feature request and why it's a problem. Consider inclu
 - [ ] I have checked for related or duplicate [Issues](https://github.com/auth0/java-jwt/issues) and [PRs](https://github.com/auth0/java-jwt/pulls).
 - [ ] I have read the [Auth0 general contribution guidelines](https://github.com/auth0/open-source-template/blob/master/GENERAL-CONTRIBUTING.md).
 - [ ] I have read the [Auth0 Code of Conduct](https://github.com/auth0/open-source-template/blob/master/CODE-OF-CONDUCT.md).
-- [ ] I am reporting this to the correct repository (this library is used by [auth0-java](https://github.com/auth0/auth0-java)).
+- [ ] I am reporting this to the correct repository (note this library is used by many libraries, such as [auth0-java](https://github.com/auth0/auth0-java)).
 
 ### Environment
 
