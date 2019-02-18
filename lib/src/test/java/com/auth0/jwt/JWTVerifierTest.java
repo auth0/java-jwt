@@ -599,20 +599,7 @@ public class JWTVerifierTest {
                 .build();
 
         assertThat(verifier.claims, is(notNullValue()));
-        assertThat(verifier.claims, not(hasKey("sub")));
-    }
-
-    @Test
-    public void shouldThrowWhenNoIssuerPresent() {
-        exception.expect(InvalidClaimException.class);
-        exception.expectMessage("The Claim 'iss' value doesn't match the required issuer.");
-
-        String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.Rq8IxqeX7eA6GgYxlcHdPFVRNFFZc5rEI3MQTZZbK3I";
-
-        JWTVerifier.init(Algorithm.HMAC256("secret"))
-                .withIssuer("oauth")
-                .build()
-                .verify(token);
+        assertThat(verifier.claims, not(hasKey("iss")));
     }
 
     @Test
