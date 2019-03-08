@@ -75,6 +75,18 @@ public class JWTVerifierTest {
     }
 
     @Test
+    public void shouldThrowOnNullIssuer() throws Exception {
+        exception.expect(InvalidClaimException.class);
+        exception.expectMessage("The Claim 'iss' value doesn't match the required issuer.");
+
+        String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.e30.t-IDcSemACt8x4iTMCda8Yhe3iZaWbvV5XKSTbuAn0M";
+        JWTVerifier.init(Algorithm.HMAC256("secret"))
+                .withIssuer("auth0")
+                .build()
+                .verify(token);
+    }
+
+    @Test
     public void shouldValidateSubject() throws Exception {
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.Rq8IxqeX7eA6GgYxlcHdPFVRNFFZc5rEI3MQTZZbK3I";
         DecodedJWT jwt = JWTVerifier.init(Algorithm.HMAC256("secret"))
@@ -136,6 +148,18 @@ public class JWTVerifierTest {
                 .withAudience("nope")
                 .build()
                 .verify(token);
+    }
+
+    @Test
+    public void shouldRemoveAudienceWhenPassingNull() throws Exception {
+        Algorithm algorithm = mock(Algorithm.class);
+        JWTVerifier verifier = JWTVerifier.init(algorithm)
+                .withAudience("John")
+                .withAudience(null)
+                .build();
+
+        assertThat(verifier.claims, is(notNullValue()));
+        assertThat(verifier.claims, not(hasKey("aud")));
     }
 
     @Test
