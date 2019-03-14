@@ -1,5 +1,11 @@
 # Change Log
 
+## [3.8.0](https://github.com/auth0/java-jwt/tree/3.8.0) (2019-03-14)
+[Full Changelog](https://github.com/auth0/java-jwt/compare/3.7.0...3.8.0)
+
+**Added**
+- Support multiple issuers #246 [\#288](https://github.com/auth0/java-jwt/pull/288) ([itdevelopmentapps](https://github.com/itdevelopmentapps))
+
 ## [3.7.0](https://github.com/auth0/java-jwt/tree/3.7.0) (2019-01-29)
 [Full Changelog](https://github.com/auth0/java-jwt/compare/3.6.0...3.7.0)
 
