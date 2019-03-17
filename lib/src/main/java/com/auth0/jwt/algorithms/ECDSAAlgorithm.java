@@ -4,13 +4,13 @@ import com.auth0.jwt.exceptions.SignatureGenerationException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.ECDSAKeyProvider;
-import org.apache.commons.codec.binary.Base64;
 
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
+import java.util.Base64;
 
 class ECDSAAlgorithm extends Algorithm {
 
@@ -35,7 +35,7 @@ class ECDSAAlgorithm extends Algorithm {
 
     @Override
     public void verify(DecodedJWT jwt) throws SignatureVerificationException {
-        byte[] signatureBytes = Base64.decodeBase64(jwt.getSignature());
+        byte[] signatureBytes = Base64.getUrlDecoder().decode(jwt.getSignature());
 
         try {
             ECPublicKey publicKey = keyProvider.getPublicKeyById(jwt.getKeyId());

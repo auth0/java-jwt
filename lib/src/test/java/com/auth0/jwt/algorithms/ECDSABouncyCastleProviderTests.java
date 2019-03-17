@@ -5,7 +5,6 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.exceptions.SignatureGenerationException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.interfaces.ECDSAKeyProvider;
-import org.apache.commons.codec.binary.Base64;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -18,6 +17,7 @@ import java.security.*;
 import java.security.interfaces.ECKey;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
+import java.util.Base64;
 
 import static com.auth0.jwt.PemUtils.readPrivateKeyFromFile;
 import static com.auth0.jwt.PemUtils.readPublicKeyFromFile;
@@ -165,7 +165,7 @@ public class ECDSABouncyCastleProviderTests {
 
         byte[] bytes = new byte[63];
         new SecureRandom().nextBytes(bytes);
-        String signature = Base64.encodeBase64URLSafeString(bytes);
+        String signature = Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
         String jwt = "eyJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJhdXRoMCJ9." + signature;
         Algorithm algorithm = Algorithm.ECDSA256((ECKey) readPublicKeyFromFile(INVALID_PUBLIC_KEY_FILE_256, "EC"));
         algorithm.verify(JWT.decode(jwt));
@@ -178,7 +178,7 @@ public class ECDSABouncyCastleProviderTests {
 
         byte[] bytes = new byte[64];
         new SecureRandom().nextBytes(bytes);
-        String signature = Base64.encodeBase64URLSafeString(bytes);
+        String signature = Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
         String jwt = "eyJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJhdXRoMCJ9." + signature;
         Algorithm algorithm = Algorithm.ECDSA256((ECKey) readPublicKeyFromFile(INVALID_PUBLIC_KEY_FILE_256, "EC"));
         algorithm.verify(JWT.decode(jwt));
@@ -192,7 +192,7 @@ public class ECDSABouncyCastleProviderTests {
         byte[] bytes = new byte[64];
         bytes[0] = 0x30;
         new SecureRandom().nextBytes(bytes);
-        String signature = Base64.encodeBase64URLSafeString(bytes);
+        String signature = Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
         String jwt = "eyJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJhdXRoMCJ9." + signature;
         Algorithm algorithm = Algorithm.ECDSA256((ECKey) readPublicKeyFromFile(INVALID_PUBLIC_KEY_FILE_256, "EC"));
         algorithm.verify(JWT.decode(jwt));
@@ -290,7 +290,7 @@ public class ECDSABouncyCastleProviderTests {
 
         byte[] bytes = new byte[95];
         new SecureRandom().nextBytes(bytes);
-        String signature = Base64.encodeBase64URLSafeString(bytes);
+        String signature = Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
         String jwt = "eyJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJhdXRoMCJ9." + signature;
         Algorithm algorithm = Algorithm.ECDSA384((ECKey) readPublicKeyFromFile(INVALID_PUBLIC_KEY_FILE_384, "EC"));
         algorithm.verify(JWT.decode(jwt));
@@ -303,7 +303,7 @@ public class ECDSABouncyCastleProviderTests {
 
         byte[] bytes = new byte[96];
         new SecureRandom().nextBytes(bytes);
-        String signature = Base64.encodeBase64URLSafeString(bytes);
+        String signature = Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
         String jwt = "eyJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJhdXRoMCJ9." + signature;
         Algorithm algorithm = Algorithm.ECDSA384((ECKey) readPublicKeyFromFile(INVALID_PUBLIC_KEY_FILE_384, "EC"));
         algorithm.verify(JWT.decode(jwt));
@@ -317,7 +317,7 @@ public class ECDSABouncyCastleProviderTests {
         byte[] bytes = new byte[96];
         new SecureRandom().nextBytes(bytes);
         bytes[0] = 0x30;
-        String signature = Base64.encodeBase64URLSafeString(bytes);
+        String signature = Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
         String jwt = "eyJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJhdXRoMCJ9." + signature;
         Algorithm algorithm = Algorithm.ECDSA384((ECKey) readPublicKeyFromFile(INVALID_PUBLIC_KEY_FILE_384, "EC"));
         algorithm.verify(JWT.decode(jwt));
@@ -415,7 +415,7 @@ public class ECDSABouncyCastleProviderTests {
 
         byte[] bytes = new byte[131];
         new SecureRandom().nextBytes(bytes);
-        String signature = Base64.encodeBase64URLSafeString(bytes);
+        String signature = Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
         String jwt = "eyJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJhdXRoMCJ9." + signature;
         Algorithm algorithm = Algorithm.ECDSA512((ECKey) readPublicKeyFromFile(INVALID_PUBLIC_KEY_FILE_512, "EC"));
         algorithm.verify(JWT.decode(jwt));
@@ -428,7 +428,7 @@ public class ECDSABouncyCastleProviderTests {
 
         byte[] bytes = new byte[132];
         new SecureRandom().nextBytes(bytes);
-        String signature = Base64.encodeBase64URLSafeString(bytes);
+        String signature = Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
         String jwt = "eyJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJhdXRoMCJ9." + signature;
         Algorithm algorithm = Algorithm.ECDSA512((ECKey) readPublicKeyFromFile(INVALID_PUBLIC_KEY_FILE_512, "EC"));
         algorithm.verify(JWT.decode(jwt));
@@ -442,7 +442,7 @@ public class ECDSABouncyCastleProviderTests {
         byte[] bytes = new byte[132];
         new SecureRandom().nextBytes(bytes);
         bytes[0] = 0x30;
-        String signature = Base64.encodeBase64URLSafeString(bytes);
+        String signature = Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
         String jwt = "eyJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJhdXRoMCJ9." + signature;
         Algorithm algorithm = Algorithm.ECDSA512((ECKey) readPublicKeyFromFile(INVALID_PUBLIC_KEY_FILE_512, "EC"));
         algorithm.verify(JWT.decode(jwt));
@@ -457,7 +457,7 @@ public class ECDSABouncyCastleProviderTests {
 
         byte[] bytes = new byte[256];
         new SecureRandom().nextBytes(bytes);
-        String signature = Base64.encodeBase64URLSafeString(bytes);
+        String signature = Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
         String jwt = "eyJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJhdXRoMCJ9." + signature;
 
         ECPublicKey publicKey = (ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC");
