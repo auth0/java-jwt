@@ -32,8 +32,8 @@ class CryptoHelper {
      *
      * @param algorithm algorithm name.
      * @param secretBytes algorithm secret.
-     * @param header JWT header.
-     * @param payload JWT payload.
+     * @param headerBytes JWT header.
+     * @param payloadBytes JWT payload.
      * @param signatureBytes JWT signature.
      * @return true if signature is valid.
      * @throws NoSuchAlgorithmException if the algorithm is not supported.
