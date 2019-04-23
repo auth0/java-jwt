@@ -26,6 +26,7 @@ If you're looking for an **Android** version of the JWT Decoder take a look at o
 
 ```gradle
 implementation 'com.auth0:java-jwt:3.8.0'
+implementation 'commons-codec:commons-codec:1.11'
 ```
 
 ## Available Algorithms
