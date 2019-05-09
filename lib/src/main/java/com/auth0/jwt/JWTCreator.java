@@ -348,9 +348,10 @@ public final class JWTCreator {
         }         
 
         private static boolean validateClaim(Map<?, Object> map) {
+            // do not accept null values in maps
             for (Entry<?, Object> entry : map.entrySet()) {
                 Object value = entry.getValue();
-                if(value != null && !isSupported(value)) {
+                if(value == null || !isSupported(value)) {
                     return false;
                 }
                 
@@ -362,6 +363,7 @@ public final class JWTCreator {
         }
         
         private static boolean validateClaim(List<?> list) {
+            // accept null values in list
             for (Object object : list) {
                 if(object != null && !isSupported(object)) {
                     return false;
@@ -372,16 +374,13 @@ public final class JWTCreator {
 
         @SuppressWarnings("unchecked")
         private static boolean isSupported(Object value) {
-            if(value != null) {
-                if(value instanceof List) {
-                    return validateClaim((List<?>)value);
-                } else if(value instanceof Map) {
-                    return validateClaim((Map<Object, Object>)value);
-                } else {
-                    return isBasicType(value);
-                }
+            if(value instanceof List) {
+                return validateClaim((List<?>)value);
+            } else if(value instanceof Map) {
+                return validateClaim((Map<Object, Object>)value);
+            } else {
+                return isBasicType(value);
             }
-            return true;
         }
 
         private static boolean isBasicType(Object value) {
