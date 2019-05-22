@@ -1,5 +1,11 @@
 # Change Log
 
+## [3.8.1](https://github.com/auth0/java-jwt/tree/3.8.1) (2019-05-22)
+[Full Changelog](https://github.com/auth0/java-jwt/compare/3.8.0...3.8.1)
+
+**Security**
+- Bump dependencies and fix security issue [\#337](https://github.com/auth0/java-jwt/pull/337) ([lbalmaceda](https://github.com/lbalmaceda))
+
 ## [3.8.0](https://github.com/auth0/java-jwt/tree/3.8.0) (2019-03-14)
 [Full Changelog](https://github.com/auth0/java-jwt/compare/3.7.0...3.8.0)
 
