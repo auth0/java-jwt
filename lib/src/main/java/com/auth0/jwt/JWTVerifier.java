@@ -66,7 +66,8 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
          */
         @Override
         public Verification withIssuer(String... issuer) {
-            requireClaim(PublicClaims.ISSUER, issuer == null ? null : Arrays.asList(issuer));
+            List<String> claims = toValidClaims(issuer);
+            requireClaim(PublicClaims.ISSUER, claims);
             return this;
         }
 
@@ -90,7 +91,8 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
          */
         @Override
         public Verification withAudience(String... audience) {
-            requireClaim(PublicClaims.AUDIENCE, audience == null ? null : Arrays.asList(audience));
+            List<String> claims = toValidClaims(audience);
+            requireClaim(PublicClaims.AUDIENCE, claims);
             return this;
         }
 
@@ -342,6 +344,25 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
             if (!claims.containsKey(PublicClaims.ISSUED_AT)) {
                 claims.put(PublicClaims.ISSUED_AT, defaultLeeway);
             }
+        }
+
+        private static List<String> toValidClaims(String ... claims) {
+            if (claims == null) {
+                return null;
+            }
+
+            List<String> validClaims = new ArrayList<>(claims.length);
+            for (String claim : claims) {
+                if (claim != null) {
+                    validClaims.add(claim);
+                }
+            }
+
+            if (validClaims.isEmpty()) {
+                return null;
+            }
+
+            return validClaims;
         }
 
         private void requireClaim(String name, Object value) {

@@ -6,12 +6,14 @@ import com.auth0.jwt.exceptions.InvalidClaimException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.Clock;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.auth0.jwt.interfaces.Verification;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.Matchers.*;
@@ -151,15 +153,39 @@ public class JWTVerifierTest {
     }
 
     @Test
-    public void shouldRemoveAudienceWhenPassingNull() throws Exception {
+    public void shouldRemoveAudienceWhenPassingNullArray() throws Exception {
         Algorithm algorithm = mock(Algorithm.class);
         JWTVerifier verifier = JWTVerifier.init(algorithm)
                 .withAudience("John")
-                .withAudience(null)
+                .withAudience((String[]) null)
                 .build();
 
         assertThat(verifier.claims, is(notNullValue()));
         assertThat(verifier.claims, not(hasKey("aud")));
+    }
+
+    @Test
+    public void shouldRemoveAudienceWhenPassingNullString() {
+        Algorithm algorithm = mock(Algorithm.class);
+        JWTVerifier verifier = JWTVerifier.init(algorithm)
+                .withAudience("John")
+                .withAudience((String) null)
+                .build();
+
+        assertThat(verifier.claims, is(notNullValue()));
+        assertThat(verifier.claims, not(hasKey("aud")));
+    }
+
+    @Test
+    public void shouldRemoveNullValueFromAudience() {
+        Algorithm algorithm = mock(Algorithm.class);
+        JWTVerifier verifier = JWTVerifier.init(algorithm)
+                .withAudience("John", null, "James")
+                .build();
+
+        assertThat(verifier.claims, is(notNullValue()));
+        assertThat((List<String>) verifier.claims.get("aud"), contains("John", "James"));
+        assertThat((List<String>) verifier.claims.get("aud"), not(contains(nullValue())));
     }
 
     @Test
@@ -615,15 +641,39 @@ public class JWTVerifierTest {
     }
 
     @Test
-    public void shouldRemoveClaimWhenPassingNull() throws Exception {
+    public void shouldRemoveIssuerWhenPassingNullArray() throws Exception {
         Algorithm algorithm = mock(Algorithm.class);
         JWTVerifier verifier = JWTVerifier.init(algorithm)
                 .withIssuer("iss")
-                .withIssuer(null)
+                .withIssuer((String[]) null)
                 .build();
 
         assertThat(verifier.claims, is(notNullValue()));
         assertThat(verifier.claims, not(hasKey("iss")));
+    }
+
+    @Test
+    public void shouldRemoveIssuerWhenPassingNullString() {
+        Algorithm algorithm = mock(Algorithm.class);
+        JWTVerifier verifier = JWTVerifier.init(algorithm)
+                .withIssuer("theIssuer")
+                .withIssuer((String) null)
+                .build();
+
+        assertThat(verifier.claims, is(notNullValue()));
+        assertThat(verifier.claims, not(hasKey("iss")));
+    }
+
+    @Test
+    public void shouldRemoveNullValueFromIssuers() {
+        Algorithm algorithm = mock(Algorithm.class);
+        JWTVerifier verifier = JWTVerifier.init(algorithm)
+                .withIssuer("theIssuer", null, "otherIssuer")
+                .build();
+
+        assertThat(verifier.claims, is(notNullValue()));
+        assertThat((List<String>) verifier.claims.get("iss"), contains("theIssuer", "otherIssuer"));
+        assertThat((List<String>) verifier.claims.get("iss"), not(contains(nullValue())));
     }
 
     @Test
