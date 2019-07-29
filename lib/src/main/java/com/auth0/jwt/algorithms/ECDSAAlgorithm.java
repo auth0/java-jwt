@@ -3,7 +3,6 @@ package com.auth0.jwt.algorithms;
 import com.auth0.jwt.exceptions.SignatureGenerationException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.auth0.jwt.interfaces.AsymKeyProvider;
 import com.auth0.jwt.interfaces.ECDSAKeyProvider;
 import org.apache.commons.codec.binary.Base64;
 
@@ -11,12 +10,12 @@ import java.security.*;
 
 class ECDSAAlgorithm extends Algorithm {
 
-    private final AsymKeyProvider keyProvider;
+    private final ECDSAKeyProvider keyProvider;
     private final CryptoHelper crypto;
     private final int ecNumberSize;
 
     //Visible for testing
-    ECDSAAlgorithm(CryptoHelper crypto, String id, String algorithm, int ecNumberSize, AsymKeyProvider keyProvider) throws IllegalArgumentException {
+    ECDSAAlgorithm(CryptoHelper crypto, String id, String algorithm, int ecNumberSize, ECDSAKeyProvider keyProvider) throws IllegalArgumentException {
         super(id, algorithm);
         if (keyProvider == null) {
             throw new IllegalArgumentException("The Key Provider cannot be null.");
@@ -26,7 +25,7 @@ class ECDSAAlgorithm extends Algorithm {
         this.ecNumberSize = ecNumberSize;
     }
 
-    ECDSAAlgorithm(String id, String algorithm, int ecNumberSize, AsymKeyProvider keyProvider) throws IllegalArgumentException {
+    ECDSAAlgorithm(String id, String algorithm, int ecNumberSize, ECDSAKeyProvider keyProvider) throws IllegalArgumentException {
         this(new CryptoHelper(), id, algorithm, ecNumberSize, keyProvider);
     }
 

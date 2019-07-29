@@ -6,7 +6,9 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.ECDSAKeyProvider;
 import com.auth0.jwt.interfaces.RSAKeyProvider;
 
-import java.io.ByteArrayOutputStream;
+import java.security.PrivateKey;
+import java.security.Provider;
+import java.security.PublicKey;
 import java.security.interfaces.*;
 
 /**
@@ -38,7 +40,20 @@ public abstract class Algorithm {
      * @throws IllegalArgumentException if both provided Keys are null.
      */
     public static Algorithm RSA256(RSAPublicKey publicKey, RSAPrivateKey privateKey) throws IllegalArgumentException {
-        return RSA256(RSAAlgorithm.providerForKeys(publicKey, privateKey));
+        return RSA256(RSAAlgorithm.providerForKeys(publicKey, privateKey, null));
+    }
+
+    /**
+     * Creates a new Algorithm instance using SHA256withRSA. Tokens specify this as "RS256".
+     *
+     * @param publicKey  the key to use in the verify instance.
+     * @param privateKey the key to use in the signing instance.
+     * @param securityProvider the Security Provider to use in the signing.
+     * @return a valid RSA256 Algorithm.
+     * @throws IllegalArgumentException if both provided Keys are null.
+     */
+    public static Algorithm RSA256(PublicKey publicKey, PrivateKey privateKey, Provider securityProvider) throws IllegalArgumentException {
+        return RSA256(RSAAlgorithm.providerForKeys(publicKey, privateKey, securityProvider));
     }
 
     /**
@@ -76,7 +91,20 @@ public abstract class Algorithm {
      * @throws IllegalArgumentException if both provided Keys are null.
      */
     public static Algorithm RSA384(RSAPublicKey publicKey, RSAPrivateKey privateKey) throws IllegalArgumentException {
-        return RSA384(RSAAlgorithm.providerForKeys(publicKey, privateKey));
+        return RSA384(RSAAlgorithm.providerForKeys(publicKey, privateKey, null));
+    }
+
+    /**
+     * Creates a new Algorithm instance using SHA384withRSA. Tokens specify this as "RS384".
+     *
+     * @param publicKey  the key to use in the verify instance.
+     * @param privateKey the key to use in the signing instance.
+     * @param securityProvider the Security Provider to use in the signing.
+     * @return a valid RSA384 Algorithm.
+     * @throws IllegalArgumentException if both provided Keys are null.
+     */
+    public static Algorithm RSA384(RSAPublicKey publicKey, RSAPrivateKey privateKey, Provider securityProvider) throws IllegalArgumentException {
+        return RSA384(RSAAlgorithm.providerForKeys(publicKey, privateKey, securityProvider));
     }
 
     /**
@@ -114,7 +142,20 @@ public abstract class Algorithm {
      * @throws IllegalArgumentException if both provided Keys are null.
      */
     public static Algorithm RSA512(RSAPublicKey publicKey, RSAPrivateKey privateKey) throws IllegalArgumentException {
-        return RSA512(RSAAlgorithm.providerForKeys(publicKey, privateKey));
+        return RSA512(RSAAlgorithm.providerForKeys(publicKey, privateKey, null));
+    }
+
+    /**
+     * Creates a new Algorithm instance using SHA512withRSA. Tokens specify this as "RS512".
+     *
+     * @param publicKey  the key to use in the verify instance.
+     * @param privateKey the key to use in the signing instance.
+     * @param securityProvider the Security Provider to use in the signing.
+     * @return a valid RSA512 Algorithm.
+     * @throws IllegalArgumentException if both provided Keys are null.
+     */
+    public static Algorithm RSA512(RSAPublicKey publicKey, RSAPrivateKey privateKey, Provider securityProvider) throws IllegalArgumentException {
+        return RSA512(RSAAlgorithm.providerForKeys(publicKey, privateKey, securityProvider));
     }
 
     /**
@@ -218,7 +259,20 @@ public abstract class Algorithm {
      * @throws IllegalArgumentException if the provided Key is null.
      */
     public static Algorithm ECDSA256(ECPublicKey publicKey, ECPrivateKey privateKey) throws IllegalArgumentException {
-        return ECDSA256(ECDSAAlgorithm.providerForKeys(publicKey, privateKey));
+        return ECDSA256(ECDSAAlgorithm.providerForKeys(publicKey, privateKey, null));
+    }
+
+    /**
+     * Creates a new Algorithm instance using SHA256withECDSA. Tokens specify this as "ES256".
+     *
+     * @param publicKey  the key to use in the verify instance.
+     * @param privateKey the key to use in the signing instance.
+     * @param securityProvider the Security Provider to use in the signing.
+     * @return a valid ECDSA256 Algorithm.
+     * @throws IllegalArgumentException if the provided Key is null.
+     */
+    public static Algorithm ECDSA256(PublicKey publicKey, PrivateKey privateKey, Provider securityProvider) throws IllegalArgumentException {
+        return ECDSA256(ECDSAAlgorithm.providerForKeys(publicKey, privateKey, securityProvider));
     }
 
     /**
@@ -256,7 +310,20 @@ public abstract class Algorithm {
      * @throws IllegalArgumentException if the provided Key is null.
      */
     public static Algorithm ECDSA384(ECPublicKey publicKey, ECPrivateKey privateKey) throws IllegalArgumentException {
-        return ECDSA384(ECDSAAlgorithm.providerForKeys(publicKey, privateKey));
+        return ECDSA384(ECDSAAlgorithm.providerForKeys(publicKey, privateKey, null));
+    }
+
+    /**
+     * Creates a new Algorithm instance using SHA384withECDSA. Tokens specify this as "ES384".
+     *
+     * @param publicKey  the key to use in the verify instance.
+     * @param privateKey the key to use in the signing instance.
+     * @param securityProvider the Security Provider to use in the signing.
+     * @return a valid ECDSA384 Algorithm.
+     * @throws IllegalArgumentException if the provided Key is null.
+     */
+    public static Algorithm ECDSA384(PublicKey publicKey, PrivateKey privateKey, Provider securityProvider) throws IllegalArgumentException {
+        return ECDSA384(ECDSAAlgorithm.providerForKeys(publicKey, privateKey, securityProvider));
     }
 
     /**
@@ -294,7 +361,20 @@ public abstract class Algorithm {
      * @throws IllegalArgumentException if the provided Key is null.
      */
     public static Algorithm ECDSA512(ECPublicKey publicKey, ECPrivateKey privateKey) throws IllegalArgumentException {
-        return ECDSA512(ECDSAAlgorithm.providerForKeys(publicKey, privateKey));
+        return ECDSA512(ECDSAAlgorithm.providerForKeys(publicKey, privateKey, null));
+    }
+
+    /**
+     * Creates a new Algorithm instance using SHA512withECDSA. Tokens specify this as "ES512".
+     *
+     * @param publicKey  the key to use in the verify instance.
+     * @param privateKey the key to use in the signing instance.
+     * @param securityProvider the Security Provider to use in the signing.
+     * @return a valid ECDSA512 Algorithm.
+     * @throws IllegalArgumentException if the provided Key is null.
+     */
+    public static Algorithm ECDSA512(ECPublicKey publicKey, ECPrivateKey privateKey, Provider securityProvider) throws IllegalArgumentException {
+        return ECDSA512(ECDSAAlgorithm.providerForKeys(publicKey, privateKey, securityProvider));
     }
 
     /**
@@ -311,7 +391,6 @@ public abstract class Algorithm {
         ECPrivateKey privateKey = key instanceof ECPrivateKey ? (ECPrivateKey) key : null;
         return ECDSA512(publicKey, privateKey);
     }
-
 
     public static Algorithm none() {
         return new NoneAlgorithm();
