@@ -709,12 +709,13 @@ public class ECDSABouncyCastleProviderTests {
         exception.expectCause(isA(NoSuchAlgorithmException.class));
 
         CryptoHelper crypto = mock(CryptoHelper.class);
-        when(crypto.createSignatureFor(anyString(), any(PrivateKey.class), any(byte[].class), any(byte[].class)))
+        when(crypto.createSignatureFor(anyString(), any(PrivateKey.class), any(Provider.class), any(byte[].class), any(byte[].class)))
                 .thenThrow(NoSuchAlgorithmException.class);
 
         ECPublicKey publicKey = mock(ECPublicKey.class);
         ECPrivateKey privateKey = mock(ECPrivateKey.class);
-        ECDSAKeyProvider provider = ECDSAAlgorithm.providerForKeys(publicKey, privateKey);
+        Provider securityProvider = mock(Provider.class);
+        ECDSAKeyProvider provider = ECDSAAlgorithm.providerForKeys(publicKey, privateKey, securityProvider);
         Algorithm algorithm = new ECDSAAlgorithm(crypto, "some-alg", "some-algorithm", 32, provider);
         algorithm.sign(ES256Header.getBytes(StandardCharsets.UTF_8), new byte[0]);
     }
@@ -726,12 +727,13 @@ public class ECDSABouncyCastleProviderTests {
         exception.expectCause(isA(InvalidKeyException.class));
 
         CryptoHelper crypto = mock(CryptoHelper.class);
-        when(crypto.createSignatureFor(anyString(), any(PrivateKey.class), any(byte[].class), any(byte[].class)))
+        when(crypto.createSignatureFor(anyString(), any(PrivateKey.class), any(Provider.class), any(byte[].class), any(byte[].class)))
                 .thenThrow(InvalidKeyException.class);
 
         ECPublicKey publicKey = mock(ECPublicKey.class);
         ECPrivateKey privateKey = mock(ECPrivateKey.class);
-        ECDSAKeyProvider provider = ECDSAAlgorithm.providerForKeys(publicKey, privateKey);
+        Provider securityProvider = mock(Provider.class);
+        ECDSAKeyProvider provider = ECDSAAlgorithm.providerForKeys(publicKey, privateKey, securityProvider);
         Algorithm algorithm = new ECDSAAlgorithm(crypto, "some-alg", "some-algorithm", 32, provider);
         algorithm.sign(ES256Header.getBytes(StandardCharsets.UTF_8), new byte[0]);
     }
@@ -743,12 +745,13 @@ public class ECDSABouncyCastleProviderTests {
         exception.expectCause(isA(SignatureException.class));
 
         CryptoHelper crypto = mock(CryptoHelper.class);
-        when(crypto.createSignatureFor(anyString(), any(PrivateKey.class), any(byte[].class), any(byte[].class)))
+        when(crypto.createSignatureFor(anyString(), any(PrivateKey.class), any(Provider.class), any(byte[].class), any(byte[].class)))
                 .thenThrow(SignatureException.class);
 
         ECPublicKey publicKey = mock(ECPublicKey.class);
         ECPrivateKey privateKey = mock(ECPrivateKey.class);
-        ECDSAKeyProvider provider = ECDSAAlgorithm.providerForKeys(publicKey, privateKey);
+        Provider securityProvider = mock(Provider.class);
+        ECDSAKeyProvider provider = ECDSAAlgorithm.providerForKeys(publicKey, privateKey, securityProvider);
         Algorithm algorithm = new ECDSAAlgorithm(crypto, "some-alg", "some-algorithm", 32, provider);
         algorithm.sign(ES256Header.getBytes(StandardCharsets.UTF_8), new byte[0]);
     }
@@ -757,7 +760,8 @@ public class ECDSABouncyCastleProviderTests {
     public void shouldReturnNullSigningKeyIdIfCreatedWithDefaultProvider() throws Exception {
         ECPublicKey publicKey = mock(ECPublicKey.class);
         ECPrivateKey privateKey = mock(ECPrivateKey.class);
-        ECDSAKeyProvider provider = ECDSAAlgorithm.providerForKeys(publicKey, privateKey);
+        Provider securityProvider = mock(Provider.class);
+        ECDSAKeyProvider provider = ECDSAAlgorithm.providerForKeys(publicKey, privateKey, securityProvider);
         Algorithm algorithm = new ECDSAAlgorithm("some-alg", "some-algorithm", 32, provider);
 
         assertThat(algorithm.getSigningKeyId(), is(nullValue()));

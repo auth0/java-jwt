@@ -3,6 +3,7 @@ package com.auth0.jwt.algorithms;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.exceptions.SignatureGenerationException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.ECDSAKeyProvider;
 
 import org.apache.commons.codec.binary.Base64;
@@ -12,18 +13,21 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import sun.security.pkcs11.SunPKCS11;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
 import java.security.interfaces.ECKey;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
 import java.util.Arrays;
 
 
-import static com.auth0.jwt.PemUtils.readPrivateKeyFromFile;
-import static com.auth0.jwt.PemUtils.readPublicKeyFromFile;
+import static com.auth0.jwt.PemUtils.*;
 import static com.auth0.jwt.algorithms.CryptoTestHelper.asJWT;
 import static com.auth0.jwt.algorithms.CryptoTestHelper.assertSignaturePresent;
 import static org.hamcrest.CoreMatchers.is;
@@ -40,14 +44,17 @@ public class ECDSAAlgorithmTest {
 
     private static final String PRIVATE_KEY_FILE_256 = "src/test/resources/ec256-key-private.pem";
     private static final String PUBLIC_KEY_FILE_256 = "src/test/resources/ec256-key-public.pem";
+    private static final String CERTIFICATE_FILE_256 = "src/test/resources/ec256-certificate.pem";
     private static final String INVALID_PUBLIC_KEY_FILE_256 = "src/test/resources/ec256-key-public-invalid.pem";
 
     private static final String PRIVATE_KEY_FILE_384 = "src/test/resources/ec384-key-private.pem";
     private static final String PUBLIC_KEY_FILE_384 = "src/test/resources/ec384-key-public.pem";
+    private static final String CERTIFICATE_FILE_384 = "src/test/resources/ec384-certificate.pem";
     private static final String INVALID_PUBLIC_KEY_FILE_384 = "src/test/resources/ec384-key-public-invalid.pem";
 
     private static final String PRIVATE_KEY_FILE_512 = "src/test/resources/ec512-key-private.pem";
     private static final String PUBLIC_KEY_FILE_512 = "src/test/resources/ec512-key-public.pem";
+    private static final String CERTIFICATE_FILE_512 = "src/test/resources/ec512-certificate.pem";
     private static final String INVALID_PUBLIC_KEY_FILE_512 = "src/test/resources/ec512-key-public-invalid.pem";
 
     @Rule
@@ -706,12 +713,13 @@ public class ECDSAAlgorithmTest {
         exception.expectCause(isA(NoSuchAlgorithmException.class));
 
         CryptoHelper crypto = mock(CryptoHelper.class);
-        when(crypto.createSignatureFor(anyString(), any(PrivateKey.class), any(byte[].class), any(byte[].class)))
+        when(crypto.createSignatureFor(anyString(), any(PrivateKey.class), any(Provider.class), any(byte[].class), any(byte[].class)))
                 .thenThrow(NoSuchAlgorithmException.class);
 
         ECPublicKey publicKey = mock(ECPublicKey.class);
         ECPrivateKey privateKey = mock(ECPrivateKey.class);
-        ECDSAKeyProvider provider = ECDSAAlgorithm.providerForKeys(publicKey, privateKey);
+        Provider securityProvider = mock(Provider.class);
+        ECDSAKeyProvider provider = ECDSAAlgorithm.providerForKeys(publicKey, privateKey, securityProvider);
         Algorithm algorithm = new ECDSAAlgorithm(crypto, "some-alg", "some-algorithm", 32, provider);
         algorithm.sign(ES256HeaderBytes, new byte[0]);
     }
@@ -723,12 +731,13 @@ public class ECDSAAlgorithmTest {
         exception.expectCause(isA(InvalidKeyException.class));
 
         CryptoHelper crypto = mock(CryptoHelper.class);
-        when(crypto.createSignatureFor(anyString(), any(PrivateKey.class), any(byte[].class), any(byte[].class)))
+        when(crypto.createSignatureFor(anyString(), any(PrivateKey.class), any(Provider.class), any(byte[].class), any(byte[].class)))
                 .thenThrow(InvalidKeyException.class);
 
         ECPublicKey publicKey = mock(ECPublicKey.class);
         ECPrivateKey privateKey = mock(ECPrivateKey.class);
-        ECDSAKeyProvider provider = ECDSAAlgorithm.providerForKeys(publicKey, privateKey);
+        Provider securityProvider = mock(Provider.class);
+        ECDSAKeyProvider provider = ECDSAAlgorithm.providerForKeys(publicKey, privateKey, securityProvider);
         Algorithm algorithm = new ECDSAAlgorithm(crypto, "some-alg", "some-algorithm", 32, provider);
         algorithm.sign(ES256HeaderBytes, new byte[0]);
     }
@@ -740,12 +749,13 @@ public class ECDSAAlgorithmTest {
         exception.expectCause(isA(SignatureException.class));
 
         CryptoHelper crypto = mock(CryptoHelper.class);
-        when(crypto.createSignatureFor(anyString(), any(PrivateKey.class), any(byte[].class), any(byte[].class)))
+        when(crypto.createSignatureFor(anyString(), any(PrivateKey.class), any(Provider.class), any(byte[].class), any(byte[].class)))
                 .thenThrow(SignatureException.class);
 
         ECPublicKey publicKey = mock(ECPublicKey.class);
         ECPrivateKey privateKey = mock(ECPrivateKey.class);
-        ECDSAKeyProvider provider = ECDSAAlgorithm.providerForKeys(publicKey, privateKey);
+        Provider securityProvider = mock(Provider.class);
+        ECDSAKeyProvider provider = ECDSAAlgorithm.providerForKeys(publicKey, privateKey, securityProvider);
         Algorithm algorithm = new ECDSAAlgorithm(crypto, "some-alg", "some-algorithm", 32, provider);
         algorithm.sign(ES256HeaderBytes, new byte[0]);
     }

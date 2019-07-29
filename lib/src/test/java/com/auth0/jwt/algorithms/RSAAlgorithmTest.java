@@ -220,7 +220,8 @@ public class RSAAlgorithmTest {
 
         RSAPublicKey publicKey = mock(RSAPublicKey.class);
         RSAPrivateKey privateKey = mock(RSAPrivateKey.class);
-        RSAKeyProvider provider = RSAAlgorithm.providerForKeys(publicKey, privateKey);
+        Provider securityProvider = mock(Provider.class);
+        RSAKeyProvider provider = RSAAlgorithm.providerForKeys(publicKey, privateKey, securityProvider);
         Algorithm algorithm = new RSAAlgorithm(crypto, "some-alg", "some-algorithm", provider);
         String jwt = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhdXRoMCJ9.dxXF3MdsyW-AuvwJpaQtrZ33fAde9xWxpLIg9cO2tMLH2GSRNuLAe61KsJusZhqZB9Iy7DvflcmRz-9OZndm6cj_ThGeJH2LLc90K83UEvvRPo8l85RrQb8PcanxCgIs2RcZOLygERizB3pr5icGkzR7R2y6zgNCjKJ5_NJ6EiZsGN6_nc2PRK_DbyY-Wn0QDxIxKoA5YgQJ9qafe7IN980pXvQv2Z62c3XR8dYuaXBqhthBj-AbaFHEpZapN-V-TmuLNzR2MCB6Xr7BYMuCaqWf_XU8og4XNe8f_8w9Wv5vvgqMM1KhqVpG5VdMJv4o_L4NoCROHhtUQSLRh2M9cA";
         algorithm.verify(JWT.decode(jwt));
@@ -238,7 +239,8 @@ public class RSAAlgorithmTest {
 
         RSAPublicKey publicKey = mock(RSAPublicKey.class);
         RSAPrivateKey privateKey = mock(RSAPrivateKey.class);
-        RSAKeyProvider provider = RSAAlgorithm.providerForKeys(publicKey, privateKey);
+        Provider securityProvider = mock(Provider.class);
+        RSAKeyProvider provider = RSAAlgorithm.providerForKeys(publicKey, privateKey, securityProvider);
         Algorithm algorithm = new RSAAlgorithm(crypto, "some-alg", "some-algorithm", provider);
         String jwt = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhdXRoMCJ9.dxXF3MdsyW-AuvwJpaQtrZ33fAde9xWxpLIg9cO2tMLH2GSRNuLAe61KsJusZhqZB9Iy7DvflcmRz-9OZndm6cj_ThGeJH2LLc90K83UEvvRPo8l85RrQb8PcanxCgIs2RcZOLygERizB3pr5icGkzR7R2y6zgNCjKJ5_NJ6EiZsGN6_nc2PRK_DbyY-Wn0QDxIxKoA5YgQJ9qafe7IN980pXvQv2Z62c3XR8dYuaXBqhthBj-AbaFHEpZapN-V-TmuLNzR2MCB6Xr7BYMuCaqWf_XU8og4XNe8f_8w9Wv5vvgqMM1KhqVpG5VdMJv4o_L4NoCROHhtUQSLRh2M9cA";
         algorithm.verify(JWT.decode(jwt));
@@ -256,7 +258,8 @@ public class RSAAlgorithmTest {
 
         RSAPublicKey publicKey = mock(RSAPublicKey.class);
         RSAPrivateKey privateKey = mock(RSAPrivateKey.class);
-        RSAKeyProvider provider = RSAAlgorithm.providerForKeys(publicKey, privateKey);
+        Provider securityProvider = mock(Provider.class);
+        RSAKeyProvider provider = RSAAlgorithm.providerForKeys(publicKey, privateKey, securityProvider);
         Algorithm algorithm = new RSAAlgorithm(crypto, "some-alg", "some-algorithm", provider);
         String jwt = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhdXRoMCJ9.dxXF3MdsyW-AuvwJpaQtrZ33fAde9xWxpLIg9cO2tMLH2GSRNuLAe61KsJusZhqZB9Iy7DvflcmRz-9OZndm6cj_ThGeJH2LLc90K83UEvvRPo8l85RrQb8PcanxCgIs2RcZOLygERizB3pr5icGkzR7R2y6zgNCjKJ5_NJ6EiZsGN6_nc2PRK_DbyY-Wn0QDxIxKoA5YgQJ9qafe7IN980pXvQv2Z62c3XR8dYuaXBqhthBj-AbaFHEpZapN-V-TmuLNzR2MCB6Xr7BYMuCaqWf_XU8og4XNe8f_8w9Wv5vvgqMM1KhqVpG5VdMJv4o_L4NoCROHhtUQSLRh2M9cA";
         algorithm.verify(JWT.decode(jwt));
@@ -468,12 +471,13 @@ public class RSAAlgorithmTest {
         exception.expectCause(isA(NoSuchAlgorithmException.class));
 
         CryptoHelper crypto = mock(CryptoHelper.class);
-        when(crypto.createSignatureFor(anyString(), any(PrivateKey.class), any(byte[].class), any(byte[].class)))
+        when(crypto.createSignatureFor(anyString(), any(PrivateKey.class), any(Provider.class), any(byte[].class), any(byte[].class)))
                 .thenThrow(NoSuchAlgorithmException.class);
 
         RSAPublicKey publicKey = mock(RSAPublicKey.class);
         RSAPrivateKey privateKey = mock(RSAPrivateKey.class);
-        RSAKeyProvider provider = RSAAlgorithm.providerForKeys(publicKey, privateKey);
+        Provider securityProvider = mock(Provider.class);
+        RSAKeyProvider provider = RSAAlgorithm.providerForKeys(publicKey, privateKey, securityProvider);
         Algorithm algorithm = new RSAAlgorithm(crypto, "some-alg", "some-algorithm", provider);
         algorithm.sign(new byte[0], new byte[0]);
     }
@@ -485,12 +489,13 @@ public class RSAAlgorithmTest {
         exception.expectCause(isA(InvalidKeyException.class));
 
         CryptoHelper crypto = mock(CryptoHelper.class);
-        when(crypto.createSignatureFor(anyString(), any(PrivateKey.class), any(byte[].class), any(byte[].class)))
+        when(crypto.createSignatureFor(anyString(), any(PrivateKey.class), any(Provider.class), any(byte[].class), any(byte[].class)))
                 .thenThrow(InvalidKeyException.class);
 
         RSAPublicKey publicKey = mock(RSAPublicKey.class);
         RSAPrivateKey privateKey = mock(RSAPrivateKey.class);
-        RSAKeyProvider provider = RSAAlgorithm.providerForKeys(publicKey, privateKey);
+        Provider securityProvider = mock(Provider.class);
+        RSAKeyProvider provider = RSAAlgorithm.providerForKeys(publicKey, privateKey, securityProvider);
         Algorithm algorithm = new RSAAlgorithm(crypto, "some-alg", "some-algorithm", provider);
         algorithm.sign(new byte[0], new byte[0]);
     }
@@ -502,12 +507,13 @@ public class RSAAlgorithmTest {
         exception.expectCause(isA(SignatureException.class));
 
         CryptoHelper crypto = mock(CryptoHelper.class);
-        when(crypto.createSignatureFor(anyString(), any(PrivateKey.class), any(byte[].class), any(byte[].class)))
+        when(crypto.createSignatureFor(anyString(), any(PrivateKey.class), any(Provider.class), any(byte[].class), any(byte[].class)))
                 .thenThrow(SignatureException.class);
 
         RSAPublicKey publicKey = mock(RSAPublicKey.class);
         RSAPrivateKey privateKey = mock(RSAPrivateKey.class);
-        RSAKeyProvider provider = RSAAlgorithm.providerForKeys(publicKey, privateKey);
+        Provider securityProvider = mock(Provider.class);
+        RSAKeyProvider provider = RSAAlgorithm.providerForKeys(publicKey, privateKey, securityProvider);
         Algorithm algorithm = new RSAAlgorithm(crypto, "some-alg", "some-algorithm", provider);
         algorithm.sign(new byte[0], new byte[0]);
     }
@@ -516,7 +522,8 @@ public class RSAAlgorithmTest {
     public void shouldReturnNullSigningKeyIdIfCreatedWithDefaultProvider() throws Exception {
         RSAPublicKey publicKey = mock(RSAPublicKey.class);
         RSAPrivateKey privateKey = mock(RSAPrivateKey.class);
-        RSAKeyProvider provider = RSAAlgorithm.providerForKeys(publicKey, privateKey);
+        Provider securityProvider = mock(Provider.class);
+        RSAKeyProvider provider = RSAAlgorithm.providerForKeys(publicKey, privateKey, securityProvider);
         Algorithm algorithm = new RSAAlgorithm("some-alg", "some-algorithm", provider);
 
         assertThat(algorithm.getSigningKeyId(), is(nullValue()));
