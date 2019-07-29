@@ -108,6 +108,7 @@ class CryptoHelper {
      *
      * @param algorithm algorithm name.
      * @param privateKey the private key to use for signing.
+     * @param securityProvider the security provider to use for signing.
      * @param headerBytes JWT header.
      * @param payloadBytes JWT payload.
      * @return the signature bytes.
@@ -116,8 +117,12 @@ class CryptoHelper {
      * @throws SignatureException if this signature object is not initialized properly or if this signature algorithm is unable to process the input data provided.
      */
 
-    byte[] createSignatureFor(String algorithm, PrivateKey privateKey, byte[] headerBytes, byte[] payloadBytes) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
-        final Signature s = Signature.getInstance(algorithm);
+    byte[] createSignatureFor(String algorithm, PrivateKey privateKey, Provider securityProvider, byte[] headerBytes, byte[] payloadBytes) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+        final Signature s;
+        if(securityProvider == null)
+            s = Signature.getInstance(algorithm);
+        else
+            s = Signature.getInstance(algorithm, securityProvider);
         s.initSign(privateKey);
         s.update(headerBytes);
         s.update(JWT_PART_SEPARATOR);
@@ -189,6 +194,7 @@ class CryptoHelper {
      *
      * @param algorithm algorithm name.
      * @param privateKey the private key to use for signing.
+     * @param securityProvider the security provider to use for signing.
      * @param contentBytes the content to be signed.
      * @return the signature bytes.
      * @throws NoSuchAlgorithmException if the algorithm is not supported.
@@ -198,8 +204,12 @@ class CryptoHelper {
      */
 
     @Deprecated
-    byte[] createSignatureFor(String algorithm, PrivateKey privateKey, byte[] contentBytes) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
-        final Signature s = Signature.getInstance(algorithm);
+    byte[] createSignatureFor(String algorithm, PrivateKey privateKey, Provider securityProvider, byte[] contentBytes) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+        final Signature s;
+        if(securityProvider == null)
+            s = Signature.getInstance(algorithm);
+        else
+            s = Signature.getInstance(algorithm, securityProvider);
         s.initSign(privateKey);
         s.update(contentBytes);
         return s.sign();

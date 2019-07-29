@@ -1,6 +1,7 @@
 package com.auth0.jwt.interfaces;
 
 import java.security.PrivateKey;
+import java.security.Provider;
 import java.security.PublicKey;
 
 /**
@@ -32,4 +33,11 @@ interface KeyProvider<U extends PublicKey, R extends PrivateKey> {
      * @return the Key Id that identifies the Private Key or null if it's not specified.
      */
     String getPrivateKeyId();
+
+    /**
+     * Getter for the Security Provider instance. Used to use Private Key. It is essential on the PKCS11 Private Key.
+     *
+     * @return the Security Provider instance or null if it's not specified.
+     */
+    Provider getSecurityProvider();
 }

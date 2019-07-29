@@ -3,23 +3,20 @@ package com.auth0.jwt.algorithms;
 import com.auth0.jwt.exceptions.SignatureGenerationException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.auth0.jwt.interfaces.AsymKeyProvider;
+import com.auth0.jwt.interfaces.ECDSAKeyProvider;
 import com.auth0.jwt.interfaces.RSAKeyProvider;
 import org.apache.commons.codec.binary.Base64;
 
-import java.nio.charset.StandardCharsets;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.SignatureException;
-import java.security.interfaces.RSAPrivateKey;
-import java.security.interfaces.RSAPublicKey;
+import java.security.*;
 
 class RSAAlgorithm extends Algorithm {
 
-    private final RSAKeyProvider keyProvider;
+    private final AsymKeyProvider keyProvider;
     private final CryptoHelper crypto;
 
     //Visible for testing
-    RSAAlgorithm(CryptoHelper crypto, String id, String algorithm, RSAKeyProvider keyProvider) throws IllegalArgumentException {
+    RSAAlgorithm(CryptoHelper crypto, String id, String algorithm, AsymKeyProvider keyProvider) throws IllegalArgumentException {
         super(id, algorithm);
         if (keyProvider == null) {
             throw new IllegalArgumentException("The Key Provider cannot be null.");
@@ -28,7 +25,7 @@ class RSAAlgorithm extends Algorithm {
         this.crypto = crypto;
     }
 
-    RSAAlgorithm(String id, String algorithm, RSAKeyProvider keyProvider) throws IllegalArgumentException {
+    RSAAlgorithm(String id, String algorithm, AsymKeyProvider keyProvider) throws IllegalArgumentException {
         this(new CryptoHelper(), id, algorithm, keyProvider);
     }
 
@@ -37,7 +34,7 @@ class RSAAlgorithm extends Algorithm {
         byte[] signatureBytes = Base64.decodeBase64(jwt.getSignature());
 
         try {
-            RSAPublicKey publicKey = keyProvider.getPublicKeyById(jwt.getKeyId());
+            PublicKey publicKey = keyProvider.getPublicKeyById(jwt.getKeyId());
             if (publicKey == null) {
                 throw new IllegalStateException("The given Public Key is null.");
             }
@@ -54,11 +51,11 @@ class RSAAlgorithm extends Algorithm {
     @Deprecated
     public byte[] sign(byte[] headerBytes, byte[] payloadBytes) throws SignatureGenerationException {
         try {
-            RSAPrivateKey privateKey = keyProvider.getPrivateKey();
+            PrivateKey privateKey = keyProvider.getPrivateKey();
             if (privateKey == null) {
                 throw new IllegalStateException("The given Private Key is null.");
             }
-            return crypto.createSignatureFor(getDescription(), privateKey, headerBytes, payloadBytes);
+            return crypto.createSignatureFor(getDescription(), privateKey, keyProvider.getSecurityProvider(), headerBytes, payloadBytes);
         } catch (NoSuchAlgorithmException | SignatureException | InvalidKeyException | IllegalStateException e) {
             throw new SignatureGenerationException(this, e);
         }
@@ -67,11 +64,11 @@ class RSAAlgorithm extends Algorithm {
     @Override
     public byte[] sign(byte[] contentBytes) throws SignatureGenerationException {
         try {
-            RSAPrivateKey privateKey = keyProvider.getPrivateKey();
+            PrivateKey privateKey = keyProvider.getPrivateKey();
             if (privateKey == null) {
                 throw new IllegalStateException("The given Private Key is null.");
             }
-            return crypto.createSignatureFor(getDescription(), privateKey, contentBytes);
+            return crypto.createSignatureFor(getDescription(), privateKey, keyProvider.getSecurityProvider(), contentBytes);
         } catch (NoSuchAlgorithmException | SignatureException | InvalidKeyException | IllegalStateException e) {
             throw new SignatureGenerationException(this, e);
         }
@@ -82,19 +79,18 @@ class RSAAlgorithm extends Algorithm {
         return keyProvider.getPrivateKeyId();
     }
 
-    //Visible for testing
-    static RSAKeyProvider providerForKeys(final RSAPublicKey publicKey, final RSAPrivateKey privateKey) {
+    static RSAKeyProvider providerForKeys(final PublicKey publicKey, final PrivateKey privateKey, final Provider securityProvider) {
         if (publicKey == null && privateKey == null) {
             throw new IllegalArgumentException("Both provided Keys cannot be null.");
         }
         return new RSAKeyProvider() {
             @Override
-            public RSAPublicKey getPublicKeyById(String keyId) {
+            public PublicKey getPublicKeyById(String keyId) {
                 return publicKey;
             }
 
             @Override
-            public RSAPrivateKey getPrivateKey() {
+            public PrivateKey getPrivateKey() {
                 return privateKey;
             }
 
@@ -102,6 +98,15 @@ class RSAAlgorithm extends Algorithm {
             public String getPrivateKeyId() {
                 return null;
             }
+
+            @Override
+            public Provider getSecurityProvider() {
+                return securityProvider;
+            }
         };
+    }
+
+    static RSAKeyProvider providerForKeys(final PublicKey publicKey, final PrivateKey privateKey) {
+        return providerForKeys(publicKey, privateKey);
     }
 }
