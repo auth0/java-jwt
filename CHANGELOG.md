@@ -1,5 +1,11 @@
 # Change Log
 
+## [3.8.2](https://github.com/auth0/java-jwt/tree/3.8.2) (2019-08-15)
+[Full Changelog](https://github.com/auth0/java-jwt/compare/3.8.1...3.8.2)
+
+**Security**
+- Fix: updated jackson-databind to 2.9.9.3 to block CVE [\#347](https://github.com/auth0/java-jwt/pull/347) ([danbrodsky](https://github.com/danbrodsky))
+
 ## [3.8.1](https://github.com/auth0/java-jwt/tree/3.8.1) (2019-05-22)
 [Full Changelog](https://github.com/auth0/java-jwt/compare/3.8.0...3.8.1)
 
