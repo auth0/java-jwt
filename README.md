@@ -3,7 +3,7 @@
 # Java JWT
 
 [![CircleCI](https://img.shields.io/circleci/project/github/auth0/java-jwt.svg?style=flat-square)](https://circleci.com/gh/auth0/java-jwt/tree/master)
-[![Coverage Status](https://img.shields.io/codecov/c/github/auth0/java-jwt/v3.svg?style=flat-square)](https://codecov.io/github/auth0/java-jwt)
+[![Coverage Status](https://img.shields.io/codecov/c/github/auth0/java-jwt.svg?style=flat-square)](https://codecov.io/github/auth0/java-jwt)
 [![License](http://img.shields.io/:license-mit-blue.svg?style=flat)](http://doge.mit-license.org)
 
 A Java implementation of [JSON Web Token (JWT) - RFC 7519](https://tools.ietf.org/html/rfc7519).
@@ -18,14 +18,14 @@ If you're looking for an **Android** version of the JWT Decoder take a look at o
 <dependency>
     <groupId>com.auth0</groupId>
     <artifactId>java-jwt</artifactId>
-    <version>3.7.0</version>
+    <version>3.8.2</version>
 </dependency>
 ```
 
 ### Gradle
 
 ```gradle
-implementation 'com.auth0:java-jwt:3.7.0'
+implementation 'com.auth0:java-jwt:3.8.2'
 ```
 
 ## Available Algorithms
