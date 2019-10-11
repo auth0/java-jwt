@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -30,6 +31,43 @@ public class JWTVerifierTest {
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage("The Algorithm cannot be null");
         JWTVerifier.init(null);
+    }
+
+    @Test
+    public void shouldReturnFalseWhenTokenInvalid() {
+        JWTVerifier verifier = JWTVerifier.init(Algorithm.HMAC512("secret")).build();
+        Boolean isValidJWT = verifier.isValid("eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJhdXRoMCJ9.s69x7Mmu4JqwmdxiK6sesALO7tcedbFsKEEITUxw9ho");
+        assertEquals(isValidJWT, Boolean.FALSE);
+    }
+
+    @Test
+    public void shouldReturnTrueWhenTokenValid() {
+        String token = "eyJhbGciOiJIUzI1NiIsImN0eSI6IkpXVCJ9.eyJpc3MiOiJhdXRoMCJ9.mZ0m_N1J4PgeqWmi903JuUoDRZDBPB7HwkS4nVyWH1M";
+        Boolean isValid = JWTVerifier.init(Algorithm.HMAC256("secret"))
+                .withIssuer("auth0")
+                .build()
+                .isValid(token);
+        assertEquals(isValid, Boolean.TRUE);
+    }
+
+    @Test
+    public void shouldReturnFalseWhenDecodedJWTInvalid() {
+        JWTVerifier verifier = JWTVerifier.init(Algorithm.HMAC512("secret")).build();
+        String token = "eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJhdXRoMCJ9.s69x7Mmu4JqwmdxiK6sesALO7tcedbFsKEEITUxw9ho";
+        DecodedJWT decodedJWT = JWT.decode(token);
+        Boolean isValidJWT = verifier.isValid(decodedJWT);
+        assertEquals(isValidJWT, Boolean.FALSE);
+    }
+
+    @Test
+    public void shouldReturnTrueWhenDecodedJWTValid() {
+        String token = "eyJhbGciOiJIUzI1NiIsImN0eSI6IkpXVCJ9.eyJpc3MiOiJhdXRoMCJ9.mZ0m_N1J4PgeqWmi903JuUoDRZDBPB7HwkS4nVyWH1M";
+        DecodedJWT decodedJWT = JWT.decode(token);
+        Boolean isValid = JWTVerifier.init(Algorithm.HMAC256("secret"))
+                .withIssuer("auth0")
+                .build()
+                .isValid(decodedJWT);
+        assertEquals(isValid, Boolean.TRUE);
     }
 
     @Test
@@ -155,7 +193,7 @@ public class JWTVerifierTest {
         Algorithm algorithm = mock(Algorithm.class);
         JWTVerifier verifier = JWTVerifier.init(algorithm)
                 .withAudience("John")
-                .withAudience(null)
+                .withAudience((String[]) null)
                 .build();
 
         assertThat(verifier.claims, is(notNullValue()));
@@ -619,7 +657,7 @@ public class JWTVerifierTest {
         Algorithm algorithm = mock(Algorithm.class);
         JWTVerifier verifier = JWTVerifier.init(algorithm)
                 .withIssuer("iss")
-                .withIssuer(null)
+                .withIssuer((String[]) null)
                 .build();
 
         assertThat(verifier.claims, is(notNullValue()));

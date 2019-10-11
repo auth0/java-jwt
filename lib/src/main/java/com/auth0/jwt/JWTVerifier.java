@@ -388,6 +388,26 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
         return jwt;
     }
 
+    @Override
+    public Boolean isValid(String token) {
+        try {
+            verify(token);
+            return Boolean.TRUE;
+        } catch (Exception e) {
+            return Boolean.FALSE;
+        }
+    }
+
+    @Override
+    public Boolean isValid(DecodedJWT jwt) {
+        try {
+            verify(jwt);
+            return Boolean.TRUE;
+        } catch (Exception e) {
+            return Boolean.FALSE;
+        }
+    }
+
     private void verifyAlgorithm(DecodedJWT jwt, Algorithm expectedAlgorithm) throws AlgorithmMismatchException {
         if (!expectedAlgorithm.getName().equals(jwt.getAlgorithm())) {
             throw new AlgorithmMismatchException("The provided Algorithm doesn't match the one defined in the JWT's Header.");
