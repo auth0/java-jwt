@@ -56,3 +56,13 @@ test {
         exceptionFormat "short"
     }
 }
+
+ext.moduleName = "com.auth0.jwt"
+
+jar {
+    inputs.property("moduleName", moduleName)
+
+    manifest {
+       attributes  'Automatic-Module-Name': moduleName
+   }
+}
