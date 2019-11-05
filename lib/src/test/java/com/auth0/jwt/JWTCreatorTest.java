@@ -64,7 +64,7 @@ public class JWTCreatorTest {
     }
 
     @Test
-    public void shouldOverwriteExistingIfHeadersMapContainsTheSameKey() throws Exception {
+    public void shouldOverwriteExistingHeaderIfHeaderMapContainsTheSameKey() throws Exception {
         Map<String, Object> header = new HashMap<String, Object>();
         header.put(PublicClaims.KEY_ID, "xyz");
 
