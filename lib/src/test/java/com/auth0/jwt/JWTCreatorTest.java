@@ -1,6 +1,7 @@
 package com.auth0.jwt;
 
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.impl.PublicClaims;
 import com.auth0.jwt.interfaces.ECDSAKeyProvider;
 import com.auth0.jwt.interfaces.RSAKeyProvider;
 import org.apache.commons.codec.binary.Base64;
@@ -51,6 +52,65 @@ public class JWTCreatorTest {
         String[] parts = signed.split("\\.");
         String headerJson = new String(Base64.decodeBase64(parts[0]), StandardCharsets.UTF_8);
         assertThat(headerJson, JsonMatcher.hasEntry("asd", 123));
+    }
+
+    @Test
+    public void shouldReturnBuilderIfNullMapIsProvided() throws Exception {
+        String signed = JWTCreator.init()
+                                  .withHeader(null)
+                                  .sign(Algorithm.HMAC256("secret"));
+
+        assertThat(signed, is(notNullValue()));
+    }
+
+    @Test
+    public void shouldOverwriteExistingHeaderIfHeaderMapContainsTheSameKey() throws Exception {
+        Map<String, Object> header = new HashMap<String, Object>();
+        header.put(PublicClaims.KEY_ID, "xyz");
+
+        String signed = JWTCreator.init()
+                                  .withKeyId("abc")
+                                  .withHeader(header)
+                                  .sign(Algorithm.HMAC256("secret"));
+
+        assertThat(signed, is(notNullValue()));
+        String[] parts = signed.split("\\.");
+        String headerJson = new String(Base64.decodeBase64(parts[0]), StandardCharsets.UTF_8);
+        assertThat(headerJson, JsonMatcher.hasEntry(PublicClaims.KEY_ID, "xyz"));
+    }
+
+    @Test
+    public void shouldOverwriteExistingHeadersWhenSettingSameHeaderKey() throws Exception {
+        Map<String, Object> header = new HashMap<String, Object>();
+        header.put(PublicClaims.KEY_ID, "xyz");
+
+        String signed = JWTCreator.init()
+                                  .withHeader(header)
+                                  .withKeyId("abc")
+                                  .sign(Algorithm.HMAC256("secret"));
+
+        assertThat(signed, is(notNullValue()));
+        String[] parts = signed.split("\\.");
+        String headerJson = new String(Base64.decodeBase64(parts[0]), StandardCharsets.UTF_8);
+        assertThat(headerJson, JsonMatcher.hasEntry(PublicClaims.KEY_ID, "abc"));
+    }
+
+    @Test
+    public void shouldRemoveHeaderIfTheValueIsNull() throws Exception {
+        Map<String, Object> header = new HashMap<String, Object>();
+        header.put(PublicClaims.KEY_ID, null);
+        header.put("test2", "isSet");
+
+        String signed = JWTCreator.init()
+                                  .withKeyId("test")
+                                  .withHeader(header)
+                                  .sign(Algorithm.HMAC256("secret"));
+
+        assertThat(signed, is(notNullValue()));
+        String[] parts = signed.split("\\.");
+        String headerJson = new String(Base64.decodeBase64(parts[0]), StandardCharsets.UTF_8);
+        assertThat(headerJson, JsonMatcher.isNotPresent(PublicClaims.KEY_ID));
+        assertThat(headerJson, JsonMatcher.hasEntry("test2", "isSet"));
     }
 
     @Test

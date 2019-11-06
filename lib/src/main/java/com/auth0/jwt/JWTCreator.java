@@ -66,12 +66,25 @@ public final class JWTCreator {
 
         /**
          * Add specific Claims to set as the Header.
+         * If provided map is null then nothing is changed
+         * If provided map contains a claim with null value then that claim will be removed from the header
          *
          * @param headerClaims the values to use as Claims in the token's Header.
          * @return this same Builder instance.
          */
         public Builder withHeader(Map<String, Object> headerClaims) {
-            this.headerClaims = new HashMap<>(headerClaims);
+            if (headerClaims == null) {
+                return this;
+            }
+
+            for (Map.Entry<String, Object> entry : headerClaims.entrySet()) {
+                if (entry.getValue() == null) {
+                    this.headerClaims.remove(entry.getKey());
+                } else {
+                    this.headerClaims.put(entry.getKey(), entry.getValue());
+                }
+            }
+
             return this;
         }
 
