@@ -46,6 +46,15 @@ public class JWTTest {
         assertThat(jwt, is(notNullValue()));
     }
 
+    @Test
+    public void shouldDecodeAStringTokenUsingInstance() throws Exception {
+        String token = "eyJhbGciOiJIUzI1NiIsImN0eSI6IkpXVCJ9.eyJpc3MiOiJhdXRoMCJ9.mZ0m_N1J4PgeqWmi903JuUoDRZDBPB7HwkS4nVyWH1M";
+        JWT jwt = new JWT();
+        DecodedJWT decodedJWT = jwt.decodeJwt(token);
+
+        assertThat(decodedJWT, is(notNullValue()));
+    }
+
     // getToken
     @Test
     public void shouldGetStringToken() throws Exception {
@@ -55,6 +64,15 @@ public class JWTTest {
         assertThat(jwt.getToken(), is("eyJhbGciOiJIUzI1NiJ9.e30.XmNK3GpH3Ys_7wsYBfq4C3M6goz71I7dTgUkuIa5lyQ"));
     }
 
+    // getToken
+    @Test
+    public void shouldGetStringTokenUsingInstance() throws Exception {
+        JWT jwt = new JWT();
+        DecodedJWT decodedJWT = jwt.decodeJwt("eyJhbGciOiJIUzI1NiJ9.e30.XmNK3GpH3Ys_7wsYBfq4C3M6goz71I7dTgUkuIa5lyQ");
+        assertThat(decodedJWT, is(notNullValue()));
+        assertThat(decodedJWT.getToken(), is(notNullValue()));
+        assertThat(decodedJWT.getToken(), is("eyJhbGciOiJIUzI1NiJ9.e30.XmNK3GpH3Ys_7wsYBfq4C3M6goz71I7dTgUkuIa5lyQ"));
+    }
 
     // Verify
 

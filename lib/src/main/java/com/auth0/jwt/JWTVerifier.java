@@ -2,6 +2,7 @@ package com.auth0.jwt;
 
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.*;
+import com.auth0.jwt.impl.JWTParser;
 import com.auth0.jwt.impl.PublicClaims;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.Clock;
@@ -18,11 +19,13 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
     private final Algorithm algorithm;
     final Map<String, Object> claims;
     private final Clock clock;
+    private final JWTParser parser;
 
     JWTVerifier(Algorithm algorithm, Map<String, Object> claims, Clock clock) {
         this.algorithm = algorithm;
         this.claims = Collections.unmodifiableMap(claims);
         this.clock = clock;
+        this.parser = new JWTParser();
     }
 
     /**
@@ -58,12 +61,12 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
         /**
          * Require a specific Issuer ("iss") claim.
          *
-         * @param issuer the required Issuer value
+         * @param issuer the required Issuer value. If multiple values are given, the claim must at least match one of them
          * @return this same Verification instance.
          */
         @Override
-        public Verification withIssuer(String issuer) {
-            requireClaim(PublicClaims.ISSUER, issuer);
+        public Verification withIssuer(String... issuer) {
+            requireClaim(PublicClaims.ISSUER, issuer == null ? null : Arrays.asList(issuer));
             return this;
         }
 
@@ -87,7 +90,7 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
          */
         @Override
         public Verification withAudience(String... audience) {
-            requireClaim(PublicClaims.AUDIENCE, Arrays.asList(audience));
+            requireClaim(PublicClaims.AUDIENCE, audience == null ? null : Arrays.asList(audience));
             return this;
         }
 
@@ -363,7 +366,7 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
      */
     @Override
     public DecodedJWT verify(String token) throws JWTVerificationException {
-        DecodedJWT jwt = JWT.decode(token);
+        DecodedJWT jwt = new JWTDecoder(parser, token);
         return verify(jwt);
     }
 
@@ -395,7 +398,6 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
         for (Map.Entry<String, Object> entry : claims.entrySet()) {
             switch (entry.getKey()) {
                 case PublicClaims.AUDIENCE:
-                    //noinspection unchecked
                     assertValidAudienceClaim(jwt.getAudience(), (List<String>) entry.getValue());
                     break;
                 case PublicClaims.EXPIRES_AT:
@@ -408,7 +410,7 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
                     assertValidDateClaim(jwt.getNotBefore(), (Long) entry.getValue(), false);
                     break;
                 case PublicClaims.ISSUER:
-                    assertValidStringClaim(entry.getKey(), jwt.getIssuer(), (String) entry.getValue());
+                    assertValidIssuerClaim(jwt.getIssuer(), (List<String>) entry.getValue());
                     break;
                 case PublicClaims.JWT_ID:
                     assertValidStringClaim(entry.getKey(), jwt.getId(), (String) entry.getValue());
@@ -481,6 +483,12 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
     private void assertValidAudienceClaim(List<String> audience, List<String> value) {
         if (audience == null || !audience.containsAll(value)) {
             throw new InvalidClaimException("The Claim 'aud' value doesn't contain the required audience.");
+        }
+    }
+
+    private void assertValidIssuerClaim(String issuer, List<String> value) {
+        if (issuer == null || !value.contains(issuer)) {
+            throw new InvalidClaimException("The Claim 'iss' value doesn't match the required issuer.");
         }
     }
 }

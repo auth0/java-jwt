@@ -77,12 +77,25 @@ public final class JWTCreator {
 
         /**
          * Add specific Claims to set as the Header.
+         * If provided map is null then nothing is changed
+         * If provided map contains a claim with null value then that claim will be removed from the header
          *
          * @param headerClaims the values to use as Claims in the token's Header.
          * @return this same Builder instance.
          */
         public Builder withHeader(Map<String, Object> headerClaims) {
-            this.headerClaims = new HashMap<>(headerClaims);
+            if (headerClaims == null) {
+                return this;
+            }
+
+            for (Map.Entry<String, Object> entry : headerClaims.entrySet()) {
+                if (entry.getValue() == null) {
+                    this.headerClaims.remove(entry.getKey());
+                } else {
+                    this.headerClaims.put(entry.getKey(), entry.getValue());
+                }
+            }
+
             return this;
         }
 
@@ -411,11 +424,10 @@ public final class JWTCreator {
     private String sign() throws SignatureGenerationException {
         String header = Base64.encodeBase64URLSafeString(headerJson.getBytes(StandardCharsets.UTF_8));
         String payload = Base64.encodeBase64URLSafeString(payloadJson.getBytes(StandardCharsets.UTF_8));
-        String content = String.format("%s.%s", header, payload);
 
-        byte[] signatureBytes = algorithm.sign(content.getBytes(StandardCharsets.UTF_8));
+        byte[] signatureBytes = algorithm.sign(header.getBytes(StandardCharsets.UTF_8), payload.getBytes(StandardCharsets.UTF_8));
         String signature = Base64.encodeBase64URLSafeString((signatureBytes));
 
-        return String.format("%s.%s", content, signature);
+        return String.format("%s.%s.%s", header, payload, signature);
     }
 }

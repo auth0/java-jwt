@@ -68,6 +68,10 @@ public class JsonMatcher extends TypeSafeDiagnosingMatcher<String> {
         return new JsonMatcher(key, null, valueMatcher);
     }
 
+    public static JsonMatcher isNotPresent(String key) {
+        return new JsonMatcher(key, null, null);
+    }
+
     private String getStringKey(String key) {
         return "\"" + key + "\":";
     }

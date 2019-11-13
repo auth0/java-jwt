@@ -52,12 +52,36 @@ public class JWTVerifierTest {
     }
 
     @Test
+    public void shouldValidateMultipleIssuers() {
+        String auth0Token = "eyJhbGciOiJIUzI1NiIsImN0eSI6IkpXVCJ9.eyJpc3MiOiJhdXRoMCJ9.mZ0m_N1J4PgeqWmi903JuUoDRZDBPB7HwkS4nVyWH1M";
+        String otherIssuertoken = "eyJhbGciOiJIUzI1NiIsImN0eSI6IkpXVCJ9.eyJpc3MiOiJvdGhlcklzc3VlciJ9.k4BCOJJl-c0_Y-49VD_mtt-u0QABKSV5i3W-RKc74co";
+        JWTVerifier verifier = JWTVerifier.init(Algorithm.HMAC256("secret"))
+                .withIssuer("otherIssuer", "auth0")
+                .build();
+
+        assertThat(verifier.verify(auth0Token), is(notNullValue()));
+        assertThat(verifier.verify(otherIssuertoken), is(notNullValue()));
+    }
+
+    @Test
     public void shouldThrowOnInvalidIssuer() throws Exception {
         exception.expect(InvalidClaimException.class);
-        exception.expectMessage("The Claim 'iss' value doesn't match the required one.");
+        exception.expectMessage("The Claim 'iss' value doesn't match the required issuer.");
         String token = "eyJhbGciOiJIUzI1NiIsImN0eSI6IkpXVCJ9.eyJpc3MiOiJhdXRoMCJ9.mZ0m_N1J4PgeqWmi903JuUoDRZDBPB7HwkS4nVyWH1M";
         JWTVerifier.init(Algorithm.HMAC256("secret"))
                 .withIssuer("invalid")
+                .build()
+                .verify(token);
+    }
+
+    @Test
+    public void shouldThrowOnNullIssuer() throws Exception {
+        exception.expect(InvalidClaimException.class);
+        exception.expectMessage("The Claim 'iss' value doesn't match the required issuer.");
+
+        String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.e30.t-IDcSemACt8x4iTMCda8Yhe3iZaWbvV5XKSTbuAn0M";
+        JWTVerifier.init(Algorithm.HMAC256("secret"))
+                .withIssuer("auth0")
                 .build()
                 .verify(token);
     }
@@ -124,6 +148,18 @@ public class JWTVerifierTest {
                 .withAudience("nope")
                 .build()
                 .verify(token);
+    }
+
+    @Test
+    public void shouldRemoveAudienceWhenPassingNull() throws Exception {
+        Algorithm algorithm = mock(Algorithm.class);
+        JWTVerifier verifier = JWTVerifier.init(algorithm)
+                .withAudience("John")
+                .withAudience(null)
+                .build();
+
+        assertThat(verifier.claims, is(notNullValue()));
+        assertThat(verifier.claims, not(hasKey("aud")));
     }
 
     @Test

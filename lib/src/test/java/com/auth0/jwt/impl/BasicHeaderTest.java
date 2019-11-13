@@ -1,6 +1,8 @@
 package com.auth0.jwt.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import org.hamcrest.collection.IsMapContaining;
@@ -18,19 +20,21 @@ public class BasicHeaderTest {
 
     @Rule
     public ExpectedException exception = ExpectedException.none();
+    
+    private ObjectReader objectReader = new ObjectMapper().reader();
 
     @SuppressWarnings("Convert2Diamond")
     @Test
     public void shouldHaveUnmodifiableTreeWhenInstantiatedWithNonNullTree() throws Exception {
         exception.expect(UnsupportedOperationException.class);
-        BasicHeader header = new BasicHeader(null, null, null, null, new HashMap<String, JsonNode>());
+        BasicHeader header = new BasicHeader(null, null, null, null, new HashMap<String, JsonNode>(), objectReader);
         header.getTree().put("something", null);
     }
 
     @Test
     public void shouldHaveUnmodifiableTreeWhenInstantiatedWithNullTree() throws Exception {
         exception.expect(UnsupportedOperationException.class);
-        BasicHeader header = new BasicHeader(null, null, null, null, null);
+        BasicHeader header = new BasicHeader(null, null, null, null, null, objectReader);
         header.getTree().put("something", null);
     }
 
@@ -39,7 +43,7 @@ public class BasicHeaderTest {
         HashMap<String, JsonNode> map = new HashMap<>();
         JsonNode node = NullNode.getInstance();
         map.put("key", node);
-        BasicHeader header = new BasicHeader(null, null, null, null, map);
+        BasicHeader header = new BasicHeader(null, null, null, null, map, objectReader);
 
         assertThat(header.getTree(), is(notNullValue()));
         assertThat(header.getTree(), is(IsMapContaining.hasEntry("key", node)));
@@ -47,7 +51,7 @@ public class BasicHeaderTest {
 
     @Test
     public void shouldGetAlgorithm() throws Exception {
-        BasicHeader header = new BasicHeader("HS256", null, null, null, null);
+        BasicHeader header = new BasicHeader("HS256", null, null, null, null, objectReader);
 
         assertThat(header, is(notNullValue()));
         assertThat(header.getAlgorithm(), is(notNullValue()));
@@ -56,7 +60,7 @@ public class BasicHeaderTest {
 
     @Test
     public void shouldGetNullAlgorithmIfMissing() throws Exception {
-        BasicHeader header = new BasicHeader(null, null, null, null, null);
+        BasicHeader header = new BasicHeader(null, null, null, null, null, objectReader);
 
         assertThat(header, is(notNullValue()));
         assertThat(header.getAlgorithm(), is(nullValue()));
@@ -64,7 +68,7 @@ public class BasicHeaderTest {
 
     @Test
     public void shouldGetType() throws Exception {
-        BasicHeader header = new BasicHeader(null, "jwt", null, null, null);
+        BasicHeader header = new BasicHeader(null, "jwt", null, null, null, objectReader);
 
         assertThat(header, is(notNullValue()));
         assertThat(header.getType(), is(notNullValue()));
@@ -73,7 +77,7 @@ public class BasicHeaderTest {
 
     @Test
     public void shouldGetNullTypeIfMissing() throws Exception {
-        BasicHeader header = new BasicHeader(null, null, null, null, null);
+        BasicHeader header = new BasicHeader(null, null, null, null, null, objectReader);
 
         assertThat(header, is(notNullValue()));
         assertThat(header.getType(), is(nullValue()));
@@ -81,7 +85,7 @@ public class BasicHeaderTest {
 
     @Test
     public void shouldGetContentType() throws Exception {
-        BasicHeader header = new BasicHeader(null, null, "content", null, null);
+        BasicHeader header = new BasicHeader(null, null, "content", null, null, objectReader);
 
         assertThat(header, is(notNullValue()));
         assertThat(header.getContentType(), is(notNullValue()));
@@ -90,7 +94,7 @@ public class BasicHeaderTest {
 
     @Test
     public void shouldGetNullContentTypeIfMissing() throws Exception {
-        BasicHeader header = new BasicHeader(null, null, null, null, null);
+        BasicHeader header = new BasicHeader(null, null, null, null, null, objectReader);
 
         assertThat(header, is(notNullValue()));
         assertThat(header.getContentType(), is(nullValue()));
@@ -98,7 +102,7 @@ public class BasicHeaderTest {
 
     @Test
     public void shouldGetKeyId() throws Exception {
-        BasicHeader header = new BasicHeader(null, null, null, "key", null);
+        BasicHeader header = new BasicHeader(null, null, null, "key", null, objectReader);
 
         assertThat(header, is(notNullValue()));
         assertThat(header.getKeyId(), is(notNullValue()));
@@ -107,7 +111,7 @@ public class BasicHeaderTest {
 
     @Test
     public void shouldGetNullKeyIdIfMissing() throws Exception {
-        BasicHeader header = new BasicHeader(null, null, null, null, null);
+        BasicHeader header = new BasicHeader(null, null, null, null, null, objectReader);
 
         assertThat(header, is(notNullValue()));
         assertThat(header.getKeyId(), is(nullValue()));
@@ -117,7 +121,7 @@ public class BasicHeaderTest {
     public void shouldGetExtraClaim() throws Exception {
         Map<String, JsonNode> tree = new HashMap<>();
         tree.put("extraClaim", new TextNode("extraValue"));
-        BasicHeader header = new BasicHeader(null, null, null, null, tree);
+        BasicHeader header = new BasicHeader(null, null, null, null, tree, objectReader);
 
         assertThat(header, is(notNullValue()));
         assertThat(header.getHeaderClaim("extraClaim"), is(instanceOf(JsonNodeClaim.class)));
@@ -127,7 +131,7 @@ public class BasicHeaderTest {
     @Test
     public void shouldGetNotNullExtraClaimIfMissing() throws Exception {
         Map<String, JsonNode> tree = new HashMap<>();
-        BasicHeader header = new BasicHeader(null, null, null, null, tree);
+        BasicHeader header = new BasicHeader(null, null, null, null, tree, objectReader);
 
         assertThat(header, is(notNullValue()));
         assertThat(header.getHeaderClaim("missing"), is(notNullValue()));
