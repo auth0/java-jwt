@@ -12,6 +12,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.Map;
@@ -289,12 +290,53 @@ public class JWTDecoderTest {
         assertThat(jwt.getClaims().get("extraClaim"), is(notNullValue()));
     }
 
+    @Test
+    public void shouldSerializeAndDeserialize() throws Exception {
+        DecodedJWT originalJwt = JWT.decode("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjEyMzQ1Njc4OTAsImlhdCI6MTIzNDU2Nzg5MCwibmJmIjoxMjM0NTY3ODkwLCJqdGkiOiJodHRwczovL2p3dC5pby8iLCJhdWQiOiJodHRwczovL2RvbWFpbi5hdXRoMC5jb20iLCJzdWIiOiJsb2dpbiIsImlzcyI6ImF1dGgwIiwiZXh0cmFDbGFpbSI6IkpvaG4gRG9lIn0.2_0nxDPJwOk64U5V5V9pt8U92jTPJbGsHYQ35HYhbdE");
+
+        assertThat(originalJwt, is(instanceOf(Serializable.class)));
+
+        byte[] serialized = serialize(originalJwt);
+        DecodedJWT deserializedJwt = (DecodedJWT) deserialize(serialized);
+
+        assertThat(originalJwt.getHeader(), is(equalTo(deserializedJwt.getHeader())));
+        assertThat(originalJwt.getPayload(), is(equalTo(deserializedJwt.getPayload())));
+        assertThat(originalJwt.getSignature(), is(equalTo(deserializedJwt.getSignature())));
+        assertThat(originalJwt.getToken(), is(equalTo(deserializedJwt.getToken())));
+        assertThat(originalJwt.getAlgorithm(), is(equalTo(deserializedJwt.getAlgorithm())));
+        assertThat(originalJwt.getAudience(), is(equalTo(deserializedJwt.getAudience())));
+        assertThat(originalJwt.getContentType(), is(equalTo(deserializedJwt.getContentType())));
+        assertThat(originalJwt.getExpiresAt(), is(equalTo(deserializedJwt.getExpiresAt())));
+        assertThat(originalJwt.getId(), is(equalTo(deserializedJwt.getId())));
+        assertThat(originalJwt.getIssuedAt(), is(equalTo(deserializedJwt.getIssuedAt())));
+        assertThat(originalJwt.getIssuer(), is(equalTo(deserializedJwt.getIssuer())));
+        assertThat(originalJwt.getKeyId(), is(equalTo(deserializedJwt.getKeyId())));
+        assertThat(originalJwt.getNotBefore(), is(equalTo(deserializedJwt.getNotBefore())));
+        assertThat(originalJwt.getSubject(), is(equalTo(deserializedJwt.getSubject())));
+        assertThat(originalJwt.getType(), is(equalTo(deserializedJwt.getType())));
+        assertThat(originalJwt.getClaims().get("extraClaim").asString(),
+                is(equalTo(deserializedJwt.getClaims().get("extraClaim").asString())));
+    }
+
     //Helper Methods
 
     private DecodedJWT customJWT(String jsonHeader, String jsonPayload, String signature) {
         String header = Base64.encodeBase64URLSafeString(jsonHeader.getBytes(StandardCharsets.UTF_8));
         String body = Base64.encodeBase64URLSafeString(jsonPayload.getBytes(StandardCharsets.UTF_8));
         return JWT.decode(String.format("%s.%s.%s", header, body, signature));
+    }
+
+    private static byte[] serialize(Object obj) throws IOException {
+        ByteArrayOutputStream b = new ByteArrayOutputStream();
+        ObjectOutputStream o = new ObjectOutputStream(b);
+        o.writeObject(obj);
+        return b.toByteArray();
+    }
+
+    private static Object deserialize(byte[] bytes) throws IOException, ClassNotFoundException {
+        ByteArrayInputStream b = new ByteArrayInputStream(bytes);
+        ObjectInputStream o = new ObjectInputStream(b);
+        return o.readObject();
     }
 
 }

@@ -5,6 +5,7 @@ import com.auth0.jwt.interfaces.Header;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectReader;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -14,7 +15,9 @@ import static com.auth0.jwt.impl.JsonNodeClaim.extractClaim;
 /**
  * The BasicHeader class implements the Header interface.
  */
-class BasicHeader implements Header {
+class BasicHeader implements Header, Serializable {
+    private static final long serialVersionUID = -4659137688548605095L;
+
     private final String algorithm;
     private final String type;
     private final String contentType;

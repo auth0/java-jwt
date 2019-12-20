@@ -9,6 +9,7 @@ import com.auth0.jwt.interfaces.Payload;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.StringUtils;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -17,7 +18,9 @@ import java.util.Map;
  * The JWTDecoder class holds the decode method to parse a given JWT token into it's JWT representation.
  */
 @SuppressWarnings("WeakerAccess")
-final class JWTDecoder implements DecodedJWT {
+final class JWTDecoder implements DecodedJWT, Serializable {
+
+    private static final long serialVersionUID = 1873362438023312895L;
 
     private final String[] parts;
     private final Header header;

@@ -5,6 +5,7 @@ import com.auth0.jwt.interfaces.Payload;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectReader;
 
+import java.io.Serializable;
 import java.util.*;
 
 import static com.auth0.jwt.impl.JsonNodeClaim.extractClaim;
@@ -12,7 +13,10 @@ import static com.auth0.jwt.impl.JsonNodeClaim.extractClaim;
 /**
  * The PayloadImpl class implements the Payload interface.
  */
-class PayloadImpl implements Payload {
+class PayloadImpl implements Payload, Serializable {
+
+    private static final long serialVersionUID = 1659021498824562311L;
+
     private final String issuer;
     private final String subject;
     private final List<String> audience;
