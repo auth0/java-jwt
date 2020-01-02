@@ -18,14 +18,14 @@ If you're looking for an **Android** version of the JWT Decoder take a look at o
 <dependency>
     <groupId>com.auth0</groupId>
     <artifactId>java-jwt</artifactId>
-    <version>3.8.3</version>
+    <version>3.9.0</version>
 </dependency>
 ```
 
 ### Gradle
 
 ```gradle
-implementation 'com.auth0:java-jwt:3.8.3'
+implementation 'com.auth0:java-jwt:3.9.0'
 ```
 
 ## Available Algorithms
