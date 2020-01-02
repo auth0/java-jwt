@@ -1,5 +1,14 @@
 # Change Log
 
+## [3.9.0](https://github.com/auth0/java-jwt/tree/3.9.0) (2020-01-02)
+[Full Changelog](https://github.com/auth0/java-jwt/compare/3.8.3...3.9.0)
+
+**Added**
+- Support serialization of DecodedJWT [\#370](https://github.com/auth0/java-jwt/pull/370) ([jimmyjames](https://github.com/jimmyjames))
+
+**Fixed**
+- Fixing JwtCreator builder when setting headers as a map [\#320](https://github.com/auth0/java-jwt/pull/320) ([maxbalan](https://github.com/maxbalan))
+
 ## [3.8.3](https://github.com/auth0/java-jwt/tree/3.8.3) (2019-09-25)
 [Full Changelog](https://github.com/auth0/java-jwt/compare/3.8.2...3.8.3)
 
