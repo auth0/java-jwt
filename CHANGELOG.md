@@ -69,8 +69,15 @@
 ## [3.4.0](https://github.com/auth0/java-jwt/tree/3.4.0) (2018-06-13)
 [Full Changelog](https://github.com/auth0/java-jwt/compare/3.3.0...3.4.0)
 
+**Breaking Changes**
+- Fix for [\#236](https://github.com/auth0/java-jwt/pull/236) - refactored HMACAlgorithm so that it doesn't throw an UnsupportedEncodingException [\#242](https://github.com/auth0/java-jwt/pull/242) ([obecker](https://github.com/obecker)). 
+
+Clients using the following methods may need to update their code to not catch an `UnsupportedEncodingException`:
+- `public static Algorithm HMAC384(String secret)`
+- `public static Algorithm HMAC256(String secret)`
+- `public static Algorithm HMAC512(String secret)`
+
 **Changed**
-- Fix for issue #236 - refactored HMACAlgorithm so that it doesn't throw an UnsupportedEncodingException [\#242](https://github.com/auth0/java-jwt/pull/242) ([obecker](https://github.com/obecker))
 - Throw JWTDecodeException when date claim format is invalid [\#241](https://github.com/auth0/java-jwt/pull/241) ([lbalmaceda](https://github.com/lbalmaceda))
 
 **Security**
