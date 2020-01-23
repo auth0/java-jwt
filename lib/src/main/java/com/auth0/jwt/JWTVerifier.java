@@ -39,9 +39,6 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
         return new BaseVerification(algorithm);
     }
 
-    /**
-     * The Verification class holds the Claims required by a JWT to be valid.
-     */
     public static class BaseVerification implements Verification {
         private final Algorithm algorithm;
         private final Map<String, Object> claims;
@@ -58,50 +55,24 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
             this.defaultLeeway = 0;
         }
 
-        /**
-         * Require a specific Issuer ("iss") claim.
-         *
-         * @param issuer the required Issuer value. If multiple values are given, the claim must at least match one of them
-         * @return this same Verification instance.
-         */
         @Override
         public Verification withIssuer(String... issuer) {
             requireClaim(PublicClaims.ISSUER, issuer == null ? null : Arrays.asList(issuer));
             return this;
         }
 
-        /**
-         * Require a specific Subject ("sub") claim.
-         *
-         * @param subject the required Subject value
-         * @return this same Verification instance.
-         */
         @Override
         public Verification withSubject(String subject) {
             requireClaim(PublicClaims.SUBJECT, subject);
             return this;
         }
 
-        /**
-         * Require a specific Audience ("aud") claim.
-         *
-         * @param audience the required Audience value
-         * @return this same Verification instance.
-         */
         @Override
         public Verification withAudience(String... audience) {
             requireClaim(PublicClaims.AUDIENCE, audience == null ? null : Arrays.asList(audience));
             return this;
         }
 
-        /**
-         * Define the default window in seconds in which the Not Before, Issued At and Expires At Claims will still be valid.
-         * Setting a specific leeway value on a given Claim will override this value for that Claim.
-         *
-         * @param leeway the window in seconds in which the Not Before, Issued At and Expires At Claims will still be valid.
-         * @return this same Verification instance.
-         * @throws IllegalArgumentException if leeway is negative.
-         */
         @Override
         public Verification acceptLeeway(long leeway) throws IllegalArgumentException {
             assertPositive(leeway);
@@ -109,14 +80,6 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
             return this;
         }
 
-        /**
-         * Set a specific leeway window in seconds in which the Expires At ("exp") Claim will still be valid.
-         * Expiration Date is always verified when the value is present. This method overrides the value set with acceptLeeway
-         *
-         * @param leeway the window in seconds in which the Expires At Claim will still be valid.
-         * @return this same Verification instance.
-         * @throws IllegalArgumentException if leeway is negative.
-         */
         @Override
         public Verification acceptExpiresAt(long leeway) throws IllegalArgumentException {
             assertPositive(leeway);
@@ -124,14 +87,6 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
             return this;
         }
 
-        /**
-         * Set a specific leeway window in seconds in which the Not Before ("nbf") Claim will still be valid.
-         * Not Before Date is always verified when the value is present. This method overrides the value set with acceptLeeway
-         *
-         * @param leeway the window in seconds in which the Not Before Claim will still be valid.
-         * @return this same Verification instance.
-         * @throws IllegalArgumentException if leeway is negative.
-         */
         @Override
         public Verification acceptNotBefore(long leeway) throws IllegalArgumentException {
             assertPositive(leeway);
@@ -139,14 +94,6 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
             return this;
         }
 
-        /**
-         * Set a specific leeway window in seconds in which the Issued At ("iat") Claim will still be valid.
-         * Issued At Date is always verified when the value is present. This method overrides the value set with acceptLeeway
-         *
-         * @param leeway the window in seconds in which the Issued At Claim will still be valid.
-         * @return this same Verification instance.
-         * @throws IllegalArgumentException if leeway is negative.
-         */
         @Override
         public Verification acceptIssuedAt(long leeway) throws IllegalArgumentException {
             assertPositive(leeway);
@@ -154,34 +101,18 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
             return this;
         }
 
-        /**
-         * Skip the Issued At ("iat") date verification. By default, the verification is performed.
-         */
+        @Override
         public Verification ignoreIssuedAt() {
             this.ignoreIssuedAt = true;
             return this;
         }
 
-        /**
-         * Require a specific JWT Id ("jti") claim.
-         *
-         * @param jwtId the required Id value
-         * @return this same Verification instance.
-         */
         @Override
         public Verification withJWTId(String jwtId) {
             requireClaim(PublicClaims.JWT_ID, jwtId);
             return this;
         }
 
-        /**
-         * Require a specific Claim value.
-         *
-         * @param name  the Claim's name.
-         * @param value the Claim's value.
-         * @return this same Verification instance.
-         * @throws IllegalArgumentException if the name is null.
-         */
         @Override
         public Verification withClaim(String name, Boolean value) throws IllegalArgumentException {
             assertNonNull(name);
@@ -189,14 +120,6 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
             return this;
         }
 
-        /**
-         * Require a specific Claim value.
-         *
-         * @param name  the Claim's name.
-         * @param value the Claim's value.
-         * @return this same Verification instance.
-         * @throws IllegalArgumentException if the name is null.
-         */
         @Override
         public Verification withClaim(String name, Integer value) throws IllegalArgumentException {
             assertNonNull(name);
@@ -204,14 +127,6 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
             return this;
         }
 
-        /**
-         * Require a specific Claim value.
-         *
-         * @param name  the Claim's name.
-         * @param value the Claim's value.
-         * @return this same Verification instance.
-         * @throws IllegalArgumentException if the name is null.
-         */
         @Override
         public Verification withClaim(String name, Long value) throws IllegalArgumentException {
             assertNonNull(name);
@@ -219,14 +134,6 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
             return this;
         }
 
-        /**
-         * Require a specific Claim value.
-         *
-         * @param name  the Claim's name.
-         * @param value the Claim's value.
-         * @return this same Verification instance.
-         * @throws IllegalArgumentException if the name is null.
-         */
         @Override
         public Verification withClaim(String name, Double value) throws IllegalArgumentException {
             assertNonNull(name);
@@ -234,14 +141,6 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
             return this;
         }
 
-        /**
-         * Require a specific Claim value.
-         *
-         * @param name  the Claim's name.
-         * @param value the Claim's value.
-         * @return this same Verification instance.
-         * @throws IllegalArgumentException if the name is null.
-         */
         @Override
         public Verification withClaim(String name, String value) throws IllegalArgumentException {
             assertNonNull(name);
@@ -249,14 +148,6 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
             return this;
         }
 
-        /**
-         * Require a specific Claim value.
-         *
-         * @param name  the Claim's name.
-         * @param value the Claim's value.
-         * @return this same Verification instance.
-         * @throws IllegalArgumentException if the name is null.
-         */
         @Override
         public Verification withClaim(String name, Date value) throws IllegalArgumentException {
             assertNonNull(name);
@@ -264,14 +155,6 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
             return this;
         }
 
-        /**
-         * Require a specific Array Claim to contain at least the given items.
-         *
-         * @param name  the Claim's name.
-         * @param items the items the Claim must contain.
-         * @return this same Verification instance.
-         * @throws IllegalArgumentException if the name is null.
-         */
         @Override
         public Verification withArrayClaim(String name, String... items) throws IllegalArgumentException {
             assertNonNull(name);
@@ -279,14 +162,6 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
             return this;
         }
 
-        /**
-         * Require a specific Array Claim to contain at least the given items.
-         *
-         * @param name  the Claim's name.
-         * @param items the items the Claim must contain.
-         * @return this same Verification instance.
-         * @throws IllegalArgumentException if the name is null.
-         */
         @Override
         public Verification withArrayClaim(String name, Integer... items) throws IllegalArgumentException {
             assertNonNull(name);
@@ -294,11 +169,6 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
             return this;
         }
 
-        /**
-         * Creates a new and reusable instance of the JWTVerifier with the configuration already provided.
-         *
-         * @return a new JWTVerifier instance.
-         */
         @Override
         public JWTVerifier build() {
             return this.build(new ClockImpl());
