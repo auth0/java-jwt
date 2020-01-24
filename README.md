@@ -140,6 +140,7 @@ try {
 
 If a Claim couldn't be converted to JSON or the Key used in the signing process was invalid a `JWTCreationException` will raise.
 
+
 ### Verify a Token
 
 You'll first need to create a `JWTVerifier` instance by calling `JWT.require()` and passing the `Algorithm` instance. If you require the token to have specific Claim values, use the builder to define them. The instance returned by the method `build()` is reusable, so you can define it once and use it to verify different tokens. Finally call `verifier.verify()` passing the token.
