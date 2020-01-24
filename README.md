@@ -65,6 +65,8 @@ RSAPrivateKey privateKey = //Get the key instance
 Algorithm algorithmRS = Algorithm.RSA256(publicKey, privateKey);
 ```
 
+> Note: How you obtain or read keys is not in the scope of this library. For an example of how you might implement this, you can see the example [here](https://gist.github.com/lbalmaceda/9a0c7890c2965826c04119dcfb1a5469).
+
 #### Using a KeyProvider:
 
 By using a `KeyProvider` you can change in runtime the key used either to verify the token signature or to sign a new token for RSA or ECDSA algorithms. This is achieved by implementing either `RSAKeyProvider` or `ECDSAKeyProvider` methods:
@@ -137,7 +139,6 @@ try {
 ```
 
 If a Claim couldn't be converted to JSON or the Key used in the signing process was invalid a `JWTCreationException` will raise.
-
 
 ### Verify a Token
 
