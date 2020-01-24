@@ -65,7 +65,7 @@ RSAPrivateKey privateKey = //Get the key instance
 Algorithm algorithmRS = Algorithm.RSA256(publicKey, privateKey);
 ```
 
-> Note: How you obtain or read keys is not in the scope of this library. For an example of how you might implement this, you can see the example [here](https://gist.github.com/lbalmaceda/9a0c7890c2965826c04119dcfb1a5469).
+> Note: How you obtain or read keys is not in the scope of this library. For an example of how you might implement this, see [this gist](https://gist.github.com/lbalmaceda/9a0c7890c2965826c04119dcfb1a5469).
 
 #### Using a KeyProvider:
 
