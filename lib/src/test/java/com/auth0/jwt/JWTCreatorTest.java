@@ -12,6 +12,7 @@ import org.junit.rules.ExpectedException;
 import java.nio.charset.StandardCharsets;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.RSAPrivateKey;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -292,7 +293,7 @@ public class JWTCreatorTest {
     }
 
     @Test
-    public void shouldSetCorrectTypeInTheHeader() throws Exception {
+    public void shouldSetDefaultTypeInTheHeader() throws Exception {
         String signed = JWTCreator.init()
                 .sign(Algorithm.HMAC256("secret"));
 
@@ -300,6 +301,19 @@ public class JWTCreatorTest {
         String[] parts = signed.split("\\.");
         String headerJson = new String(Base64.decodeBase64(parts[0]), StandardCharsets.UTF_8);
         assertThat(headerJson, JsonMatcher.hasEntry("typ", "JWT"));
+    }
+
+    @Test
+    public void shouldSetCustomTypeInTheHeader() throws Exception {
+        Map<String, Object> header = Collections.singletonMap("typ", "passport");
+        String signed = JWTCreator.init()
+                .withHeader(header)
+                .sign(Algorithm.HMAC256("secret"));
+
+        assertThat(signed, is(notNullValue()));
+        String[] parts = signed.split("\\.");
+        String headerJson = new String(Base64.decodeBase64(parts[0]), StandardCharsets.UTF_8);
+        assertThat(headerJson, JsonMatcher.hasEntry("typ", "passport"));
     }
 
     @Test
