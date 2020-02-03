@@ -5,6 +5,7 @@
 [![CircleCI](https://img.shields.io/circleci/project/github/auth0/java-jwt.svg?style=flat-square)](https://circleci.com/gh/auth0/java-jwt/tree/master)
 [![Coverage Status](https://img.shields.io/codecov/c/github/auth0/java-jwt.svg?style=flat-square)](https://codecov.io/github/auth0/java-jwt)
 [![License](http://img.shields.io/:license-mit-blue.svg?style=flat)](http://doge.mit-license.org)
+[![Javadoc](https://javadoc.io/badge2/com.auth0/java-jwt/javadoc.svg)](https://javadoc.io/doc/com.auth0/java-jwt/latest/index.html)
 
 A Java implementation of [JSON Web Token (JWT) - RFC 7519](https://tools.ietf.org/html/rfc7519).
 
@@ -12,6 +13,8 @@ If you're looking for an **Android** version of the JWT Decoder take a look at o
 
 ## Installation
 
+The library is available on both Maven Central and Bintray, and the Javadoc published [here](https://javadoc.io/doc/com.auth0/java-jwt/latest/index.html).
+ 
 ### Maven
 
 ```xml
