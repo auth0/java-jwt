@@ -316,7 +316,9 @@ public final class JWTCreator {
                 throw new IllegalArgumentException("The Algorithm cannot be null.");
             }
             headerClaims.put(PublicClaims.ALGORITHM, algorithm.getName());
-            headerClaims.put(PublicClaims.TYPE, "JWT");
+            if (!headerClaims.containsKey(PublicClaims.TYPE)) {
+                headerClaims.put(PublicClaims.TYPE, "JWT");
+            }
             String signingKeyId = algorithm.getSigningKeyId();
             if (signingKeyId != null) {
                 withKeyId(signingKeyId);
