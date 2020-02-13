@@ -46,8 +46,8 @@ public class NullClaimTest {
     }
 
     @Test
-    public void shouldGetAsDate() {
-        assertThat(claim.asDate(), is(nullValue()));
+    public void shouldGetAsDate() throws Exception {
+        assertThat(claim.asInstant(), is(nullValue()));
     }
 
     @Test

@@ -200,7 +200,7 @@ JWTVerifier verifier = JWT.require(algorithm)
     .build();
 ```
 
-You can also specify a custom value for a given Date claim and override the default one for only that claim.
+You can also specify a custom value for a given DateNumber claim and override the default one for only that claim.
 
 ```java
 JWTVerifier verifier = JWT.require(algorithm)
@@ -319,7 +319,7 @@ List<String> audience = jwt.getAudience();
 Returns the Expiration Time value or null if it's not defined in the Payload.
 
 ```java
-Date expiresAt = jwt.getExpiresAt();
+Instant expiresAt = jwt.getExpiresAt();
 ```
 
 #### Not Before ("nbf")
@@ -327,7 +327,7 @@ Date expiresAt = jwt.getExpiresAt();
 Returns the Not Before value or null if it's not defined in the Payload.
 
 ```java
-Date notBefore = jwt.getNotBefore();
+Instant notBefore = jwt.getNotBefore();
 ```
 
 #### Issued At ("iat")
@@ -335,7 +335,7 @@ Date notBefore = jwt.getNotBefore();
 Returns the Issued At value or null if it's not defined in the Payload.
 
 ```java
-Date issuedAt = jwt.getIssuedAt();
+Instant issuedAt = jwt.getIssuedAt();
 ```
 
 #### JWT ID ("jti")
@@ -380,7 +380,7 @@ JWTVerifier verifier = JWT.require(algorithm)
 DecodedJWT jwt = verifier.verify("my.jwt.token");
 ```
 
-> Currently supported classes for custom JWT Claim creation and verification are: Boolean, Integer, Double, String, Date and Arrays of type String and Integer.
+> Currently supported classes for custom JWT Claim creation and verification are: Boolean, Integer, Double, String, Instant and Arrays of type String and Integer.
 
 
 ### Claim Class
@@ -392,7 +392,7 @@ The Claim class is a wrapper for the Claim values. It allows you to get the Clai
 * **asDouble()**: Returns the Double value or null if it can't be converted.
 * **asLong()**: Returns the Long value or null if it can't be converted.
 * **asString()**: Returns the String value or null if it can't be converted.
-* **asDate()**: Returns the Date value or null if it can't be converted. This must be a NumericDate (Unix Epoch/Timestamp). Note that the [JWT Standard](https://tools.ietf.org/html/rfc7519#section-2) specified that all the *NumericDate* values must be in seconds.
+* **asInstant()**: Returns the Instant value or null if it can't be converted. This must be a NumericDate (Unix Epoch/Timestamp). Note that the [JWT Standard](https://tools.ietf.org/html/rfc7519#section-2) specified that all the *NumericDate* values must be in seconds.
 
 #### Custom Classes and Collections
 To obtain a Claim as a Collection you'll need to provide the **Class Type** of the contents to convert from.

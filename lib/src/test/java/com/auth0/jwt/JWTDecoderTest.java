@@ -14,7 +14,7 @@ import org.junit.rules.ExpectedException;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.Date;
+import java.time.Instant;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -131,33 +131,33 @@ public class JWTDecoderTest {
     public void shouldGetExpirationTime() {
         DecodedJWT jwt = JWT.decode("eyJhbGciOiJIUzI1NiJ9.eyJleHAiOjE0NzY3MjcwODZ9.L9dcPHEDQew2u9MkDCORFkfDGcSOsgoPqNY-LUMLEHg");
         assertThat(jwt, is(notNullValue()));
-        assertThat(jwt.getExpiresAt(), is(instanceOf(Date.class)));
+        assertThat(jwt.getExpiresAt(), is(instanceOf(Instant.class)));
         long ms = 1476727086L * 1000;
-        Date expectedDate = new Date(ms);
+        Instant expectedInstant = Instant.ofEpochMilli(ms);
         assertThat(jwt.getExpiresAt(), is(notNullValue()));
-        assertThat(jwt.getExpiresAt(), is(equalTo(expectedDate)));
+        assertThat(jwt.getExpiresAt(), is(equalTo(expectedInstant)));
     }
 
     @Test
     public void shouldGetNotBefore() {
         DecodedJWT jwt = JWT.decode("eyJhbGciOiJIUzI1NiJ9.eyJuYmYiOjE0NzY3MjcwODZ9.tkpD3iCPQPVqjnjpDVp2bJMBAgpVCG9ZjlBuMitass0");
         assertThat(jwt, is(notNullValue()));
-        assertThat(jwt.getNotBefore(), is(instanceOf(Date.class)));
+        assertThat(jwt.getNotBefore(), is(instanceOf(Instant.class)));
         long ms = 1476727086L * 1000;
-        Date expectedDate = new Date(ms);
+        Instant expectedInstant = Instant.ofEpochMilli(ms);
         assertThat(jwt.getNotBefore(), is(notNullValue()));
-        assertThat(jwt.getNotBefore(), is(equalTo(expectedDate)));
+        assertThat(jwt.getNotBefore(), is(equalTo(expectedInstant)));
     }
 
     @Test
     public void shouldGetIssuedAt() {
         DecodedJWT jwt = JWT.decode("eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE0NzY3MjcwODZ9.KPjGoW665E8V5_27Jugab8qSTxLk2cgquhPCBfAP0_w");
         assertThat(jwt, is(notNullValue()));
-        assertThat(jwt.getIssuedAt(), is(instanceOf(Date.class)));
+        assertThat(jwt.getIssuedAt(), is(instanceOf(Instant.class)));
         long ms = 1476727086L * 1000;
-        Date expectedDate = new Date(ms);
+        Instant expectedInstant = Instant.ofEpochMilli(ms);
         assertThat(jwt.getIssuedAt(), is(notNullValue()));
-        assertThat(jwt.getIssuedAt(), is(equalTo(expectedDate)));
+        assertThat(jwt.getIssuedAt(), is(equalTo(expectedInstant)));
     }
 
     @Test
@@ -241,10 +241,10 @@ public class JWTDecoderTest {
     @Test
     public void shouldGetCustomClaimOfTypeDate() {
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoxNDc4ODkxNTIxfQ.mhioumeok8fghQEhTKF3QtQAksSvZ_9wIhJmgZLhJ6c";
-        Date date = new Date(1478891521000L);
+        Instant instant = Instant.ofEpochMilli(1478891521000L);
         DecodedJWT jwt = JWT.decode(token);
         Assert.assertThat(jwt, is(notNullValue()));
-        Assert.assertThat(jwt.getClaim("name").asDate().getTime(), is(date.getTime()));
+        Assert.assertThat(jwt.getClaim("name").asInstant().getEpochSecond(), is(instant.getEpochSecond()));
     }
 
     @Test

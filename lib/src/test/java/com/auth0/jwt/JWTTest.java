@@ -13,7 +13,7 @@ import org.junit.rules.ExpectedException;
 import java.nio.charset.StandardCharsets;
 import java.security.interfaces.ECKey;
 import java.security.interfaces.RSAKey;
-import java.util.Date;
+import java.time.Instant;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
@@ -267,8 +267,8 @@ public class JWTTest {
     }
 
     @Test
-    public void shouldGetExpirationTime() {
-        Date expectedDate = new Date(1477592 * 1000);
+    public void shouldGetExpirationTime() throws Exception {
+        Instant expectedDate = Instant.ofEpochMilli(1477592 * 1000);
         Clock clock = mock(Clock.class);
         when(clock.getToday()).thenReturn(expectedDate);
 
@@ -279,14 +279,14 @@ public class JWTTest {
                 .verify(token);
 
         assertThat(jwt, is(notNullValue()));
-        assertThat(jwt.getExpiresAt(), is(instanceOf(Date.class)));
+        assertThat(jwt.getExpiresAt(), is(instanceOf(Instant.class)));
         assertThat(jwt.getExpiresAt(), is(notNullValue()));
         assertThat(jwt.getExpiresAt(), is(equalTo(expectedDate)));
     }
 
     @Test
-    public void shouldGetNotBefore() {
-        Date expectedDate = new Date(1477592 * 1000);
+    public void shouldGetNotBefore() throws Exception {
+        Instant expectedDate = Instant.ofEpochMilli(1477592 * 1000);
         Clock clock = mock(Clock.class);
         when(clock.getToday()).thenReturn(expectedDate);
 
@@ -297,14 +297,14 @@ public class JWTTest {
                 .verify(token);
 
         assertThat(jwt, is(notNullValue()));
-        assertThat(jwt.getNotBefore(), is(instanceOf(Date.class)));
+        assertThat(jwt.getNotBefore(), is(instanceOf(Instant.class)));
         assertThat(jwt.getNotBefore(), is(notNullValue()));
         assertThat(jwt.getNotBefore(), is(equalTo(expectedDate)));
     }
 
     @Test
-    public void shouldGetIssuedAt() {
-        Date expectedDate = new Date(1477592 * 1000);
+    public void shouldGetIssuedAt() throws Exception {
+        Instant expectedDate = Instant.ofEpochMilli(1477592 * 1000);
         Clock clock = mock(Clock.class);
         when(clock.getToday()).thenReturn(expectedDate);
 
@@ -315,7 +315,7 @@ public class JWTTest {
                 .verify(token);
 
         assertThat(jwt, is(notNullValue()));
-        assertThat(jwt.getIssuedAt(), is(instanceOf(Date.class)));
+        assertThat(jwt.getIssuedAt(), is(instanceOf(Instant.class)));
         assertThat(jwt.getIssuedAt(), is(notNullValue()));
         assertThat(jwt.getIssuedAt(), is(equalTo(expectedDate)));
     }

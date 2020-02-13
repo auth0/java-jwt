@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 
 import java.io.IOException;
-import java.util.Date;
+import java.time.Instant;
 import java.util.Map;
 
 public class PayloadSerializer extends StdSerializer<ClaimsHolder> {
@@ -53,7 +53,7 @@ public class PayloadSerializer extends StdSerializer<ClaimsHolder> {
         gen.writeEndObject();
     }
 
-    private long dateToSeconds(Date date) {
-        return date.getTime() / 1000;
+    private long instantToSeconds(Instant instant) {
+        return instant.getEpochSecond();
     }
 }

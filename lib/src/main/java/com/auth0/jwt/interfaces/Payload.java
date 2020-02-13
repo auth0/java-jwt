@@ -1,6 +1,6 @@
 package com.auth0.jwt.interfaces;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 
@@ -34,21 +34,21 @@ public interface Payload {
      *
      * @return the Expiration Time value or null.
      */
-    Date getExpiresAt();
+    Instant getExpiresAt();
 
     /**
      * Get the value of the "nbf" claim, or null if it's not available.
      *
      * @return the Not Before value or null.
      */
-    Date getNotBefore();
+    Instant getNotBefore();
 
     /**
      * Get the value of the "iat" claim, or null if it's not available.
      *
      * @return the Issued At value or null.
      */
-    Date getIssuedAt();
+    Instant getIssuedAt();
 
     /**
      * Get the value of the "jti" claim, or null if it's not available.

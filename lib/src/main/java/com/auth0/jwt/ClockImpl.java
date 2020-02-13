@@ -2,7 +2,7 @@ package com.auth0.jwt;
 
 import com.auth0.jwt.interfaces.Clock;
 
-import java.util.Date;
+import java.time.Instant;
 
 final class ClockImpl implements Clock {
 
@@ -11,7 +11,7 @@ final class ClockImpl implements Clock {
     }
 
     @Override
-    public Date getToday() {
-        return new Date();
+    public Instant getToday() {
+        return Instant.now();
     }
 }

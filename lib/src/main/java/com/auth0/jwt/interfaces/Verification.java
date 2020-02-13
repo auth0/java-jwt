@@ -2,7 +2,7 @@ package com.auth0.jwt.interfaces;
 
 import com.auth0.jwt.JWTVerifier;
 
-import java.util.Date;
+import java.time.Instant;
 
 /**
  * Holds the Claims and claim-based configurations required for a JWT to be considered valid.
@@ -138,7 +138,7 @@ public interface Verification {
      * @return this same Verification instance.
      * @throws IllegalArgumentException if the name is null.
      */
-    Verification withClaim(String name, Date value) throws IllegalArgumentException;
+    Verification withClaim(String name, Instant value) throws IllegalArgumentException;
 
     /**
      * Require a specific Array Claim to contain at least the given items.
