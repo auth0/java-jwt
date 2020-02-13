@@ -436,9 +436,9 @@ public class JWTCreatorTest {
         String[] parts = jwt.split("\\.");
         assertThat(parts[1], is("eyJuYW1lIjpbMSwyLDNdfQ"));
     }
-    
+
     @Test
-    public void shouldAcceptCustomClaimOfTypeObject() throws Exception {
+    public void shouldAcceptCustomClaimOfTypeMap() throws Exception {
         Map<String, Object> data = new HashMap<>();
         data.put("test1", "abc");
         data.put("test2", "def");
@@ -450,25 +450,24 @@ public class JWTCreatorTest {
         String[] parts = jwt.split("\\.");
         assertThat(parts[1], is("eyJkYXRhIjp7InRlc3QyIjoiZGVmIiwidGVzdDEiOiJhYmMifX0"));
     }
-    
+
     @Test
     public void shouldRefuseCustomClaimOfTypeUserPojo() throws Exception{
-    	Map<String, Object> data = new HashMap<>();
+        Map<String, Object> data = new HashMap<>();
         data.put("test1", new UserPojo("Michael", 255));
-        
+
         exception.expect(IllegalArgumentException.class);
 
-    	JWTCreator.init()
+        JWTCreator.init()
                  .withClaim("pojo", data)
                  .sign(Algorithm.HMAC256("secret"));
     }
-    
-    
+
     @SuppressWarnings("unchecked")
-	@Test
+    @Test
     public void shouldAcceptCustomMapClaimOfBasicObjectTypes() throws Exception {
         Map<String, Object> data = new HashMap<>();
-        
+
         // simple types
         data.put("string", "abc");
         data.put("integer", 1);
@@ -476,7 +475,7 @@ public class JWTCreatorTest {
         data.put("double", 123.456d);
         data.put("date", new Date(123L));
         data.put("boolean", true);
-        
+
         // array types
         data.put("intArray", new Integer[]{3, 5});
         data.put("longArray", new Long[]{Long.MAX_VALUE, Long.MIN_VALUE});
@@ -486,7 +485,7 @@ public class JWTCreatorTest {
 
         Map<String, Object> sub = new HashMap<>();
         sub.put("subKey", "subValue");
-        
+
         data.put("map", sub);
 
         String jwt = JWTCreator.init()
@@ -506,7 +505,7 @@ public class JWTCreatorTest {
         assertThat(map.get("double"), is(123.456d));
         assertThat(map.get("date"), is(123));
         assertThat(map.get("boolean"), is(true));
-        
+
         // array types
         assertThat(map.get("intArray"), is(Arrays.asList(new Integer[]{3, 5})));
         assertThat(map.get("longArray"), is(Arrays.asList(new Long[]{Long.MAX_VALUE, Long.MIN_VALUE})));
@@ -517,12 +516,12 @@ public class JWTCreatorTest {
         assertThat(map.get("map"), is(sub));
 
     }
-    
+
     @SuppressWarnings("unchecked")
-	@Test
+    @Test
     public void shouldAcceptCustomListClaimOfBasicObjectTypes() throws Exception {
         List<Object> data = new ArrayList<>();
-        
+
         // simple types
         data.add("abc");
         data.add(1);
@@ -540,7 +539,7 @@ public class JWTCreatorTest {
 
         Map<String, Object> sub = new HashMap<>();
         sub.put("subKey", "subValue");
-        
+
         data.add(sub);
 
         String jwt = JWTCreator.init()
@@ -571,7 +570,7 @@ public class JWTCreatorTest {
         assertThat(list.get(10), is(sub));
 
     }
-    
+
     @Test
     public void shouldAcceptCustomClaimForNullListItem() throws Exception{
         Map<String, Object> data = new HashMap<>();
@@ -581,7 +580,7 @@ public class JWTCreatorTest {
                  .withClaim("pojo", data)
                  .sign(Algorithm.HMAC256("secret"));
     }
-    
+
     @Test
     public void shouldRefuseCustomClaimForNullMapValue() throws Exception{
         Map<String, Object> data = new HashMap<>();
@@ -593,7 +592,7 @@ public class JWTCreatorTest {
                  .withClaim("pojo", data)
                  .sign(Algorithm.HMAC256("secret"));
     }
-    
+
     @Test
     public void shouldRefuseCustomClaimForNullMapKey() throws Exception{
         Map<String, Object> data = new HashMap<>();
@@ -604,8 +603,9 @@ public class JWTCreatorTest {
         JWTCreator.init()
                  .withClaim("pojo", data)
                  .sign(Algorithm.HMAC256("secret"));
-    }    
-    
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Test
     public void shouldRefuseCustomMapClaimForNonStringKey() throws Exception{
         Map data = new HashMap<>();
@@ -617,28 +617,42 @@ public class JWTCreatorTest {
                  .withClaim("pojo", (Map<String, Object>)data)
                  .sign(Algorithm.HMAC256("secret"));
     }
-    
+
     @Test
     public void shouldRefuseCustomListClaimForUnknownListElement() throws Exception{
-    	List<Object> list = Arrays.asList(new UserPojo("Michael", 255));
-        
+        List<Object> list = Arrays.asList(new UserPojo("Michael", 255));
+
         exception.expect(IllegalArgumentException.class);
 
         JWTCreator.init()
                  .withClaim("list", list)
                  .sign(Algorithm.HMAC256("secret"));
     }
-    
+
+    @Test
+    public void shouldRefuseCustomListClaimForUnknownListElementWrappedInAMap() throws Exception{
+        List<Object> list = Arrays.asList(new UserPojo("Michael", 255));
+        
+        Map<String, Object> data = new HashMap<>();
+        data.put("someList", list);
+
+        exception.expect(IllegalArgumentException.class);
+
+        JWTCreator.init()
+                 .withClaim("list", list)
+                 .sign(Algorithm.HMAC256("secret"));
+    }
+
     @Test
     public void shouldRefuseCustomListClaimForUnknownArrayType() throws Exception{
-    	List<Object> list = new ArrayList<>();
+        List<Object> list = new ArrayList<>();
         list.add(new Object[] {"test"});
-        
+
         exception.expect(IllegalArgumentException.class);
 
         JWTCreator.init()
                  .withClaim("list", list)
                  .sign(Algorithm.HMAC256("secret"));
     }
-    
+
 }
