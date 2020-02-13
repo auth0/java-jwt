@@ -297,7 +297,7 @@ public final class JWTCreator {
          * @param name  the Claim's name.
          * @param items the Claim's value.
          * @return this same Builder instance.
-         * @throws IllegalArgumentException if the name is null, or if the value is null or of an unsupported type
+         * @throws IllegalArgumentException if the name is null
          */
         public Builder withArrayClaim(String name, Long[] items) throws IllegalArgumentException {
             assertNonNull(name);
@@ -307,15 +307,18 @@ public final class JWTCreator {
 
         /**
          * Add a custom Map Claim with the given items.
-         * Accepted nested types are {@linkplain Map} and {@linkplain List} with basic types 
-         * Boolean, Integer, Long, Double, String and Date.
          * 
+         * Accepted nested types are {@linkplain Map} and {@linkplain List} with basic types
+         * {@linkplain Boolean}, {@linkplain Integer}, {@linkplain Long}, {@linkplain Double},
+         * {@linkplain String} and {@linkplain Date}. {@linkplain Map}s cannot contain null keys or values.
+         * {@linkplain List}s can contain null elements.
+         *
          * @param name  the Claim's name.
          * @param map the Claim's key-values.
          * @return this same Builder instance.
-         * @throws IllegalArgumentException if the name is null, or if the value is null or of an unsupported type
+         * @throws IllegalArgumentException if the name is null, or if the map contents does not validate.
          */
-        public Builder withClaim(String name, Map<String, Object> map) throws IllegalArgumentException {
+        public Builder withClaim(String name, Map<String, ?> map) throws IllegalArgumentException {
             assertNonNull(name);
             // validate map contents
             if(!validateClaim(map)) {
@@ -328,16 +331,18 @@ public final class JWTCreator {
         /**
          * Add a custom List Claim with the given items.
          *
-         * Accepted nested types are {@linkplain Map} and {@linkplain List} with basic types 
-         * Boolean, Integer, Long, Double, String and Date.
-         * 
+         * Accepted nested types are {@linkplain Map} and {@linkplain List} with basic types
+         * {@linkplain Boolean}, {@linkplain Integer}, {@linkplain Long}, {@linkplain Double},
+         * {@linkplain String} and {@linkplain Date}. {@linkplain Map}s cannot contain null keys or values.
+         * {@linkplain List}s can contain null elements.
+         *
          * @param name  the Claim's name.
          * @param list the Claim's list of values.
          * @return this same Builder instance.
-         * @throws IllegalArgumentException if the name is null, or if the value is null or of an unsupported type
+         * @throws IllegalArgumentException if the name is null, or if the list contents does not validate.
          */
         
-        public Builder withClaim(String name, List<Object> list) throws IllegalArgumentException {
+        public Builder withClaim(String name, List<?> list) throws IllegalArgumentException {
             assertNonNull(name);
             // validate list contents
             if(!validateClaim(list)) {
@@ -347,9 +352,9 @@ public final class JWTCreator {
             return this;
         }         
 
-        private static boolean validateClaim(Map<?, Object> map) {
+        private static boolean validateClaim(Map<?, ?> map) {
             // do not accept null values in maps
-            for (Entry<?, Object> entry : map.entrySet()) {
+            for (Entry<?, ?> entry : map.entrySet()) {
                 Object value = entry.getValue();
                 if(value == null || !isSupportedType(value)) {
                     return false;
@@ -372,12 +377,11 @@ public final class JWTCreator {
             return true;
         }        
 
-        @SuppressWarnings("unchecked")
         private static boolean isSupportedType(Object value) {
             if(value instanceof List) {
                 return validateClaim((List<?>)value);
             } else if(value instanceof Map) {
-                return validateClaim((Map<?, Object>)value);
+                return validateClaim((Map<?, ?>)value);
             } else {
                 return isBasicType(value);
             }
