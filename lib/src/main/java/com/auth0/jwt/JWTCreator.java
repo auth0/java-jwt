@@ -309,7 +309,7 @@ public final class JWTCreator {
          * 
          * Accepted nested types are {@linkplain Map} and {@linkplain List} with basic types
          * {@linkplain Boolean}, {@linkplain Integer}, {@linkplain Long}, {@linkplain Double},
-         * {@linkplain String} and {@linkplain Date}. {@linkplain Map}s cannot contain null keys or values.
+         * {@linkplain String} and {@linkplain Instant}. {@linkplain Map}s cannot contain null keys or values.
          * {@linkplain List}s can contain null elements.
          *
          * @param name  the Claim's name.
@@ -321,7 +321,7 @@ public final class JWTCreator {
             assertNonNull(name);
             // validate map contents
             if(!validateClaim(map)) {
-                throw new IllegalArgumentException("Expected map containing Map, List, Boolean, Integer, Long, Double, String and Date");
+                throw new IllegalArgumentException("Expected map containing Map, List, Boolean, Integer, Long, Double, String and Instant");
             }
             addClaim(name, map);
             return this;
@@ -332,7 +332,7 @@ public final class JWTCreator {
          *
          * Accepted nested types are {@linkplain Map} and {@linkplain List} with basic types
          * {@linkplain Boolean}, {@linkplain Integer}, {@linkplain Long}, {@linkplain Double},
-         * {@linkplain String} and {@linkplain Date}. {@linkplain Map}s cannot contain null keys or values.
+         * {@linkplain String} and {@linkplain Instant}. {@linkplain Map}s cannot contain null keys or values.
          * {@linkplain List}s can contain null elements.
          *
          * @param name  the Claim's name.
@@ -344,7 +344,7 @@ public final class JWTCreator {
             assertNonNull(name);
             // validate list contents
             if(!validateClaim(list)) {
-                throw new IllegalArgumentException("Expected list containing Map, List, Boolean, Integer, Long, Double, String and Date");
+                throw new IllegalArgumentException("Expected list containing Map, List, Boolean, Integer, Long, Double, String and Instant");
             }
             addClaim(name, list);
             return this;
@@ -391,7 +391,7 @@ public final class JWTCreator {
             if(c.isArray()) {
                 return c == Integer[].class || c == Long[].class || c == String[].class;
             }
-            return c == String.class || c == Integer.class || c == Long.class || c == Double.class || c == Date.class || c == Boolean.class;
+            return c == String.class || c == Integer.class || c == Long.class || c == Double.class || c == Instant.class || c == Boolean.class;
         }
 
         /**

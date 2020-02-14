@@ -5,7 +5,6 @@ import com.auth0.jwt.impl.PublicClaims;
 import com.auth0.jwt.interfaces.ECDSAKeyProvider;
 import com.auth0.jwt.interfaces.RSAKeyProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import org.apache.commons.codec.binary.Base64;
 import org.junit.Rule;
 import org.junit.Test;
@@ -15,10 +14,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.RSAPrivateKey;
 import java.time.Instant;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
@@ -389,7 +385,7 @@ public class JWTCreatorTest {
     }
 
     @Test
-    public void shouldAcceptCustomClaimOfTypeDate() throws Exception {
+    public void shouldAcceptCustomClaimOfTypeInstant() throws Exception {
         Instant instant = Instant.ofEpochMilli(1478891521000L);
         String jwt = JWTCreator.init()
                 .withClaim("name", instant)
@@ -469,7 +465,7 @@ public class JWTCreatorTest {
         data.put("integer", 1);
         data.put("long", Long.MAX_VALUE);
         data.put("double", 123.456d);
-        data.put("date", new Date(123L));
+        data.put("instant", Instant.ofEpochSecond(123L));
         data.put("boolean", true);
 
         // array types
@@ -477,11 +473,11 @@ public class JWTCreatorTest {
         data.put("longArray", new Long[]{Long.MAX_VALUE, Long.MIN_VALUE});
         data.put("stringArray", new String[]{"string"});
 
-        data.put("list", Arrays.asList("a", "b", "c"));
+        data.put("list", Arrays.asList("a", "b", "c", Instant.ofEpochSecond(41L)));
 
         Map<String, Object> sub = new HashMap<>();
         sub.put("subKey", "subValue");
-
+        sub.put("subInstant", Instant.ofEpochSecond(567L));
         data.put("map", sub);
 
         String jwt = JWTCreator.init()
@@ -499,7 +495,7 @@ public class JWTCreatorTest {
         assertThat(map.get("integer"), is(1));
         assertThat(map.get("long"), is(Long.MAX_VALUE));
         assertThat(map.get("double"), is(123.456d));
-        assertThat(map.get("date"), is(123));
+        assertThat(map.get("instant"), is(123));
         assertThat(map.get("boolean"), is(true));
 
         // array types
@@ -508,9 +504,12 @@ public class JWTCreatorTest {
         assertThat(map.get("stringArray"), is(Arrays.asList("string")));
 
         // list
-        assertThat(map.get("list"), is(Arrays.asList("a", "b", "c")));
-        assertThat(map.get("map"), is(sub));
+        assertThat(map.get("list"), is(Arrays.asList("a", "b", "c", 41)));
 
+        // nested map
+        Map nested = (Map) map.get("map");
+        assertThat(nested.get("subKey"), is("subValue"));
+        assertThat(nested.get("subInstant"), is(567));
     }
 
     @SuppressWarnings("unchecked")
@@ -523,7 +522,7 @@ public class JWTCreatorTest {
         data.add(1);
         data.add(Long.MAX_VALUE);
         data.add(123.456d);
-        data.add(new Date(123L));
+        data.add(Instant.ofEpochSecond(123L));
         data.add(true);
         
         // array types
