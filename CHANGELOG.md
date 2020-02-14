@@ -1,5 +1,23 @@
 # Change Log
 
+## [3.10.0](https://github.com/auth0/java-jwt/tree/3.10.0) (2020-02-14)
+[Full Changelog](https://github.com/auth0/java-jwt/compare/3.9.0...3.10.0)
+**Closed issues**
+- NullPointerException when the claim doesn't exist in the token [\#384](https://github.com/auth0/java-jwt/issues/384)
+
+**Added**
+- Add Javadoc URL and badge to the README [\#382](https://github.com/auth0/java-jwt/pull/382) ([lbalmaceda](https://github.com/lbalmaceda))
+- Allow to customize the typ header claim [\#381](https://github.com/auth0/java-jwt/pull/381) ([lbalmaceda](https://github.com/lbalmaceda))
+- JWTCreator for basic types [\#282](https://github.com/auth0/java-jwt/pull/282) ([skjolber](https://github.com/skjolber))
+- Support verification of Long[] datatype like in JWTCreator [\#278](https://github.com/auth0/java-jwt/pull/278) ([skjolber](https://github.com/skjolber))
+
+**Changed**
+- Update to Gradle 6.1.1 [\#389](https://github.com/auth0/java-jwt/pull/389) ([jimmyjames](https://github.com/jimmyjames))
+
+**Fixed**
+- Handle missing expected array claim [\#393](https://github.com/auth0/java-jwt/pull/393) ([lbalmaceda](https://github.com/lbalmaceda))
+- Update tests to use valid Base64 URL-encoded tokens [\#386](https://github.com/auth0/java-jwt/pull/386) ([jimmyjames](https://github.com/jimmyjames))
+
 ## [3.9.0](https://github.com/auth0/java-jwt/tree/3.9.0) (2020-01-02)
 [Full Changelog](https://github.com/auth0/java-jwt/compare/3.8.3...3.9.0)
 
