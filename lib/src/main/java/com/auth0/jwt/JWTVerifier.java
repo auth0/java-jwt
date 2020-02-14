@@ -168,7 +168,7 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
             requireClaim(name, items);
             return this;
         }
-        
+
         /**
          * Require a specific Array Claim to contain at least the given items.
          *
@@ -178,11 +178,11 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
          * @throws IllegalArgumentException if the name is null.
          */
         @Override
-        public Verification withArrayClaim(String name, Long ... items) throws IllegalArgumentException {
+        public Verification withArrayClaim(String name, Long... items) throws IllegalArgumentException {
             assertNonNull(name);
             requireClaim(name, items);
             return this;
-        }        
+        }
 
         @Override
         public JWTVerifier build() {
@@ -220,7 +220,7 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
             if (!claims.containsKey(PublicClaims.NOT_BEFORE)) {
                 claims.put(PublicClaims.NOT_BEFORE, defaultLeeway);
             }
-            if(ignoreIssuedAt) {
+            if (ignoreIssuedAt) {
                 claims.remove(PublicClaims.ISSUED_AT);
                 return;
             }
@@ -329,18 +329,18 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
             Object[] claimAsObject = claim.as(Object[].class);
 
             // Jackson uses 'natural' mapping which uses Integer if value fits in 32 bits.
-            if(value instanceof Long[]) {
+            if (value instanceof Long[]) {
                 // convert Integers to Longs for comparison with equals
                 claimArr = new ArrayList<>(claimAsObject.length);
-                for(Object cao : claimAsObject) {
-                    if(cao instanceof Integer) {
-                        claimArr.add(((Integer)cao).longValue());
+                for (Object cao : claimAsObject) {
+                    if (cao instanceof Integer) {
+                        claimArr.add(((Integer) cao).longValue());
                     } else {
                         claimArr.add(cao);
                     }
                 }
             } else {
-                claimArr = Arrays.asList(claim.as(Object[].class));
+                claimArr = claim.isNull() ? Collections.emptyList() : Arrays.asList(claim.as(Object[].class));
             }
             List<Object> valueArr = Arrays.asList((Object[]) value);
             isValid = claimArr.containsAll(valueArr);

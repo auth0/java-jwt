@@ -171,6 +171,28 @@ public class JWTVerifierTest {
     }
 
     @Test
+    public void shouldThrowWhenExpectedArrayClaimIsMissing() throws Exception {
+        exception.expect(InvalidClaimException.class);
+        exception.expectMessage("The Claim 'missing' value doesn't match the required one.");
+        String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcnJheSI6WzEsMiwzXX0.wKNFBcMdwIpdF9rXRxvexrzSM6umgSFqRO1WZj992YM";
+        JWTVerifier.init(Algorithm.HMAC256("secret"))
+                .withArrayClaim("missing", 1, 2, 3)
+                .build()
+                .verify(token);
+    }
+
+    @Test
+    public void shouldThrowWhenExpectedClaimIsMissing() throws Exception {
+        exception.expect(InvalidClaimException.class);
+        exception.expectMessage("The Claim 'missing' value doesn't match the required one.");
+        String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGFpbSI6InRleHQifQ.aZ27Ze35VvTqxpaSIK5ZcnYHr4SrvANlUbDR8fw9qsQ";
+        JWTVerifier.init(Algorithm.HMAC256("secret"))
+                .withClaim("missing", "text")
+                .build()
+                .verify(token);
+    }
+
+    @Test
     public void shouldThrowOnInvalidCustomClaimValueOfTypeString() throws Exception {
         exception.expect(InvalidClaimException.class);
         exception.expectMessage("The Claim 'name' value doesn't match the required one.");
@@ -546,8 +568,8 @@ public class JWTVerifierTest {
                 .acceptNotBefore(-1);
     }
 
-// Issued At with future date
-    @Test (expected = InvalidClaimException.class)
+    // Issued At with future date
+    @Test(expected = InvalidClaimException.class)
     public void shouldThrowOnFutureIssuedAt() throws Exception {
         Clock clock = mock(Clock.class);
         when(clock.getToday()).thenReturn(new Date(DATE_TOKEN_MS_VALUE - 1000));
