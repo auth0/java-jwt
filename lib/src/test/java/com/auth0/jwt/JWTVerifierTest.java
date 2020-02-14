@@ -380,6 +380,7 @@ public class JWTVerifierTest {
 
         assertThat(jwt, is(notNullValue()));
     }
+
     // Generic Delta
     @SuppressWarnings("RedundantCast")
     @Test
