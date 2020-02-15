@@ -158,6 +158,13 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
         }
 
         @Override
+        public Verification withClaim(String name, Date value) throws IllegalArgumentException {
+            assertNonNull(name);
+            requireClaim(name, value);
+            return this;
+        }
+
+        @Override
         public Verification withArrayClaim(String name, String... items) throws IllegalArgumentException {
             assertNonNull(name);
             requireClaim(name, items);
@@ -308,6 +315,8 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
             isValid = value.equals(claim.asBoolean());
         } else if (value instanceof Double) {
             isValid = value.equals(claim.asDouble());
+        } else if (value instanceof Date) {
+            isValid = value.equals(claim.asDate());
         } else if (value instanceof Instant) {
             isValid = value.equals(claim.asInstant());
         } else if (value instanceof Object[]) {
