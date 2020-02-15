@@ -14,6 +14,7 @@ import org.apache.commons.codec.binary.Base64;
 
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -146,6 +147,17 @@ public final class JWTCreator {
         }
 
         /**
+         * Add a specific Expires At ("exp") claim to the Payload.
+         *
+         * @param expiresAt the Expires At value.
+         * @return this same Builder instance.
+         */
+        // TODO - Deprecate this method in favor of withExpiresAtInstant
+        public Builder withExpiresAt(Date expiresAt) {
+            return withExpiresAt(expiresAt.toInstant());
+        }
+
+        /**
          * Add a specific Not Before ("nbf") claim to the Payload.
          *
          * @param notBefore the Not Before value.
@@ -157,6 +169,17 @@ public final class JWTCreator {
         }
 
         /**
+         * Add a specific Not Before ("nbf") claim to the Payload.
+         *
+         * @param notBefore the Not Before value.
+         * @return this same Builder instance.
+         */
+        // TODO - Deprecate this method in favor of withNotBeforeInstant
+        public Builder withNotBefore(Date notBefore) {
+            return withNotBefore(notBefore.toInstant());
+        }
+
+        /**
          * Add a specific Issued At ("iat") claim to the Payload.
          *
          * @param issuedAt the Issued At value.
@@ -165,6 +188,17 @@ public final class JWTCreator {
         public Builder withIssuedAt(Instant issuedAt) {
             addClaim(PublicClaims.ISSUED_AT, issuedAt);
             return this;
+        }
+
+        /**
+         * Add a specific Issued At ("iat") claim to the Payload.
+         *
+         * @param issuedAt the Issued At value.
+         * @return this same Builder instance.
+         */
+        // TODO - Deprecate this method in favor of withIssuedAtInstant
+        public Builder withIssuedAt(Date issuedAt) {
+            return withIssuedAt(issuedAt.toInstant());
         }
 
         /**
@@ -260,6 +294,19 @@ public final class JWTCreator {
             assertNonNull(name);
             addClaim(name, value);
             return this;
+        }
+
+        /**
+         * Add a custom Claim value.
+         *
+         * @param name  the Claim's name.
+         * @param value the Claim's value.
+         * @return this same Builder instance.
+         * @throws IllegalArgumentException if the name is null.
+         */
+        // TODO - Deprecate this method in favor of withClaim(String name, Instant value)
+        public Builder withClaim(String name, Date value) throws IllegalArgumentException {
+            return withClaim(name, value.toInstant());
         }
 
         /**

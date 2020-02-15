@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.lang.reflect.Array;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -51,6 +52,12 @@ class JsonNodeClaim implements Claim {
     @Override
     public String asString() {
         return !data.isTextual() ? null : data.asText();
+    }
+
+    @Override
+    public Date asDate() {
+        Instant instant = asInstant();
+        return (instant != null) ? Date.from(instant) : null;
     }
 
     @Override

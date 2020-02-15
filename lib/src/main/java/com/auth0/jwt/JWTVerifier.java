@@ -272,13 +272,13 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
                     assertValidAudienceClaim(jwt.getAudience(), (List<String>) entry.getValue());
                     break;
                 case PublicClaims.EXPIRES_AT:
-                    assertValidInstantClaim(jwt.getExpiresAt(), (Long) entry.getValue(), true);
+                    assertValidInstantClaim(jwt.getExpiresAtInstant(), (Long) entry.getValue(), true);
                     break;
                 case PublicClaims.ISSUED_AT:
-                    assertValidInstantClaim(jwt.getIssuedAt(), (Long) entry.getValue(), false);
+                    assertValidInstantClaim(jwt.getIssuedAtInstant(), (Long) entry.getValue(), false);
                     break;
                 case PublicClaims.NOT_BEFORE:
-                    assertValidInstantClaim(jwt.getNotBefore(), (Long) entry.getValue(), false);
+                    assertValidInstantClaim(jwt.getNotBeforeInstant(), (Long) entry.getValue(), false);
                     break;
                 case PublicClaims.ISSUER:
                     assertValidIssuerClaim(jwt.getIssuer(), (List<String>) entry.getValue());
@@ -328,7 +328,7 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
     }
 
     private void assertValidInstantClaim(Instant claimVal, long leeway, boolean shouldBeFuture) {
-        Instant today = clock.getToday();
+        Instant today = clock.getNow();
         if (shouldBeFuture) {
             assertInstantIsFuture(claimVal, leeway, today);
         } else {

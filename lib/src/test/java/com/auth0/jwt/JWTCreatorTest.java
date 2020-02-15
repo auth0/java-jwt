@@ -228,7 +228,7 @@ public class JWTCreatorTest {
     }
 
     @Test
-    public void shouldAddExpiresAt() {
+    public void shouldAddExpiresAtAsInstant() throws Exception {
         String signed = JWTCreator.init()
                 .withExpiresAt(Instant.ofEpochMilli(1477592000))
                 .sign(Algorithm.HMAC256("secret"));
@@ -238,7 +238,17 @@ public class JWTCreatorTest {
     }
 
     @Test
-    public void shouldAddNotBefore() {
+    public void shouldAddExpiresAtAsDate() throws Exception {
+        String signed = JWTCreator.init()
+                .withExpiresAt(new Date(1477592000))
+                .sign(Algorithm.HMAC256("secret"));
+
+        assertThat(signed, is(notNullValue()));
+        assertThat(TokenUtils.splitToken(signed)[1], is("eyJleHAiOjE0Nzc1OTJ9"));
+    }
+
+    @Test
+    public void shouldAddNotBeforeAsInstant() throws Exception {
         String signed = JWTCreator.init()
                 .withNotBefore(Instant.ofEpochMilli(1477592000))
                 .sign(Algorithm.HMAC256("secret"));
@@ -248,7 +258,17 @@ public class JWTCreatorTest {
     }
 
     @Test
-    public void shouldAddIssuedAt() {
+    public void shouldAddNotBeforeAsDate() throws Exception {
+        String signed = JWTCreator.init()
+                .withNotBefore(new Date(1477592000))
+                .sign(Algorithm.HMAC256("secret"));
+
+        assertThat(signed, is(notNullValue()));
+        assertThat(TokenUtils.splitToken(signed)[1], is("eyJuYmYiOjE0Nzc1OTJ9"));
+    }
+
+    @Test
+    public void shouldAddIssuedAtAsInstant() throws Exception {
         String signed = JWTCreator.init()
                 .withIssuedAt(Instant.ofEpochMilli(1477592000))
                 .sign(Algorithm.HMAC256("secret"));
@@ -258,7 +278,17 @@ public class JWTCreatorTest {
     }
 
     @Test
-    public void shouldAddJWTId() {
+    public void shouldAddIssuedAtAsDate() throws Exception {
+        String signed = JWTCreator.init()
+                .withIssuedAt(new Date(1477592000))
+                .sign(Algorithm.HMAC256("secret"));
+
+        assertThat(signed, is(notNullValue()));
+        assertThat(TokenUtils.splitToken(signed)[1], is("eyJpYXQiOjE0Nzc1OTJ9"));
+    }
+
+    @Test
+    public void shouldAddJWTId() throws Exception {
         String signed = JWTCreator.init()
                 .withJWTId("jwt_id_123")
                 .sign(Algorithm.HMAC256("secret"));
@@ -397,7 +427,19 @@ public class JWTCreatorTest {
     }
 
     @Test
-    public void shouldAcceptCustomArrayClaimOfTypeString() {
+    public void shouldAcceptCustomClaimOfTypeDate() throws Exception {
+        Date date = new Date(1478891521000L);
+        String jwt = JWTCreator.init()
+                .withClaim("name", date)
+                .sign(Algorithm.HMAC256("secret"));
+
+        assertThat(jwt, is(notNullValue()));
+        String[] parts = jwt.split("\\.");
+        assertThat(parts[1], is("eyJuYW1lIjoxNDc4ODkxNTIxfQ"));
+    }
+
+    @Test
+    public void shouldAcceptCustomArrayClaimOfTypeString() throws Exception {
         String jwt = JWTCreator.init()
                 .withArrayClaim("name", new String[]{"text", "123", "true"})
                 .sign(Algorithm.HMAC256("secret"));

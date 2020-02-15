@@ -59,18 +59,33 @@ class PayloadImpl implements Payload, Serializable {
     }
 
     @Override
-    public Instant getExpiresAt() {
+    public Instant getExpiresAtInstant() {
         return expiresAt;
     }
 
     @Override
-    public Instant getNotBefore() {
+    public Instant getNotBeforeInstant() {
         return notBefore;
     }
 
     @Override
-    public Instant getIssuedAt() {
+    public Instant getIssuedAtInstant() {
         return issuedAt;
+    }
+
+    @Override
+    public Date getExpiresAt() {
+        return (expiresAt != null) ? Date.from(expiresAt) : null;
+    }
+
+    @Override
+    public Date getIssuedAt() {
+        return (issuedAt != null) ? Date.from(issuedAt) : null;
+    }
+
+    @Override
+    public Date getNotBefore() {
+        return (notBefore != null) ? Date.from(notBefore) : null;
     }
 
     @Override

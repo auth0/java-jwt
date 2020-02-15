@@ -94,9 +94,12 @@ public class PayloadDeserializerTest {
         assertThat(payload.getIssuer(), is("auth0"));
         assertThat(payload.getSubject(), is("emails"));
         assertThat(payload.getAudience(), is(IsCollectionContaining.hasItem("users")));
-        assertThat(payload.getIssuedAt().toEpochMilli(), is(10101010L * 1000));
-        assertThat(payload.getExpiresAt().toEpochMilli(), is(11111111L * 1000));
-        assertThat(payload.getNotBefore().toEpochMilli(), is(10101011L * 1000));
+        assertThat(payload.getIssuedAt().getTime(), is(10101010L * 1000));
+        assertThat(payload.getExpiresAt().getTime(), is(11111111L * 1000));
+        assertThat(payload.getNotBefore().getTime(), is(10101011L * 1000));
+        assertThat(payload.getIssuedAtInstant().toEpochMilli(), is(10101010L * 1000));
+        assertThat(payload.getExpiresAtInstant().toEpochMilli(), is(11111111L * 1000));
+        assertThat(payload.getNotBeforeInstant().toEpochMilli(), is(10101011L * 1000));
         assertThat(payload.getId(), is("idid"));
 
         assertThat(payload.getClaim("roles").asString(), is("admin"));

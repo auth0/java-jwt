@@ -12,6 +12,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import java.sql.Date;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.HashMap;
@@ -98,7 +99,8 @@ public class PayloadImplTest {
     @Test
     public void shouldGetExpiresAt() {
         assertThat(payload, is(notNullValue()));
-        assertThat(payload.getExpiresAt(), is(expiresAt));
+        assertThat(payload.getExpiresAt(), is(Date.from(expiresAt)));
+        assertThat(payload.getExpiresAtInstant(), is(expiresAt));
     }
 
     @Test
@@ -106,12 +108,14 @@ public class PayloadImplTest {
         PayloadImpl payload = new PayloadImpl(null, null, null, null, null, null, null, null, objectReader);
         assertThat(payload, is(notNullValue()));
         assertThat(payload.getExpiresAt(), is(nullValue()));
+        assertThat(payload.getExpiresAtInstant(), is(nullValue()));
     }
 
     @Test
     public void shouldGetNotBefore() {
         assertThat(payload, is(notNullValue()));
-        assertThat(payload.getNotBefore(), is(notBefore));
+        assertThat(payload.getNotBefore(), is(Date.from(notBefore)));
+        assertThat(payload.getNotBeforeInstant(), is(notBefore));
     }
 
     @Test
@@ -119,12 +123,14 @@ public class PayloadImplTest {
         PayloadImpl payload = new PayloadImpl(null, null, null, null, null, null, null, null, objectReader);
         assertThat(payload, is(notNullValue()));
         assertThat(payload.getNotBefore(), is(nullValue()));
+        assertThat(payload.getNotBeforeInstant(), is(nullValue()));
     }
 
     @Test
     public void shouldGetIssuedAt() {
         assertThat(payload, is(notNullValue()));
-        assertThat(payload.getIssuedAt(), is(issuedAt));
+        assertThat(payload.getIssuedAt(), is(Date.from(issuedAt)));
+        assertThat(payload.getIssuedAtInstant(), is(issuedAt));
     }
 
     @Test
@@ -132,6 +138,7 @@ public class PayloadImplTest {
         PayloadImpl payload = new PayloadImpl(null, null, null, null, null, null, null, null, objectReader);
         assertThat(payload, is(notNullValue()));
         assertThat(payload.getIssuedAt(), is(nullValue()));
+        assertThat(payload.getIssuedAtInstant(), is(nullValue()));
     }
 
     @Test
