@@ -356,7 +356,7 @@ public final class JWTCreator {
          * 
          * Accepted nested types are {@linkplain Map} and {@linkplain List} with basic types
          * {@linkplain Boolean}, {@linkplain Integer}, {@linkplain Long}, {@linkplain Double},
-         * {@linkplain String} and {@linkplain Instant}. {@linkplain Map}s cannot contain null keys or values.
+         * {@linkplain String}, {@linkplain Instant}, and {@linkplain Date}. {@linkplain Map}s cannot contain null keys or values.
          * {@linkplain List}s can contain null elements.
          *
          * @param name  the Claim's name.
@@ -379,7 +379,7 @@ public final class JWTCreator {
          *
          * Accepted nested types are {@linkplain Map} and {@linkplain List} with basic types
          * {@linkplain Boolean}, {@linkplain Integer}, {@linkplain Long}, {@linkplain Double},
-         * {@linkplain String} and {@linkplain Instant}. {@linkplain Map}s cannot contain null keys or values.
+         * {@linkplain String}, {@linkplain Instant}, and {@linkplain Date}. {@linkplain Map}s cannot contain null keys or values.
          * {@linkplain List}s can contain null elements.
          *
          * @param name  the Claim's name.
@@ -438,7 +438,7 @@ public final class JWTCreator {
             if(c.isArray()) {
                 return c == Integer[].class || c == Long[].class || c == String[].class;
             }
-            return c == String.class || c == Integer.class || c == Long.class || c == Double.class || c == Instant.class || c == Boolean.class;
+            return c == String.class || c == Integer.class || c == Long.class || c == Double.class || c == Date.class || c == Instant.class || c == Boolean.class;
         }
 
         /**

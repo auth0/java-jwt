@@ -507,6 +507,7 @@ public class JWTCreatorTest {
         data.put("integer", 1);
         data.put("long", Long.MAX_VALUE);
         data.put("double", 123.456d);
+        data.put("date", new Date(123L));
         data.put("instant", Instant.ofEpochSecond(123L));
         data.put("boolean", true);
 
@@ -519,6 +520,7 @@ public class JWTCreatorTest {
 
         Map<String, Object> sub = new HashMap<>();
         sub.put("subKey", "subValue");
+        sub.put("subDate", new Date(567L));
         sub.put("subInstant", Instant.ofEpochSecond(567L));
         data.put("map", sub);
 
@@ -537,6 +539,7 @@ public class JWTCreatorTest {
         assertThat(map.get("integer"), is(1));
         assertThat(map.get("long"), is(Long.MAX_VALUE));
         assertThat(map.get("double"), is(123.456d));
+        assertThat(map.get("date"), is(123));
         assertThat(map.get("instant"), is(123));
         assertThat(map.get("boolean"), is(true));
 
@@ -551,6 +554,7 @@ public class JWTCreatorTest {
         // nested map
         Map nested = (Map) map.get("map");
         assertThat(nested.get("subKey"), is("subValue"));
+        assertThat(nested.get("subDate"), is(567));
         assertThat(nested.get("subInstant"), is(567));
     }
 
@@ -564,6 +568,7 @@ public class JWTCreatorTest {
         data.add(1);
         data.add(Long.MAX_VALUE);
         data.add(123.456d);
+        data.add(new Date(123L));
         data.add(Instant.ofEpochSecond(123L));
         data.add(true);
         
@@ -576,6 +581,8 @@ public class JWTCreatorTest {
 
         Map<String, Object> sub = new HashMap<>();
         sub.put("subKey", "subValue");
+        sub.put("subDate", new Date(567L));
+        sub.put("subInstant", Instant.ofEpochSecond(567L));
 
         data.add(sub);
 
@@ -595,17 +602,22 @@ public class JWTCreatorTest {
         assertThat(list.get(2), is(Long.MAX_VALUE));
         assertThat(list.get(3), is(123.456d));
         assertThat(list.get(4), is(123));
-        assertThat(list.get(5), is(true));
+        assertThat(list.get(5), is(123));
+        assertThat(list.get(6), is(true));
         
         // array types
-        assertThat(list.get(6), is(Arrays.asList(3, 5)));
-        assertThat(list.get(7), is(Arrays.asList(Long.MAX_VALUE, Long.MIN_VALUE)));
-        assertThat(list.get(8), is(Arrays.asList("string")));
+        assertThat(list.get(7), is(Arrays.asList(new Integer[]{3, 5})));
+        assertThat(list.get(8), is(Arrays.asList(new Long[]{Long.MAX_VALUE, Long.MIN_VALUE})));
+        assertThat(list.get(9), is(Arrays.asList(new String[]{"string"})));
 
         // list
-        assertThat(list.get(9), is(Arrays.asList("a", "b", "c")));
-        assertThat(list.get(10), is(sub));
+        assertThat(list.get(10), is(Arrays.asList("a", "b", "c")));
 
+        // nested map
+        Map nested = (Map) list.get(11);
+        assertThat(nested.get("subKey"), is("subValue"));
+        assertThat(nested.get("subDate"), is(567));
+        assertThat(nested.get("subInstant"), is(567));
     }
 
     @Test
