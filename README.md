@@ -224,7 +224,7 @@ try {
 }
 ```
 
-If the token has an invalid syntax or the header or payload are invalid JSON objects, a `JWTDecodeException` will be thrown.
+If the token has an invalid syntax or the `Header` or `Payload are invalid JSON objects, a `JWTDecodeException` will be thrown.
 
 ### Header Claims
 
