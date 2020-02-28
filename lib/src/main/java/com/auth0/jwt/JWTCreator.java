@@ -24,7 +24,6 @@ import java.util.Map.Entry;
  */
 @SuppressWarnings("WeakerAccess")
 public final class JWTCreator {
-
     private final Algorithm algorithm;
     private final String headerJson;
     private final String payloadJson;
@@ -341,7 +340,6 @@ public final class JWTCreator {
          * @return this same Builder instance.
          * @throws IllegalArgumentException if the name is null, or if the list contents does not validate.
          */
-        
         public Builder withClaim(String name, List<?> list) throws IllegalArgumentException {
             assertNonNull(name);
             // validate list contents

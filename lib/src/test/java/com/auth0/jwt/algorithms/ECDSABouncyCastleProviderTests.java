@@ -32,7 +32,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class ECDSABouncyCastleProviderTests {
-
     private static final String PRIVATE_KEY_FILE_256 = "src/test/resources/ec256-key-private.pem";
     private static final String PUBLIC_KEY_FILE_256 = "src/test/resources/ec256-key-public.pem";
     private static final String INVALID_PUBLIC_KEY_FILE_256 = "src/test/resources/ec256-key-public-invalid.pem";
@@ -56,18 +55,18 @@ public class ECDSABouncyCastleProviderTests {
     //These tests add and use the BouncyCastle SecurityProvider to handle ECDSA algorithms
 
     @BeforeClass
-    public static void setUp() throws Exception {
+    public static void setUp() {
         //Set BC as the preferred bcProvider
         Security.insertProviderAt(bcProvider, 1);
     }
 
     @AfterClass
-    public static void tearDown() throws Exception {
+    public static void tearDown() {
         Security.removeProvider(bcProvider.getName());
     }
 
     @Test
-    public void shouldPreferBouncyCastleProvider() throws Exception {
+    public void shouldPreferBouncyCastleProvider() {
         assertThat(Security.getProviders()[0], is(equalTo(bcProvider)));
     }
 
@@ -124,7 +123,7 @@ public class ECDSABouncyCastleProviderTests {
     }
 
     @Test
-    public void shouldFailECDSA256VerificationWhenProvidedPublicKeyIsNull() throws Exception {
+    public void shouldFailECDSA256VerificationWhenProvidedPublicKeyIsNull() {
         exception.expect(SignatureVerificationException.class);
         exception.expectMessage("The Token's Signature resulted invalid when verified using the Algorithm: SHA256withECDSA");
         exception.expectCause(isA(IllegalStateException.class));
@@ -249,7 +248,7 @@ public class ECDSABouncyCastleProviderTests {
     }
 
     @Test
-    public void shouldFailECDSA384VerificationWhenProvidedPublicKeyIsNull() throws Exception {
+    public void shouldFailECDSA384VerificationWhenProvidedPublicKeyIsNull() {
         exception.expect(SignatureVerificationException.class);
         exception.expectMessage("The Token's Signature resulted invalid when verified using the Algorithm: SHA384withECDSA");
         exception.expectCause(isA(IllegalStateException.class));
@@ -374,7 +373,7 @@ public class ECDSABouncyCastleProviderTests {
     }
 
     @Test
-    public void shouldFailECDSA512VerificationWhenProvidedPublicKeyIsNull() throws Exception {
+    public void shouldFailECDSA512VerificationWhenProvidedPublicKeyIsNull() {
         exception.expect(SignatureVerificationException.class);
         exception.expectMessage("The Token's Signature resulted invalid when verified using the Algorithm: SHA512withECDSA");
         exception.expectCause(isA(IllegalStateException.class));
@@ -562,7 +561,7 @@ public class ECDSABouncyCastleProviderTests {
     }
 
     @Test
-    public void shouldFailOnECDSA256SigningWhenProvidedPrivateKeyIsNull() throws Exception {
+    public void shouldFailOnECDSA256SigningWhenProvidedPrivateKeyIsNull() {
         exception.expect(SignatureGenerationException.class);
         exception.expectMessage("The Token's Signature couldn't be generated when signing using the Algorithm: SHA256withECDSA");
         exception.expectCause(isA(IllegalStateException.class));
@@ -620,7 +619,7 @@ public class ECDSABouncyCastleProviderTests {
     }
 
     @Test
-    public void shouldFailOnECDSA384SigningWhenProvidedPrivateKeyIsNull() throws Exception {
+    public void shouldFailOnECDSA384SigningWhenProvidedPrivateKeyIsNull() {
         exception.expect(SignatureGenerationException.class);
         exception.expectMessage("The Token's Signature couldn't be generated when signing using the Algorithm: SHA384withECDSA");
         exception.expectCause(isA(IllegalStateException.class));
@@ -679,7 +678,7 @@ public class ECDSABouncyCastleProviderTests {
     }
 
     @Test
-    public void shouldFailOnECDSA512SigningWhenProvidedPrivateKeyIsNull() throws Exception {
+    public void shouldFailOnECDSA512SigningWhenProvidedPrivateKeyIsNull() {
         exception.expect(SignatureGenerationException.class);
         exception.expectMessage("The Token's Signature couldn't be generated when signing using the Algorithm: SHA512withECDSA");
         exception.expectCause(isA(IllegalStateException.class));
@@ -754,7 +753,7 @@ public class ECDSABouncyCastleProviderTests {
     }
 
     @Test
-    public void shouldReturnNullSigningKeyIdIfCreatedWithDefaultProvider() throws Exception {
+    public void shouldReturnNullSigningKeyIdIfCreatedWithDefaultProvider() {
         ECPublicKey publicKey = mock(ECPublicKey.class);
         ECPrivateKey privateKey = mock(ECPrivateKey.class);
         ECDSAKeyProvider provider = ECDSAAlgorithm.providerForKeys(publicKey, privateKey);
@@ -764,7 +763,7 @@ public class ECDSABouncyCastleProviderTests {
     }
 
     @Test
-    public void shouldReturnSigningKeyIdFromProvider() throws Exception {
+    public void shouldReturnSigningKeyIdFromProvider() {
         ECDSAKeyProvider provider = mock(ECDSAKeyProvider.class);
         when(provider.getPrivateKeyId()).thenReturn("keyId");
         Algorithm algorithm = new ECDSAAlgorithm("some-alg", "some-algorithm", 32, provider);
@@ -789,7 +788,7 @@ public class ECDSABouncyCastleProviderTests {
     public void shouldThrowOnDERSignatureConversionIfDoesNotHaveExpectedLength() throws Exception {
         ECDSAAlgorithm algorithm256 = (ECDSAAlgorithm) Algorithm.ECDSA256((ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC"), (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_256, "EC"));
         byte[] derSignature = createDERSignature(32, false, false);
-        int received = (int) derSignature[1];
+        int received = derSignature[1];
         received--;
         derSignature[1] = (byte) received;
         exception.expect(SignatureException.class);

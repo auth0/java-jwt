@@ -8,7 +8,6 @@ import java.util.Map;
  * The Payload class represents the 2nd part of the JWT, where the Payload value is hold.
  */
 public interface Payload {
-
     /**
      * Get the value of the "iss" claim, or null if it's not available.
      *

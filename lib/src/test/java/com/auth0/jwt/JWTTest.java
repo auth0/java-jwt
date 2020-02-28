@@ -21,7 +21,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class JWTTest {
-
     private static final String PUBLIC_KEY_FILE_RSA = "src/test/resources/rsa-public.pem";
     private static final String PRIVATE_KEY_FILE_RSA = "src/test/resources/rsa-private.pem";
 
@@ -39,7 +38,7 @@ public class JWTTest {
     // Decode
 
     @Test
-    public void shouldDecodeAStringToken() throws Exception {
+    public void shouldDecodeAStringToken() {
         String token = "eyJhbGciOiJIUzI1NiIsImN0eSI6IkpXVCJ9.eyJpc3MiOiJhdXRoMCJ9.mZ0m_N1J4PgeqWmi903JuUoDRZDBPB7HwkS4nVyWH1M";
         DecodedJWT jwt = JWT.decode(token);
 
@@ -47,7 +46,7 @@ public class JWTTest {
     }
 
     @Test
-    public void shouldDecodeAStringTokenUsingInstance() throws Exception {
+    public void shouldDecodeAStringTokenUsingInstance() {
         String token = "eyJhbGciOiJIUzI1NiIsImN0eSI6IkpXVCJ9.eyJpc3MiOiJhdXRoMCJ9.mZ0m_N1J4PgeqWmi903JuUoDRZDBPB7HwkS4nVyWH1M";
         JWT jwt = new JWT();
         DecodedJWT decodedJWT = jwt.decodeJwt(token);
@@ -57,7 +56,7 @@ public class JWTTest {
 
     // getToken
     @Test
-    public void shouldGetStringToken() throws Exception {
+    public void shouldGetStringToken() {
         DecodedJWT jwt = JWT.decode("eyJhbGciOiJIUzI1NiJ9.e30.XmNK3GpH3Ys_7wsYBfq4C3M6goz71I7dTgUkuIa5lyQ");
         assertThat(jwt, is(notNullValue()));
         assertThat(jwt.getToken(), is(notNullValue()));
@@ -66,7 +65,7 @@ public class JWTTest {
 
     // getToken
     @Test
-    public void shouldGetStringTokenUsingInstance() throws Exception {
+    public void shouldGetStringTokenUsingInstance() {
         JWT jwt = new JWT();
         DecodedJWT decodedJWT = jwt.decodeJwt("eyJhbGciOiJIUzI1NiJ9.e30.XmNK3GpH3Ys_7wsYBfq4C3M6goz71I7dTgUkuIa5lyQ");
         assertThat(decodedJWT, is(notNullValue()));
@@ -89,7 +88,7 @@ public class JWTTest {
     }
 
     @Test
-    public void shouldAcceptNoneAlgorithm() throws Exception {
+    public void shouldAcceptNoneAlgorithm() {
         String token = "eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJpc3MiOiJhdXRoMCJ9.";
         DecodedJWT jwt = JWT.require(Algorithm.none())
                 .build()
@@ -99,7 +98,7 @@ public class JWTTest {
     }
 
     @Test
-    public void shouldAcceptHMAC256Algorithm() throws Exception {
+    public void shouldAcceptHMAC256Algorithm() {
         String token = "eyJhbGciOiJIUzI1NiIsImN0eSI6IkpXVCJ9.eyJpc3MiOiJhdXRoMCJ9.mZ0m_N1J4PgeqWmi903JuUoDRZDBPB7HwkS4nVyWH1M";
         DecodedJWT jwt = JWT.require(Algorithm.HMAC256("secret"))
                 .build()
@@ -109,7 +108,7 @@ public class JWTTest {
     }
 
     @Test
-    public void shouldAcceptHMAC384Algorithm() throws Exception {
+    public void shouldAcceptHMAC384Algorithm() {
         String token = "eyJhbGciOiJIUzM4NCIsImN0eSI6IkpXVCJ9.eyJpc3MiOiJhdXRoMCJ9.uztpK_wUMYJhrRv8SV-1LU4aPnwl-EM1q-wJnqgyb5DHoDteP6lN_gE1xnZJH5vw";
         DecodedJWT jwt = JWT.require(Algorithm.HMAC384("secret"))
                 .build()
@@ -119,7 +118,7 @@ public class JWTTest {
     }
 
     @Test
-    public void shouldAcceptHMAC512Algorithm() throws Exception {
+    public void shouldAcceptHMAC512Algorithm() {
         String token = "eyJhbGciOiJIUzUxMiIsImN0eSI6IkpXVCJ9.eyJpc3MiOiJhdXRoMCJ9.VUo2Z9SWDV-XcOc_Hr6Lff3vl7L9e5Vb8ThXpmGDFjHxe3Dr1ZBmUChYF-xVA7cAdX1P_D4ZCUcsv3IefpVaJw";
         DecodedJWT jwt = JWT.require(Algorithm.HMAC512("secret"))
                 .build()
@@ -197,11 +196,10 @@ public class JWTTest {
         assertThat(jwt, is(notNullValue()));
     }
 
-
     // Public Claims
 
     @Test
-    public void shouldGetAlgorithm() throws Exception {
+    public void shouldGetAlgorithm() {
         String token = "eyJhbGciOiJIUzI1NiJ9.e30.XmNK3GpH3Ys_7wsYBfq4C3M6goz71I7dTgUkuIa5lyQ";
         DecodedJWT jwt = JWT.require(Algorithm.HMAC256("secret"))
                 .build()
@@ -212,7 +210,7 @@ public class JWTTest {
     }
 
     @Test
-    public void shouldGetSignature() throws Exception {
+    public void shouldGetSignature() {
         String token = "eyJhbGciOiJIUzI1NiJ9.e30.XmNK3GpH3Ys_7wsYBfq4C3M6goz71I7dTgUkuIa5lyQ";
         DecodedJWT jwt = JWT.require(Algorithm.HMAC256("secret"))
                 .build()
@@ -223,7 +221,7 @@ public class JWTTest {
     }
 
     @Test
-    public void shouldGetIssuer() throws Exception {
+    public void shouldGetIssuer() {
         String token = "eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJKb2huIERvZSJ9.SgXosfRR_IwCgHq5lF3tlM-JHtpucWCRSaVuoHTbWbQ";
         DecodedJWT jwt = JWT.require(Algorithm.HMAC256("secret"))
                 .build()
@@ -234,7 +232,7 @@ public class JWTTest {
     }
 
     @Test
-    public void shouldGetSubject() throws Exception {
+    public void shouldGetSubject() {
         String token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJUb2szbnMifQ.RudAxkslimoOY3BLl2Ghny3BrUKu9I1ZrXzCZGDJtNs";
         DecodedJWT jwt = JWT.require(Algorithm.HMAC256("secret"))
                 .build()
@@ -245,7 +243,7 @@ public class JWTTest {
     }
 
     @Test
-    public void shouldGetArrayAudience() throws Exception {
+    public void shouldGetArrayAudience() {
         String token = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOlsiSG9wZSIsIlRyYXZpcyIsIlNvbG9tb24iXX0.Tm4W8WnfPjlmHSmKFakdij0on2rWPETpoM7Sh0u6-S4";
         DecodedJWT jwt = JWT.require(Algorithm.HMAC256("secret"))
                 .build()
@@ -257,7 +255,7 @@ public class JWTTest {
     }
 
     @Test
-    public void shouldGetStringAudience() throws Exception {
+    public void shouldGetStringAudience() {
         String token = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJKYWNrIFJleWVzIn0.a4I9BBhPt1OB1GW67g2P1bEHgi6zgOjGUL4LvhE9Dgc";
         DecodedJWT jwt = JWT.require(Algorithm.HMAC256("secret"))
                 .build()
@@ -269,7 +267,7 @@ public class JWTTest {
     }
 
     @Test
-    public void shouldGetExpirationTime() throws Exception {
+    public void shouldGetExpirationTime() {
         Date expectedDate = new Date(1477592 * 1000);
         Clock clock = mock(Clock.class);
         when(clock.getToday()).thenReturn(expectedDate);
@@ -287,7 +285,7 @@ public class JWTTest {
     }
 
     @Test
-    public void shouldGetNotBefore() throws Exception {
+    public void shouldGetNotBefore() {
         Date expectedDate = new Date(1477592 * 1000);
         Clock clock = mock(Clock.class);
         when(clock.getToday()).thenReturn(expectedDate);
@@ -305,7 +303,7 @@ public class JWTTest {
     }
 
     @Test
-    public void shouldGetIssuedAt() throws Exception {
+    public void shouldGetIssuedAt() {
         Date expectedDate = new Date(1477592 * 1000);
         Clock clock = mock(Clock.class);
         when(clock.getToday()).thenReturn(expectedDate);
@@ -323,7 +321,7 @@ public class JWTTest {
     }
 
     @Test
-    public void shouldGetId() throws Exception {
+    public void shouldGetId() {
         String token = "eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiIxMjM0NTY3ODkwIn0.m3zgEfVUFOd-CvL3xG5BuOWLzb0zMQZCqiVNQQOPOvA";
         JWTVerifier.BaseVerification verification = (JWTVerifier.BaseVerification) JWT.require(Algorithm.HMAC256("secret"));
         DecodedJWT jwt = verification
@@ -335,7 +333,7 @@ public class JWTTest {
     }
 
     @Test
-    public void shouldGetContentType() throws Exception {
+    public void shouldGetContentType() {
         String token = "eyJhbGciOiJIUzI1NiIsImN0eSI6ImF3ZXNvbWUifQ.e30.AIm-pJDOaAyct9qKMlN-lQieqNDqc3d4erqUZc5SHAs";
         DecodedJWT jwt = JWT.require(Algorithm.HMAC256("secret"))
                 .build()
@@ -346,7 +344,7 @@ public class JWTTest {
     }
 
     @Test
-    public void shouldGetType() throws Exception {
+    public void shouldGetType() {
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXUyJ9.e30.WdFmrzx8b9v_a-r6EHC2PTAaWywgm_8LiP8RBRhYwkI";
         DecodedJWT jwt = JWT.require(Algorithm.HMAC256("secret"))
                 .build()
@@ -357,7 +355,7 @@ public class JWTTest {
     }
 
     @Test
-    public void shouldGetKeyId() throws Exception {
+    public void shouldGetKeyId() {
         String token = "eyJhbGciOiJIUzI1NiIsImtpZCI6ImtleSJ9.e30.von1Vt9tq9cn5ZYdX1f4cf2EE7fUvb5BCBlKOTm9YWs";
         DecodedJWT jwt = JWT.require(Algorithm.HMAC256("secret"))
                 .build()
@@ -368,7 +366,7 @@ public class JWTTest {
     }
 
     @Test
-    public void shouldGetCustomClaims() throws Exception {
+    public void shouldGetCustomClaims() {
         String token = "eyJhbGciOiJIUzI1NiIsImlzQWRtaW4iOnRydWV9.eyJpc0FkbWluIjoibm9wZSJ9.YDKBAgUDbh0PkhioDcLNzdQ8c2Gdf_yS6zdEtJQS3F0";
         DecodedJWT jwt = JWT.require(Algorithm.HMAC256("secret"))
                 .build()
@@ -384,7 +382,7 @@ public class JWTTest {
     // Sign
 
     @Test
-    public void shouldCreateAnEmptyHMAC256SignedToken() throws Exception {
+    public void shouldCreateAnEmptyHMAC256SignedToken() {
         String signed = JWT.create().sign(Algorithm.HMAC256("secret"));
         assertThat(signed, is(notNullValue()));
 
@@ -400,7 +398,7 @@ public class JWTTest {
     }
 
     @Test
-    public void shouldCreateAnEmptyHMAC384SignedToken() throws Exception {
+    public void shouldCreateAnEmptyHMAC384SignedToken() {
         String signed = JWT.create().sign(Algorithm.HMAC384("secret"));
         assertThat(signed, is(notNullValue()));
 
@@ -416,7 +414,7 @@ public class JWTTest {
     }
 
     @Test
-    public void shouldCreateAnEmptyHMAC512SignedToken() throws Exception {
+    public void shouldCreateAnEmptyHMAC512SignedToken() {
         String signed = JWT.create().sign(Algorithm.HMAC512("secret"));
         assertThat(signed, is(notNullValue()));
 

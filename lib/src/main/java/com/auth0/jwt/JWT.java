@@ -8,7 +8,6 @@ import com.auth0.jwt.interfaces.Verification;
 
 @SuppressWarnings("WeakerAccess")
 public class JWT {
-
     private final JWTParser parser;
 
     /**

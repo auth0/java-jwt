@@ -223,7 +223,6 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
         }
     }
 
-
     /**
      * Perform the verification against the given Token, using any previous configured options.
      *

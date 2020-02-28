@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.util.*;
 
 class PayloadDeserializer extends StdDeserializer<Payload> {
-
     private final ObjectReader objectReader;
     
     PayloadDeserializer(ObjectReader reader) {

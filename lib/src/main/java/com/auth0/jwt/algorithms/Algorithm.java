@@ -6,7 +6,6 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.ECDSAKeyProvider;
 import com.auth0.jwt.interfaces.RSAKeyProvider;
 
-import java.io.ByteArrayOutputStream;
 import java.security.interfaces.*;
 
 /**
@@ -14,7 +13,6 @@ import java.security.interfaces.*;
  */
 @SuppressWarnings("WeakerAccess")
 public abstract class Algorithm {
-
     private final String name;
     private final String description;
 
@@ -392,5 +390,4 @@ public abstract class Algorithm {
     
     @Deprecated
     public abstract byte[] sign(byte[] contentBytes) throws SignatureGenerationException;
-
 }

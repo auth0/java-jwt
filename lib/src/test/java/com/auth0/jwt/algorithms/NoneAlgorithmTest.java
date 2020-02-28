@@ -12,19 +12,18 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 public class NoneAlgorithmTest {
-
     @Rule
     public ExpectedException exception = ExpectedException.none();
 
     @Test
-    public void shouldPassNoneVerification() throws Exception {
+    public void shouldPassNoneVerification() {
         Algorithm algorithm = Algorithm.none();
         String jwt = "eyJhbGciOiJub25lIiwiY3R5IjoiSldUIn0.eyJpc3MiOiJhdXRoMCJ9.";
         algorithm.verify(JWT.decode(jwt));
     }
 
     @Test
-    public void shouldFailNoneVerificationWhenTokenHasTwoParts() throws Exception {
+    public void shouldFailNoneVerificationWhenTokenHasTwoParts() {
         exception.expect(JWTDecodeException.class);
         exception.expectMessage("The token was expected to have 3 parts, but got 2.");
         String jwt = "eyJhbGciOiJub25lIiwiY3R5IjoiSldUIn0.eyJpc3MiOiJhdXRoMCJ9";
@@ -33,7 +32,7 @@ public class NoneAlgorithmTest {
     }
 
     @Test
-    public void shouldFailNoneVerificationWhenSignatureIsPresent() throws Exception {
+    public void shouldFailNoneVerificationWhenSignatureIsPresent() {
         exception.expect(SignatureVerificationException.class);
         exception.expectMessage("The Token's Signature resulted invalid when verified using the Algorithm: none");
         String jwt = "eyJhbGciOiJub25lIiwiY3R5IjoiSldUIn0.eyJpc3MiOiJhdXRoMCJ9.Ox-WRXRaGAuWt2KfPvWiGcCrPqZtbp_4OnQzZXaTfss";
@@ -42,7 +41,7 @@ public class NoneAlgorithmTest {
     }
 
     @Test
-    public void shouldReturnNullSigningKeyId() throws Exception {
+    public void shouldReturnNullSigningKeyId() {
         assertThat(Algorithm.none().getSigningKeyId(), is(nullValue()));
     }
 }

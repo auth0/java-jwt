@@ -68,5 +68,4 @@ public class PemUtils {
         byte[] bytes = PemUtils.parsePEMFile(new File(filepath));
         return PemUtils.getPrivateKey(bytes, algorithm);
     }
-
 }

@@ -19,7 +19,6 @@ import java.util.Map;
  */
 @SuppressWarnings("WeakerAccess")
 final class JWTDecoder implements DecodedJWT, Serializable {
-
     private static final long serialVersionUID = 1873362438023312895L;
 
     private final String[] parts;

@@ -36,7 +36,6 @@ import static org.mockito.Mockito.when;
 
 @SuppressWarnings("deprecation")
 public class ECDSAAlgorithmTest {
-
     private static final String PRIVATE_KEY_FILE_256 = "src/test/resources/ec256-key-private.pem";
     private static final String PUBLIC_KEY_FILE_256 = "src/test/resources/ec256-key-public.pem";
     private static final String INVALID_PUBLIC_KEY_FILE_256 = "src/test/resources/ec256-key-public-invalid.pem";
@@ -110,7 +109,7 @@ public class ECDSAAlgorithmTest {
     }
 
     @Test
-    public void shouldFailECDSA256VerificationWhenProvidedPublicKeyIsNull() throws Exception {
+    public void shouldFailECDSA256VerificationWhenProvidedPublicKeyIsNull() {
         exception.expect(SignatureVerificationException.class);
         exception.expectMessage("The Token's Signature resulted invalid when verified using the Algorithm: SHA256withECDSA");
         exception.expectCause(isA(IllegalStateException.class));
@@ -235,7 +234,7 @@ public class ECDSAAlgorithmTest {
     }
 
     @Test
-    public void shouldFailECDSA384VerificationWhenProvidedPublicKeyIsNull() throws Exception {
+    public void shouldFailECDSA384VerificationWhenProvidedPublicKeyIsNull() {
         exception.expect(SignatureVerificationException.class);
         exception.expectMessage("The Token's Signature resulted invalid when verified using the Algorithm: SHA384withECDSA");
         exception.expectCause(isA(IllegalStateException.class));
@@ -360,7 +359,7 @@ public class ECDSAAlgorithmTest {
     }
 
     @Test
-    public void shouldFailECDSA512VerificationWhenProvidedPublicKeyIsNull() throws Exception {
+    public void shouldFailECDSA512VerificationWhenProvidedPublicKeyIsNull() {
         exception.expect(SignatureVerificationException.class);
         exception.expectMessage("The Token's Signature resulted invalid when verified using the Algorithm: SHA512withECDSA");
         exception.expectCause(isA(IllegalStateException.class));
@@ -514,8 +513,6 @@ public class ECDSAAlgorithmTest {
     private static final String auth0IssPayload = "eyJpc3MiOiJhdXRoMCJ9";
 
     private static final byte[] ES256HeaderBytes = ES256Header.getBytes(StandardCharsets.UTF_8);
-    private static final byte[] ES384HeaderBytes = ES384Header.getBytes(StandardCharsets.UTF_8);
-    private static final byte[] ES512HeaderBytes = ES512Header.getBytes(StandardCharsets.UTF_8);
     private static final byte[] auth0IssPayloadBytes = auth0IssPayload.getBytes(StandardCharsets.UTF_8);
 
 
@@ -556,7 +553,7 @@ public class ECDSAAlgorithmTest {
     }
 
     @Test
-    public void shouldFailOnECDSA256SigningWhenProvidedPrivateKeyIsNull() throws Exception {
+    public void shouldFailOnECDSA256SigningWhenProvidedPrivateKeyIsNull() {
         exception.expect(SignatureGenerationException.class);
         exception.expectMessage("The Token's Signature couldn't be generated when signing using the Algorithm: SHA256withECDSA");
         exception.expectCause(isA(IllegalStateException.class));
@@ -614,7 +611,7 @@ public class ECDSAAlgorithmTest {
     }
 
     @Test
-    public void shouldFailOnECDSA384SigningWhenProvidedPrivateKeyIsNull() throws Exception {
+    public void shouldFailOnECDSA384SigningWhenProvidedPrivateKeyIsNull() {
         exception.expect(SignatureGenerationException.class);
         exception.expectMessage("The Token's Signature couldn't be generated when signing using the Algorithm: SHA384withECDSA");
         exception.expectCause(isA(IllegalStateException.class));
@@ -675,7 +672,7 @@ public class ECDSAAlgorithmTest {
     }
 
     @Test
-    public void shouldFailOnECDSA512SigningWhenProvidedPrivateKeyIsNull() throws Exception {
+    public void shouldFailOnECDSA512SigningWhenProvidedPrivateKeyIsNull() {
         exception.expect(SignatureGenerationException.class);
         exception.expectMessage("The Token's Signature couldn't be generated when signing using the Algorithm: SHA512withECDSA");
         exception.expectCause(isA(IllegalStateException.class));
@@ -750,7 +747,7 @@ public class ECDSAAlgorithmTest {
     }
 
     @Test
-    public void shouldReturnNullSigningKeyIdIfCreatedWithDefaultProvider() throws Exception {
+    public void shouldReturnNullSigningKeyIdIfCreatedWithDefaultProvider() {
         ECPublicKey publicKey = mock(ECPublicKey.class);
         ECPrivateKey privateKey = mock(ECPrivateKey.class);
         ECDSAKeyProvider provider = ECDSAAlgorithm.providerForKeys(publicKey, privateKey);
@@ -760,7 +757,7 @@ public class ECDSAAlgorithmTest {
     }
 
     @Test
-    public void shouldReturnSigningKeyIdFromProvider() throws Exception {
+    public void shouldReturnSigningKeyIdFromProvider() {
         ECDSAKeyProvider provider = mock(ECDSAKeyProvider.class);
         when(provider.getPrivateKeyId()).thenReturn("keyId");
         Algorithm algorithm = new ECDSAAlgorithm("some-alg", "some-algorithm", 32, provider);
@@ -785,7 +782,7 @@ public class ECDSAAlgorithmTest {
     public void shouldThrowOnDERSignatureConversionIfDoesNotHaveExpectedLength() throws Exception {
         ECDSAAlgorithm algorithm256 = (ECDSAAlgorithm) Algorithm.ECDSA256((ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC"), (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_256, "EC"));
         byte[] derSignature = createDERSignature(32, false, false);
-        int received = (int) derSignature[1];
+        int received = derSignature[1];
         received--;
         derSignature[1] = (byte) received;
         exception.expect(SignatureException.class);
@@ -1187,5 +1184,4 @@ public class ECDSAAlgorithmTest {
         Algorithm algorithm = Algorithm.ECDSA256(provider);
         algorithm.sign(new byte[0]);
     }
-
 }

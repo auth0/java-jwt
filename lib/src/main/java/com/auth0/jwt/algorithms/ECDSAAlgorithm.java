@@ -13,10 +13,11 @@ import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
 
 class ECDSAAlgorithm extends Algorithm {
-
     private final ECDSAKeyProvider keyProvider;
     private final CryptoHelper crypto;
     private final int ecNumberSize;
+
+    private static final String INVALID_DER_SIGNATURE_FORMAT_MESSAGE = "Invalid DER signature format.";
 
     //Visible for testing
     ECDSAAlgorithm(CryptoHelper crypto, String id, String algorithm, int ecNumberSize, ECDSAKeyProvider keyProvider) throws IllegalArgumentException {
@@ -91,7 +92,7 @@ class ECDSAAlgorithm extends Algorithm {
         // DER Structure: http://crypto.stackexchange.com/a/1797
         boolean derEncoded = derSignature[0] == 0x30 && derSignature.length != ecNumberSize * 2;
         if (!derEncoded) {
-            throw new SignatureException("Invalid DER signature format.");
+            throw new SignatureException(INVALID_DER_SIGNATURE_FORMAT_MESSAGE);
         }
 
         final byte[] joseSignature = new byte[ecNumberSize * 2];
@@ -106,7 +107,7 @@ class ECDSAAlgorithm extends Algorithm {
         //Convert to unsigned. Should match DER length - offset
         int encodedLength = derSignature[offset++] & 0xff;
         if (encodedLength != derSignature.length - offset) {
-            throw new SignatureException("Invalid DER signature format.");
+            throw new SignatureException(INVALID_DER_SIGNATURE_FORMAT_MESSAGE);
         }
 
         //Skip 0x02
@@ -115,7 +116,7 @@ class ECDSAAlgorithm extends Algorithm {
         //Obtain R number length (Includes padding) and skip it
         int rLength = derSignature[offset++];
         if (rLength > ecNumberSize + 1) {
-            throw new SignatureException("Invalid DER signature format.");
+            throw new SignatureException(INVALID_DER_SIGNATURE_FORMAT_MESSAGE);
         }
         int rPadding = ecNumberSize - rLength;
         //Retrieve R number
@@ -127,7 +128,7 @@ class ECDSAAlgorithm extends Algorithm {
         //Obtain S number length. (Includes padding)
         int sLength = derSignature[offset++];
         if (sLength > ecNumberSize + 1) {
-            throw new SignatureException("Invalid DER signature format.");
+            throw new SignatureException(INVALID_DER_SIGNATURE_FORMAT_MESSAGE);
         }
         int sPadding = ecNumberSize - sLength;
         //Retrieve R number
