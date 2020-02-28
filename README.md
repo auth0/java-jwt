@@ -1,5 +1,3 @@
-
-
 # Java JWT
 
 [![CircleCI](https://img.shields.io/circleci/project/github/auth0/java-jwt.svg?style=flat-square)](https://circleci.com/gh/auth0/java-jwt/tree/master)
@@ -9,15 +7,15 @@
 
 A Java implementation of [JSON Web Token (JWT) - RFC 7519](https://tools.ietf.org/html/rfc7519).
 
-If you're looking for an **Android** version of the JWT Decoder take a look at our [JWTDecode.Android](https://github.com/auth0/JWTDecode.Android) library.
+If you're looking for the **Android** version of the JWT Decoder take a look at our [JWTDecode.Android](https://github.com/auth0/JWTDecode.Android) library.
 
 ## Installation
 
-The library is available on both Maven Central and Bintray, and the Javadoc is published [here](https://javadoc.io/doc/com.auth0/java-jwt/latest/index.html).
+The library is available on both [Maven Central](https://mvnrepository.com/artifact/com.auth0/java-jwt) and [Bintray](https://bintray.com/bintray/jcenter/com.auth0%3Ajava-jwt), and the Javadoc is published [here](https://javadoc.io/doc/com.auth0/java-jwt/latest/index.html).
  
 ### Maven
 
-```xml
+```XML
 <dependency>
     <groupId>com.auth0</groupId>
     <artifactId>java-jwt</artifactId>
@@ -27,13 +25,13 @@ The library is available on both Maven Central and Bintray, and the Javadoc is p
 
 ### Gradle
 
-```gradle
+```Gradle
 implementation 'com.auth0:java-jwt:3.9.0'
 ```
 
 ## Available Algorithms
 
-The library implements JWT Verification and Signing using the following algorithms:
+The library implements *JWT Verification* and *Signing* using the following algorithms:
 
 | JWS | Algorithm | Description |
 | :-------------: | :-------------: | :----- |
@@ -51,20 +49,19 @@ The library implements JWT Verification and Signing using the following algorith
 
 ### Pick the Algorithm
 
-The Algorithm defines how a token is signed and verified. It can be instantiated with the raw value of the secret in the case of HMAC algorithms, or the key pairs or `KeyProvider` in the case of RSA and ECDSA algorithms. Once created, the instance is reusable for token signing and verification operations.
+The *Algorithm* defines how a token is signed and verified. It can be instantiated with the raw value of the secret in the case of HMAC algorithms, or the key pairs or `KeyProvider` in the case of RSA and ECDSA algorithms. Once created, the instance is reusable for token signing and verification operations.
 
-When using RSA or ECDSA algorithms and you just need to **sign** JWTs you can avoid specifying a Public Key by passing a `null` value. The same can be done with the Private Key when you just need to **verify** JWTs.
-
+When using RSA or ECDSA algorithms and you just need to **sign** JWTs you can avoid specifying a public key by passing a `null` value. The same can be done with the Private Key when you just need to **verify** JWTs.
 
 #### Using static secrets or keys:
 
-```java
-//HMAC
+```Java
+// HMAC
 Algorithm algorithmHS = Algorithm.HMAC256("secret");
 
-//RSA
-RSAPublicKey publicKey = //Get the key instance
-RSAPrivateKey privateKey = //Get the key instance
+// RSA
+RSAPublicKey publicKey =   // Get the key instance
+RSAPrivateKey privateKey = // Get the key instance
 Algorithm algorithmRS = Algorithm.RSA256(publicKey, privateKey);
 ```
 
@@ -72,24 +69,23 @@ Algorithm algorithmRS = Algorithm.RSA256(publicKey, privateKey);
 
 #### Using a KeyProvider:
 
-By using a `KeyProvider` you can change in runtime the key used either to verify the token signature or to sign a new token for RSA or ECDSA algorithms. This is achieved by implementing either `RSAKeyProvider` or `ECDSAKeyProvider` methods:
+By using a `KeyProvider` you can, in runtime, change the key used either to verify the token signature or to sign a new token for RSA or ECDSA algorithms. This is achieved by implementing either `RSAKeyProvider` or `ECDSAKeyProvider` methods:
 
-- `getPublicKeyById(String kid)`: Its called during token signature verification and it should return the key used to verify the token. If key rotation is being used, e.g. [JWK](https://tools.ietf.org/html/rfc7517) it can fetch the correct rotation key using the id. (Or just return the same key all the time).
+- `getPublicKeyById(String kid)`: Its called during token signature verification and it should return the key used to verify the token. If key rotation is being used, e.g. [JWK](https://tools.ietf.org/html/rfc7517), it can fetch the correct rotation key using the id (or just return the same key all the time).
 - `getPrivateKey()`: Its called during token signing and it should return the key that will be used to sign the JWT.
-- `getPrivateKeyId()`: Its called during token signing and it should return the id of the key that identifies the one returned by `getPrivateKey()`. This value is preferred over the one set in the `JWTCreator.Builder#withKeyId(String)` method. If you don't need to set a `kid` value avoid instantiating an Algorithm using a `KeyProvider`.
-
+- `getPrivateKeyId()`: Its called during token signing and it should return the id of the key that identifies the one returned by `getPrivateKey()`. This value is preferred over the one set in the `JWTCreator.Builder#withKeyId(String)` method. If you don't need to set a `kid` value, avoid instantiating an Algorithm using a `KeyProvider`.
 
 The following example shows how this would work with `JwkStore`, an imaginary [JWK Set](https://auth0.com/docs/jwks) implementation. For simple key rotation using JWKS, try the [jwks-rsa-java](https://github.com/auth0/jwks-rsa-java) library.
 
-```java
+```Java
 final JwkStore jwkStore = new JwkStore("{JWKS_FILE_HOST}");
-final RSAPrivateKey privateKey = //Get the key instance
-final String privateKeyId = //Create an Id for the above key
+final RSAPrivateKey privateKey = // Get the key instance
+final String privateKeyId =      // Create an Id for the above key
 
 RSAKeyProvider keyProvider = new RSAKeyProvider() {
     @Override
     public RSAPublicKey getPublicKeyById(String kid) {
-        //Received 'kid' value might be null if it wasn't defined in the Token's header
+        // Received 'kid' value might be null if it wasn't defined in the Token's header
         RSAPublicKey publicKey = jwkStore.get(kid);
         return (RSAPublicKey) publicKey;
     }
@@ -106,69 +102,68 @@ RSAKeyProvider keyProvider = new RSAKeyProvider() {
 };
 
 Algorithm algorithm = Algorithm.RSA256(keyProvider);
-//Use the Algorithm to create and verify JWTs.
+// Use the Algorithm to create and verify JWTs.
 ```
 
 ### Create and Sign a Token
 
-You'll first need to create a `JWTCreator` instance by calling `JWT.create()`. Use the builder to define the custom Claims your token needs to have. Finally to get the String token call `sign()` and pass the `Algorithm` instance.
+You'll first need to create a `JWTCreator` instance by calling `JWT.create()`. Use the builder to define the custom claims your token needs to have. Finally to get the `String` token call `sign()` and pass the `Algorithm` instance.
 
 * Example using `HS256`
 
-```java
+```Java
 try {
     Algorithm algorithm = Algorithm.HMAC256("secret");
     String token = JWT.create()
         .withIssuer("auth0")
         .sign(algorithm);
 } catch (JWTCreationException exception){
-    //Invalid Signing configuration / Couldn't convert Claims.
+    // Invalid Signing configuration / Couldn't convert Claims.
 }
 ```
 
 * Example using `RS256`
 
-```java
-RSAPublicKey publicKey = //Get the key instance
-RSAPrivateKey privateKey = //Get the key instance
+```Java
+RSAPublicKey publicKey =   // Get the key instance
+RSAPrivateKey privateKey = // Get the key instance
 try {
     Algorithm algorithm = Algorithm.RSA256(publicKey, privateKey);
     String token = JWT.create()
         .withIssuer("auth0")
         .sign(algorithm);
 } catch (JWTCreationException exception){
-    //Invalid Signing configuration / Couldn't convert Claims.
+    // Invalid Signing configuration / Couldn't convert Claims.
 }
 ```
 
-If a Claim couldn't be converted to JSON or the Key used in the signing process was invalid a `JWTCreationException` will raise.
-
+If a `Claim` couldn't be converted to JSON or the key used in the signing process was invalid, a `JWTCreationException` will be thrown.
 
 ### Verify a Token
 
-You'll first need to create a `JWTVerifier` instance by calling `JWT.require()` and passing the `Algorithm` instance. If you require the token to have specific Claim values, use the builder to define them. The instance returned by the method `build()` is reusable, so you can define it once and use it to verify different tokens. Finally call `verifier.verify()` passing the token.
+You'll first need to create a `JWTVerifier` instance by calling `JWT.require()` and passing the `Algorithm` instance. If you require the token to have specific `Claim` values, use the builder to define them. The instance returned by the method `build()` is reusable, so you can define it once and use it to verify different tokens. Finally call `verifier.verify()` passing the token.
 
 * Example using `HS256`
 
-```java
+```Java
 String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXUyJ9.eyJpc3MiOiJhdXRoMCJ9.AbIJTDMFc7yUa5MhvcP03nJPyCPzZtQcGEp-zWfOkEE";
 try {
     Algorithm algorithm = Algorithm.HMAC256("secret");
     JWTVerifier verifier = JWT.require(algorithm)
         .withIssuer("auth0")
-        .build(); //Reusable verifier instance
+        .build(); // Reusable verifier instance
     DecodedJWT jwt = verifier.verify(token);
 } catch (JWTVerificationException exception){
-    //Invalid signature/claims
+    // Invalid signature/claims
 }
 ```
 
 * Example using `RS256`
 
-```java
+```Java
 String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXUyJ9.eyJpc3MiOiJhdXRoMCJ9.AbIJTDMFc7yUa5MhvcP03nJPyCPzZtQcGEp-zWfOkEE";
-RSAPublicKey publicKey = //Get the key instance
-RSAPrivateKey privateKey = //Get the key instance
+RSAPublicKey publicKey   = // Get the key instance
+RSAPrivateKey privateKey = // Get the key instance
 try {
     Algorithm algorithm = Algorithm.RSA256(publicKey, privateKey);
     JWTVerifier verifier = JWT.require(algorithm)
@@ -180,38 +175,37 @@ try {
 }
 ```
 
-If the token has an invalid signature or the Claim requirement is not met, a `JWTVerificationException` will raise.
-
+If the token has an invalid signature or the `Claim` requirement is not met, a `JWTVerificationException` will be thrown.
 
 #### Time Validation
 
-The JWT token may include DateNumber fields that can be used to validate that:
-* The token was issued in a past date `"iat" < TODAY`
-* The token hasn't expired yet `"exp" > TODAY` and
-* The token can already be used. `"nbf" < TODAY`
+The JWT token may include *DateNumber* fields that can be used to validate that:
+* The token was issued in the past (`"iat" < TODAY`)
+* The token hasn't expired yet (`"exp" > TODAY`) and
+* The token can already be used (`"nbf" < TODAY`)
 
-When verifying a token the time validation occurs automatically, resulting in a `JWTVerificationException` being throw when the values are invalid. If any of the previous fields are missing they won't be considered in this validation.
+When verifying a token the time validation occurs automatically, resulting in a `JWTVerificationException` being thrown when the values are invalid. If any of the previous fields are missing they won't be considered in this validation.
 
-To specify a **leeway window** in which the Token should still be considered valid, use the `acceptLeeway()` method in the `JWTVerifier` builder and pass a positive seconds value. This applies to every item listed above.
+To specify a **leeway window** in which the *Token* should still be considered valid, use the `acceptLeeway()` method in the `JWTVerifier` builder and pass a positive seconds value. This applies to every item listed above.
 
-```java
+```Java
 JWTVerifier verifier = JWT.require(algorithm)
     .acceptLeeway(1) // 1 sec for nbf, iat and exp
     .build();
 ```
 
-You can also specify a custom value for a given Date claim and override the default one for only that claim.
+You can also specify a custom value for a given `Date` `Claim` and override the default value for only that `Claim`.
 
-```java
+```Java
 JWTVerifier verifier = JWT.require(algorithm)
-    .acceptLeeway(1)   //1 sec for nbf and iat
-    .acceptExpiresAt(5)   //5 secs for exp
+    .acceptLeeway(1)    // 1 sec for nbf and iat
+    .acceptExpiresAt(5) // 5 secs for exp
     .build();
 ```
 
 If you need to test this behaviour in your lib/app cast the `Verification` instance to a `BaseVerification` to gain visibility of the `verification.build()` method that accepts a custom `Clock`. e.g.:
 
-```java
+```Java
 BaseVerification verification = (BaseVerification) JWT.require(algorithm)
     .acceptLeeway(1)
     .acceptExpiresAt(5);
@@ -221,63 +215,62 @@ JWTVerifier verifier = verification.build(clock);
 
 ### Decode a Token
 
-```java
+```Java
 String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXUyJ9.eyJpc3MiOiJhdXRoMCJ9.AbIJTDMFc7yUa5MhvcP03nJPyCPzZtQcGEp-zWfOkEE";
 try {
     DecodedJWT jwt = JWT.decode(token);
 } catch (JWTDecodeException exception){
-    //Invalid token
+    // Invalid token
 }
 ```
 
-If the token has an invalid syntax or the header or payload are not JSONs, a `JWTDecodeException` will raise.
-
+If the token has an invalid syntax or the header or payload are invalid JSON objects, a `JWTDecodeException` will be thrown.
 
 ### Header Claims
 
 #### Algorithm ("alg")
 
-Returns the Algorithm value or null if it's not defined in the Header.
+Returns the `Algorithm` value or `null` if it's not defined in the `Header`.
 
-```java
+```Java
 String algorithm = jwt.getAlgorithm();
 ```
 
 #### Type ("typ")
 
-Returns the Type value or null if it's not defined in the Header.
+Returns the *Type* value or `null` if it's not defined in the `Header`.
 
-```java
+```Java
 String type = jwt.getType();
 ```
 
 #### Content Type ("cty")
 
-Returns the Content Type value or null if it's not defined in the Header.
+Returns the *Content Type* value or `null` if it's not defined in the `Header`.
 
-```java
+```Java
 String contentType = jwt.getContentType();
 ```
 
 #### Key Id ("kid")
 
-Returns the Key Id value or null if it's not defined in the Header.
+Returns the *Key Id* value or `null` if it's not defined in the `Header`.
 
-```java
+```Java
 String keyId = jwt.getKeyId();
 ```
 
 #### Private Claims
 
-Additional Claims defined in the token's Header can be obtained by calling `getHeaderClaim()` and passing the Claim name. A Claim will always be returned, even if it can't be found. You can check if a Claim's value is null by calling `claim.isNull()`.
+Additional claims defined in the token's `Header` can be obtained by calling `getHeaderClaim()` and passing the `Claim` name. A `Claim` will always be returned, even if it can't be found. You can check if a `Claim`'s value is `null` by calling `claim.isNull()`.
 
-```java
+```Java
 Claim claim = jwt.getHeaderClaim("owner");
 ```
 
-When creating a Token with the `JWT.create()` you can specify header Claims by calling `withHeader()` and passing both the map of claims.
+When creating a token with the `JWT.create()` you can specify header claims by calling `withHeader()` and passing both the map of claims.
 
-```java
+```Java
 Map<String, Object> headerClaims = new HashMap();
 headerClaims.put("owner", "auth0");
 String token = JWT.create()
@@ -285,14 +278,13 @@ String token = JWT.create()
         .sign(algorithm);
 ```
 
-> The `alg` and `typ` values will always be included in the Header after the signing process.
-
+> The `alg` and `typ` values will always be included in the `Header` after the signing process.
 
 ### Payload Claims
 
 #### Issuer ("iss")
 
-Returns the Issuer value or null if it's not defined in the Payload.
+Returns the *Issuer* value or `null` if it's not defined in the `Payload`.
 
 ```java
 String issuer = jwt.getIssuer();
@@ -300,7 +292,7 @@ String issuer = jwt.getIssuer();
 
 #### Subject ("sub")
 
-Returns the Subject value or null if it's not defined in the Payload.
+Returns the *Subject* value or `null` if it's not defined in the `Payload`.
 
 ```java
 String subject = jwt.getSubject();
@@ -308,7 +300,7 @@ String subject = jwt.getSubject();
 
 #### Audience ("aud")
 
-Returns the Audience value or null if it's not defined in the Payload.
+Returns the *Audience* value or `null` if it's not defined in the `Payload`.
 
 ```java
 List<String> audience = jwt.getAudience();
@@ -316,63 +308,63 @@ List<String> audience = jwt.getAudience();
 
 #### Expiration Time ("exp")
 
-Returns the Expiration Time value or null if it's not defined in the Payload.
+Returns the *Expiration Time* value or `null` if it's not defined in the `Payload`.
 
-```java
+```Java
 Date expiresAt = jwt.getExpiresAt();
 ```
 
 #### Not Before ("nbf")
 
-Returns the Not Before value or null if it's not defined in the Payload.
+Returns the *Not Before* value or `null` if it's not defined in the `Payload`.
 
-```java
+```Java
 Date notBefore = jwt.getNotBefore();
 ```
 
 #### Issued At ("iat")
 
-Returns the Issued At value or null if it's not defined in the Payload.
+Returns the *Issued At* value or `null` if it's not defined in the `Payload`.
 
-```java
+```Java
 Date issuedAt = jwt.getIssuedAt();
 ```
 
 #### JWT ID ("jti")
 
-Returns the JWT ID value or null if it's not defined in the Payload.
+Returns the *JWT ID* value or `null` if it's not defined in the `Payload`.
 
-```java
+```Java
 String id = jwt.getId();
 ```
 
 #### Private Claims
 
-Additional Claims defined in the token's Payload can be obtained by calling `getClaims()` or `getClaim()` and passing the Claim name. A Claim will always be returned, even if it can't be found. You can check if a Claim's value is null by calling `claim.isNull()`.
+Additional claims defined in the token's `Payload` can be obtained by calling `getClaims()` or `getClaim()` and passing the `Claim` name. A `Claim` will always be returned, even if it can't be found. You can check if a `Claim`'s value is `null` by calling `claim.isNull()`.
 
-```java
-Map<String, Claim> claims = jwt.getClaims();    //Key is the Claim name
+```Java
+Map<String, Claim> claims = jwt.getClaims(); // Key is the Claim name
 Claim claim = claims.get("isAdmin");
 ```
 
-or
+Alternatively:
 
-```java
+```Java
 Claim claim = jwt.getClaim("isAdmin");
 ```
 
-When creating a Token with the `JWT.create()` you can specify a custom Claim by calling `withClaim()` and passing both the name and the value.
+When creating a token with the `JWT.create()` you can specify a custom `Claim` by calling `withClaim()` and passing both the name and the value.
 
-```java
+```Java
 String token = JWT.create()
         .withClaim("name", 123)
         .withArrayClaim("array", new Integer[]{1, 2, 3})
         .sign(algorithm);
 ```
 
-You can also verify custom Claims on the `JWT.require()` by calling `withClaim()` and passing both the name and the required value.
+You can also verify custom claims on the `JWT.require()` by calling `withClaim()` and passing both the name and the required value.
 
-```java
+```Java
 JWTVerifier verifier = JWT.require(algorithm)
     .withClaim("name", 123)
     .withArrayClaim("array", 1, 2, 3)
@@ -380,31 +372,31 @@ JWTVerifier verifier = JWT.require(algorithm)
 DecodedJWT jwt = verifier.verify("my.jwt.token");
 ```
 
-> Currently supported classes for custom JWT Claim creation and verification are: Boolean, Integer, Double, String, Date and Arrays of type String and Integer.
-
+> Currently supported classes for custom JWT Claim creation and verification are: `Boolean`, `Integer`, `Double`, `String`, `Date` and arrays of type `String` and `Integer`.
 
 ### Claim Class
-The Claim class is a wrapper for the Claim values. It allows you to get the Claim as different class types. The available helpers are:
+
+The `Claim` class is a wrapper for the `Claim` values. It allows you to get the `Claim` as different class types. The available helpers are:
 
 #### Primitives
-* **asBoolean()**: Returns the Boolean value or null if it can't be converted.
-* **asInt()**: Returns the Integer value or null if it can't be converted.
-* **asDouble()**: Returns the Double value or null if it can't be converted.
-* **asLong()**: Returns the Long value or null if it can't be converted.
-* **asString()**: Returns the String value or null if it can't be converted.
-* **asDate()**: Returns the Date value or null if it can't be converted. This must be a NumericDate (Unix Epoch/Timestamp). Note that the [JWT Standard](https://tools.ietf.org/html/rfc7519#section-2) specified that all the *NumericDate* values must be in seconds.
+
+* **asBoolean()**: Returns the `Boolean` value or `null` if it can't be converted.
+* **asInt()**: Returns the `Integer` value or `null` if it can't be converted.
+* **asDouble()**: Returns the `Double` value or `null` if it can't be converted.
+* **asLong()**: Returns the `Long` value or `null` if it can't be converted.
+* **asString()**: Returns the `String` value or `null` if it can't be converted.
+* **asDate()**: Returns the `Date` value or `null` if it can't be converted. This must be a numeric date (Unix Epoch/Timestamp). Note that the [JWT Standard](https://tools.ietf.org/html/rfc7519#section-2) specified that all the numeric date values must be in seconds.
 
 #### Custom Classes and Collections
-To obtain a Claim as a Collection you'll need to provide the **Class Type** of the contents to convert from.
+
+To obtain a `Claim` as a `Collection` you'll need to provide the **Class Type** of the contents to convert from.
 
 * **as(class)**: Returns the value parsed as **Class Type**. For collections you should use the `asArray` and `asList` methods.
 * **asMap()**: Returns the value parsed as **Map<String, Object>**.
-* **asArray(class)**: Returns the value parsed as an Array of elements of type **Class Type**, or null if the value isn't a JSON Array.
-* **asList(class)**: Returns the value parsed as a List of elements of type **Class Type**, or null if the value isn't a JSON Array.
+* **asArray(class)**: Returns the value parsed as an array of elements of type **Class Type**, or `null` if the value isn't a JSON array.
+* **asList(class)**: Returns the value parsed as a `List` of elements of type **Class Type**, or `null` if the value isn't a JSON array.
 
-If the values can't be converted to the given **Class Type** a `JWTDecodeException` will raise.
-
-
+If the values can't be converted to the given **Class Type** a `JWTDecodeException` will be thrown.
 
 ## What is Auth0?
 
@@ -415,11 +407,11 @@ Auth0 helps you to:
 * Add support for **[linking different user accounts](https://docs.auth0.com/link-accounts)** with the same user.
 * Support for generating signed [Json Web Tokens](https://docs.auth0.com/jwt) to call your APIs and **flow the user identity** securely.
 * Analytics of how, when and where users are logging in.
-* Pull data from other sources and add it to the user profile, through [JavaScript rules](https://docs.auth0.com/rules).
+* Pull data from other sources and add it to the user profile through [JavaScript rules](https://docs.auth0.com/rules).
 
 ## Create a free account in Auth0
 
-1. Go to [Auth0](https://auth0.com) and click Sign Up.
+1. Go to [Auth0](https://auth0.com) and click *Sign Up*.
 2. Use Google, GitHub or Microsoft Account to login.
 
 ## Issue Reporting
