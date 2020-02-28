@@ -85,7 +85,7 @@ final String privateKeyId =      // Create an Id for the above key
 RSAKeyProvider keyProvider = new RSAKeyProvider() {
     @Override
     public RSAPublicKey getPublicKeyById(String kid) {
-        // Received 'kid' value might be null if it wasn't defined in the Token's header
+        // Received 'kid' value might be null if it wasn't defined in the token's header
         RSAPublicKey publicKey = jwkStore.get(kid);
         return (RSAPublicKey) publicKey;
     }
@@ -186,7 +186,7 @@ The JWT token may include *DateNumber* fields that can be used to validate that:
 
 When verifying a token the time validation occurs automatically, resulting in a `JWTVerificationException` being thrown when the values are invalid. If any of the previous fields are missing they won't be considered in this validation.
 
-To specify a **leeway window** in which the *Token* should still be considered valid, use the `acceptLeeway()` method in the `JWTVerifier` builder and pass a positive seconds value. This applies to every item listed above.
+To specify a **leeway window** in which the token should still be considered valid, use the `acceptLeeway()` method in the `JWTVerifier` builder and pass a positive seconds value. This applies to every item listed above.
 
 ```Java
 JWTVerifier verifier = JWT.require(algorithm)
