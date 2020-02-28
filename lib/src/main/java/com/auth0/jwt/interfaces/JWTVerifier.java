@@ -4,7 +4,6 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 
 
 public interface JWTVerifier {
-  
   /**
    * Performs the verification against the given Token
    *

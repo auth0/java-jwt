@@ -3,7 +3,6 @@ package com.auth0.jwt;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 
 abstract class TokenUtils {
-
     /**
      * Splits the given token on the "." chars into a String array with 3 parts.
      *

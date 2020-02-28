@@ -7,6 +7,7 @@ import java.util.Date;
 final class ClockImpl implements Clock {
 
     ClockImpl() {
+
     }
 
     @Override

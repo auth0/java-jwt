@@ -11,7 +11,6 @@ import java.util.regex.Pattern;
 import org.apache.commons.codec.binary.Base64;
 
 public abstract class CryptoTestHelper {
-
     private static final Pattern authHeaderPattern = Pattern.compile("^([\\w-]+)\\.([\\w-]+)\\.([\\w-]+)");
 
 	public static String asJWT(Algorithm algorithm, String header, String payload) {

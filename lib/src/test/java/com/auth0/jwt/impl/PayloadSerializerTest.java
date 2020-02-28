@@ -18,7 +18,6 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 public class PayloadSerializerTest {
-
     private StringWriter writer;
     private PayloadSerializer serializer;
     private JsonGenerator jsonGenerator;
@@ -120,7 +119,7 @@ public class PayloadSerializerTest {
     public void shouldSerializeDatesUsingLong() throws Exception {
         long secs = Integer.MAX_VALUE + 10000L;
         Date date = new Date(secs * 1000L);
-        Map<String, Object> claims = new HashMap<String, Object>();
+        Map<String, Object> claims = new HashMap<>();
         claims.put("iat", date);
         claims.put("nbf", date);
         claims.put("exp", date);
@@ -219,5 +218,4 @@ public class PayloadSerializerTest {
         map.put(key, value);
         return new ClaimsHolder(map);
     }
-
 }

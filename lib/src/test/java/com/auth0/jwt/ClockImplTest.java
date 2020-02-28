@@ -12,7 +12,7 @@ import static org.junit.Assert.*;
 public class ClockImplTest {
 
     @Test
-    public void shouldGetToday() throws Exception{
+    public void shouldGetToday() {
         Clock clock = new ClockImpl();
         Date clockToday = clock.getToday();
         assertThat(clockToday, is(notNullValue()));

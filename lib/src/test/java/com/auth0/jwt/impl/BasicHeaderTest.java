@@ -17,7 +17,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
 public class BasicHeaderTest {
-
     @Rule
     public ExpectedException exception = ExpectedException.none();
     
@@ -25,21 +24,21 @@ public class BasicHeaderTest {
 
     @SuppressWarnings("Convert2Diamond")
     @Test
-    public void shouldHaveUnmodifiableTreeWhenInstantiatedWithNonNullTree() throws Exception {
+    public void shouldHaveUnmodifiableTreeWhenInstantiatedWithNonNullTree() {
         exception.expect(UnsupportedOperationException.class);
         BasicHeader header = new BasicHeader(null, null, null, null, new HashMap<String, JsonNode>(), objectReader);
         header.getTree().put("something", null);
     }
 
     @Test
-    public void shouldHaveUnmodifiableTreeWhenInstantiatedWithNullTree() throws Exception {
+    public void shouldHaveUnmodifiableTreeWhenInstantiatedWithNullTree() {
         exception.expect(UnsupportedOperationException.class);
         BasicHeader header = new BasicHeader(null, null, null, null, null, objectReader);
         header.getTree().put("something", null);
     }
 
     @Test
-    public void shouldHaveTree() throws Exception {
+    public void shouldHaveTree() {
         HashMap<String, JsonNode> map = new HashMap<>();
         JsonNode node = NullNode.getInstance();
         map.put("key", node);
@@ -50,7 +49,7 @@ public class BasicHeaderTest {
     }
 
     @Test
-    public void shouldGetAlgorithm() throws Exception {
+    public void shouldGetAlgorithm() {
         BasicHeader header = new BasicHeader("HS256", null, null, null, null, objectReader);
 
         assertThat(header, is(notNullValue()));
@@ -59,7 +58,7 @@ public class BasicHeaderTest {
     }
 
     @Test
-    public void shouldGetNullAlgorithmIfMissing() throws Exception {
+    public void shouldGetNullAlgorithmIfMissing() {
         BasicHeader header = new BasicHeader(null, null, null, null, null, objectReader);
 
         assertThat(header, is(notNullValue()));
@@ -67,7 +66,7 @@ public class BasicHeaderTest {
     }
 
     @Test
-    public void shouldGetType() throws Exception {
+    public void shouldGetType() {
         BasicHeader header = new BasicHeader(null, "jwt", null, null, null, objectReader);
 
         assertThat(header, is(notNullValue()));
@@ -76,7 +75,7 @@ public class BasicHeaderTest {
     }
 
     @Test
-    public void shouldGetNullTypeIfMissing() throws Exception {
+    public void shouldGetNullTypeIfMissing() {
         BasicHeader header = new BasicHeader(null, null, null, null, null, objectReader);
 
         assertThat(header, is(notNullValue()));
@@ -84,7 +83,7 @@ public class BasicHeaderTest {
     }
 
     @Test
-    public void shouldGetContentType() throws Exception {
+    public void shouldGetContentType() {
         BasicHeader header = new BasicHeader(null, null, "content", null, null, objectReader);
 
         assertThat(header, is(notNullValue()));
@@ -93,7 +92,7 @@ public class BasicHeaderTest {
     }
 
     @Test
-    public void shouldGetNullContentTypeIfMissing() throws Exception {
+    public void shouldGetNullContentTypeIfMissing() {
         BasicHeader header = new BasicHeader(null, null, null, null, null, objectReader);
 
         assertThat(header, is(notNullValue()));
@@ -101,7 +100,7 @@ public class BasicHeaderTest {
     }
 
     @Test
-    public void shouldGetKeyId() throws Exception {
+    public void shouldGetKeyId() {
         BasicHeader header = new BasicHeader(null, null, null, "key", null, objectReader);
 
         assertThat(header, is(notNullValue()));
@@ -110,7 +109,7 @@ public class BasicHeaderTest {
     }
 
     @Test
-    public void shouldGetNullKeyIdIfMissing() throws Exception {
+    public void shouldGetNullKeyIdIfMissing() {
         BasicHeader header = new BasicHeader(null, null, null, null, null, objectReader);
 
         assertThat(header, is(notNullValue()));
@@ -118,7 +117,7 @@ public class BasicHeaderTest {
     }
 
     @Test
-    public void shouldGetExtraClaim() throws Exception {
+    public void shouldGetExtraClaim() {
         Map<String, JsonNode> tree = new HashMap<>();
         tree.put("extraClaim", new TextNode("extraValue"));
         BasicHeader header = new BasicHeader(null, null, null, null, tree, objectReader);
@@ -129,7 +128,7 @@ public class BasicHeaderTest {
     }
 
     @Test
-    public void shouldGetNotNullExtraClaimIfMissing() throws Exception {
+    public void shouldGetNotNullExtraClaimIfMissing() {
         Map<String, JsonNode> tree = new HashMap<>();
         BasicHeader header = new BasicHeader(null, null, null, null, tree, objectReader);
 

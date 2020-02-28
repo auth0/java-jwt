@@ -14,7 +14,6 @@ import static com.auth0.jwt.impl.JsonNodeClaim.extractClaim;
  * The PayloadImpl class implements the Payload interface.
  */
 class PayloadImpl implements Payload, Serializable {
-
     private static final long serialVersionUID = 1659021498824562311L;
 
     private final String issuer;

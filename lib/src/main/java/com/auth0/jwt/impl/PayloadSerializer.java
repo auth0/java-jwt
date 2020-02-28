@@ -20,37 +20,33 @@ public class PayloadSerializer extends StdSerializer<ClaimsHolder> {
 
     @Override
     public void serialize(ClaimsHolder holder, JsonGenerator gen, SerializerProvider provider) throws IOException {
-        
         gen.writeStartObject();
         for (Map.Entry<String, Object> e : holder.getClaims().entrySet()) {
-            switch (e.getKey()) {
-                case PublicClaims.AUDIENCE:
-                    if (e.getValue() instanceof String) {
-                        gen.writeFieldName(e.getKey());
-                        gen.writeString((String)e.getValue());
-                        break;
-                    }
-                    String[] audArray = (String[]) e.getValue();
-                    if (audArray.length == 1) {
-                        gen.writeFieldName(e.getKey());
-                        gen.writeString(audArray[0]);
-                    } else if (audArray.length > 1) {
-                        gen.writeFieldName(e.getKey());
-                        gen.writeStartArray();
-                        for(String aud : audArray) {
-                            gen.writeString(aud);
-                        }
-                        gen.writeEndArray();
-                    }
-                    break;
-                default:
+            if (PublicClaims.AUDIENCE.equals(e.getKey())) {
+                if (e.getValue() instanceof String) {
                     gen.writeFieldName(e.getKey());
-                    if (e.getValue() instanceof Date) { // true for EXPIRES_AT, ISSUED_AT, NOT_BEFORE
-                        gen.writeNumber(dateToSeconds((Date) e.getValue()));
-                    } else {
-                        gen.writeObject(e.getValue());
+                    gen.writeString((String) e.getValue());
+                    continue;
+                }
+                String[] audArray = (String[]) e.getValue();
+                if (audArray.length == 1) {
+                    gen.writeFieldName(e.getKey());
+                    gen.writeString(audArray[0]);
+                } else if (audArray.length > 1) {
+                    gen.writeFieldName(e.getKey());
+                    gen.writeStartArray();
+                    for (String aud : audArray) {
+                        gen.writeString(aud);
                     }
-                    break;
+                    gen.writeEndArray();
+                }
+            } else {
+                gen.writeFieldName(e.getKey());
+                if (e.getValue() instanceof Date) { // true for EXPIRES_AT, ISSUED_AT, NOT_BEFORE
+                    gen.writeNumber(dateToSeconds((Date) e.getValue()));
+                } else {
+                    gen.writeObject(e.getValue());
+                }
             }
         }
 

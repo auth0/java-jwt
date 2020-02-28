@@ -10,7 +10,6 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
 class HMACAlgorithm extends Algorithm {
-
     private final CryptoHelper crypto;
     private final byte[] secret;
 
