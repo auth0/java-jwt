@@ -7,7 +7,7 @@
 
 A Java implementation of [JSON Web Token (JWT) - RFC 7519](https://tools.ietf.org/html/rfc7519).
 
-If you're looking for the **Android** version of the JWT Decoder take a look at our [JWTDecode.Android](https://github.com/auth0/JWTDecode.Android) library.
+If you're looking for the **Android** version of the JWT Decoder, take a look at our [JWTDecode.Android](https://github.com/auth0/JWTDecode.Android) library.
 
 ## Installation
 
