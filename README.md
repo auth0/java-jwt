@@ -11,7 +11,7 @@ If you're looking for the **Android** version of the JWT Decoder, take a look at
 
 ## Installation
 
-The library is available on both [Maven Central](https://mvnrepository.com/artifact/com.auth0/java-jwt) and [Bintray](https://bintray.com/bintray/jcenter/com.auth0%3Ajava-jwt), and the Javadoc is published [here](https://javadoc.io/doc/com.auth0/java-jwt/latest/index.html).
+The library is available on both [Maven Central](https://mvnrepository.com/artifact/com.auth0/java-jwt) and [Bintray](https://bintray.com/bintray/jcenter/com.auth0%3Ajava-jwt). The Javadoc is published [here](https://javadoc.io/doc/com.auth0/java-jwt/latest/index.html).
  
 ### Maven
 
