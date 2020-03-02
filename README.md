@@ -380,7 +380,7 @@ JWTVerifier verifier = JWT.require(algorithm)
 DecodedJWT jwt = verifier.verify("my.jwt.token");
 ```
 
-> Currently supported classes for custom JWT Claim creation and verification are: Boolean, Integer, Double, String, Instant and Arrays of type String and Integer.
+> Currently supported classes for custom JWT Claim creation and verification are: Boolean, Integer, Double, String, Instant (for NumericDate) and Arrays of type String and Integer.
 
 
 ### Claim Class
