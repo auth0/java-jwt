@@ -4,8 +4,6 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.exceptions.SignatureGenerationException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.interfaces.ECDSAKeyProvider;
-
-import org.apache.commons.codec.binary.Base64;
 import org.hamcrest.Matchers;
 import org.hamcrest.collection.IsIn;
 import org.junit.Assert;
@@ -20,13 +18,15 @@ import java.security.interfaces.ECKey;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
 import java.util.Arrays;
+import java.util.Base64;
 
 import static com.auth0.jwt.PemUtils.readPrivateKeyFromFile;
 import static com.auth0.jwt.PemUtils.readPublicKeyFromFile;
 import static com.auth0.jwt.algorithms.CryptoTestHelper.asJWT;
 import static com.auth0.jwt.algorithms.CryptoTestHelper.assertSignaturePresent;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.isA;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.internal.matchers.ThrowableMessageMatcher.hasMessage;
 import static org.mockito.ArgumentMatchers.any;
@@ -156,7 +156,7 @@ public class ECDSAAlgorithmTest {
 
         byte[] bytes = new byte[63];
         new SecureRandom().nextBytes(bytes);
-        String signature = Base64.encodeBase64URLSafeString(bytes);
+        String signature = Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
         String jwt = "eyJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJhdXRoMCJ9." + signature;
         Algorithm algorithm = Algorithm.ECDSA256((ECKey) readPublicKeyFromFile(INVALID_PUBLIC_KEY_FILE_256, "EC"));
         algorithm.verify(JWT.decode(jwt));
@@ -169,7 +169,7 @@ public class ECDSAAlgorithmTest {
 
         byte[] bytes = new byte[64];
         new SecureRandom().nextBytes(bytes);
-        String signature = Base64.encodeBase64URLSafeString(bytes);
+        String signature = Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
         String jwt = "eyJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJhdXRoMCJ9." + signature;
         Algorithm algorithm = Algorithm.ECDSA256((ECKey) readPublicKeyFromFile(INVALID_PUBLIC_KEY_FILE_256, "EC"));
         algorithm.verify(JWT.decode(jwt));
@@ -183,7 +183,7 @@ public class ECDSAAlgorithmTest {
         byte[] bytes = new byte[64];
         bytes[0] = 0x30;
         new SecureRandom().nextBytes(bytes);
-        String signature = Base64.encodeBase64URLSafeString(bytes);
+        String signature = Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
         String jwt = "eyJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJhdXRoMCJ9." + signature;
         Algorithm algorithm = Algorithm.ECDSA256((ECKey) readPublicKeyFromFile(INVALID_PUBLIC_KEY_FILE_256, "EC"));
         algorithm.verify(JWT.decode(jwt));
@@ -275,7 +275,7 @@ public class ECDSAAlgorithmTest {
         
         byte[] bytes = new byte[64];
         new SecureRandom().nextBytes(bytes);
-        String signature = Base64.encodeBase64URLSafeString(bytes);
+        String signature = Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
         String jwt = "eyJhbGciOiJFUzI1NksifQo.eyJpc3MiOiJhdXRoMCJ9." + signature;
         Algorithm algorithm = Algorithm.ECDSA256K((ECPublicKey) readPublicKeyFromFile(INVALID_PUBLIC_KEY_FILE_256K, "EC"), null);
         algorithm.verify(JWT.decode(jwt));
@@ -289,7 +289,7 @@ public class ECDSAAlgorithmTest {
         byte[] bytes = new byte[64];
         bytes[0] = 0x30;
         new SecureRandom().nextBytes(bytes);
-        String signature = Base64.encodeBase64URLSafeString(bytes);
+        String signature = Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
         String jwt = "eyJhbGciOiJFUzI1NksifQo.eyJpc3MiOiJhdXRoMCJ9." + signature;
         Algorithm algorithm = Algorithm.ECDSA256K((ECPublicKey) readPublicKeyFromFile(INVALID_PUBLIC_KEY_FILE_256K, "EC"), null);
         algorithm.verify(JWT.decode(jwt));
@@ -386,7 +386,7 @@ public class ECDSAAlgorithmTest {
 
         byte[] bytes = new byte[95];
         new SecureRandom().nextBytes(bytes);
-        String signature = Base64.encodeBase64URLSafeString(bytes);
+        String signature = Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
         String jwt = "eyJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJhdXRoMCJ9." + signature;
         Algorithm algorithm = Algorithm.ECDSA384((ECKey) readPublicKeyFromFile(INVALID_PUBLIC_KEY_FILE_384, "EC"));
         algorithm.verify(JWT.decode(jwt));
@@ -399,7 +399,7 @@ public class ECDSAAlgorithmTest {
 
         byte[] bytes = new byte[96];
         new SecureRandom().nextBytes(bytes);
-        String signature = Base64.encodeBase64URLSafeString(bytes);
+        String signature = Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
         String jwt = "eyJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJhdXRoMCJ9." + signature;
         Algorithm algorithm = Algorithm.ECDSA384((ECKey) readPublicKeyFromFile(INVALID_PUBLIC_KEY_FILE_384, "EC"));
         algorithm.verify(JWT.decode(jwt));
@@ -413,7 +413,7 @@ public class ECDSAAlgorithmTest {
         byte[] bytes = new byte[96];
         new SecureRandom().nextBytes(bytes);
         bytes[0] = 0x30;
-        String signature = Base64.encodeBase64URLSafeString(bytes);
+        String signature = Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
         String jwt = "eyJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJhdXRoMCJ9." + signature;
         Algorithm algorithm = Algorithm.ECDSA384((ECKey) readPublicKeyFromFile(INVALID_PUBLIC_KEY_FILE_384, "EC"));
         algorithm.verify(JWT.decode(jwt));
@@ -511,7 +511,7 @@ public class ECDSAAlgorithmTest {
 
         byte[] bytes = new byte[131];
         new SecureRandom().nextBytes(bytes);
-        String signature = Base64.encodeBase64URLSafeString(bytes);
+        String signature = Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
         String jwt = "eyJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJhdXRoMCJ9." + signature;
         Algorithm algorithm = Algorithm.ECDSA512((ECKey) readPublicKeyFromFile(INVALID_PUBLIC_KEY_FILE_512, "EC"));
         algorithm.verify(JWT.decode(jwt));
@@ -524,7 +524,7 @@ public class ECDSAAlgorithmTest {
 
         byte[] bytes = new byte[132];
         new SecureRandom().nextBytes(bytes);
-        String signature = Base64.encodeBase64URLSafeString(bytes);
+        String signature = Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
         String jwt = "eyJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJhdXRoMCJ9." + signature;
         Algorithm algorithm = Algorithm.ECDSA512((ECKey) readPublicKeyFromFile(INVALID_PUBLIC_KEY_FILE_512, "EC"));
         algorithm.verify(JWT.decode(jwt));
@@ -538,7 +538,7 @@ public class ECDSAAlgorithmTest {
         byte[] bytes = new byte[132];
         new SecureRandom().nextBytes(bytes);
         bytes[0] = 0x30;
-        String signature = Base64.encodeBase64URLSafeString(bytes);
+        String signature = Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
         String jwt = "eyJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJhdXRoMCJ9." + signature;
         Algorithm algorithm = Algorithm.ECDSA512((ECKey) readPublicKeyFromFile(INVALID_PUBLIC_KEY_FILE_512, "EC"));
         algorithm.verify(JWT.decode(jwt));
@@ -553,7 +553,7 @@ public class ECDSAAlgorithmTest {
 
         byte[] bytes = new byte[256];
         new SecureRandom().nextBytes(bytes);
-        String signature = Base64.encodeBase64URLSafeString(bytes);
+        String signature = Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
         String jwt = "eyJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJhdXRoMCJ9." + signature;
 
         ECPublicKey publicKey = (ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC");
@@ -643,7 +643,7 @@ public class ECDSAAlgorithmTest {
     public void shouldDoECDSA256SigningWithBothKeys() throws Exception {
         Algorithm algorithm = Algorithm.ECDSA256((ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC"), (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_256, "EC"));
         byte[] signatureBytes = algorithm.sign(ES256HeaderBytes, auth0IssPayloadBytes);
-        String jwtSignature = Base64.encodeBase64URLSafeString(signatureBytes);
+        String jwtSignature = Base64.getUrlEncoder().withoutPadding().encodeToString(signatureBytes);
         String jwt = String.format("%s.%s.%s", ES256Header, auth0IssPayload, jwtSignature);
 
         assertSignaturePresent(jwt);
@@ -1267,12 +1267,12 @@ public class ECDSAAlgorithmTest {
         bout.write('.');
         bout.write(payloadBytes);
 
-        String jwtSignature1 = Base64.encodeBase64URLSafeString(algorithm.sign(bout.toByteArray()));
+        String jwtSignature1 = Base64.getUrlEncoder().withoutPadding().encodeToString(algorithm.sign(bout.toByteArray()));
         String jwt1 = String.format("%s.%s.%s", header, payload, jwtSignature1);
 
         algorithm.verify(JWT.decode(jwt1));
 
-        String jwtSignature2 = Base64.encodeBase64URLSafeString(algorithm.sign(headerBytes, payloadBytes));
+        String jwtSignature2 = Base64.getUrlEncoder().withoutPadding().encodeToString(algorithm.sign(headerBytes, payloadBytes));
         String jwt2 = String.format("%s.%s.%s", header, payload, jwtSignature2);
 
         algorithm.verify(JWT.decode(jwt2));
