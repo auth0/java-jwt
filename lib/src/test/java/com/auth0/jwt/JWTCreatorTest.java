@@ -5,7 +5,7 @@ import com.auth0.jwt.impl.PublicClaims;
 import com.auth0.jwt.interfaces.ECDSAKeyProvider;
 import com.auth0.jwt.interfaces.RSAKeyProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.codec.binary.Base64;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -48,7 +48,7 @@ public class JWTCreatorTest {
 
         assertThat(signed, is(notNullValue()));
         String[] parts = signed.split("\\.");
-        String headerJson = new String(Base64.decodeBase64(parts[0]), StandardCharsets.UTF_8);
+        String headerJson = new String(Base64.getUrlDecoder().decode(parts[0]), StandardCharsets.UTF_8);
         assertThat(headerJson, JsonMatcher.hasEntry("asd", 123));
     }
 
@@ -73,7 +73,7 @@ public class JWTCreatorTest {
 
         assertThat(signed, is(notNullValue()));
         String[] parts = signed.split("\\.");
-        String headerJson = new String(Base64.decodeBase64(parts[0]), StandardCharsets.UTF_8);
+        String headerJson = new String(Base64.getUrlDecoder().decode(parts[0]), StandardCharsets.UTF_8);
         assertThat(headerJson, JsonMatcher.hasEntry(PublicClaims.KEY_ID, "xyz"));
     }
 
@@ -89,7 +89,7 @@ public class JWTCreatorTest {
 
         assertThat(signed, is(notNullValue()));
         String[] parts = signed.split("\\.");
-        String headerJson = new String(Base64.decodeBase64(parts[0]), StandardCharsets.UTF_8);
+        String headerJson = new String(Base64.getUrlDecoder().decode(parts[0]), StandardCharsets.UTF_8);
         assertThat(headerJson, JsonMatcher.hasEntry(PublicClaims.KEY_ID, "abc"));
     }
 
@@ -106,7 +106,7 @@ public class JWTCreatorTest {
 
         assertThat(signed, is(notNullValue()));
         String[] parts = signed.split("\\.");
-        String headerJson = new String(Base64.decodeBase64(parts[0]), StandardCharsets.UTF_8);
+        String headerJson = new String(Base64.getUrlDecoder().decode(parts[0]), StandardCharsets.UTF_8);
         assertThat(headerJson, JsonMatcher.isNotPresent(PublicClaims.KEY_ID));
         assertThat(headerJson, JsonMatcher.hasEntry("test2", "isSet"));
     }
@@ -119,7 +119,7 @@ public class JWTCreatorTest {
 
         assertThat(signed, is(notNullValue()));
         String[] parts = signed.split("\\.");
-        String headerJson = new String(Base64.decodeBase64(parts[0]), StandardCharsets.UTF_8);
+        String headerJson = new String(Base64.getUrlDecoder().decode(parts[0]), StandardCharsets.UTF_8);
         assertThat(headerJson, JsonMatcher.hasEntry("kid", "56a8bd44da435300010000015f5ed"));
     }
 
@@ -135,7 +135,7 @@ public class JWTCreatorTest {
 
         assertThat(signed, is(notNullValue()));
         String[] parts = signed.split("\\.");
-        String headerJson = new String(Base64.decodeBase64(parts[0]), StandardCharsets.UTF_8);
+        String headerJson = new String(Base64.getUrlDecoder().decode(parts[0]), StandardCharsets.UTF_8);
         assertThat(headerJson, JsonMatcher.hasEntry("kid", "my-key-id"));
     }
 
@@ -152,7 +152,7 @@ public class JWTCreatorTest {
 
         assertThat(signed, is(notNullValue()));
         String[] parts = signed.split("\\.");
-        String headerJson = new String(Base64.decodeBase64(parts[0]), StandardCharsets.UTF_8);
+        String headerJson = new String(Base64.getUrlDecoder().decode(parts[0]), StandardCharsets.UTF_8);
         assertThat(headerJson, JsonMatcher.hasEntry("kid", "my-key-id"));
     }
 
@@ -168,7 +168,7 @@ public class JWTCreatorTest {
 
         assertThat(signed, is(notNullValue()));
         String[] parts = signed.split("\\.");
-        String headerJson = new String(Base64.decodeBase64(parts[0]), StandardCharsets.UTF_8);
+        String headerJson = new String(Base64.getUrlDecoder().decode(parts[0]), StandardCharsets.UTF_8);
         assertThat(headerJson, JsonMatcher.hasEntry("kid", "my-key-id"));
     }
 
@@ -185,7 +185,7 @@ public class JWTCreatorTest {
 
         assertThat(signed, is(notNullValue()));
         String[] parts = signed.split("\\.");
-        String headerJson = new String(Base64.decodeBase64(parts[0]), StandardCharsets.UTF_8);
+        String headerJson = new String(Base64.getUrlDecoder().decode(parts[0]), StandardCharsets.UTF_8);
         assertThat(headerJson, JsonMatcher.hasEntry("kid", "my-key-id"));
     }
 
@@ -315,7 +315,7 @@ public class JWTCreatorTest {
 
         assertThat(signed, is(notNullValue()));
         String[] parts = signed.split("\\.");
-        String headerJson = new String(Base64.decodeBase64(parts[0]), StandardCharsets.UTF_8);
+        String headerJson = new String(Base64.getUrlDecoder().decode(parts[0]), StandardCharsets.UTF_8);
         assertThat(headerJson, JsonMatcher.hasEntry("alg", "HS256"));
     }
 
@@ -326,7 +326,7 @@ public class JWTCreatorTest {
 
         assertThat(signed, is(notNullValue()));
         String[] parts = signed.split("\\.");
-        String headerJson = new String(Base64.decodeBase64(parts[0]), StandardCharsets.UTF_8);
+        String headerJson = new String(Base64.getUrlDecoder().decode(parts[0]), StandardCharsets.UTF_8);
         assertThat(headerJson, JsonMatcher.hasEntry("typ", "JWT"));
     }
 
@@ -339,7 +339,7 @@ public class JWTCreatorTest {
 
         assertThat(signed, is(notNullValue()));
         String[] parts = signed.split("\\.");
-        String headerJson = new String(Base64.decodeBase64(parts[0]), StandardCharsets.UTF_8);
+        String headerJson = new String(Base64.getUrlDecoder().decode(parts[0]), StandardCharsets.UTF_8);
         assertThat(headerJson, JsonMatcher.hasEntry("typ", "passport"));
     }
 
@@ -531,7 +531,7 @@ public class JWTCreatorTest {
         assertThat(jwt, is(notNullValue()));
         String[] parts = jwt.split("\\.");
         
-        String body = new String(Base64.decodeBase64(parts[1]), StandardCharsets.UTF_8);
+        String body = new String(Base64.getUrlDecoder().decode(parts[1]), StandardCharsets.UTF_8);
         ObjectMapper mapper = new ObjectMapper();
         Map<String, Object> map = (Map<String, Object>) mapper.readValue(body, Map.class).get("data");
 
@@ -593,7 +593,7 @@ public class JWTCreatorTest {
         assertThat(jwt, is(notNullValue()));
         String[] parts = jwt.split("\\.");
         
-        String body = new String(Base64.decodeBase64(parts[1]), StandardCharsets.UTF_8);
+        String body = new String(Base64.getUrlDecoder().decode(parts[1]), StandardCharsets.UTF_8);
         ObjectMapper mapper = new ObjectMapper();
         List<Object> list = (List<Object>) mapper.readValue(body, Map.class).get("data");
         

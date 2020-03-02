@@ -3,7 +3,8 @@ package com.auth0.jwt.algorithms;
 import com.auth0.jwt.exceptions.SignatureGenerationException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import org.apache.commons.codec.binary.Base64;
+
+import java.util.Base64;
 
 class NoneAlgorithm extends Algorithm {
 
@@ -13,7 +14,7 @@ class NoneAlgorithm extends Algorithm {
 
     @Override
     public void verify(DecodedJWT jwt) throws SignatureVerificationException {
-        byte[] signatureBytes = Base64.decodeBase64(jwt.getSignature());
+        byte[] signatureBytes = Base64.getUrlDecoder().decode(jwt.getSignature());
         if (signatureBytes.length > 0) {
             throw new SignatureVerificationException(this);
         }
