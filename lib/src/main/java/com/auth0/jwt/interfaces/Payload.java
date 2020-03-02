@@ -56,6 +56,7 @@ public interface Payload {
      *
      * @return the Expiration Time value or null.
      */
+    // TODO - deprecate in favor of getExpiresAtInstant
     Date getExpiresAt();
 
     /**
@@ -63,6 +64,7 @@ public interface Payload {
      *
      * @return the Not Before value or null.
      */
+    // TODO - deprecate in favor of getNotBeforeInstant
     Date getNotBefore();
 
     /**
@@ -70,6 +72,7 @@ public interface Payload {
      *
      * @return the Issued At value or null.
      */
+    // TODO - deprecate in favor of getIssuedAtInstant
     Date getIssuedAt();
 
     /**

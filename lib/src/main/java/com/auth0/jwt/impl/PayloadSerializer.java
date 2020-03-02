@@ -60,7 +60,7 @@ public class PayloadSerializer extends StdSerializer<ClaimsHolder> {
      * @param gen the JsonGenerator to use for JSON serialization
      * @throws IOException
      */
-    private void handleInstantSerialization(Map.Entry<String, Object> entry, JsonGenerator gen) throws IOException {
+    private void handleSerialization(Map.Entry<String, Object> entry, JsonGenerator gen) throws IOException {
         gen.writeFieldName(entry.getKey());
         if (entry.getValue() instanceof Instant) { // EXPIRES_AT, ISSUED_AT, NOT_BEFORE, custom Instant claims
             gen.writeNumber(instantToSeconds((Instant) entry.getValue()));
