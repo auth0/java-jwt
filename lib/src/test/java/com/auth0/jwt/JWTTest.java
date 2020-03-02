@@ -269,9 +269,10 @@ public class JWTTest {
 
     @Test
     public void shouldGetExpirationTime() throws Exception {
-        Date expectedDate = new Date(1477592 * 1000);
+        Instant expectedInstant = Instant.ofEpochSecond(1477592);
         Clock clock = mock(Clock.class);
-        when(clock.getNow()).thenReturn(expectedDate.toInstant());
+        // implementation uses getNow instead of getToday, so need to mock that call
+        when(clock.getNow()).thenReturn(expectedInstant);
 
         String token = "eyJhbGciOiJIUzI1NiJ9.eyJleHAiOjE0Nzc1OTJ9.x_ZjkPkKYUV5tdvc0l8go6D_z2kez1MQcOxokXrDc3k";
         JWTVerifier.BaseVerification verification = (JWTVerifier.BaseVerification) JWT.require(Algorithm.HMAC256("secret"));
@@ -282,14 +283,15 @@ public class JWTTest {
         assertThat(jwt, is(notNullValue()));
         assertThat(jwt.getExpiresAt(), is(instanceOf(Date.class)));
         assertThat(jwt.getExpiresAt(), is(notNullValue()));
-        assertThat(jwt.getExpiresAt(), is(equalTo(expectedDate)));
+        assertThat(jwt.getExpiresAt(), is(equalTo(Date.from(expectedInstant))));
     }
 
     @Test
     public void shouldGetNotBefore() throws Exception {
-        Date expectedDate = new Date(1477592 * 1000);
+        Instant expectedInstant = Instant.ofEpochSecond(1477592);
         Clock clock = mock(Clock.class);
-        when(clock.getNow()).thenReturn(expectedDate.toInstant());
+        // implementation uses getNow instead of getToday, so need to mock that call
+        when(clock.getNow()).thenReturn(expectedInstant);
 
         String token = "eyJhbGciOiJIUzI1NiJ9.eyJuYmYiOjE0Nzc1OTJ9.mWYSOPoNXstjKbZkKrqgkwPOQWEx3F3gMm6PMcfuJd8";
         JWTVerifier.BaseVerification verification = (JWTVerifier.BaseVerification) JWT.require(Algorithm.HMAC256("secret"));
@@ -300,14 +302,15 @@ public class JWTTest {
         assertThat(jwt, is(notNullValue()));
         assertThat(jwt.getNotBefore(), is(instanceOf(Date.class)));
         assertThat(jwt.getNotBefore(), is(notNullValue()));
-        assertThat(jwt.getNotBefore(), is(equalTo(expectedDate)));
+        assertThat(jwt.getNotBefore(), is(equalTo(Date.from(expectedInstant))));
     }
 
     @Test
     public void shouldGetIssuedAt() throws Exception {
-        Date expectedDate = new Date(1477592 * 1000);
+        Instant expectedInstant = Instant.ofEpochSecond(1477592);
         Clock clock = mock(Clock.class);
-        when(clock.getNow()).thenReturn(expectedDate.toInstant());
+        // implementation uses getNow instead of getToday, so need to mock that call
+        when(clock.getNow()).thenReturn(expectedInstant);
 
         String token = "eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE0Nzc1OTJ9.5o1CKlLFjKKcddZzoarQ37pq7qZqNPav3sdZ_bsZaD4";
         JWTVerifier.BaseVerification verification = (JWTVerifier.BaseVerification) JWT.require(Algorithm.HMAC256("secret"));
@@ -318,7 +321,7 @@ public class JWTTest {
         assertThat(jwt, is(notNullValue()));
         assertThat(jwt.getIssuedAt(), is(instanceOf(Date.class)));
         assertThat(jwt.getIssuedAt(), is(notNullValue()));
-        assertThat(jwt.getIssuedAt(), is(equalTo(expectedDate)));
+        assertThat(jwt.getIssuedAt(), is(equalTo(Date.from(expectedInstant))));
     }
 
     @Test

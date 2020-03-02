@@ -613,8 +613,11 @@ public class JWTVerifierTest {
     }
 
     // Issued At with future date
-    @Test(expected = InvalidClaimException.class)
+    @Test
     public void shouldThrowOnFutureIssuedAtDate() throws Exception {
+        exception.expect(InvalidClaimException.class);
+        exception.expectMessage("The Token can't be used before 1970-01-18T02:26:32Z.");
+
         Clock clock = mock(Clock.class);
         when(clock.getNow()).thenReturn(Instant.ofEpochMilli(DATE_TOKEN_MS_VALUE - 1000));
 
@@ -625,8 +628,11 @@ public class JWTVerifierTest {
         assertThat(jwt, is(notNullValue()));
     }
 
-    @Test (expected = InvalidClaimException.class)
+    @Test
     public void shouldThrowOnFutureIssuedAtInstant() throws Exception {
+        exception.expect(InvalidClaimException.class);
+        exception.expectMessage("The Token can't be used before 1970-01-18T02:26:32Z.");
+
         Clock clock = mock(Clock.class);
         when(clock.getNow()).thenReturn(Instant.ofEpochMilli(DATE_TOKEN_MS_VALUE - 1000));
 
