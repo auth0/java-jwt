@@ -568,4 +568,13 @@ public class RSAAlgorithmTest {
         algorithm.sign(new byte[0]);
     }
 
+    @Test
+    public void shouldThrowWhenSignatureNotValidBase64()  throws Exception {
+        exception.expect(SignatureVerificationException.class);
+        exception.expectCause(isA(IllegalArgumentException.class));
+
+        String jwt = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhdXRoMCJ9.dxXF3MdsyW-AuvwJpaQtrZ33fAde9xWxpLIg9cO2tMLH2GSRNu+LAe61KsJusZhqZB9Iy7DvflcmRz-9OZndm6cj_ThGeJH2LLc90K83UEvvRPo8l85RrQb8PcanxCgIs2RcZOLygERizB3pr5icGkzR7R2y6zgNCjKJ5_NJ6EiZsGN6_nc2PRK_DbyY-Wn0QDxIxKoA5YgQJ9qafe7IN980pXvQv2Z62c3XR8dYuaXBqhthBj-AbaFHEpZapN-V-TmuLNzR2MCB6Xr7BYMuCaqWf_XU8og4XNe8f_8w9Wv5vvgqMM1KhqVpG5VdMJv4o_L4NoCROHhtUQSLRh2M9cA";
+        Algorithm algorithm = Algorithm.RSA256((RSAKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE, "RSA"));
+        algorithm.verify(JWT.decode(jwt));
+    }
 }

@@ -41,14 +41,13 @@ class HMACAlgorithm extends Algorithm {
 
     @Override
     public void verify(DecodedJWT jwt) throws SignatureVerificationException {
-        byte[] signatureBytes = Base64.getUrlDecoder().decode(jwt.getSignature());
-
         try {
+            byte[] signatureBytes = Base64.getUrlDecoder().decode(jwt.getSignature());
             boolean valid = crypto.verifySignatureFor(getDescription(), secret, jwt.getHeader(), jwt.getPayload(), signatureBytes);
             if (!valid) {
                 throw new SignatureVerificationException(this);
             }
-        } catch (IllegalStateException | InvalidKeyException | NoSuchAlgorithmException e) {
+        } catch (IllegalStateException | InvalidKeyException | NoSuchAlgorithmException | IllegalArgumentException e) {
             throw new SignatureVerificationException(this, e);
         }
     }

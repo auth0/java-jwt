@@ -32,9 +32,8 @@ class RSAAlgorithm extends Algorithm {
 
     @Override
     public void verify(DecodedJWT jwt) throws SignatureVerificationException {
-        byte[] signatureBytes = Base64.getUrlDecoder().decode(jwt.getSignature());
-
         try {
+            byte[] signatureBytes = Base64.getUrlDecoder().decode(jwt.getSignature());
             RSAPublicKey publicKey = keyProvider.getPublicKeyById(jwt.getKeyId());
             if (publicKey == null) {
                 throw new IllegalStateException("The given Public Key is null.");
@@ -43,7 +42,7 @@ class RSAAlgorithm extends Algorithm {
             if (!valid) {
                 throw new SignatureVerificationException(this);
             }
-        } catch (NoSuchAlgorithmException | SignatureException | InvalidKeyException | IllegalStateException e) {
+        } catch (NoSuchAlgorithmException | SignatureException | InvalidKeyException | IllegalArgumentException | IllegalStateException e) {
             throw new SignatureVerificationException(this, e);
         }
     }

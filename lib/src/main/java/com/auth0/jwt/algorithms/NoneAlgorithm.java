@@ -14,9 +14,14 @@ class NoneAlgorithm extends Algorithm {
 
     @Override
     public void verify(DecodedJWT jwt) throws SignatureVerificationException {
-        byte[] signatureBytes = Base64.getUrlDecoder().decode(jwt.getSignature());
-        if (signatureBytes.length > 0) {
-            throw new SignatureVerificationException(this);
+        try {
+            byte[] signatureBytes = Base64.getUrlDecoder().decode(jwt.getSignature());
+
+            if (signatureBytes.length > 0) {
+                throw new SignatureVerificationException(this);
+            }
+        } catch (IllegalArgumentException e) {
+            throw new SignatureVerificationException(this, e);
         }
     }
 

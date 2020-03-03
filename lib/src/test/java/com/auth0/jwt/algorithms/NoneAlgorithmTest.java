@@ -7,8 +7,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
+import java.security.interfaces.ECKey;
+
+import static com.auth0.jwt.PemUtils.readPublicKeyFromFile;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 public class NoneAlgorithmTest {
@@ -43,5 +45,15 @@ public class NoneAlgorithmTest {
     @Test
     public void shouldReturnNullSigningKeyId() {
         assertThat(Algorithm.none().getSigningKeyId(), is(nullValue()));
+    }
+
+    @Test
+    public void shouldThrowWhenSignatureNotValidBase64() {
+        exception.expect(SignatureVerificationException.class);
+        exception.expectCause(isA(IllegalArgumentException.class));
+
+        String jwt = "eyJhbGciOiJub25lIiwiY3R5IjoiSldUIn0.eyJpc3MiOiJhdXRoMCJ9.Ox-WRXRaGAuWt2KfPvW+iGcCrPqZtbp_4OnQzZXaTfss";
+        Algorithm algorithm = Algorithm.none();
+        algorithm.verify(JWT.decode(jwt));
     }
 }

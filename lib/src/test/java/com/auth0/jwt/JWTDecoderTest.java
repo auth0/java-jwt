@@ -65,6 +65,24 @@ public class JWTDecoderTest {
         customJWT(invalidJson, validJson, "signature");
     }
 
+    @Test
+    public void shouldThrowWhenHeaderNotValidBase64() {
+        exception.expect(JWTDecodeException.class);
+        exception.expectCause(isA(IllegalArgumentException.class));
+
+        String jwt = "eyJhbGciOiJub25l+IiwiY3R5IjoiSldUIn0.eyJpc3MiOiJhdXRoMCJ9.Ox-WRXRaGAuWt2KfPvWiGcCrPqZtbp_4OnQzZXaTfss";
+        JWT.decode(jwt);
+    }
+
+    @Test
+    public void shouldThrowWhenPayloadNotValidBase64() {
+        exception.expect(JWTDecodeException.class);
+        exception.expectCause(isA(IllegalArgumentException.class));
+
+        String jwt = "eyJhbGciOiJub25lIiwiY3R5IjoiSldUIn0.eyJpc3MiOiJhdXRo+MCJ9.Ox-WRXRaGAuWt2KfPvWiGcCrPqZtbp_4OnQzZXaTfss";
+        JWT.decode(jwt);
+    }
+
     // Parts
 
     @Test
