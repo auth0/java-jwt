@@ -8,6 +8,7 @@ import com.auth0.jwt.interfaces.Header;
 import com.auth0.jwt.interfaces.Payload;
 
 import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;

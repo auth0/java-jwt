@@ -617,7 +617,18 @@ public class ECDSAAlgorithmTest {
         algorithm.verify(JWT.decode(jwt));
     }
 
-    //Sign
+    @Test
+    public void shouldThrowWhenSignatureNotValidBase64() throws Exception {
+        exception.expect(SignatureVerificationException.class);
+        exception.expectCause(isA(IllegalArgumentException.class));
+
+        String jwt = "eyJhbGciOiJFUzUxMiJ9.eyJpc3MiOiJhdXRoMCJ9.MIGIAkIB4Ik8MixIeHBFIZkJjquymLzN6Q7DQr2pgw2uJ0UW726GsDVCsb4RTFeUTTrKaHZHtHPRoTuTEHCuerwvxo4+EICQgGALKocz3lL8qfH1444LNBLaOSNJp3RNkB5YHDEhQEsox21PMA9kau2TcxkOW9jGX6b9N9FhlGo0mmWFhVCR1YNg";
+        ECKey key = (ECKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_512, "EC");
+        Algorithm algorithm = Algorithm.ECDSA512(key);
+        algorithm.verify(JWT.decode(jwt));
+    }
+
+        //Sign
     private static final String ES256Header = "eyJhbGciOiJFUzI1NiJ9";
     private static final String ES384Header = "eyJhbGciOiJFUzM4NCJ9";
     private static final String ES512Header = "eyJhbGciOiJFUzUxMiJ9";
