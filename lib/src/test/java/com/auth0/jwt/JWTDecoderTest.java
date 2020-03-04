@@ -26,7 +26,7 @@ public class JWTDecoderTest {
     public ExpectedException exception = ExpectedException.none();
 
     @Test
-    public void getSubject() throws Exception {
+    public void getSubject() {
         DecodedJWT jwt = JWT.decode("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ");
         assertThat(jwt.getSubject(), is(notNullValue()));
         assertThat(jwt.getSubject(), is("1234567890"));
@@ -162,7 +162,7 @@ public class JWTDecoderTest {
     }
 
     @Test
-    public void shouldGetExpirationTimeAsInstant() throws Exception {
+    public void shouldGetExpirationTimeAsInstant() {
         DecodedJWT jwt = JWT.decode("eyJhbGciOiJIUzI1NiJ9.eyJleHAiOjE0NzY3MjcwODZ9.L9dcPHEDQew2u9MkDCORFkfDGcSOsgoPqNY-LUMLEHg");
         assertThat(jwt, is(notNullValue()));
         assertThat(jwt.getExpiresAtInstant(), is(instanceOf(Instant.class)));
@@ -173,7 +173,7 @@ public class JWTDecoderTest {
     }
 
     @Test
-    public void shouldGetNotBeforeAsInstant() throws Exception {
+    public void shouldGetNotBeforeAsInstant() {
         DecodedJWT jwt = JWT.decode("eyJhbGciOiJIUzI1NiJ9.eyJuYmYiOjE0NzY3MjcwODZ9.tkpD3iCPQPVqjnjpDVp2bJMBAgpVCG9ZjlBuMitass0");
         assertThat(jwt, is(notNullValue()));
         assertThat(jwt.getNotBeforeInstant(), is(instanceOf(Instant.class)));
@@ -184,7 +184,7 @@ public class JWTDecoderTest {
     }
 
     @Test
-    public void shouldGetIssuedAtAsInstant() throws Exception {
+    public void shouldGetIssuedAtAsInstant() {
         DecodedJWT jwt = JWT.decode("eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE0NzY3MjcwODZ9.KPjGoW665E8V5_27Jugab8qSTxLk2cgquhPCBfAP0_w");
         assertThat(jwt, is(notNullValue()));
         assertThat(jwt.getIssuedAtInstant(), is(instanceOf(Instant.class)));
@@ -282,7 +282,7 @@ public class JWTDecoderTest {
     }
 
     @Test
-    public void shouldGetCustomClaimOfTypeInstant() throws Exception {
+    public void shouldGetCustomClaimOfTypeInstant() {
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoxNDc4ODkxNTIxfQ.mhioumeok8fghQEhTKF3QtQAksSvZ_9wIhJmgZLhJ6c";
         Instant instant = Instant.ofEpochMilli(1478891521000L);
         DecodedJWT jwt = JWT.decode(token);

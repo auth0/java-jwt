@@ -226,7 +226,7 @@ public class JWTVerifierTest {
     }
 
     @Test
-    public void shouldThrowOnInvalidCustomClaimValueOfTypeInstant() throws Exception {
+    public void shouldThrowOnInvalidCustomClaimValueOfTypeInstant() {
         exception.expect(InvalidClaimException.class);
         exception.expectMessage("The Claim 'name' value doesn't match the required one.");
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjpbInNvbWV0aGluZyJdfQ.3ENLez6tU_fG0SVFrGmISltZPiXLSHaz_dyn-XFTEGQ";
@@ -420,7 +420,7 @@ public class JWTVerifierTest {
 
     // Expires At
     @Test
-    public void shouldValidateExpiresDateAtWithLeeway() throws Exception {
+    public void shouldValidateExpiresDateAtWithLeeway() {
         Clock clock = mock(Clock.class);
         when(clock.getNow()).thenReturn(Instant.ofEpochMilli(DATE_TOKEN_MS_VALUE + 1000));
 
@@ -436,7 +436,7 @@ public class JWTVerifierTest {
 
 
     @Test
-    public void shouldValidateExpiresInstantAtWithLeeway() throws Exception {
+    public void shouldValidateExpiresInstantAtWithLeeway() {
         Clock clock = mock(Clock.class);
         when(clock.getNow()).thenReturn(Instant.ofEpochMilli(DATE_TOKEN_MS_VALUE + 1000));
 
@@ -451,7 +451,7 @@ public class JWTVerifierTest {
     }
 
     @Test
-    public void shouldValidateExpiresAtDateIfPresent() throws Exception {
+    public void shouldValidateExpiresAtDateIfPresent() {
         Clock clock = mock(Clock.class);
         when(clock.getNow()).thenReturn(Instant.ofEpochMilli(DATE_TOKEN_MS_VALUE));
 
@@ -465,7 +465,7 @@ public class JWTVerifierTest {
     }
 
     @Test
-    public void shouldValidateExpiresAtInstantIfPresent() throws Exception {
+    public void shouldValidateExpiresAtInstantIfPresent() {
         Clock clock = mock(Clock.class);
         when(clock.getNow()).thenReturn(Instant.ofEpochMilli(DATE_TOKEN_MS_VALUE));
 
@@ -479,7 +479,7 @@ public class JWTVerifierTest {
     }
 
     @Test
-    public void shouldThrowOnInvalidExpiresAtDateIfPresent() throws Exception {
+    public void shouldThrowOnInvalidExpiresAtDateIfPresent() {
         exception.expect(TokenExpiredException.class);
         exception.expectMessage(startsWith("The Token has expired on"));
         Clock clock = mock(Clock.class);
@@ -493,7 +493,7 @@ public class JWTVerifierTest {
     }
 
     @Test
-    public void shouldThrowOnInvalidExpiresAtInstantIfPresent() throws Exception {
+    public void shouldThrowOnInvalidExpiresAtInstantIfPresent() {
         exception.expect(TokenExpiredException.class);
         exception.expectMessage(startsWith("The Token has expired on"));
         Clock clock = mock(Clock.class);
@@ -517,7 +517,7 @@ public class JWTVerifierTest {
 
     // Not before
     @Test
-    public void shouldValidateNotBeforeDateWithLeeway() throws Exception {
+    public void shouldValidateNotBeforeDateWithLeeway() {
         Clock clock = mock(Clock.class);
         when(clock.getNow()).thenReturn(Instant.ofEpochMilli(DATE_TOKEN_MS_VALUE - 1000));
 
@@ -533,7 +533,7 @@ public class JWTVerifierTest {
 
 
     @Test
-    public void shouldValidateNotBeforeInstantWithLeeway() throws Exception {
+    public void shouldValidateNotBeforeInstantWithLeeway() {
         Clock clock = mock(Clock.class);
         when(clock.getNow()).thenReturn(Instant.ofEpochMilli(DATE_TOKEN_MS_VALUE - 1000));
 
@@ -548,7 +548,7 @@ public class JWTVerifierTest {
     }
 
     @Test
-    public void shouldThrowOnInvalidNotBeforeDateIfPresent() throws Exception {
+    public void shouldThrowOnInvalidNotBeforeDateIfPresent() {
         exception.expect(InvalidClaimException.class);
         exception.expectMessage(startsWith("The Token can't be used before"));
         Clock clock = mock(Clock.class);
@@ -562,7 +562,7 @@ public class JWTVerifierTest {
     }
 
     @Test
-    public void shouldThrowOnInvalidNotBeforeInstantIfPresent() throws Exception {
+    public void shouldThrowOnInvalidNotBeforeInstantIfPresent() {
         exception.expect(InvalidClaimException.class);
         exception.expectMessage(startsWith("The Token can't be used before"));
         Clock clock = mock(Clock.class);
@@ -576,7 +576,7 @@ public class JWTVerifierTest {
     }
 
     @Test
-    public void shouldValidateNotBeforeDateIfPresent() throws Exception {
+    public void shouldValidateNotBeforeDateIfPresent() {
         Clock clock = mock(Clock.class);
         when(clock.getNow()).thenReturn(Instant.ofEpochMilli(DATE_TOKEN_MS_VALUE));
 
@@ -590,7 +590,7 @@ public class JWTVerifierTest {
     }
 
     @Test
-    public void shouldValidateNotBeforeInstantIfPresent() throws Exception {
+    public void shouldValidateNotBeforeInstantIfPresent() {
         Clock clock = mock(Clock.class);
         when(clock.getNow()).thenReturn(Instant.ofEpochMilli(DATE_TOKEN_MS_VALUE));
 
@@ -614,7 +614,7 @@ public class JWTVerifierTest {
 
     // Issued At with future date
     @Test
-    public void shouldThrowOnFutureIssuedAtDate() throws Exception {
+    public void shouldThrowOnFutureIssuedAtDate() {
         exception.expect(InvalidClaimException.class);
         exception.expectMessage("The Token can't be used before 1970-01-18T02:26:32Z.");
 
@@ -629,7 +629,7 @@ public class JWTVerifierTest {
     }
 
     @Test
-    public void shouldThrowOnFutureIssuedAtInstant() throws Exception {
+    public void shouldThrowOnFutureIssuedAtInstant() {
         exception.expect(InvalidClaimException.class);
         exception.expectMessage("The Token can't be used before 1970-01-18T02:26:32Z.");
 
@@ -645,7 +645,7 @@ public class JWTVerifierTest {
 
     // Issued At with future date and ignore flag
     @Test
-    public void shouldSkipIssuedAtDateVerificationWhenFlagIsPassed() throws Exception {
+    public void shouldSkipIssuedAtDateVerificationWhenFlagIsPassed() {
         Clock clock = mock(Clock.class);
         when(clock.getNow()).thenReturn(Instant.ofEpochMilli(DATE_TOKEN_MS_VALUE - 1000));
 
@@ -658,7 +658,7 @@ public class JWTVerifierTest {
     }
 
     @Test
-    public void shouldSkipIssuedAtInstantVerificationWhenFlagIsPassed() throws Exception {
+    public void shouldSkipIssuedAtInstantVerificationWhenFlagIsPassed() {
         Clock clock = mock(Clock.class);
         when(clock.getNow()).thenReturn(Instant.ofEpochMilli(DATE_TOKEN_MS_VALUE - 1000));
 
@@ -671,7 +671,7 @@ public class JWTVerifierTest {
     }
 
     @Test
-    public void shouldThrowOnInvalidIssuedAtDateIfPresent() throws Exception {
+    public void shouldThrowOnInvalidIssuedAtDateIfPresent() {
         exception.expect(InvalidClaimException.class);
         exception.expectMessage(startsWith("The Token can't be used before"));
         Clock clock = mock(Clock.class);
@@ -685,7 +685,7 @@ public class JWTVerifierTest {
     }
 
     @Test
-    public void shouldThrowOnInvalidIssuedAtInstantIfPresent() throws Exception {
+    public void shouldThrowOnInvalidIssuedAtInstantIfPresent() {
         exception.expect(InvalidClaimException.class);
         exception.expectMessage(startsWith("The Token can't be used before"));
         Clock clock = mock(Clock.class);
@@ -699,7 +699,7 @@ public class JWTVerifierTest {
     }
 
     @Test
-    public void shouldOverrideAcceptIssuedAtWhenIgnoreIssuedAtDateFlagPassedAndSkipTheVerification() throws Exception {
+    public void shouldOverrideAcceptIssuedAtWhenIgnoreIssuedAtDateFlagPassedAndSkipTheVerification() {
         Clock clock = mock(Clock.class);
         when(clock.getNow()).thenReturn(Instant.ofEpochMilli(DATE_TOKEN_MS_VALUE - 1000));
 
@@ -713,7 +713,7 @@ public class JWTVerifierTest {
     }
 
     @Test
-    public void shouldOverrideAcceptIssuedAtWhenIgnoreIssuedAtInstantFlagPassedAndSkipTheVerification() throws Exception {
+    public void shouldOverrideAcceptIssuedAtWhenIgnoreIssuedAtInstantFlagPassedAndSkipTheVerification() {
         Clock clock = mock(Clock.class);
         when(clock.getNow()).thenReturn(Instant.ofEpochMilli(DATE_TOKEN_MS_VALUE - 1000));
 
@@ -727,7 +727,7 @@ public class JWTVerifierTest {
     }
 
     @Test
-    public void shouldValidateIssuedAtDateIfPresent() throws Exception {
+    public void shouldValidateIssuedAtDateIfPresent() {
         Clock clock = mock(Clock.class);
         when(clock.getNow()).thenReturn(Instant.ofEpochMilli(DATE_TOKEN_MS_VALUE));
 
@@ -741,7 +741,7 @@ public class JWTVerifierTest {
     }
 
     @Test
-    public void shouldValidateIssuedAtInstantIfPresent() throws Exception {
+    public void shouldValidateIssuedAtInstantIfPresent() {
         Clock clock = mock(Clock.class);
         when(clock.getNow()).thenReturn(Instant.ofEpochMilli(DATE_TOKEN_MS_VALUE));
 

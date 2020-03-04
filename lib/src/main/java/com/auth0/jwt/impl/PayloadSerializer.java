@@ -42,12 +42,7 @@ public class PayloadSerializer extends StdSerializer<ClaimsHolder> {
                     gen.writeEndArray();
                 }
             } else {
-                gen.writeFieldName(e.getKey());
-                if (e.getValue() instanceof Date) { // true for EXPIRES_AT, ISSUED_AT, NOT_BEFORE
-                    gen.writeNumber(dateToSeconds((Date) e.getValue()));
-                } else {
-                    gen.writeObject(e.getValue());
-                }
+                handleSerialization(e, gen);
             }
         }
 
