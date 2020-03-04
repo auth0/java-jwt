@@ -358,7 +358,7 @@ public final class JWTCreator {
                     return false;
                 }
                 
-                if(entry.getKey() == null || !(entry.getKey() instanceof String)) {
+                if(!(entry.getKey() instanceof String)) {
                     return false;
                 }
             }
