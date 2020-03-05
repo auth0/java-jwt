@@ -57,16 +57,18 @@ public class PayloadSerializer extends StdSerializer<ClaimsHolder> {
      */
     private void handleSerialization(Map.Entry<String, Object> entry, JsonGenerator gen) throws IOException {
         gen.writeFieldName(entry.getKey());
-        if (entry.getValue() instanceof Instant) { // EXPIRES_AT, ISSUED_AT, NOT_BEFORE, custom Instant claims
-            gen.writeNumber(instantToSeconds((Instant) entry.getValue()));
-        } else if (entry.getValue() instanceof List) {
-            // traverse lists and handle custom Instant serialization
-            serializeList((List<?>) entry.getValue(), gen);
-        } else if (entry.getValue() instanceof Map) {
-            // traverse maps and handle custom Instant serialization
-            serializeMap((Map<?,?>) entry.getValue(), gen);
+        serialize(entry.getValue(), gen);
+    }
+
+    private void serialize(Object value, JsonGenerator gen) throws IOException {
+        if (value instanceof Instant) { // EXPIRES_AT, ISSUED_AT, NOT_BEFORE, custom Instant claims
+            gen.writeNumber(instantToSeconds((Instant) value));
+        } else if (value instanceof Map) {
+            serializeMap((Map<?, ?>) value, gen);
+        } else if (value instanceof List) {
+            serializeList((List<?>) value, gen);
         } else {
-            gen.writeObject(entry.getValue());
+            gen.writeObject(value);
         }
     }
 
@@ -86,18 +88,6 @@ public class PayloadSerializer extends StdSerializer<ClaimsHolder> {
             serialize(entry, gen);
         }
         gen.writeEndArray();
-    }
-
-    private void serialize(Object value, JsonGenerator gen) throws IOException {
-        if (value instanceof Instant) {
-            gen.writeNumber(instantToSeconds((Instant) value));
-        } else if (value instanceof Map) {
-            serializeMap((Map<?, ?>) value, gen);
-        } else if (value instanceof List) {
-            serializeList((List<?>) value, gen);
-        } else {
-            gen.writeObject(value);
-        }
     }
 
     private long instantToSeconds(Instant instant) {
