@@ -11,10 +11,10 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.mockito.Mockito;
 
+import java.sql.Date;
+import java.time.Instant;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,9 +27,9 @@ public class PayloadImplTest {
     public ExpectedException exception = ExpectedException.none();
 
     private PayloadImpl payload;
-    private Date expiresAt;
-    private Date notBefore;
-    private Date issuedAt;
+    private Instant expiresAt;
+    private Instant notBefore;
+    private Instant issuedAt;
 
     private ObjectMapper mapper;
     private ObjectReader objectReader;
@@ -38,10 +38,10 @@ public class PayloadImplTest {
     public void setUp() {
         mapper = getDefaultObjectMapper();
         objectReader = mapper.reader();
-        
-        expiresAt = Mockito.mock(Date.class);
-        notBefore = Mockito.mock(Date.class);
-        issuedAt = Mockito.mock(Date.class);
+
+        expiresAt = Instant.now();
+        notBefore = Instant.now();
+        issuedAt = Instant.now();
         Map<String, JsonNode> tree = new HashMap<>();
         tree.put("extraClaim", new TextNode("extraValue"));
         payload = new PayloadImpl("issuer", "subject", Collections.singletonList("audience"), expiresAt, notBefore, issuedAt, "jwtId", tree, objectReader);
@@ -99,7 +99,8 @@ public class PayloadImplTest {
     @Test
     public void shouldGetExpiresAt() {
         assertThat(payload, is(notNullValue()));
-        assertThat(payload.getExpiresAt(), is(expiresAt));
+        assertThat(payload.getExpiresAt(), is(Date.from(expiresAt)));
+        assertThat(payload.getExpiresAtInstant(), is(expiresAt));
     }
 
     @Test
@@ -107,12 +108,14 @@ public class PayloadImplTest {
         PayloadImpl payload = new PayloadImpl(null, null, null, null, null, null, null, null, objectReader);
         assertThat(payload, is(notNullValue()));
         assertThat(payload.getExpiresAt(), is(nullValue()));
+        assertThat(payload.getExpiresAtInstant(), is(nullValue()));
     }
 
     @Test
     public void shouldGetNotBefore() {
         assertThat(payload, is(notNullValue()));
-        assertThat(payload.getNotBefore(), is(notBefore));
+        assertThat(payload.getNotBefore(), is(Date.from(notBefore)));
+        assertThat(payload.getNotBeforeInstant(), is(notBefore));
     }
 
     @Test
@@ -120,12 +123,14 @@ public class PayloadImplTest {
         PayloadImpl payload = new PayloadImpl(null, null, null, null, null, null, null, null, objectReader);
         assertThat(payload, is(notNullValue()));
         assertThat(payload.getNotBefore(), is(nullValue()));
+        assertThat(payload.getNotBeforeInstant(), is(nullValue()));
     }
 
     @Test
     public void shouldGetIssuedAt() {
         assertThat(payload, is(notNullValue()));
-        assertThat(payload.getIssuedAt(), is(issuedAt));
+        assertThat(payload.getIssuedAt(), is(Date.from(issuedAt)));
+        assertThat(payload.getIssuedAtInstant(), is(issuedAt));
     }
 
     @Test
@@ -133,6 +138,7 @@ public class PayloadImplTest {
         PayloadImpl payload = new PayloadImpl(null, null, null, null, null, null, null, null, objectReader);
         assertThat(payload, is(notNullValue()));
         assertThat(payload.getIssuedAt(), is(nullValue()));
+        assertThat(payload.getIssuedAtInstant(), is(nullValue()));
     }
 
     @Test

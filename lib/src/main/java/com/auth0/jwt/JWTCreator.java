@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.apache.commons.codec.binary.Base64;
 
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -140,8 +141,30 @@ public final class JWTCreator {
          * @param expiresAt the Expires At value.
          * @return this same Builder instance.
          */
-        public Builder withExpiresAt(Date expiresAt) {
+        public Builder withExpiresAt(Instant expiresAt) {
             addClaim(PublicClaims.EXPIRES_AT, expiresAt);
+            return this;
+        }
+
+        /**
+         * Add a specific Expires At ("exp") claim to the Payload.
+         *
+         * @param expiresAt the Expires At value.
+         * @return this same Builder instance.
+         */
+        // TODO - Deprecate this method in favor of withExpiresAtInstant
+        public Builder withExpiresAt(Date expiresAt) {
+            return withExpiresAt(expiresAt.toInstant());
+        }
+
+        /**
+         * Add a specific Not Before ("nbf") claim to the Payload.
+         *
+         * @param notBefore the Not Before value.
+         * @return this same Builder instance.
+         */
+        public Builder withNotBefore(Instant notBefore) {
+            addClaim(PublicClaims.NOT_BEFORE, notBefore);
             return this;
         }
 
@@ -151,8 +174,19 @@ public final class JWTCreator {
          * @param notBefore the Not Before value.
          * @return this same Builder instance.
          */
+        // TODO - Deprecate this method in favor of withNotBeforeInstant
         public Builder withNotBefore(Date notBefore) {
-            addClaim(PublicClaims.NOT_BEFORE, notBefore);
+            return withNotBefore(notBefore.toInstant());
+        }
+
+        /**
+         * Add a specific Issued At ("iat") claim to the Payload.
+         *
+         * @param issuedAt the Issued At value.
+         * @return this same Builder instance.
+         */
+        public Builder withIssuedAt(Instant issuedAt) {
+            addClaim(PublicClaims.ISSUED_AT, issuedAt);
             return this;
         }
 
@@ -162,9 +196,9 @@ public final class JWTCreator {
          * @param issuedAt the Issued At value.
          * @return this same Builder instance.
          */
+        // TODO - Deprecate this method in favor of withIssuedAtInstant
         public Builder withIssuedAt(Date issuedAt) {
-            addClaim(PublicClaims.ISSUED_AT, issuedAt);
-            return this;
+            return withIssuedAt(issuedAt.toInstant());
         }
 
         /**
@@ -256,10 +290,23 @@ public final class JWTCreator {
          * @return this same Builder instance.
          * @throws IllegalArgumentException if the name is null.
          */
-        public Builder withClaim(String name, Date value) throws IllegalArgumentException {
+        public Builder withClaim(String name, Instant value) throws IllegalArgumentException {
             assertNonNull(name);
             addClaim(name, value);
             return this;
+        }
+
+        /**
+         * Add a custom Claim value.
+         *
+         * @param name  the Claim's name.
+         * @param value the Claim's value.
+         * @return this same Builder instance.
+         * @throws IllegalArgumentException if the name is null.
+         */
+        // TODO - Deprecate this method in favor of withClaim(String name, Instant value)
+        public Builder withClaim(String name, Date value) throws IllegalArgumentException {
+            return withClaim(name, value.toInstant());
         }
 
         /**
@@ -309,7 +356,7 @@ public final class JWTCreator {
          * 
          * Accepted nested types are {@linkplain Map} and {@linkplain List} with basic types
          * {@linkplain Boolean}, {@linkplain Integer}, {@linkplain Long}, {@linkplain Double},
-         * {@linkplain String} and {@linkplain Date}. {@linkplain Map}s cannot contain null keys or values.
+         * {@linkplain String}, {@linkplain Instant}, and {@linkplain Date}. {@linkplain Map}s cannot contain null keys or values.
          * {@linkplain List}s can contain null elements.
          *
          * @param name  the Claim's name.
@@ -321,7 +368,7 @@ public final class JWTCreator {
             assertNonNull(name);
             // validate map contents
             if(!validateClaim(map)) {
-                throw new IllegalArgumentException("Expected map containing Map, List, Boolean, Integer, Long, Double, String and Date");
+                throw new IllegalArgumentException("Expected map containing Map, List, Boolean, Integer, Long, Double, String and Instant");
             }
             addClaim(name, map);
             return this;
@@ -332,7 +379,7 @@ public final class JWTCreator {
          *
          * Accepted nested types are {@linkplain Map} and {@linkplain List} with basic types
          * {@linkplain Boolean}, {@linkplain Integer}, {@linkplain Long}, {@linkplain Double},
-         * {@linkplain String} and {@linkplain Date}. {@linkplain Map}s cannot contain null keys or values.
+         * {@linkplain String}, {@linkplain Instant}, and {@linkplain Date}. {@linkplain Map}s cannot contain null keys or values.
          * {@linkplain List}s can contain null elements.
          *
          * @param name  the Claim's name.
@@ -344,7 +391,7 @@ public final class JWTCreator {
             assertNonNull(name);
             // validate list contents
             if(!validateClaim(list)) {
-                throw new IllegalArgumentException("Expected list containing Map, List, Boolean, Integer, Long, Double, String and Date");
+                throw new IllegalArgumentException("Expected list containing Map, List, Boolean, Integer, Long, Double, String and Instant");
             }
             addClaim(name, list);
             return this;
@@ -391,7 +438,7 @@ public final class JWTCreator {
             if(c.isArray()) {
                 return c == Integer[].class || c == Long[].class || c == String[].class;
             }
-            return c == String.class || c == Integer.class || c == Long.class || c == Double.class || c == Date.class || c == Boolean.class;
+            return c == String.class || c == Integer.class || c == Long.class || c == Double.class || c == Date.class || c == Instant.class || c == Boolean.class;
         }
 
         /**

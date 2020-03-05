@@ -1,5 +1,6 @@
 package com.auth0.jwt.interfaces;
 
+import java.time.Instant;
 import java.util.Date;
 
 /**
@@ -7,9 +8,17 @@ import java.util.Date;
  */
 public interface Clock {
     /**
-     * Returns a new Date representing Today's time.
+     * Returns a new Instant representing the current time.
      *
+     * @return the current time.
+     */
+    Instant getNow();
+
+    /**
+     * Returns a new Date representing Today's time.
+
      * @return a new Date representing Today's time.
      */
+    // TODO - Deprecate this method in favor of getNow()
     Date getToday();
 }

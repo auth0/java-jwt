@@ -1,5 +1,6 @@
 package com.auth0.jwt.interfaces;
 
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +35,28 @@ public interface Payload {
      *
      * @return the Expiration Time value or null.
      */
+    Instant getExpiresAtInstant();
+
+    /**
+     * Get the value of the "nbf" claim, or null if it's not available.
+     *
+     * @return the Not Before value or null.
+     */
+    Instant getNotBeforeInstant();
+
+    /**
+     * Get the value of the "iat" claim, or null if it's not available.
+     *
+     * @return the Issued At value or null.
+     */
+    Instant getIssuedAtInstant();
+
+    /**
+     * Get the value of the "exp" claim, or null if it's not available.
+     *
+     * @return the Expiration Time value or null.
+     */
+    // TODO - deprecate in favor of getExpiresAtInstant
     Date getExpiresAt();
 
     /**
@@ -41,6 +64,7 @@ public interface Payload {
      *
      * @return the Not Before value or null.
      */
+    // TODO - deprecate in favor of getNotBeforeInstant
     Date getNotBefore();
 
     /**
@@ -48,6 +72,7 @@ public interface Payload {
      *
      * @return the Issued At value or null.
      */
+    // TODO - deprecate in favor of getIssuedAtInstant
     Date getIssuedAt();
 
     /**

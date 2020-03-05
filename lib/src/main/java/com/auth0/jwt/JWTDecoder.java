@@ -10,6 +10,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.StringUtils;
 
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -81,6 +82,21 @@ final class JWTDecoder implements DecodedJWT, Serializable {
     @Override
     public List<String> getAudience() {
         return payload.getAudience();
+    }
+
+    @Override
+    public Instant getExpiresAtInstant() {
+        return payload.getExpiresAtInstant();
+    }
+
+    @Override
+    public Instant getNotBeforeInstant() {
+        return payload.getNotBeforeInstant();
+    }
+
+    @Override
+    public Instant getIssuedAtInstant() {
+        return payload.getIssuedAtInstant();
     }
 
     @Override

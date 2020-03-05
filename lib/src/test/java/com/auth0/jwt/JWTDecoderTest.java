@@ -14,6 +14,7 @@ import org.junit.rules.ExpectedException;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.Date;
 import java.util.Map;
 
@@ -25,7 +26,7 @@ public class JWTDecoderTest {
     public ExpectedException exception = ExpectedException.none();
 
     @Test
-    public void getSubject() throws Exception {
+    public void getSubject() {
         DecodedJWT jwt = JWT.decode("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ");
         assertThat(jwt.getSubject(), is(notNullValue()));
         assertThat(jwt.getSubject(), is("1234567890"));
@@ -161,6 +162,39 @@ public class JWTDecoderTest {
     }
 
     @Test
+    public void shouldGetExpirationTimeAsInstant() {
+        DecodedJWT jwt = JWT.decode("eyJhbGciOiJIUzI1NiJ9.eyJleHAiOjE0NzY3MjcwODZ9.L9dcPHEDQew2u9MkDCORFkfDGcSOsgoPqNY-LUMLEHg");
+        assertThat(jwt, is(notNullValue()));
+        assertThat(jwt.getExpiresAtInstant(), is(instanceOf(Instant.class)));
+        long ms = 1476727086L * 1000;
+        Instant expectedInstant = Instant.ofEpochMilli(ms);
+        assertThat(jwt.getExpiresAtInstant(), is(notNullValue()));
+        assertThat(jwt.getExpiresAtInstant(), is(equalTo(expectedInstant)));
+    }
+
+    @Test
+    public void shouldGetNotBeforeAsInstant() {
+        DecodedJWT jwt = JWT.decode("eyJhbGciOiJIUzI1NiJ9.eyJuYmYiOjE0NzY3MjcwODZ9.tkpD3iCPQPVqjnjpDVp2bJMBAgpVCG9ZjlBuMitass0");
+        assertThat(jwt, is(notNullValue()));
+        assertThat(jwt.getNotBeforeInstant(), is(instanceOf(Instant.class)));
+        long ms = 1476727086L * 1000;
+        Instant expectedInstant = Instant.ofEpochMilli(ms);
+        assertThat(jwt.getNotBeforeInstant(), is(notNullValue()));
+        assertThat(jwt.getNotBeforeInstant(), is(equalTo(expectedInstant)));
+    }
+
+    @Test
+    public void shouldGetIssuedAtAsInstant() {
+        DecodedJWT jwt = JWT.decode("eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE0NzY3MjcwODZ9.KPjGoW665E8V5_27Jugab8qSTxLk2cgquhPCBfAP0_w");
+        assertThat(jwt, is(notNullValue()));
+        assertThat(jwt.getIssuedAtInstant(), is(instanceOf(Instant.class)));
+        long ms = 1476727086L * 1000;
+        Instant expectedInstant = Instant.ofEpochMilli(ms);
+        assertThat(jwt.getIssuedAtInstant(), is(notNullValue()));
+        assertThat(jwt.getIssuedAtInstant(), is(equalTo(expectedInstant)));
+    }
+
+    @Test
     public void shouldGetId() {
         DecodedJWT jwt = JWT.decode("eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiIxMjM0NTY3ODkwIn0.m3zgEfVUFOd-CvL3xG5BuOWLzb0zMQZCqiVNQQOPOvA");
         assertThat(jwt, is(notNullValue()));
@@ -248,6 +282,15 @@ public class JWTDecoderTest {
     }
 
     @Test
+    public void shouldGetCustomClaimOfTypeInstant() {
+        String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoxNDc4ODkxNTIxfQ.mhioumeok8fghQEhTKF3QtQAksSvZ_9wIhJmgZLhJ6c";
+        Instant instant = Instant.ofEpochMilli(1478891521000L);
+        DecodedJWT jwt = JWT.decode(token);
+        Assert.assertThat(jwt, is(notNullValue()));
+        Assert.assertThat(jwt.getClaim("name").asInstant().getEpochSecond(), is(instant.getEpochSecond()));
+    }
+
+    @Test
     public void shouldGetCustomArrayClaimOfTypeString() {
         String token = "eyJhbGciOiJIUzI1NiJ9.eyJuYW1lIjpbInRleHQiLCIxMjMiLCJ0cnVlIl19.lxM8EcmK1uSZRAPd0HUhXGZJdauRmZmLjoeqz4J9yAA";
         DecodedJWT jwt = JWT.decode(token);
@@ -306,12 +349,12 @@ public class JWTDecoderTest {
         assertThat(originalJwt.getAlgorithm(), is(equalTo(deserializedJwt.getAlgorithm())));
         assertThat(originalJwt.getAudience(), is(equalTo(deserializedJwt.getAudience())));
         assertThat(originalJwt.getContentType(), is(equalTo(deserializedJwt.getContentType())));
-        assertThat(originalJwt.getExpiresAt(), is(equalTo(deserializedJwt.getExpiresAt())));
+        assertThat(originalJwt.getExpiresAtInstant(), is(equalTo(deserializedJwt.getExpiresAtInstant())));
         assertThat(originalJwt.getId(), is(equalTo(deserializedJwt.getId())));
-        assertThat(originalJwt.getIssuedAt(), is(equalTo(deserializedJwt.getIssuedAt())));
+        assertThat(originalJwt.getIssuedAtInstant(), is(equalTo(deserializedJwt.getIssuedAtInstant())));
         assertThat(originalJwt.getIssuer(), is(equalTo(deserializedJwt.getIssuer())));
         assertThat(originalJwt.getKeyId(), is(equalTo(deserializedJwt.getKeyId())));
-        assertThat(originalJwt.getNotBefore(), is(equalTo(deserializedJwt.getNotBefore())));
+        assertThat(originalJwt.getNotBeforeInstant(), is(equalTo(deserializedJwt.getNotBeforeInstant())));
         assertThat(originalJwt.getSubject(), is(equalTo(deserializedJwt.getSubject())));
         assertThat(originalJwt.getType(), is(equalTo(deserializedJwt.getType())));
         assertThat(originalJwt.getClaims().get("extraClaim").asString(),

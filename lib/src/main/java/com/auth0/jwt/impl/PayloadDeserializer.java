@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.*;
 
 class PayloadDeserializer extends StdDeserializer<Payload> {
@@ -37,9 +38,9 @@ class PayloadDeserializer extends StdDeserializer<Payload> {
         String issuer = getString(tree, PublicClaims.ISSUER);
         String subject = getString(tree, PublicClaims.SUBJECT);
         List<String> audience = getStringOrArray(tree, PublicClaims.AUDIENCE);
-        Date expiresAt = getDateFromSeconds(tree, PublicClaims.EXPIRES_AT);
-        Date notBefore = getDateFromSeconds(tree, PublicClaims.NOT_BEFORE);
-        Date issuedAt = getDateFromSeconds(tree, PublicClaims.ISSUED_AT);
+        Instant expiresAt = getInstantFromSeconds(tree, PublicClaims.EXPIRES_AT);
+        Instant notBefore = getInstantFromSeconds(tree, PublicClaims.NOT_BEFORE);
+        Instant issuedAt = getInstantFromSeconds(tree, PublicClaims.ISSUED_AT);
         String jwtId = getString(tree, PublicClaims.JWT_ID);
 
         return new PayloadImpl(issuer, subject, audience, expiresAt, notBefore, issuedAt, jwtId, tree, objectReader);
@@ -65,7 +66,7 @@ class PayloadDeserializer extends StdDeserializer<Payload> {
         return list;
     }
 
-    Date getDateFromSeconds(Map<String, JsonNode> tree, String claimName) {
+    Instant getInstantFromSeconds(Map<String, JsonNode> tree, String claimName) {
         JsonNode node = tree.get(claimName);
         if (node == null || node.isNull()) {
             return null;
@@ -73,8 +74,7 @@ class PayloadDeserializer extends StdDeserializer<Payload> {
         if (!node.canConvertToLong()) {
             throw new JWTDecodeException(String.format("The claim '%s' contained a non-numeric date value.", claimName));
         }
-        final long ms = node.asLong() * 1000;
-        return new Date(ms);
+        return Instant.ofEpochSecond(node.asLong());
     }
 
     String getString(Map<String, JsonNode> tree, String claimName) {

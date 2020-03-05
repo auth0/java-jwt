@@ -9,8 +9,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.StringWriter;
+import java.time.Instant;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -80,8 +80,8 @@ public class PayloadSerializerTest {
     }
 
     @Test
-    public void shouldSerializeNotBeforeDateInSeconds() throws Exception {
-        ClaimsHolder holder = holderFor("nbf", new Date(1478874000));
+    public void shouldSerializeNotBeforeInstantInSeconds() throws Exception {
+        ClaimsHolder holder = holderFor("nbf", Instant.ofEpochMilli(1478874000));
         serializer.serialize(holder, jsonGenerator, serializerProvider);
         jsonGenerator.flush();
 
@@ -89,8 +89,8 @@ public class PayloadSerializerTest {
     }
 
     @Test
-    public void shouldSerializeIssuedAtDateInSeconds() throws Exception {
-        ClaimsHolder holder = holderFor("iat", new Date(1478874000));
+    public void shouldSerializeIssuedAtInstantInSeconds() throws Exception {
+        ClaimsHolder holder = holderFor("iat", Instant.ofEpochMilli(1478874000));
         serializer.serialize(holder, jsonGenerator, serializerProvider);
         jsonGenerator.flush();
 
@@ -98,8 +98,8 @@ public class PayloadSerializerTest {
     }
 
     @Test
-    public void shouldSerializeExpiresAtDateInSeconds() throws Exception {
-        ClaimsHolder holder = holderFor("exp", new Date(1478874000));
+    public void shouldSerializeExpiresAtInstantInSeconds() throws Exception {
+        ClaimsHolder holder = holderFor("exp", Instant.ofEpochMilli(1478874000));
         serializer.serialize(holder, jsonGenerator, serializerProvider);
         jsonGenerator.flush();
 
@@ -107,8 +107,8 @@ public class PayloadSerializerTest {
     }
 
     @Test
-    public void shouldSerializeCustomDateInSeconds() throws Exception {
-        ClaimsHolder holder = holderFor("birthdate", new Date(1478874000));
+    public void shouldSerializeCustomInstantInSeconds() throws Exception {
+        ClaimsHolder holder = holderFor("birthdate", Instant.ofEpochMilli(1478874000));
         serializer.serialize(holder, jsonGenerator, serializerProvider);
         jsonGenerator.flush();
 
@@ -116,14 +116,14 @@ public class PayloadSerializerTest {
     }
 
     @Test
-    public void shouldSerializeDatesUsingLong() throws Exception {
+    public void shouldSerializeInstantsUsingLong() throws Exception {
         long secs = Integer.MAX_VALUE + 10000L;
-        Date date = new Date(secs * 1000L);
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("iat", date);
-        claims.put("nbf", date);
-        claims.put("exp", date);
-        claims.put("ctm", date);
+        Instant instant = Instant.ofEpochSecond(secs);
+        Map<String, Object> claims = new HashMap<String, Object>();
+        claims.put("iat", instant);
+        claims.put("nbf", instant);
+        claims.put("exp", instant);
+        claims.put("ctm", instant);
         ClaimsHolder holder = new ClaimsHolder(claims);
         serializer.serialize(holder, jsonGenerator, serializerProvider);
         jsonGenerator.flush();
