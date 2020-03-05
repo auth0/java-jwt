@@ -6,11 +6,11 @@ import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.Header;
 import com.auth0.jwt.interfaces.Payload;
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.codec.binary.StringUtils;
 
 import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -35,10 +35,10 @@ final class JWTDecoder implements DecodedJWT, Serializable {
         String headerJson;
         String payloadJson;
         try {
-            headerJson = StringUtils.newStringUtf8(Base64.decodeBase64(parts[0]));
-            payloadJson = StringUtils.newStringUtf8(Base64.decodeBase64(parts[1]));
-        } catch (NullPointerException e) {
-            throw new JWTDecodeException("The UTF-8 Charset isn't initialized.", e);
+            headerJson = new String(Base64.getUrlDecoder().decode(parts[0]), StandardCharsets.UTF_8);
+            payloadJson = new String(Base64.getUrlDecoder().decode(parts[1]), StandardCharsets.UTF_8);
+        } catch (NullPointerException | IllegalArgumentException e) {
+            throw new JWTDecodeException("The UTF-8 Charset isn't initialized or the token is not valid Base64.", e);
         }
         header = converter.parseHeader(headerJson);
         payload = converter.parsePayload(payloadJson);

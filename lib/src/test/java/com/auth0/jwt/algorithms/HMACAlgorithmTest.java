@@ -276,4 +276,18 @@ public class HMACAlgorithmTest {
 
         assertThat(algorithm.sign(bout.toByteArray()), is(algorithm.sign(header, payload)));
     }
+
+    @Test
+    public void shouldThrowWhenSignatureNotValidBase64() throws Exception {
+        exception.expect(SignatureVerificationException.class);
+        exception.expectCause(isA(IllegalArgumentException.class));
+
+        CryptoHelper crypto = mock(CryptoHelper.class);
+        when(crypto.verifySignatureFor(anyString(), any(byte[].class), any(String.class), any(String.class), any(byte[].class)))
+                .thenThrow(NoSuchAlgorithmException.class);
+
+        Algorithm algorithm = new HMACAlgorithm(crypto, "some-alg", "some-algorithm", "secret".getBytes(StandardCharsets.UTF_8));
+        String jwt = "eyJhbGciOiJIUzI1NiIsImN0eSI6IkpXVCJ9.eyJpc3MiOiJhdXRoMCJ9.mZ0m_N1J4PgeqWm+i903JuUoDRZDBPB7HwkS4nVyWH1M";
+        algorithm.verify(JWT.decode(jwt));
+    }
 }
