@@ -42,7 +42,8 @@ public class PayloadSerializer extends StdSerializer<ClaimsHolder> {
                     gen.writeEndArray();
                 }
             } else {
-                handleSerialization(e, gen);
+                gen.writeFieldName(e.getKey());
+                handleSerialization(e.getValue(), gen);
             }
         }
 
@@ -51,16 +52,11 @@ public class PayloadSerializer extends StdSerializer<ClaimsHolder> {
 
     /**
      * Serializes {@linkplain Instant} to epoch second values, traversing maps and lists as needed.
-     * @param entry the entry to serialize
+     * @param value the object to serialize
      * @param gen the JsonGenerator to use for JSON serialization
      * @throws IOException
      */
-    private void handleSerialization(Map.Entry<String, Object> entry, JsonGenerator gen) throws IOException {
-        gen.writeFieldName(entry.getKey());
-        serialize(entry.getValue(), gen);
-    }
-
-    private void serialize(Object value, JsonGenerator gen) throws IOException {
+    private void handleSerialization(Object value, JsonGenerator gen) throws IOException {
         if (value instanceof Instant) { // EXPIRES_AT, ISSUED_AT, NOT_BEFORE, custom Instant claims
             gen.writeNumber(instantToSeconds((Instant) value));
         } else if (value instanceof Map) {
@@ -77,7 +73,7 @@ public class PayloadSerializer extends StdSerializer<ClaimsHolder> {
         for (Map.Entry<?, ?> entry : map.entrySet()) {
             gen.writeFieldName((String) entry.getKey());
             Object value = entry.getValue();
-            serialize(value, gen);
+            handleSerialization(value, gen);
         }
         gen.writeEndObject();
     }
@@ -85,7 +81,7 @@ public class PayloadSerializer extends StdSerializer<ClaimsHolder> {
     private void serializeList(List<?> list, JsonGenerator gen) throws IOException {
         gen.writeStartArray();
         for (Object entry : list) {
-            serialize(entry, gen);
+            handleSerialization(entry, gen);
         }
         gen.writeEndArray();
     }
