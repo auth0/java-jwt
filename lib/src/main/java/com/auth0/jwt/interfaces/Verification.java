@@ -148,8 +148,9 @@ public interface Verification {
      * @param value the Claim's value.
      * @return this same Verification instance.
      * @throws IllegalArgumentException if the name is null.
+     * @deprecated Use {@linkplain #withClaim(String, Instant)} instead.
      */
-    // TODO deprecate this in favor of withClaim(String name, Instant value)
+    @Deprecated
     Verification withClaim(String name, Date value) throws IllegalArgumentException;
 
     /**

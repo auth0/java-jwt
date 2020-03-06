@@ -147,8 +147,9 @@ public final class JWTCreator {
          *
          * @param expiresAt the Expires At value.
          * @return this same Builder instance.
+         * @deprecated Use {@linkplain #withExpiresAt(Instant)} instead.
          */
-        // TODO - Deprecate this method in favor of withExpiresAtInstant
+        @Deprecated
         public Builder withExpiresAt(Date expiresAt) {
             return withExpiresAt(expiresAt.toInstant());
         }
@@ -169,8 +170,9 @@ public final class JWTCreator {
          *
          * @param notBefore the Not Before value.
          * @return this same Builder instance.
+         * @deprecated Use {@linkplain #withNotBefore(Instant)} instead.
          */
-        // TODO - Deprecate this method in favor of withNotBeforeInstant
+        @Deprecated
         public Builder withNotBefore(Date notBefore) {
             return withNotBefore(notBefore.toInstant());
         }
@@ -191,8 +193,9 @@ public final class JWTCreator {
          *
          * @param issuedAt the Issued At value.
          * @return this same Builder instance.
+         * @deprecated Use {@linkplain #withIssuedAt(Instant)} instead.
          */
-        // TODO - Deprecate this method in favor of withIssuedAtInstant
+        @Deprecated
         public Builder withIssuedAt(Date issuedAt) {
             return withIssuedAt(issuedAt.toInstant());
         }
@@ -299,8 +302,9 @@ public final class JWTCreator {
          * @param value the Claim's value.
          * @return this same Builder instance.
          * @throws IllegalArgumentException if the name is null.
+         * @deprecated Use {@linkplain #withClaim(String, Instant)} instead.
          */
-        // TODO - Deprecate this method in favor of withClaim(String name, Instant value)
+        @Deprecated
         public Builder withClaim(String name, Date value) throws IllegalArgumentException {
             return withClaim(name, value.toInstant());
         }
@@ -312,7 +316,9 @@ public final class JWTCreator {
          * @param items the Claim's value.
          * @return this same Builder instance.
          * @throws IllegalArgumentException if the name is null.
+         * @deprecated Use {@linkplain #withClaim(String, List)} instead.
          */
+        @Deprecated
         public Builder withArrayClaim(String name, String[] items) throws IllegalArgumentException {
             assertNonNull(name);
             addClaim(name, items);
@@ -326,7 +332,9 @@ public final class JWTCreator {
          * @param items the Claim's value.
          * @return this same Builder instance.
          * @throws IllegalArgumentException if the name is null.
+         * @deprecated Use {@linkplain #withClaim(String, List)} instead.
          */
+        @Deprecated
         public Builder withArrayClaim(String name, Integer[] items) throws IllegalArgumentException {
             assertNonNull(name);
             addClaim(name, items);
@@ -340,7 +348,9 @@ public final class JWTCreator {
          * @param items the Claim's value.
          * @return this same Builder instance.
          * @throws IllegalArgumentException if the name is null
+         * @deprecated Use {@linkplain #withClaim(String, List)} instead.
          */
+        @Deprecated
         public Builder withArrayClaim(String name, Long[] items) throws IllegalArgumentException {
             assertNonNull(name);
             addClaim(name, items);
