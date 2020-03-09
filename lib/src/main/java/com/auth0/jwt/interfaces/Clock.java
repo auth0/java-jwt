@@ -18,7 +18,8 @@ public interface Clock {
      * Returns a new Date representing Today's time.
 
      * @return a new Date representing Today's time.
+     * @deprecated Use {@linkplain #getNow()} instead
      */
-    // TODO - Deprecate this method in favor of getNow()
+    @Deprecated
     Date getToday();
 }

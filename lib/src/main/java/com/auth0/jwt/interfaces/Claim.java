@@ -71,8 +71,9 @@ public interface Claim {
      * If the value can't be converted to a Date, null will be returned.
      *
      * @return the value as a Date or null.
+     * @deprecated Use {@linkplain #asInstant()} instead.
      */
-    // TODO - Deprecate this method in favor of asInstant()
+    @Deprecated
     Date asDate();
 
     /**

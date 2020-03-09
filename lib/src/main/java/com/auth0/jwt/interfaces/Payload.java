@@ -55,24 +55,27 @@ public interface Payload {
      * Get the value of the "exp" claim, or null if it's not available.
      *
      * @return the Expiration Time value or null.
+     * @deprecated Use {@linkplain #getExpiresAtInstant()} instead.
      */
-    // TODO - deprecate in favor of getExpiresAtInstant
+    @Deprecated
     Date getExpiresAt();
 
     /**
      * Get the value of the "nbf" claim, or null if it's not available.
      *
      * @return the Not Before value or null.
+     * @deprecated Use {@linkplain #getNotBeforeInstant()} instead.
      */
-    // TODO - deprecate in favor of getNotBeforeInstant
+    @Deprecated
     Date getNotBefore();
 
     /**
      * Get the value of the "iat" claim, or null if it's not available.
      *
      * @return the Issued At value or null.
+     * @deprecated Use {@linkplain #getIssuedAtInstant()} instead.
      */
-    // TODO - deprecate in favor of getIssuedAtInstant
+    @Deprecated
     Date getIssuedAt();
 
     /**
