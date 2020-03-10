@@ -702,6 +702,26 @@ public class JWTVerifierTest {
     }
 
     @Test
+    public void shouldRemoveIssuerWhenPassingNullReference() throws Exception {
+        String issuer = null;
+        Algorithm algorithm = mock(Algorithm.class);
+        JWTVerifier verifier = JWTVerifier.init(algorithm)
+                .withIssuer(issuer)
+                .withIssuer(null)
+                .build();
+
+        assertThat(verifier.claims, is(notNullValue()));
+        assertThat(verifier.claims, not(hasKey("iss")));
+
+        verifier = JWTVerifier.init(algorithm)
+                .withIssuer()
+                .build();
+
+        assertThat(verifier.claims, is(notNullValue()));
+        assertThat(verifier.claims, not(hasKey("iss")));
+    }
+
+    @Test
     public void shouldSkipClaimValidationsIfNoClaimsRequired() throws Exception {
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.e30.t-IDcSemACt8x4iTMCda8Yhe3iZaWbvV5XKSTbuAn0M";
         DecodedJWT jwt = JWTVerifier.init(Algorithm.HMAC256("secret"))
