@@ -125,7 +125,7 @@ public class JWTVerifierTest {
                 .verify(tokenArr);
 
         assertThat(jwtArr, is(notNullValue()));
-    }
+     }
 
     @Test
     public void shouldAcceptPartialAudience() throws Exception {
@@ -148,6 +148,26 @@ public class JWTVerifierTest {
                 .withAudience("nope")
                 .build()
                 .verify(token);
+    }
+
+    @Test
+    public void shouldRemoveAudienceWhenPassingNullReference() throws Exception {
+        String audience = null;
+        Algorithm algorithm = mock(Algorithm.class);
+        JWTVerifier verifier = JWTVerifier.init(algorithm)
+                .withAudience(audience)
+                .withAudience(null)
+                .build();
+
+        assertThat(verifier.claims, is(notNullValue()));
+        assertThat(verifier.claims, not(hasKey("aud")));
+
+        verifier = JWTVerifier.init(algorithm)
+                .withAudience()
+                .build();
+
+        assertThat(verifier.claims, is(notNullValue()));
+        assertThat(verifier.claims, not(hasKey("aud")));
     }
 
     @Test
