@@ -57,7 +57,7 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
 
         @Override
         public Verification withIssuer(String... issuer) {
-            requireClaim(PublicClaims.ISSUER, issuer == null ? null : Arrays.asList(issuer));
+            requireClaim(PublicClaims.ISSUER, issuer == null || issuer.length == 0 || (issuer.length == 1 && issuer[0] == null) ? null : Arrays.asList(issuer));
             return this;
         }
 
@@ -69,7 +69,7 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
 
         @Override
         public Verification withAudience(String... audience) {
-            requireClaim(PublicClaims.AUDIENCE, audience == null ? null : Arrays.asList(audience));
+            requireClaim(PublicClaims.AUDIENCE, audience == null || audience.length == 0 || (audience.length == 1 && audience[0] == null)? null : Arrays.asList(audience));
             return this;
         }
 
