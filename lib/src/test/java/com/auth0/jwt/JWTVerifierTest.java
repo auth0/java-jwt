@@ -168,6 +168,13 @@ public class JWTVerifierTest {
 
         assertThat(verifier.claims, is(notNullValue()));
         assertThat(verifier.claims, not(hasKey("aud")));
+
+        verifier = JWTVerifier.init(algorithm)
+                .withAudience("   ")
+                .build();
+
+        assertThat(verifier.claims, is(notNullValue()));
+        assertThat(verifier.claims, not(hasKey("aud")));
     }
 
     @Test
@@ -715,6 +722,13 @@ public class JWTVerifierTest {
 
         verifier = JWTVerifier.init(algorithm)
                 .withIssuer()
+                .build();
+
+        assertThat(verifier.claims, is(notNullValue()));
+        assertThat(verifier.claims, not(hasKey("iss")));
+
+        verifier = JWTVerifier.init(algorithm)
+                .withIssuer("  ")
                 .build();
 
         assertThat(verifier.claims, is(notNullValue()));
