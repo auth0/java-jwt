@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -59,6 +60,8 @@ public class PayloadSerializer extends StdSerializer<ClaimsHolder> {
     private void handleSerialization(Object value, JsonGenerator gen) throws IOException {
         if (value instanceof Instant) { // EXPIRES_AT, ISSUED_AT, NOT_BEFORE, custom Instant claims
             gen.writeNumber(instantToSeconds((Instant) value));
+        } else if (value instanceof Date) {
+            gen.writeNumber(dateToSeconds((Date) value));
         } else if (value instanceof Map) {
             serializeMap((Map<?, ?>) value, gen);
         } else if (value instanceof List) {
@@ -88,5 +91,9 @@ public class PayloadSerializer extends StdSerializer<ClaimsHolder> {
 
     private long instantToSeconds(Instant instant) {
         return instant.getEpochSecond();
+    }
+
+    private long dateToSeconds(Date date) {
+        return date.getTime() / 1000;
     }
 }

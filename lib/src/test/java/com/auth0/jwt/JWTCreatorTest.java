@@ -2,6 +2,7 @@ package com.auth0.jwt;
 
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.impl.PublicClaims;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.ECDSAKeyProvider;
 import com.auth0.jwt.interfaces.RSAKeyProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -507,7 +508,7 @@ public class JWTCreatorTest {
         data.put("integer", 1);
         data.put("long", Long.MAX_VALUE);
         data.put("double", 123.456d);
-        data.put("date", new Date(123L));
+        data.put("date", new Date(123000));
         data.put("instant", Instant.ofEpochSecond(123L));
         data.put("boolean", true);
 
@@ -520,7 +521,7 @@ public class JWTCreatorTest {
 
         Map<String, Object> sub = new HashMap<>();
         sub.put("subKey", "subValue");
-        sub.put("subDate", new Date(567L));
+        sub.put("subDate", new Date(567000));
         sub.put("subInstant", Instant.ofEpochSecond(567L));
         data.put("map", sub);
 
@@ -530,10 +531,9 @@ public class JWTCreatorTest {
 
         assertThat(jwt, is(notNullValue()));
         String[] parts = jwt.split("\\.");
-        
-        String body = new String(Base64.getUrlDecoder().decode(parts[1]), StandardCharsets.UTF_8);
-        ObjectMapper mapper = new ObjectMapper();
-        Map<String, Object> map = (Map<String, Object>) mapper.readValue(body, Map.class).get("data");
+
+        DecodedJWT decodedJWT = JWT.decode(jwt);
+        Map<String, Object> map = decodedJWT.getClaim("data").asMap();
 
         assertThat(map.get("string"), is("abc"));
         assertThat(map.get("integer"), is(1));
@@ -568,7 +568,7 @@ public class JWTCreatorTest {
         data.add(1);
         data.add(Long.MAX_VALUE);
         data.add(123.456d);
-        data.add(new Date(123L));
+        data.add(new Date(123000));
         data.add(Instant.ofEpochSecond(123L));
         data.add(true);
         
@@ -581,7 +581,7 @@ public class JWTCreatorTest {
 
         Map<String, Object> sub = new HashMap<>();
         sub.put("subKey", "subValue");
-        sub.put("subDate", new Date(567L));
+        sub.put("subDate", new Date(567000));
         sub.put("subInstant", Instant.ofEpochSecond(567L));
 
         data.add(sub);
@@ -592,10 +592,9 @@ public class JWTCreatorTest {
 
         assertThat(jwt, is(notNullValue()));
         String[] parts = jwt.split("\\.");
-        
-        String body = new String(Base64.getUrlDecoder().decode(parts[1]), StandardCharsets.UTF_8);
-        ObjectMapper mapper = new ObjectMapper();
-        List<Object> list = (List<Object>) mapper.readValue(body, Map.class).get("data");
+
+        DecodedJWT decodedJWT = JWT.decode(jwt);
+        List<Object> list = decodedJWT.getClaim("data").asList(Object.class);
         
         assertThat(list.get(0), is("abc"));
         assertThat(list.get(1), is(1));
