@@ -34,8 +34,8 @@ compileJava {
 }
 
 dependencies {
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.10.2'
-    implementation 'commons-codec:commons-codec:1.12'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.10.3'
+    implementation 'commons-codec:commons-codec:1.14'
     testImplementation 'org.bouncycastle:bcprov-jdk15on:1.60'
     testImplementation 'junit:junit:4.12'
     testImplementation 'net.jodah:concurrentunit:0.4.3'
