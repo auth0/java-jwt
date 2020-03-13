@@ -1,5 +1,14 @@
 # Change Log
 
+## [3.10.1](https://github.com/auth0/java-jwt/tree/3.10.1) (2020-03-13)
+[Full Changelog](https://github.com/auth0/java-jwt/compare/3.10.0...3.10.1)
+
+**Changed**
+- Update Jackson and Commons Codec dependencies [\#407](https://github.com/auth0/java-jwt/pull/407) ([jimmyjames](https://github.com/jimmyjames))
+
+**Security**
+- Update jackson-databind to 2.10.2 [\#399](https://github.com/auth0/java-jwt/pull/399) ([gexclaude](https://github.com/gexclaude))
+
 ## [3.10.0](https://github.com/auth0/java-jwt/tree/3.10.0) (2020-02-14)
 [Full Changelog](https://github.com/auth0/java-jwt/compare/3.9.0...3.10.0)
 **Closed issues**
