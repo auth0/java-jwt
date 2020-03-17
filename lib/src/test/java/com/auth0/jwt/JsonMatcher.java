@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 
 public class JsonMatcher extends TypeSafeDiagnosingMatcher<String> {
-
     private final String entry;
     private final String key;
     private final Matcher matcher;

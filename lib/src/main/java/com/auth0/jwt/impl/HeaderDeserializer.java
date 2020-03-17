@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.util.Map;
 
 class HeaderDeserializer extends StdDeserializer<BasicHeader> {
-
     private final ObjectReader objectReader;
     
     HeaderDeserializer(ObjectReader objectReader) {

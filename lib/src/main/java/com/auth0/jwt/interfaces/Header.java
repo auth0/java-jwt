@@ -4,7 +4,6 @@ package com.auth0.jwt.interfaces;
  * The Header class represents the 1st part of the JWT, where the Header value is hold.
  */
 public interface Header {
-
     /**
      * Getter for the Algorithm "alg" claim defined in the JWT's Header. If the claim is missing it will return null.
      *

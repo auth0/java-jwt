@@ -11,63 +11,67 @@ public class NullClaimTest {
     private NullClaim claim;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         claim = new NullClaim();
     }
 
     @Test
-    public void shouldBeNull() throws Exception {
+    public void shouldBeNull() {
         assertThat(claim.isNull(), is(true));
     }
 
     @Test
-    public void shouldGetAsBoolean() throws Exception {
+    public void shouldGetAsBoolean() {
         assertThat(claim.asBoolean(), is(nullValue()));
     }
 
     @Test
-    public void shouldGetAsInt() throws Exception {
+    public void shouldGetAsInt() {
         assertThat(claim.asInt(), is(nullValue()));
     }
 
     @Test
-    public void shouldGetAsLong() throws Exception {
+    public void shouldGetAsLong() {
         assertThat(claim.asLong(), is(nullValue()));
     }
 
     @Test
-    public void shouldGetAsDouble() throws Exception {
+    public void shouldGetAsDouble() {
         assertThat(claim.asDouble(), is(nullValue()));
     }
 
     @Test
-    public void shouldGetAsString() throws Exception {
+    public void shouldGetAsString() {
         assertThat(claim.asString(), is(nullValue()));
     }
 
     @Test
-    public void shouldGetAsDate() throws Exception {
+    public void shouldGetAsDate() {
         assertThat(claim.asDate(), is(nullValue()));
     }
 
     @Test
-    public void shouldGetAsArray() throws Exception {
+    public void shouldGetAsInstant() {
+        assertThat(claim.asInstant(), is(nullValue()));
+    }
+
+    @Test
+    public void shouldGetAsArray() {
         assertThat(claim.asArray(Object.class), is(nullValue()));
     }
 
     @Test
-    public void shouldGetAsList() throws Exception {
+    public void shouldGetAsList() {
         assertThat(claim.asList(Object.class), is(nullValue()));
     }
 
     @Test
-    public void shouldGetAsMap() throws Exception {
+    public void shouldGetAsMap() {
         assertThat(claim.asMap(), is(nullValue()));
     }
 
     @Test
-    public void shouldGetAsCustomClass() throws Exception {
+    public void shouldGetAsCustomClass() {
         assertThat(claim.as(Object.class), is(nullValue()));
     }
-
 }

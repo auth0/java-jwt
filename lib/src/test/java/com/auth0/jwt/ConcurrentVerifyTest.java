@@ -19,7 +19,6 @@ import static com.auth0.jwt.PemUtils.readPublicKeyFromFile;
 
 //@Ignore("Skipping concurrency tests")
 public class ConcurrentVerifyTest {
-
     private static final long TIMEOUT = 10 * 1000 * 1000; //1 min
     private static final int THREAD_COUNT = 100;
     private static final int REPEAT_COUNT = 1000;
@@ -33,16 +32,15 @@ public class ConcurrentVerifyTest {
     private static ExecutorService executor;
 
     @BeforeClass
-    public static void beforeAll() throws Exception {
+    public static void beforeAll() {
         executor = Executors.newFixedThreadPool(THREAD_COUNT);
     }
 
     @AfterClass
-    public static void afterAll() throws Exception {
+    public static void afterAll() {
         executor.shutdown();
     }
 
-    @SuppressWarnings("Convert2Lambda")
     private void concurrentVerify(final JWTVerifier verifier, final String token) throws TimeoutException, InterruptedException {
         final Waiter waiter = new Waiter();
         List<VerifyTask> tasks = Collections.nCopies(REPEAT_COUNT, new VerifyTask(waiter, verifier, token));
@@ -63,7 +61,7 @@ public class ConcurrentVerifyTest {
         }
 
         @Override
-        public DecodedJWT call() throws Exception {
+        public DecodedJWT call() {
             DecodedJWT jwt = null;
             try {
                 jwt = verifier.verify(token);

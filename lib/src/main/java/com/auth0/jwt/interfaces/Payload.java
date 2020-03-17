@@ -1,5 +1,6 @@
 package com.auth0.jwt.interfaces;
 
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -8,7 +9,6 @@ import java.util.Map;
  * The Payload class represents the 2nd part of the JWT, where the Payload value is hold.
  */
 public interface Payload {
-
     /**
      * Get the value of the "iss" claim, or null if it's not available.
      *
@@ -35,20 +35,47 @@ public interface Payload {
      *
      * @return the Expiration Time value or null.
      */
-    Date getExpiresAt();
+    Instant getExpiresAtInstant();
 
     /**
      * Get the value of the "nbf" claim, or null if it's not available.
      *
      * @return the Not Before value or null.
      */
-    Date getNotBefore();
+    Instant getNotBeforeInstant();
 
     /**
      * Get the value of the "iat" claim, or null if it's not available.
      *
      * @return the Issued At value or null.
      */
+    Instant getIssuedAtInstant();
+
+    /**
+     * Get the value of the "exp" claim, or null if it's not available.
+     *
+     * @return the Expiration Time value or null.
+     * @deprecated Use {@linkplain #getExpiresAtInstant()} instead.
+     */
+    @Deprecated
+    Date getExpiresAt();
+
+    /**
+     * Get the value of the "nbf" claim, or null if it's not available.
+     *
+     * @return the Not Before value or null.
+     * @deprecated Use {@linkplain #getNotBeforeInstant()} instead.
+     */
+    @Deprecated
+    Date getNotBefore();
+
+    /**
+     * Get the value of the "iat" claim, or null if it's not available.
+     *
+     * @return the Issued At value or null.
+     * @deprecated Use {@linkplain #getIssuedAtInstant()} instead.
+     */
+    @Deprecated
     Date getIssuedAt();
 
     /**

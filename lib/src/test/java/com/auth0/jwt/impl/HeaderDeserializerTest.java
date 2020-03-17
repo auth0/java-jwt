@@ -30,14 +30,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class HeaderDeserializerTest {
-
     @Rule
     public ExpectedException exception = ExpectedException.none();
     private HeaderDeserializer deserializer;
     private ObjectReader objectReader = new ObjectMapper().reader();
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         deserializer = new HeaderDeserializer(objectReader);
     }
 
@@ -88,7 +87,7 @@ public class HeaderDeserializerTest {
     }
 
     @Test
-    public void shouldGetNullStringWhenParsingNullNode() throws Exception {
+    public void shouldGetNullStringWhenParsingNullNode() {
         Map<String, JsonNode> tree = new HashMap<>();
         NullNode node = NullNode.getInstance();
         tree.put("key", node);
@@ -98,7 +97,7 @@ public class HeaderDeserializerTest {
     }
 
     @Test
-    public void shouldGetNullStringWhenParsingNull() throws Exception {
+    public void shouldGetNullStringWhenParsingNull() {
         Map<String, JsonNode> tree = new HashMap<>();
         tree.put("key", null);
 
@@ -107,7 +106,7 @@ public class HeaderDeserializerTest {
     }
 
     @Test
-    public void shouldGetStringWhenParsingTextNode() throws Exception {
+    public void shouldGetStringWhenParsingTextNode() {
         Map<String, JsonNode> tree = new HashMap<>();
         TextNode node = new TextNode("something here");
         tree.put("key", node);

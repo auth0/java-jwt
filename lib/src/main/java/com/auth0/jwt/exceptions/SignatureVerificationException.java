@@ -3,6 +3,7 @@ package com.auth0.jwt.exceptions;
 import com.auth0.jwt.algorithms.Algorithm;
 
 public class SignatureVerificationException extends JWTVerificationException {
+
     public SignatureVerificationException(Algorithm algorithm) {
         this(algorithm, null);
     }

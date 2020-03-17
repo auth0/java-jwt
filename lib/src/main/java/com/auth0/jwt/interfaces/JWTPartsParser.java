@@ -6,7 +6,6 @@ import com.auth0.jwt.exceptions.JWTDecodeException;
  * The JWTPartsParser class defines which parts of the JWT should be converted to it's specific Object representation instance.
  */
 public interface JWTPartsParser {
-
     /**
      * Parses the given JSON into a Payload instance.
      *

@@ -10,13 +10,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import org.apache.commons.codec.binary.Base64;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.Instant;
+import java.util.*;
 import java.util.Map.Entry;
 
 /**
@@ -24,7 +21,6 @@ import java.util.Map.Entry;
  */
 @SuppressWarnings("WeakerAccess")
 public final class JWTCreator {
-
     private final Algorithm algorithm;
     private final String headerJson;
     private final String payloadJson;
@@ -141,9 +137,21 @@ public final class JWTCreator {
          * @param expiresAt the Expires At value.
          * @return this same Builder instance.
          */
-        public Builder withExpiresAt(Date expiresAt) {
+        public Builder withExpiresAt(Instant expiresAt) {
             addClaim(PublicClaims.EXPIRES_AT, expiresAt);
             return this;
+        }
+
+        /**
+         * Add a specific Expires At ("exp") claim to the Payload.
+         *
+         * @param expiresAt the Expires At value.
+         * @return this same Builder instance.
+         * @deprecated Use {@linkplain #withExpiresAt(Instant)} instead.
+         */
+        @Deprecated
+        public Builder withExpiresAt(Date expiresAt) {
+            return withExpiresAt(expiresAt.toInstant());
         }
 
         /**
@@ -152,9 +160,21 @@ public final class JWTCreator {
          * @param notBefore the Not Before value.
          * @return this same Builder instance.
          */
-        public Builder withNotBefore(Date notBefore) {
+        public Builder withNotBefore(Instant notBefore) {
             addClaim(PublicClaims.NOT_BEFORE, notBefore);
             return this;
+        }
+
+        /**
+         * Add a specific Not Before ("nbf") claim to the Payload.
+         *
+         * @param notBefore the Not Before value.
+         * @return this same Builder instance.
+         * @deprecated Use {@linkplain #withNotBefore(Instant)} instead.
+         */
+        @Deprecated
+        public Builder withNotBefore(Date notBefore) {
+            return withNotBefore(notBefore.toInstant());
         }
 
         /**
@@ -163,9 +183,21 @@ public final class JWTCreator {
          * @param issuedAt the Issued At value.
          * @return this same Builder instance.
          */
-        public Builder withIssuedAt(Date issuedAt) {
+        public Builder withIssuedAt(Instant issuedAt) {
             addClaim(PublicClaims.ISSUED_AT, issuedAt);
             return this;
+        }
+
+        /**
+         * Add a specific Issued At ("iat") claim to the Payload.
+         *
+         * @param issuedAt the Issued At value.
+         * @return this same Builder instance.
+         * @deprecated Use {@linkplain #withIssuedAt(Instant)} instead.
+         */
+        @Deprecated
+        public Builder withIssuedAt(Date issuedAt) {
+            return withIssuedAt(issuedAt.toInstant());
         }
 
         /**
@@ -257,10 +289,24 @@ public final class JWTCreator {
          * @return this same Builder instance.
          * @throws IllegalArgumentException if the name is null.
          */
-        public Builder withClaim(String name, Date value) throws IllegalArgumentException {
+        public Builder withClaim(String name, Instant value) throws IllegalArgumentException {
             assertNonNull(name);
             addClaim(name, value);
             return this;
+        }
+
+        /**
+         * Add a custom Claim value.
+         *
+         * @param name  the Claim's name.
+         * @param value the Claim's value.
+         * @return this same Builder instance.
+         * @throws IllegalArgumentException if the name is null.
+         * @deprecated Use {@linkplain #withClaim(String, Instant)} instead.
+         */
+        @Deprecated
+        public Builder withClaim(String name, Date value) throws IllegalArgumentException {
+            return withClaim(name, value.toInstant());
         }
 
         /**
@@ -270,7 +316,9 @@ public final class JWTCreator {
          * @param items the Claim's value.
          * @return this same Builder instance.
          * @throws IllegalArgumentException if the name is null.
+         * @deprecated Use {@linkplain #withClaim(String, List)} instead.
          */
+        @Deprecated
         public Builder withArrayClaim(String name, String[] items) throws IllegalArgumentException {
             assertNonNull(name);
             addClaim(name, items);
@@ -284,7 +332,9 @@ public final class JWTCreator {
          * @param items the Claim's value.
          * @return this same Builder instance.
          * @throws IllegalArgumentException if the name is null.
+         * @deprecated Use {@linkplain #withClaim(String, List)} instead.
          */
+        @Deprecated
         public Builder withArrayClaim(String name, Integer[] items) throws IllegalArgumentException {
             assertNonNull(name);
             addClaim(name, items);
@@ -298,7 +348,9 @@ public final class JWTCreator {
          * @param items the Claim's value.
          * @return this same Builder instance.
          * @throws IllegalArgumentException if the name is null
+         * @deprecated Use {@linkplain #withClaim(String, List)} instead.
          */
+        @Deprecated
         public Builder withArrayClaim(String name, Long[] items) throws IllegalArgumentException {
             assertNonNull(name);
             addClaim(name, items);
@@ -310,7 +362,7 @@ public final class JWTCreator {
          * 
          * Accepted nested types are {@linkplain Map} and {@linkplain List} with basic types
          * {@linkplain Boolean}, {@linkplain Integer}, {@linkplain Long}, {@linkplain Double},
-         * {@linkplain String} and {@linkplain Date}. {@linkplain Map}s cannot contain null keys or values.
+         * {@linkplain String}, {@linkplain Instant}, and {@linkplain Date}. {@linkplain Map}s cannot contain null keys or values.
          * {@linkplain List}s can contain null elements.
          *
          * @param name  the Claim's name.
@@ -322,7 +374,7 @@ public final class JWTCreator {
             assertNonNull(name);
             // validate map contents
             if(!validateClaim(map)) {
-                throw new IllegalArgumentException("Expected map containing Map, List, Boolean, Integer, Long, Double, String and Date");
+                throw new IllegalArgumentException("Expected map containing Map, List, Boolean, Integer, Long, Double, String and Instant");
             }
             addClaim(name, map);
             return this;
@@ -333,7 +385,7 @@ public final class JWTCreator {
          *
          * Accepted nested types are {@linkplain Map} and {@linkplain List} with basic types
          * {@linkplain Boolean}, {@linkplain Integer}, {@linkplain Long}, {@linkplain Double},
-         * {@linkplain String} and {@linkplain Date}. {@linkplain Map}s cannot contain null keys or values.
+         * {@linkplain String}, {@linkplain Instant}, and {@linkplain Date}. {@linkplain Map}s cannot contain null keys or values.
          * {@linkplain List}s can contain null elements.
          *
          * @param name  the Claim's name.
@@ -341,12 +393,11 @@ public final class JWTCreator {
          * @return this same Builder instance.
          * @throws IllegalArgumentException if the name is null, or if the list contents does not validate.
          */
-        
         public Builder withClaim(String name, List<?> list) throws IllegalArgumentException {
             assertNonNull(name);
             // validate list contents
             if(!validateClaim(list)) {
-                throw new IllegalArgumentException("Expected list containing Map, List, Boolean, Integer, Long, Double, String and Date");
+                throw new IllegalArgumentException("Expected list containing Map, List, Boolean, Integer, Long, Double, String and Instant");
             }
             addClaim(name, list);
             return this;
@@ -360,7 +411,7 @@ public final class JWTCreator {
                     return false;
                 }
                 
-                if(entry.getKey() == null || !(entry.getKey() instanceof String)) {
+                if(!(entry.getKey() instanceof String)) {
                     return false;
                 }
             }
@@ -393,7 +444,7 @@ public final class JWTCreator {
             if(c.isArray()) {
                 return c == Integer[].class || c == Long[].class || c == String[].class;
             }
-            return c == String.class || c == Integer.class || c == Long.class || c == Double.class || c == Date.class || c == Boolean.class;
+            return c == String.class || c == Integer.class || c == Long.class || c == Double.class || c == Date.class || c == Instant.class || c == Boolean.class;
         }
 
         /**
@@ -435,11 +486,11 @@ public final class JWTCreator {
     }
 
     private String sign() throws SignatureGenerationException {
-        String header = Base64.encodeBase64URLSafeString(headerJson.getBytes(StandardCharsets.UTF_8));
-        String payload = Base64.encodeBase64URLSafeString(payloadJson.getBytes(StandardCharsets.UTF_8));
+        String header = Base64.getUrlEncoder().withoutPadding().encodeToString(headerJson.getBytes(StandardCharsets.UTF_8));
+        String payload = Base64.getUrlEncoder().withoutPadding().encodeToString(payloadJson.getBytes(StandardCharsets.UTF_8));
 
         byte[] signatureBytes = algorithm.sign(header.getBytes(StandardCharsets.UTF_8), payload.getBytes(StandardCharsets.UTF_8));
-        String signature = Base64.encodeBase64URLSafeString((signatureBytes));
+        String signature = Base64.getUrlEncoder().withoutPadding().encodeToString((signatureBytes));
 
         return String.format("%s.%s.%s", header, payload, signature);
     }

@@ -2,6 +2,7 @@ package com.auth0.jwt.interfaces;
 
 import com.auth0.jwt.JWTVerifier;
 
+import java.time.Instant;
 import java.util.Date;
 
 /**
@@ -138,6 +139,18 @@ public interface Verification {
      * @return this same Verification instance.
      * @throws IllegalArgumentException if the name is null.
      */
+    Verification withClaim(String name, Instant value) throws IllegalArgumentException;
+
+    /**
+     * Require a specific Claim value.
+     *
+     * @param name  the Claim's name.
+     * @param value the Claim's value.
+     * @return this same Verification instance.
+     * @throws IllegalArgumentException if the name is null.
+     * @deprecated Use {@linkplain #withClaim(String, Instant)} instead.
+     */
+    @Deprecated
     Verification withClaim(String name, Date value) throws IllegalArgumentException;
 
     /**

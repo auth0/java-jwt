@@ -2,6 +2,7 @@ package com.auth0.jwt.interfaces;
 
 import com.auth0.jwt.exceptions.JWTDecodeException;
 
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -10,7 +11,6 @@ import java.util.Map;
  * The Claim class holds the value in a generic way so that it can be recovered in many representations.
  */
 public interface Claim {
-
     /**
      * Whether this Claim has a null value or not.
      *
@@ -59,11 +59,21 @@ public interface Claim {
     String asString();
 
     /**
+     * Get this Claim as an Instant.
+     * If the value can't be converted to an Instant, null will be returned.
+     *
+     * @return the value as a Instant or null.
+     */
+    Instant asInstant();
+
+    /**
      * Get this Claim as a Date.
      * If the value can't be converted to a Date, null will be returned.
      *
      * @return the value as a Date or null.
+     * @deprecated Use {@linkplain #asInstant()} instead.
      */
+    @Deprecated
     Date asDate();
 
     /**

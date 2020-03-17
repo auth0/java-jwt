@@ -20,10 +20,10 @@ import org.junit.rules.ExpectedException;
 import org.mockito.ArgumentMatchers;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.*;
 
 import static com.auth0.jwt.impl.JWTParser.getDefaultObjectMapper;
-import static com.auth0.jwt.impl.JsonNodeClaim.claimFromNode;
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.hamcrest.core.IsNull.nullValue;
@@ -31,7 +31,6 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.*;
 
 public class JsonNodeClaimTest {
-
     private ObjectMapper mapper;
     private ObjectReader objectReader;
 
@@ -39,13 +38,13 @@ public class JsonNodeClaimTest {
     public ExpectedException exception = ExpectedException.none();
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mapper = getDefaultObjectMapper();
         objectReader = mapper.reader();
     }
 
     @Test
-    public void shouldGetBooleanValue() throws Exception {
+    public void shouldGetBooleanValue() {
         JsonNode value = mapper.valueToTree(true);
         Claim claim = claimFromNode(value);
 
@@ -58,7 +57,7 @@ public class JsonNodeClaimTest {
     }
 
     @Test
-    public void shouldGetNullBooleanIfNotBooleanValue() throws Exception {
+    public void shouldGetNullBooleanIfNotBooleanValue() {
         JsonNode objectValue = mapper.valueToTree(new Object());
         assertThat(claimFromNode(objectValue).asBoolean(), is(nullValue()));
         JsonNode stringValue = mapper.valueToTree("boolean");
@@ -66,7 +65,7 @@ public class JsonNodeClaimTest {
     }
 
     @Test
-    public void shouldGetIntValue() throws Exception {
+    public void shouldGetIntValue() {
         JsonNode value = mapper.valueToTree(123);
         Claim claim = claimFromNode(value);
 
@@ -75,7 +74,7 @@ public class JsonNodeClaimTest {
     }
 
     @Test
-    public void shouldGetNullIntIfNotIntValue() throws Exception {
+    public void shouldGetNullIntIfNotIntValue() {
         JsonNode objectValue = mapper.valueToTree(new Object());
         assertThat(claimFromNode(objectValue).asInt(), is(nullValue()));
         JsonNode stringValue = mapper.valueToTree("123");
@@ -83,7 +82,7 @@ public class JsonNodeClaimTest {
     }
 
     @Test
-    public void shouldGetLongValue() throws Exception {
+    public void shouldGetLongValue() {
         JsonNode value = mapper.valueToTree(Long.MAX_VALUE);
         Claim claim = claimFromNode(value);
 
@@ -92,7 +91,7 @@ public class JsonNodeClaimTest {
     }
 
     @Test
-    public void shouldGetNullLongIfNotIntValue() throws Exception {
+    public void shouldGetNullLongIfNotIntValue() {
         JsonNode objectValue = mapper.valueToTree(new Object());
         assertThat(claimFromNode(objectValue).asLong(), is(nullValue()));
         JsonNode stringValue = mapper.valueToTree("" + Long.MAX_VALUE);
@@ -100,7 +99,7 @@ public class JsonNodeClaimTest {
     }
 
     @Test
-    public void shouldGetDoubleValue() throws Exception {
+    public void shouldGetDoubleValue() {
         JsonNode value = mapper.valueToTree(1.5);
         Claim claim = claimFromNode(value);
 
@@ -109,7 +108,7 @@ public class JsonNodeClaimTest {
     }
 
     @Test
-    public void shouldGetNullDoubleIfNotDoubleValue() throws Exception {
+    public void shouldGetNullDoubleIfNotDoubleValue() {
         JsonNode objectValue = mapper.valueToTree(new Object());
         assertThat(claimFromNode(objectValue).asDouble(), is(nullValue()));
         JsonNode stringValue = mapper.valueToTree("123.23");
@@ -117,24 +116,28 @@ public class JsonNodeClaimTest {
     }
 
     @Test
-    public void shouldGetDateValue() throws Exception {
+    public void shouldGetDateValue() {
         JsonNode value = mapper.valueToTree(1476824844L);
         Claim claim = claimFromNode(value);
 
         assertThat(claim.asDate(), is(notNullValue()));
         assertThat(claim.asDate(), is(new Date(1476824844L * 1000)));
+        assertThat(claim.asInstant(), is(notNullValue()));
+        assertThat(claim.asInstant(), is(Instant.ofEpochSecond(1476824844L)));
     }
 
     @Test
-    public void shouldGetNullDateIfNotDateValue() throws Exception {
+    public void shouldGetNullDateIfNotDateValue() {
         JsonNode objectValue = mapper.valueToTree(new Object());
         assertThat(claimFromNode(objectValue).asDate(), is(nullValue()));
+        assertThat(claimFromNode(objectValue).asInstant(), is(nullValue()));
         JsonNode stringValue = mapper.valueToTree("1476824844");
         assertThat(claimFromNode(stringValue).asDate(), is(nullValue()));
+        assertThat(claimFromNode(stringValue).asInstant(), is(nullValue()));
     }
 
     @Test
-    public void shouldGetStringValue() throws Exception {
+    public void shouldGetStringValue() {
         JsonNode value = mapper.valueToTree("string");
         Claim claim = claimFromNode(value);
 
@@ -143,7 +146,7 @@ public class JsonNodeClaimTest {
     }
 
     @Test
-    public void shouldGetNullStringIfNotStringValue() throws Exception {
+    public void shouldGetNullStringIfNotStringValue() {
         JsonNode objectValue = mapper.valueToTree(new Object());
         assertThat(claimFromNode(objectValue).asString(), is(nullValue()));
         JsonNode intValue = mapper.valueToTree(12345);
@@ -151,7 +154,7 @@ public class JsonNodeClaimTest {
     }
 
     @Test
-    public void shouldGetArrayValueOfCustomClass() throws Exception {
+    public void shouldGetArrayValueOfCustomClass() {
         JsonNode value = mapper.valueToTree(new UserPojo[]{new UserPojo("George", 1), new UserPojo("Mark", 2)});
         Claim claim = claimFromNode(value);
 
@@ -160,7 +163,7 @@ public class JsonNodeClaimTest {
     }
 
     @Test
-    public void shouldGetArrayValue() throws Exception {
+    public void shouldGetArrayValue() {
         JsonNode value = mapper.valueToTree(new String[]{"string1", "string2"});
         Claim claim = claimFromNode(value);
 
@@ -169,7 +172,7 @@ public class JsonNodeClaimTest {
     }
 
     @Test
-    public void shouldGetNullArrayIfNullValue() throws Exception {
+    public void shouldGetNullArrayIfNullValue() {
         JsonNode value = mapper.valueToTree(null);
         Claim claim = claimFromNode(value);
 
@@ -177,7 +180,7 @@ public class JsonNodeClaimTest {
     }
 
     @Test
-    public void shouldGetNullArrayIfNonArrayValue() throws Exception {
+    public void shouldGetNullArrayIfNonArrayValue() {
         JsonNode value = mapper.valueToTree(1);
         Claim claim = claimFromNode(value);
 
@@ -185,7 +188,7 @@ public class JsonNodeClaimTest {
     }
 
     @Test
-    public void shouldThrowIfArrayClassMismatch() throws Exception {
+    public void shouldThrowIfArrayClassMismatch() {
         JsonNode value = mapper.valueToTree(new String[]{"keys", "values"});
         Claim claim = claimFromNode(value);
 
@@ -194,7 +197,7 @@ public class JsonNodeClaimTest {
     }
 
     @Test
-    public void shouldGetListValueOfCustomClass() throws Exception {
+    public void shouldGetListValueOfCustomClass() {
         JsonNode value = mapper.valueToTree(Arrays.asList(new UserPojo("George", 1), new UserPojo("Mark", 2)));
         Claim claim = claimFromNode(value);
 
@@ -203,7 +206,7 @@ public class JsonNodeClaimTest {
     }
 
     @Test
-    public void shouldGetListValue() throws Exception {
+    public void shouldGetListValue() {
         JsonNode value = mapper.valueToTree(Arrays.asList("string1", "string2"));
         Claim claim = claimFromNode(value);
 
@@ -212,7 +215,7 @@ public class JsonNodeClaimTest {
     }
 
     @Test
-    public void shouldGetNullListIfNullValue() throws Exception {
+    public void shouldGetNullListIfNullValue() {
         JsonNode value = mapper.valueToTree(null);
         Claim claim = claimFromNode(value);
 
@@ -220,7 +223,7 @@ public class JsonNodeClaimTest {
     }
 
     @Test
-    public void shouldGetNullListIfNonArrayValue() throws Exception {
+    public void shouldGetNullListIfNonArrayValue() {
         JsonNode value = mapper.valueToTree(1);
         Claim claim = claimFromNode(value);
 
@@ -228,7 +231,7 @@ public class JsonNodeClaimTest {
     }
 
     @Test
-    public void shouldThrowIfListClassMismatch() throws Exception {
+    public void shouldThrowIfListClassMismatch() {
         JsonNode value = mapper.valueToTree(new String[]{"keys", "values"});
         Claim claim = claimFromNode(value);
 
@@ -237,7 +240,7 @@ public class JsonNodeClaimTest {
     }
 
     @Test
-    public void shouldGetNullMapIfNullValue() throws Exception {
+    public void shouldGetNullMapIfNullValue() {
         JsonNode value = mapper.valueToTree(null);
         Claim claim = claimFromNode(value);
 
@@ -245,7 +248,7 @@ public class JsonNodeClaimTest {
     }
 
     @Test
-    public void shouldGetNullMapIfNonArrayValue() throws Exception {
+    public void shouldGetNullMapIfNonArrayValue() {
         JsonNode value = mapper.valueToTree(1);
         Claim claim = claimFromNode(value);
 
@@ -253,7 +256,7 @@ public class JsonNodeClaimTest {
     }
 
     @Test
-    public void shouldGetMapValue() throws Exception {
+    public void shouldGetMapValue() {
         Map<String, Object> map = new HashMap<>();
         map.put("text", "extraValue");
         map.put("number", 12);
@@ -292,7 +295,7 @@ public class JsonNodeClaimTest {
     }
 
     @Test
-    public void shouldGetCustomClassValue() throws Exception {
+    public void shouldGetCustomClassValue() {
         JsonNode value = mapper.valueToTree(new UserPojo("john", 123));
         Claim claim = claimFromNode(value);
 
@@ -302,7 +305,7 @@ public class JsonNodeClaimTest {
     }
 
     @Test
-    public void shouldThrowIfCustomClassMismatch() throws Exception {
+    public void shouldThrowIfCustomClassMismatch() {
         JsonNode value = mapper.valueToTree(new UserPojo("john", 123));
         Claim claim = claimFromNode(value);
 
@@ -312,7 +315,7 @@ public class JsonNodeClaimTest {
 
     @SuppressWarnings({"unchecked", "RedundantCast"})
     @Test
-    public void shouldGetAsMapValue() throws Exception {
+    public void shouldGetAsMapValue() {
         JsonNode value = mapper.valueToTree(Collections.singletonMap("key", new UserPojo("john", 123)));
         Claim claim = claimFromNode(value);
 
@@ -323,7 +326,7 @@ public class JsonNodeClaimTest {
     }
 
     @Test
-    public void shouldReturnBaseClaimWhenParsingMissingNode() throws Exception {
+    public void shouldReturnBaseClaimWhenParsingMissingNode() {
         JsonNode value = MissingNode.getInstance();
         Claim claim = claimFromNode(value);
 
@@ -333,7 +336,7 @@ public class JsonNodeClaimTest {
     }
 
     @Test
-    public void shouldReturnBaseClaimWhenParsingNullNode() throws Exception {
+    public void shouldReturnBaseClaimWhenParsingNullNode() {
         JsonNode value = NullNode.getInstance();
         Claim claim = claimFromNode(value);
 
@@ -343,7 +346,7 @@ public class JsonNodeClaimTest {
     }
 
     @Test
-    public void shouldReturnBaseClaimWhenParsingNullValue() throws Exception {
+    public void shouldReturnBaseClaimWhenParsingNullValue() {
         JsonNode value = mapper.valueToTree(null);
         Claim claim = claimFromNode(value);
 
@@ -353,7 +356,7 @@ public class JsonNodeClaimTest {
     }
 
     @Test
-    public void shouldReturnNonNullClaimWhenParsingObject() throws Exception {
+    public void shouldReturnNonNullClaimWhenParsingObject() {
         JsonNode value = mapper.valueToTree(new Object());
         Claim claim = claimFromNode(value);
 
@@ -363,7 +366,7 @@ public class JsonNodeClaimTest {
     }
 
     @Test
-    public void shouldReturnNonNullClaimWhenParsingArray() throws Exception {
+    public void shouldReturnNonNullClaimWhenParsingArray() {
         JsonNode value = mapper.valueToTree(new String[]{});
         Claim claim = claimFromNode(value);
 
@@ -373,7 +376,7 @@ public class JsonNodeClaimTest {
     }
 
     @Test
-    public void shouldReturnNonNullClaimWhenParsingList() throws Exception {
+    public void shouldReturnNonNullClaimWhenParsingList() {
         JsonNode value = mapper.valueToTree(new ArrayList<String>());
         Claim claim = claimFromNode(value);
 
@@ -383,7 +386,7 @@ public class JsonNodeClaimTest {
     }
 
     @Test
-    public void shouldReturnNonNullClaimWhenParsingStringValue() throws Exception {
+    public void shouldReturnNonNullClaimWhenParsingStringValue() {
         JsonNode value = mapper.valueToTree("");
         Claim claim = claimFromNode(value);
 
@@ -393,7 +396,7 @@ public class JsonNodeClaimTest {
     }
 
     @Test
-    public void shouldReturnNonNullClaimWhenParsingIntValue() throws Exception {
+    public void shouldReturnNonNullClaimWhenParsingIntValue() {
         JsonNode value = mapper.valueToTree(Integer.MAX_VALUE);
         Claim claim = claimFromNode(value);
 
@@ -403,7 +406,7 @@ public class JsonNodeClaimTest {
     }
 
     @Test
-    public void shouldReturnNonNullClaimWhenParsingDoubleValue() throws Exception {
+    public void shouldReturnNonNullClaimWhenParsingDoubleValue() {
         JsonNode value = mapper.valueToTree(Double.MAX_VALUE);
         Claim claim = claimFromNode(value);
 
@@ -413,7 +416,7 @@ public class JsonNodeClaimTest {
     }
 
     @Test
-    public void shouldReturnNonNullClaimWhenParsingDateValue() throws Exception {
+    public void shouldReturnNonNullClaimWhenParsingDateValue() {
         JsonNode value = mapper.valueToTree(new Date());
         Claim claim = claimFromNode(value);
 
@@ -423,7 +426,7 @@ public class JsonNodeClaimTest {
     }
 
     @Test
-    public void shouldReturnNonNullClaimWhenParsingBooleanValue() throws Exception {
+    public void shouldReturnNonNullClaimWhenParsingBooleanValue() {
         JsonNode value = mapper.valueToTree(Boolean.TRUE);
         Claim claim = claimFromNode(value);
 
