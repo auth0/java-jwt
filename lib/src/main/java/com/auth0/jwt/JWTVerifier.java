@@ -57,7 +57,7 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
 
         @Override
         public Verification withIssuer(String... issuer) {
-            requireClaim(PublicClaims.ISSUER, issuer == null ? null : Arrays.asList(issuer));
+            requireClaim(PublicClaims.ISSUER, checkVarargNull(issuer) ? null : Arrays.asList(issuer));
             return this;
         }
 
@@ -69,7 +69,7 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
 
         @Override
         public Verification withAudience(String... audience) {
-            requireClaim(PublicClaims.AUDIENCE, audience == null ? null : Arrays.asList(audience));
+            requireClaim(PublicClaims.AUDIENCE, checkVarargNull(audience) ? null : Arrays.asList(audience));
             return this;
         }
 
@@ -228,6 +228,20 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
             }
             claims.put(name, value);
         }
+    }
+
+    private static boolean checkVarargNull(String[] args) {
+        if (args == null || args.length == 0) {
+            return true;
+        }
+        boolean isAllNull = true;
+        for (String arg: args) {
+            if (arg != null) {
+                isAllNull = false;
+                break;
+            }
+        }
+        return isAllNull;
     }
 
 
