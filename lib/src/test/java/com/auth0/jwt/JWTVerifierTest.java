@@ -10,6 +10,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -125,7 +126,7 @@ public class JWTVerifierTest {
                 .verify(tokenArr);
 
         assertThat(jwtArr, is(notNullValue()));
-    }
+     }
 
     @Test
     public void shouldAcceptPartialAudience() throws Exception {
@@ -151,11 +152,52 @@ public class JWTVerifierTest {
     }
 
     @Test
+    public void shouldRemoveAudienceWhenPassingNullReference() throws Exception {
+        Algorithm algorithm = mock(Algorithm.class);
+        JWTVerifier verifier = JWTVerifier.init(algorithm)
+                .withAudience((String) null)
+                .build();
+
+        assertThat(verifier.claims, is(notNullValue()));
+        assertThat(verifier.claims, not(hasKey("aud")));
+
+        verifier = JWTVerifier.init(algorithm)
+                .withAudience((String[]) null)
+                .build();
+
+        assertThat(verifier.claims, is(notNullValue()));
+        assertThat(verifier.claims, not(hasKey("aud")));
+
+        verifier = JWTVerifier.init(algorithm)
+                .withAudience()
+                .build();
+
+        assertThat(verifier.claims, is(notNullValue()));
+        assertThat(verifier.claims, not(hasKey("aud")));
+
+        String emptyAud = "   ";
+        verifier = JWTVerifier.init(algorithm)
+                .withAudience(emptyAud)
+                .build();
+
+        assertThat(verifier.claims, is(notNullValue()));
+        assertThat(verifier.claims, hasEntry("aud", Collections.singletonList(emptyAud)));
+    }
+
+    @Test
     public void shouldRemoveAudienceWhenPassingNull() throws Exception {
         Algorithm algorithm = mock(Algorithm.class);
         JWTVerifier verifier = JWTVerifier.init(algorithm)
                 .withAudience("John")
-                .withAudience(null)
+                .withAudience((String) null)
+                .build();
+
+        assertThat(verifier.claims, is(notNullValue()));
+        assertThat(verifier.claims, not(hasKey("aud")));
+
+        verifier = JWTVerifier.init(algorithm)
+                .withAudience("John")
+                .withAudience((String[]) null)
                 .build();
 
         assertThat(verifier.claims, is(notNullValue()));
@@ -674,11 +716,52 @@ public class JWTVerifierTest {
         Algorithm algorithm = mock(Algorithm.class);
         JWTVerifier verifier = JWTVerifier.init(algorithm)
                 .withIssuer("iss")
-                .withIssuer(null)
+                .withIssuer((String) null)
                 .build();
 
         assertThat(verifier.claims, is(notNullValue()));
         assertThat(verifier.claims, not(hasKey("iss")));
+
+        verifier = JWTVerifier.init(algorithm)
+                .withIssuer("iss")
+                .withIssuer((String[]) null)
+                .build();
+
+        assertThat(verifier.claims, is(notNullValue()));
+        assertThat(verifier.claims, not(hasKey("iss")));
+    }
+
+    @Test
+    public void shouldRemoveIssuerWhenPassingNullReference() throws Exception {
+        Algorithm algorithm = mock(Algorithm.class);
+        JWTVerifier verifier = JWTVerifier.init(algorithm)
+                .withIssuer((String) null)
+                .build();
+
+        assertThat(verifier.claims, is(notNullValue()));
+        assertThat(verifier.claims, not(hasKey("iss")));
+
+        verifier = JWTVerifier.init(algorithm)
+                .withIssuer((String[]) null)
+                .build();
+
+        assertThat(verifier.claims, is(notNullValue()));
+        assertThat(verifier.claims, not(hasKey("iss")));
+
+        verifier = JWTVerifier.init(algorithm)
+                .withIssuer()
+                .build();
+
+        assertThat(verifier.claims, is(notNullValue()));
+        assertThat(verifier.claims, not(hasKey("iss")));
+
+        String emptyIss = "  ";
+        verifier = JWTVerifier.init(algorithm)
+                .withIssuer(emptyIss)
+                .build();
+
+        assertThat(verifier.claims, is(notNullValue()));
+        assertThat(verifier.claims, hasEntry("iss", Collections.singletonList(emptyIss)));
     }
 
     @Test
