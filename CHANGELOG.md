@@ -1,5 +1,12 @@
 # Change Log
 
+## [3.10.2](https://github.com/auth0/java-jwt/tree/3.10.2) (2020-03-27)
+[Full Changelog](https://github.com/auth0/java-jwt/compare/3.10.1...3.10.2)
+
+**Fixed**
+- JavaDoc fix [\#413](https://github.com/auth0/java-jwt/pull/413) ([jimmyjames](https://github.com/jimmyjames))
+- Check varargs null values in JWTVerifier [\#412](https://github.com/auth0/java-jwt/pull/412) ([jimmyjames](https://github.com/jimmyjames))
+
 ## [3.10.1](https://github.com/auth0/java-jwt/tree/3.10.1) (2020-03-13)
 [Full Changelog](https://github.com/auth0/java-jwt/compare/3.10.0...3.10.1)
 
