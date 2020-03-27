@@ -173,6 +173,8 @@ public interface Verification {
 
     /**
      * Skip the Issued At ("iat") date verification. By default, the verification is performed.
+     *
+     * @return this same Verification instance.
      */
     Verification ignoreIssuedAt();
 
