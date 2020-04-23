@@ -321,7 +321,7 @@ public final class JWTCreator {
         public Builder withClaim(String name, Map<String, ?> map) throws IllegalArgumentException {
             assertNonNull(name);
             // validate map contents
-            if (!validateClaim(map)) {
+            if (map != null && !validateClaim(map)) {
                 throw new IllegalArgumentException("Expected map containing Map, List, Boolean, Integer, Long, Double, String and Date");
             }
             addClaim(name, map);
@@ -345,7 +345,7 @@ public final class JWTCreator {
         public Builder withClaim(String name, List<?> list) throws IllegalArgumentException {
             assertNonNull(name);
             // validate list contents
-            if (!validateClaim(list)) {
+            if (list != null && !validateClaim(list)) {
                 throw new IllegalArgumentException("Expected list containing Map, List, Boolean, Integer, Long, Double, String and Date");
             }
             addClaim(name, list);

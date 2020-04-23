@@ -15,6 +15,7 @@ import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.RSAPrivateKey;
 import java.util.*;
 
+import static org.hamcrest.Matchers.anEmptyMap;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
@@ -572,6 +573,40 @@ public class JWTCreatorTest {
         JWTCreator.init()
                 .withClaim("pojo", data)
                 .sign(Algorithm.HMAC256("secret"));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void shouldAcceptCustomClaimWithNullMapAndRemoveClaim() throws Exception {
+        String jwt = JWTCreator.init()
+                .withClaim("map", "stubValue")
+                .withClaim("map", (Map<String, ?>) null)
+                .sign(Algorithm.HMAC256("secret"));
+
+        assertThat(jwt, is(notNullValue()));
+        String[] parts = jwt.split("\\.");
+
+        String body = new String(Base64.decodeBase64(parts[1]), StandardCharsets.UTF_8);
+        ObjectMapper mapper = new ObjectMapper();
+        Map<String, Object> map = (Map<String, Object>) mapper.readValue(body, Map.class);
+        assertThat(map, anEmptyMap());
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void shouldAcceptCustomClaimWithNullListAndRemoveClaim() throws Exception {
+        String jwt = JWTCreator.init()
+                .withClaim("list", "stubValue")
+                .withClaim("list", (List<String>) null)
+                .sign(Algorithm.HMAC256("secret"));
+
+        assertThat(jwt, is(notNullValue()));
+        String[] parts = jwt.split("\\.");
+
+        String body = new String(Base64.decodeBase64(parts[1]), StandardCharsets.UTF_8);
+        ObjectMapper mapper = new ObjectMapper();
+        Map<String, Object> map = (Map<String, Object>) mapper.readValue(body, Map.class);
+        assertThat(map, anEmptyMap());
     }
 
     @Test
