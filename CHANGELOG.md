@@ -1,5 +1,11 @@
 # Change Log
 
+## [3.10.3](https://github.com/auth0/java-jwt/tree/3.10.3) (2020-04-24)
+[Full Changelog](https://github.com/auth0/java-jwt/compare/3.10.2...3.10.3)
+
+**Fixed**
+- Fixed an NPE on null map and list claims [\#417](https://github.com/auth0/java-jwt/pull/417) ([Vorotyntsev](https://github.com/Vorotyntsev))
+
 ## [3.10.2](https://github.com/auth0/java-jwt/tree/3.10.2) (2020-03-27)
 [Full Changelog](https://github.com/auth0/java-jwt/compare/3.10.1...3.10.2)
 
