@@ -1,2 +1,12 @@
+pluginManagement {
+    plugins {
+        id 'biz.aQute.bnd.builder' version '5.0.1'
+    }
+    repositories {
+        jcenter()
+        gradlePluginPortal()
+    }
+}
+
 include ':java-jwt'
 project(':java-jwt').projectDir = new File(rootProject.projectDir, '/lib')

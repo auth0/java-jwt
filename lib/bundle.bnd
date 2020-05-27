@@ -1,0 +1,2 @@
+Bundle-SymbolicName: com.auth0.java-jwt
+Export-Package: !com.auth0.jwt.impl, com.auth0.jwt.*

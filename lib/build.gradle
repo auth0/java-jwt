@@ -1,7 +1,10 @@
+import aQute.bnd.gradle.Bundle
+
 plugins {
     id "com.jfrog.bintray" version "1.8.4"
     id "com.auth0.gradle.oss-library.java" version "0.11.0"
     id "jacoco"
+    id 'biz.aQute.bnd.builder'
 }
 
 logger.lifecycle("Using version ${version} for ${group}.${name}")
@@ -55,4 +58,8 @@ test {
         events "skipped", "failed", "standardError"
         exceptionFormat "short"
     }
+}
+
+jar {
+    bndfile = 'bundle.bnd'
 }
