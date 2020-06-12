@@ -33,6 +33,13 @@ public class JWTDecoderTest {
 
     // Exceptions
     @Test
+    public void shouldThrowIfTheContentIsNotProperlyEncoded() throws Exception {
+        exception.expect(JWTDecodeException.class);
+        exception.expectMessage("The input is not a valid base 64 encoded string.");
+        JWT.decode("eyJ0eXAiOiJKV1QiLCJhbGciO-corrupted.eyJ0ZXN0IjoxMjN9.sLtFC2rLAzN0-UJ13OLQX6ezNptAQzespaOGwCnpqk");
+    }
+
+    @Test
     public void shouldThrowIfLessThan3Parts() throws Exception {
         exception.expect(JWTDecodeException.class);
         exception.expectMessage("The token was expected to have 3 parts, but got 2.");

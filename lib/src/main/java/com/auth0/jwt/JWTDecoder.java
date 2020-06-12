@@ -39,6 +39,8 @@ final class JWTDecoder implements DecodedJWT, Serializable {
             payloadJson = StringUtils.newStringUtf8(Base64.decodeBase64(parts[1]));
         } catch (NullPointerException e) {
             throw new JWTDecodeException("The UTF-8 Charset isn't initialized.", e);
+        } catch (IllegalArgumentException e){
+            throw new JWTDecodeException("The input is not a valid base 64 encoded string.", e);
         }
         header = converter.parseHeader(headerJson);
         payload = converter.parsePayload(payloadJson);
