@@ -15,10 +15,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.hamcrest.Matchers.startsWith;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class JWTVerifierTest {
 
@@ -126,7 +126,7 @@ public class JWTVerifierTest {
                 .verify(tokenArr);
 
         assertThat(jwtArr, is(notNullValue()));
-     }
+    }
 
     @Test
     public void shouldAcceptPartialAudience() throws Exception {
@@ -503,6 +503,23 @@ public class JWTVerifierTest {
         Algorithm algorithm = mock(Algorithm.class);
         JWTVerifier.init(algorithm)
                 .acceptLeeway(-1);
+    }
+
+    @Test
+    public void shouldNotModifyOriginalClockDateWhenVerifying() throws Exception {
+        Clock clock = mock(Clock.class);
+        Date clockDate = spy(new Date(DATE_TOKEN_MS_VALUE));
+        when(clock.getToday()).thenReturn(clockDate);
+
+        String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE0Nzc1OTJ9.isvT0Pqx0yjnZk53mUFSeYFJLDs-Ls9IsNAm86gIdZo";
+        JWTVerifier.BaseVerification verification = (JWTVerifier.BaseVerification) JWTVerifier.init(Algorithm.HMAC256("secret"));
+        JWTVerifier verifier = verification
+                .build(clock);
+
+        DecodedJWT jwt = verifier.verify(token);
+        assertThat(jwt, is(notNullValue()));
+
+        verify(clockDate, never()).setTime(anyLong());
     }
 
     // Expires At
