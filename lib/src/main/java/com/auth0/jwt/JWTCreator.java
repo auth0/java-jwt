@@ -59,7 +59,7 @@ public final class JWTCreator {
      */
     public static class Builder {
         private final Map<String, Object> payloadClaims;
-        private Map<String, Object> headerClaims;
+        private final Map<String, Object> headerClaims;
 
         Builder() {
             this.payloadClaims = new HashMap<>();
