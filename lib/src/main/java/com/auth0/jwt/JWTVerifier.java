@@ -235,7 +235,7 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
             return true;
         }
         boolean isAllNull = true;
-        for (String arg: args) {
+        for (String arg : args) {
             if (arg != null) {
                 isAllNull = false;
                 break;
@@ -364,7 +364,7 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
     }
 
     private void assertValidDateClaim(Date date, long leeway, boolean shouldBeFuture) {
-        Date today = clock.getToday();
+        Date today = new Date(clock.getToday().getTime());
         today.setTime(today.getTime() / 1000 * 1000); // truncate millis
         if (shouldBeFuture) {
             assertDateIsFuture(date, leeway, today);
