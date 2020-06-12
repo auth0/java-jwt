@@ -13,6 +13,8 @@ import java.util.*;
 
 /**
  * The JWTVerifier class holds the verify method to assert that a given Token has not only a proper JWT format, but also it's signature matches.
+ * <p>
+ * This class is thread-safe.
  */
 @SuppressWarnings("WeakerAccess")
 public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {

@@ -6,11 +6,12 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.ECDSAKeyProvider;
 import com.auth0.jwt.interfaces.RSAKeyProvider;
 
-import java.io.ByteArrayOutputStream;
 import java.security.interfaces.*;
 
 /**
  * The Algorithm class represents an algorithm to be used in the Signing or Verification process of a Token.
+ * <p>
+ * This class and its subclasses are thread-safe.
  */
 @SuppressWarnings("WeakerAccess")
 public abstract class Algorithm {
@@ -137,7 +138,7 @@ public abstract class Algorithm {
      *
      * @param secret the secret to use in the verify or signing instance.
      * @return a valid HMAC256 Algorithm.
-     * @throws IllegalArgumentException     if the provided Secret is null.
+     * @throws IllegalArgumentException if the provided Secret is null.
      */
     public static Algorithm HMAC256(String secret) throws IllegalArgumentException {
         return new HMACAlgorithm("HS256", "HmacSHA256", secret);
@@ -148,7 +149,7 @@ public abstract class Algorithm {
      *
      * @param secret the secret to use in the verify or signing instance.
      * @return a valid HMAC384 Algorithm.
-     * @throws IllegalArgumentException     if the provided Secret is null.
+     * @throws IllegalArgumentException if the provided Secret is null.
      */
     public static Algorithm HMAC384(String secret) throws IllegalArgumentException {
         return new HMACAlgorithm("HS384", "HmacSHA384", secret);
@@ -159,7 +160,7 @@ public abstract class Algorithm {
      *
      * @param secret the secret to use in the verify or signing instance.
      * @return a valid HMAC512 Algorithm.
-     * @throws IllegalArgumentException     if the provided Secret is null.
+     * @throws IllegalArgumentException if the provided Secret is null.
      */
     public static Algorithm HMAC512(String secret) throws IllegalArgumentException {
         return new HMACAlgorithm("HS512", "HmacSHA512", secret);
@@ -365,20 +366,20 @@ public abstract class Algorithm {
     /**
      * Sign the given content using this Algorithm instance.
      *
-     * @param headerBytes an array of bytes representing the base64 encoded header content to be verified against the signature.
+     * @param headerBytes  an array of bytes representing the base64 encoded header content to be verified against the signature.
      * @param payloadBytes an array of bytes representing the base64 encoded payload content to be verified against the signature.
      * @return the signature in a base64 encoded array of bytes
      * @throws SignatureGenerationException if the Key is invalid.
      */
     public byte[] sign(byte[] headerBytes, byte[] payloadBytes) throws SignatureGenerationException {
-    	// default implementation; keep around until sign(byte[]) method is removed
-    	byte[] contentBytes = new byte[headerBytes.length + 1 + payloadBytes.length];
-    	
-    	System.arraycopy(headerBytes, 0, contentBytes, 0, headerBytes.length);
-    	contentBytes[headerBytes.length] = (byte)'.';
-    	System.arraycopy(payloadBytes, 0, contentBytes, headerBytes.length + 1, payloadBytes.length);
-    	
-    	return sign(contentBytes);
+        // default implementation; keep around until sign(byte[]) method is removed
+        byte[] contentBytes = new byte[headerBytes.length + 1 + payloadBytes.length];
+
+        System.arraycopy(headerBytes, 0, contentBytes, 0, headerBytes.length);
+        contentBytes[headerBytes.length] = (byte) '.';
+        System.arraycopy(payloadBytes, 0, contentBytes, headerBytes.length + 1, payloadBytes.length);
+
+        return sign(contentBytes);
     }
 
     /**
@@ -389,7 +390,7 @@ public abstract class Algorithm {
      * @throws SignatureGenerationException if the Key is invalid.
      * @deprecated Please use the {@linkplain #sign(byte[], byte[])} method instead.
      */
-    
+
     @Deprecated
     public abstract byte[] sign(byte[] contentBytes) throws SignatureGenerationException;
 
