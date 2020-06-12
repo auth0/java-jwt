@@ -30,7 +30,7 @@ class PayloadImpl implements Payload, Serializable {
     PayloadImpl(String issuer, String subject, List<String> audience, Date expiresAt, Date notBefore, Date issuedAt, String jwtId, Map<String, JsonNode> tree, ObjectReader objectReader) {
         this.issuer = issuer;
         this.subject = subject;
-        this.audience = audience;
+        this.audience = audience != null ? Collections.unmodifiableList(audience) : null;
         this.expiresAt = expiresAt;
         this.notBefore = notBefore;
         this.issuedAt = issuedAt;
