@@ -8,6 +8,7 @@ import org.apache.commons.codec.binary.Base64;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 
 class HMACAlgorithm extends Algorithm {
 
@@ -20,7 +21,7 @@ class HMACAlgorithm extends Algorithm {
         if (secretBytes == null) {
             throw new IllegalArgumentException("The Secret cannot be null");
         }
-        this.secret = secretBytes;
+        this.secret = Arrays.copyOf(secretBytes, secretBytes.length);
         this.crypto = crypto;
     }
 
