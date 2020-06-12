@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import java.io.ByteArrayOutputStream;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -37,6 +38,18 @@ public class HMACAlgorithmTest {
         String text = "abcdef123456!@#$%^";
         byte[] expectedBytes = text.getBytes("UTF-8");
         assertTrue(Arrays.equals(expectedBytes, HMACAlgorithm.getSecretBytes(text)));
+    }
+
+    @Test
+    public void shouldKeepCopyTheReceivedSecretArray() throws Exception {
+        String jwt = "eyJhbGciOiJIUzI1NiIsImN0eSI6IkpXVCJ9.eyJpc3MiOiJhdXRoMCJ9.mZ0m_N1J4PgeqWmi903JuUoDRZDBPB7HwkS4nVyWH1M";
+        byte[] secretArray = "secret".getBytes(Charset.defaultCharset());
+        Algorithm algorithmString = Algorithm.HMAC256(secretArray);
+
+        DecodedJWT decoded = JWT.decode(jwt);
+        algorithmString.verify(decoded);
+        secretArray[0] = secretArray[1];
+        algorithmString.verify(decoded);
     }
 
     @Test
