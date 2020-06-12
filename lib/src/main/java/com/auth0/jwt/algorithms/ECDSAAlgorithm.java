@@ -12,6 +12,11 @@ import java.security.SignatureException;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
 
+/**
+ * Subclass representing an Elliptic Curve signing algorithm
+ * <p>
+ * This class is thread-safe.
+ */
 class ECDSAAlgorithm extends Algorithm {
 
     private final ECDSAKeyProvider keyProvider;
@@ -65,7 +70,7 @@ class ECDSAAlgorithm extends Algorithm {
             throw new SignatureGenerationException(this, e);
         }
     }
-    
+
     @Override
     @Deprecated
     public byte[] sign(byte[] contentBytes) throws SignatureGenerationException {

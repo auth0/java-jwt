@@ -13,6 +13,11 @@ import java.security.SignatureException;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 
+/**
+ * Subclass representing an RSA signing algorithm
+ * <p>
+ * This class is thread-safe.
+ */
 class RSAAlgorithm extends Algorithm {
 
     private final RSAKeyProvider keyProvider;

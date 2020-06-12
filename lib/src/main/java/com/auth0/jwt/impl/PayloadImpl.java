@@ -11,7 +11,11 @@ import java.util.*;
 import static com.auth0.jwt.impl.JsonNodeClaim.extractClaim;
 
 /**
- * The PayloadImpl class implements the Payload interface.
+ * Decoder of string JSON Web Tokens into their POJO representations.
+ *
+ * @see Payload
+ * <p>
+ * This class is thread-safe.
  */
 class PayloadImpl implements Payload, Serializable {
 

@@ -10,6 +10,11 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
+/**
+ * Subclass representing an Hash-based MAC signing algorithm
+ * <p>
+ * This class is thread-safe.
+ */
 class HMACAlgorithm extends Algorithm {
 
     private final CryptoHelper crypto;
