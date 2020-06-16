@@ -41,7 +41,7 @@ public class HMACAlgorithmTest {
     }
 
     @Test
-    public void shouldKeepCopyTheReceivedSecretArray() throws Exception {
+    public void shouldCopyTheReceivedSecretArray() throws Exception {
         String jwt = "eyJhbGciOiJIUzI1NiIsImN0eSI6IkpXVCJ9.eyJpc3MiOiJhdXRoMCJ9.mZ0m_N1J4PgeqWmi903JuUoDRZDBPB7HwkS4nVyWH1M";
         byte[] secretArray = "secret".getBytes(Charset.defaultCharset());
         Algorithm algorithmString = Algorithm.HMAC256(secretArray);
