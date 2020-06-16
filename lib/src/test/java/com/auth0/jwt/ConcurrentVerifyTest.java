@@ -25,6 +25,7 @@ public class ConcurrentVerifyTest {
     private static final int REPEAT_COUNT = 1000;
     private static final String PUBLIC_KEY_FILE = "src/test/resources/rsa-public.pem";
     private static final String PUBLIC_KEY_FILE_256 = "src/test/resources/ec256-key-public.pem";
+    private static final String PUBLIC_KEY_FILE_256K = "src/test/resources/ec256k-key-public.pem";
     private static final String PUBLIC_KEY_FILE_384 = "src/test/resources/ec384-key-public.pem";
     private static final String PUBLIC_KEY_FILE_512 = "src/test/resources/ec512-key-public.pem";
 
@@ -84,7 +85,7 @@ public class ConcurrentVerifyTest {
 
         concurrentVerify(verifier, token);
     }
-
+    
     @Test
     public void shouldPassHMAC384Verification() throws Exception {
         String token = "eyJhbGciOiJIUzM4NCIsImN0eSI6IkpXVCJ9.eyJpc3MiOiJhdXRoMCJ9.uztpK_wUMYJhrRv8SV-1LU4aPnwl-EM1q-wJnqgyb5DHoDteP6lN_gE1xnZJH5vw";
@@ -139,7 +140,17 @@ public class ConcurrentVerifyTest {
 
         concurrentVerify(verifier, token);
     }
-
+    
+    @Test
+    public void shouldPassECDSA256KVerificationWithJOSESignature() throws Exception {
+        String token = "eyJraWQiOiJteS1rZXktaWQiLCJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJpc3MiOiJhdXRoMCJ9.W-AbsnuQ4vqmPftAyQuF09hn3oGn3tN7VGergxyMbK74yEzDV-mLyC3o3fxXrZxcW5h01DM6BckNag7ZcimPjw";
+        ECKey key = (ECKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256K, "EC");
+        Algorithm algorithm = Algorithm.ECDSA256K(key);
+        JWTVerifier verifier = JWTVerifier.init(algorithm).withIssuer("auth0").build();
+        
+        concurrentVerify(verifier, token);
+    }
+    
     @Test
     public void shouldPassECDSA384VerificationWithJOSESignature() throws Exception {
         String token = "eyJhbGciOiJFUzM4NCJ9.eyJpc3MiOiJhdXRoMCJ9.50UU5VKNdF1wfykY8jQBKpvuHZoe6IZBJm5NvoB8bR-hnRg6ti-CHbmvoRtlLfnHfwITa_8cJMy6TenMC2g63GQHytc8rYoXqbwtS4R0Ko_AXbLFUmfxnGnMC6v4MS_z";
