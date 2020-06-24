@@ -8,6 +8,13 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.Map;
 
+/**
+ * Jackson serializer implementation for converting into JWT Payload parts.
+ *
+ * @see com.auth0.jwt.JWTCreator
+ * <p>
+ * This class is thread-safe.
+ */
 public class PayloadSerializer extends StdSerializer<ClaimsHolder> {
 
     public PayloadSerializer() {
@@ -20,14 +27,14 @@ public class PayloadSerializer extends StdSerializer<ClaimsHolder> {
 
     @Override
     public void serialize(ClaimsHolder holder, JsonGenerator gen, SerializerProvider provider) throws IOException {
-        
+
         gen.writeStartObject();
         for (Map.Entry<String, Object> e : holder.getClaims().entrySet()) {
             switch (e.getKey()) {
                 case PublicClaims.AUDIENCE:
                     if (e.getValue() instanceof String) {
                         gen.writeFieldName(e.getKey());
-                        gen.writeString((String)e.getValue());
+                        gen.writeString((String) e.getValue());
                         break;
                     }
                     String[] audArray = (String[]) e.getValue();
@@ -37,7 +44,7 @@ public class PayloadSerializer extends StdSerializer<ClaimsHolder> {
                     } else if (audArray.length > 1) {
                         gen.writeFieldName(e.getKey());
                         gen.writeStartArray();
-                        for(String aud : audArray) {
+                        for (String aud : audArray) {
                             gen.writeString(aud);
                         }
                         gen.writeEndArray();

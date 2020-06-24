@@ -16,6 +16,8 @@ import java.util.Map;
 
 /**
  * The JWTDecoder class holds the decode method to parse a given JWT token into it's JWT representation.
+ * <p>
+ * This class is thread-safe.
  */
 @SuppressWarnings("WeakerAccess")
 final class JWTDecoder implements DecodedJWT, Serializable {

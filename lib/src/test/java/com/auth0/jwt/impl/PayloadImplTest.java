@@ -13,10 +13,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.Mockito;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static com.auth0.jwt.impl.JWTParser.getDefaultObjectMapper;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -39,7 +36,7 @@ public class PayloadImplTest {
     public void setUp() throws Exception {
         mapper = getDefaultObjectMapper();
         objectReader = mapper.reader();
-        
+
         expiresAt = Mockito.mock(Date.class);
         notBefore = Mockito.mock(Date.class);
         issuedAt = Mockito.mock(Date.class);
@@ -54,6 +51,13 @@ public class PayloadImplTest {
         exception.expect(UnsupportedOperationException.class);
         PayloadImpl payload = new PayloadImpl(null, null, null, null, null, null, null, new HashMap<String, JsonNode>(), objectReader);
         payload.getTree().put("something", null);
+    }
+
+    @Test
+    public void shouldHaveUnmodifiableAudience() throws Exception {
+        exception.expect(UnsupportedOperationException.class);
+        PayloadImpl payload = new PayloadImpl(null, null, new ArrayList<String>(), null, null, null, null, null, objectReader);
+        payload.getAudience().add("something");
     }
 
     @Test

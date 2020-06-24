@@ -2,10 +2,14 @@ package com.auth0.jwt.algorithms;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-
 import java.nio.charset.StandardCharsets;
 import java.security.*;
 
+/**
+ * Class used to perform the signature hash calculations.
+ * <p>
+ * This class is thread-safe.
+ */
 class CryptoHelper {
 
     private static final byte JWT_PART_SEPARATOR = (byte)46;

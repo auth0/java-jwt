@@ -21,6 +21,8 @@ import java.util.Map.Entry;
 
 /**
  * The JWTCreator class holds the sign method to generate a complete JWT (with Signature) from a given Header and Payload content.
+ * <p>
+ * This class is thread-safe.
  */
 @SuppressWarnings("WeakerAccess")
 public final class JWTCreator {
@@ -59,7 +61,7 @@ public final class JWTCreator {
      */
     public static class Builder {
         private final Map<String, Object> payloadClaims;
-        private Map<String, Object> headerClaims;
+        private final Map<String, Object> headerClaims;
 
         Builder() {
             this.payloadClaims = new HashMap<>();
