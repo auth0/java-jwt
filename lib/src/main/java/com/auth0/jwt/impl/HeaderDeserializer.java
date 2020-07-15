@@ -11,16 +11,23 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import java.io.IOException;
 import java.util.Map;
 
+/**
+ * Jackson deserializer implementation for converting from JWT Header parts.
+ *
+ * @see JWTParser
+ * <p>
+ * This class is thread-safe.
+ */
 class HeaderDeserializer extends StdDeserializer<BasicHeader> {
     private final ObjectReader objectReader;
-    
+
     HeaderDeserializer(ObjectReader objectReader) {
         this(null, objectReader);
     }
 
     private HeaderDeserializer(Class<?> vc, ObjectReader objectReader) {
         super(vc);
-        
+
         this.objectReader = objectReader;
     }
 

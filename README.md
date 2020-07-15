@@ -19,14 +19,14 @@ The library is available on both [Maven Central](https://mvnrepository.com/artif
 <dependency>
     <groupId>com.auth0</groupId>
     <artifactId>java-jwt</artifactId>
-    <version>3.9.0</version>
+    <version>3.10.3</version>
 </dependency>
 ```
 
 ### Gradle
 
-```Gradle
-implementation 'com.auth0:java-jwt:3.9.0'
+```gradle
+implementation 'com.auth0:java-jwt:3.10.3'
 ```
 
 ## Available Algorithms

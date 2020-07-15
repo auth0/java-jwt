@@ -10,6 +10,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Jackson serializer implementation for converting into JWT Payload parts.
+ *
+ * @see com.auth0.jwt.JWTCreator
+ * <p>
+ * This class is thread-safe.
+ */
 public class PayloadSerializer extends StdSerializer<ClaimsHolder> {
 
     public PayloadSerializer() {

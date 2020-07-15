@@ -17,6 +17,8 @@ import java.util.Map;
 
 /**
  * The JWTDecoder class holds the decode method to parse a given JWT token into it's JWT representation.
+ * <p>
+ * This class is thread-safe.
  */
 @SuppressWarnings("WeakerAccess")
 final class JWTDecoder implements DecodedJWT, Serializable {
@@ -37,9 +39,12 @@ final class JWTDecoder implements DecodedJWT, Serializable {
         try {
             headerJson = new String(Base64.getUrlDecoder().decode(parts[0]), StandardCharsets.UTF_8);
             payloadJson = new String(Base64.getUrlDecoder().decode(parts[1]), StandardCharsets.UTF_8);
-        } catch (NullPointerException | IllegalArgumentException e) {
-            throw new JWTDecodeException("The UTF-8 Charset isn't initialized or the token is not valid Base64.", e);
+        } catch (NullPointerException e) {
+            throw new JWTDecodeException("The UTF-8 Charset isn't initialized.", e);
+        } catch (IllegalArgumentException e){
+            throw new JWTDecodeException("The input is not a valid base 64 encoded string.", e);
         }
+
         header = converter.parseHeader(headerJson);
         payload = converter.parsePayload(payloadJson);
     }
