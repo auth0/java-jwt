@@ -174,7 +174,20 @@ public interface Verification {
     Verification withArrayClaim(String name, Integer... items) throws IllegalArgumentException;
 
     /**
+     * Require a specific Array Claim to contain at least the given items.
+     *
+     * @param name  the Claim's name.
+     * @param items the items the Claim must contain.
+     * @return this same Verification instance.
+     * @throws IllegalArgumentException if the name is null.
+     */
+
+    Verification withArrayClaim(String name, Long ... items) throws IllegalArgumentException;
+
+    /**
      * Skip the Issued At ("iat") date verification. By default, the verification is performed.
+     *
+     * @return this same Verification instance.
      */
     Verification ignoreIssuedAt();
 

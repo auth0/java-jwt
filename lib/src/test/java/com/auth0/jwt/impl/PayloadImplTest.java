@@ -14,6 +14,7 @@ import org.junit.rules.ExpectedException;
 
 import java.sql.Date;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -56,7 +57,14 @@ public class PayloadImplTest {
     }
 
     @Test
-    public void shouldGetIssuer() {
+    public void shouldHaveUnmodifiableAudience() throws Exception {
+        exception.expect(UnsupportedOperationException.class);
+        PayloadImpl payload = new PayloadImpl(null, null, new ArrayList<String>(), null, null, null, null, null, objectReader);
+        payload.getAudience().add("something");
+    }
+
+    @Test
+    public void shouldGetIssuer() throws Exception {
         assertThat(payload, is(notNullValue()));
         assertThat(payload.getIssuer(), is("issuer"));
     }

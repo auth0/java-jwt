@@ -7,8 +7,14 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 import java.util.Base64;
 
+/**
+ * Subclass representing an Hash-based MAC signing algorithm
+ * <p>
+ * This class is thread-safe.
+ */
 class HMACAlgorithm extends Algorithm {
     private final CryptoHelper crypto;
     private final byte[] secret;
@@ -19,7 +25,7 @@ class HMACAlgorithm extends Algorithm {
         if (secretBytes == null) {
             throw new IllegalArgumentException("The Secret cannot be null");
         }
-        this.secret = secretBytes;
+        this.secret = Arrays.copyOf(secretBytes, secretBytes.length);
         this.crypto = crypto;
     }
 

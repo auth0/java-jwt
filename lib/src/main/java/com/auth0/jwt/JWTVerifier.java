@@ -15,6 +15,8 @@ import java.util.*;
 
 /**
  * The JWTVerifier class holds the verify method to assert that a given Token has not only a proper JWT format, but also it's signature matches.
+ * <p>
+ * This class is thread-safe.
  */
 @SuppressWarnings("WeakerAccess")
 public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
@@ -59,7 +61,7 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
 
         @Override
         public Verification withIssuer(String... issuer) {
-            requireClaim(PublicClaims.ISSUER, issuer == null ? null : Arrays.asList(issuer));
+            requireClaim(PublicClaims.ISSUER, isNullOrEmpty(issuer) ? null : Arrays.asList(issuer));
             return this;
         }
 
@@ -71,7 +73,7 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
 
         @Override
         public Verification withAudience(String... audience) {
-            requireClaim(PublicClaims.AUDIENCE, audience == null ? null : Arrays.asList(audience));
+            requireClaim(PublicClaims.AUDIENCE, isNullOrEmpty(audience) ? null : Arrays.asList(audience));
             return this;
         }
 
@@ -179,6 +181,13 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
         }
 
         @Override
+        public Verification withArrayClaim(String name, Long... items) throws IllegalArgumentException {
+            assertNonNull(name);
+            requireClaim(name, items);
+            return this;
+        }
+
+        @Override
         public JWTVerifier build() {
             return this.build(new ClockImpl());
         }
@@ -214,7 +223,7 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
             if (!claims.containsKey(PublicClaims.NOT_BEFORE)) {
                 claims.put(PublicClaims.NOT_BEFORE, defaultLeeway);
             }
-            if(ignoreIssuedAt) {
+            if (ignoreIssuedAt) {
                 claims.remove(PublicClaims.ISSUED_AT);
                 return;
             }
@@ -231,6 +240,21 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
             claims.put(name, value);
         }
     }
+
+    private static boolean isNullOrEmpty(String[] args) {
+        if (args == null || args.length == 0) {
+            return true;
+        }
+        boolean isAllNull = true;
+        for (String arg : args) {
+            if (arg != null) {
+                isAllNull = false;
+                break;
+            }
+        }
+        return isAllNull;
+    }
+
 
     /**
      * Perform the verification against the given Token, using any previous configured options.
@@ -320,7 +344,23 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
         } else if (value instanceof Instant) {
             isValid = value.equals(claim.asInstant());
         } else if (value instanceof Object[]) {
-            List<Object> claimArr = Arrays.asList(claim.as(Object[].class));
+            List<Object> claimArr;
+            Object[] claimAsObject = claim.as(Object[].class);
+
+            // Jackson uses 'natural' mapping which uses Integer if value fits in 32 bits.
+            if (value instanceof Long[]) {
+                // convert Integers to Longs for comparison with equals
+                claimArr = new ArrayList<>(claimAsObject.length);
+                for (Object cao : claimAsObject) {
+                    if (cao instanceof Integer) {
+                        claimArr.add(((Integer) cao).longValue());
+                    } else {
+                        claimArr.add(cao);
+                    }
+                }
+            } else {
+                claimArr = claim.isNull() ? Collections.emptyList() : Arrays.asList(claim.as(Object[].class));
+            }
             List<Object> valueArr = Arrays.asList((Object[]) value);
             isValid = claimArr.containsAll(valueArr);
         }

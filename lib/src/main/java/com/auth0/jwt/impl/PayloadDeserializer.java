@@ -14,16 +14,23 @@ import java.io.IOException;
 import java.time.Instant;
 import java.util.*;
 
+/**
+ * Jackson deserializer implementation for converting from JWT Payload parts.
+ *
+ * @see JWTParser
+ * <p>
+ * This class is thread-safe.
+ */
 class PayloadDeserializer extends StdDeserializer<Payload> {
     private final ObjectReader objectReader;
-    
+
     PayloadDeserializer(ObjectReader reader) {
         this(null, reader);
     }
 
     private PayloadDeserializer(Class<?> vc, ObjectReader reader) {
         super(vc);
-        
+
         this.objectReader = reader;
     }
 
