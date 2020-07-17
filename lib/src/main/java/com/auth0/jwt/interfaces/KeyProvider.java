@@ -1,5 +1,7 @@
 package com.auth0.jwt.interfaces;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.security.PrivateKey;
 import java.security.PublicKey;
 
@@ -17,6 +19,7 @@ interface KeyProvider<U extends PublicKey, R extends PrivateKey> {
      * @param keyId the Key Id specified in the Token's Header or null if none is available. Provides a hint on which Public Key to use to verify the token's signature.
      * @return the Public Key instance
      */
+    @Nullable
     U getPublicKeyById(String keyId);
 
     /**
@@ -24,6 +27,7 @@ interface KeyProvider<U extends PublicKey, R extends PrivateKey> {
      *
      * @return the Private Key instance
      */
+    @Nullable
     R getPrivateKey();
 
     /**
@@ -31,5 +35,6 @@ interface KeyProvider<U extends PublicKey, R extends PrivateKey> {
      *
      * @return the Key Id that identifies the Private Key or null if it's not specified.
      */
+    @Nullable
     String getPrivateKeyId();
 }

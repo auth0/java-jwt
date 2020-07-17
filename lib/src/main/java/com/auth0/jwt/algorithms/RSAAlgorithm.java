@@ -5,8 +5,9 @@ import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.RSAKeyProvider;
 import org.apache.commons.codec.binary.Base64;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
@@ -38,7 +39,7 @@ class RSAAlgorithm extends Algorithm {
     }
 
     @Override
-    public void verify(DecodedJWT jwt) throws SignatureVerificationException {
+    public void verify(@NotNull DecodedJWT jwt) throws SignatureVerificationException {
         byte[] signatureBytes = Base64.decodeBase64(jwt.getSignature());
 
         try {
@@ -55,9 +56,9 @@ class RSAAlgorithm extends Algorithm {
         }
     }
 
+    @NotNull
     @Override
-    @Deprecated
-    public byte[] sign(byte[] headerBytes, byte[] payloadBytes) throws SignatureGenerationException {
+    public byte[] sign(@NotNull byte[] headerBytes, @NotNull byte[] payloadBytes) throws SignatureGenerationException {
         try {
             RSAPrivateKey privateKey = keyProvider.getPrivateKey();
             if (privateKey == null) {
@@ -69,8 +70,10 @@ class RSAAlgorithm extends Algorithm {
         }
     }
     
+    @Deprecated
+    @NotNull
     @Override
-    public byte[] sign(byte[] contentBytes) throws SignatureGenerationException {
+    public byte[] sign(@NotNull byte[] contentBytes) throws SignatureGenerationException {
         try {
             RSAPrivateKey privateKey = keyProvider.getPrivateKey();
             if (privateKey == null) {
@@ -93,16 +96,19 @@ class RSAAlgorithm extends Algorithm {
             throw new IllegalArgumentException("Both provided Keys cannot be null.");
         }
         return new RSAKeyProvider() {
+            @Nullable
             @Override
             public RSAPublicKey getPublicKeyById(String keyId) {
                 return publicKey;
             }
 
+            @Nullable
             @Override
             public RSAPrivateKey getPrivateKey() {
                 return privateKey;
             }
 
+            @Nullable
             @Override
             public String getPrivateKeyId() {
                 return null;

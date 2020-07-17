@@ -5,6 +5,9 @@ import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.ECDSAKeyProvider;
 import org.apache.commons.codec.binary.Base64;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -24,7 +27,7 @@ class ECDSAAlgorithm extends Algorithm {
     private final int ecNumberSize;
 
     //Visible for testing
-    ECDSAAlgorithm(CryptoHelper crypto, String id, String algorithm, int ecNumberSize, ECDSAKeyProvider keyProvider) throws IllegalArgumentException {
+    ECDSAAlgorithm(CryptoHelper crypto, String id, String algorithm, int ecNumberSize, @NotNull ECDSAKeyProvider keyProvider) throws IllegalArgumentException {
         super(id, algorithm);
         if (keyProvider == null) {
             throw new IllegalArgumentException("The Key Provider cannot be null.");
@@ -39,7 +42,7 @@ class ECDSAAlgorithm extends Algorithm {
     }
 
     @Override
-    public void verify(DecodedJWT jwt) throws SignatureVerificationException {
+    public void verify(@NotNull DecodedJWT jwt) throws SignatureVerificationException {
         byte[] signatureBytes = Base64.decodeBase64(jwt.getSignature());
 
         try {
@@ -57,8 +60,9 @@ class ECDSAAlgorithm extends Algorithm {
         }
     }
 
+    @NotNull
     @Override
-    public byte[] sign(byte[] headerBytes, byte[] payloadBytes) throws SignatureGenerationException {
+    public byte[] sign(@NotNull byte[] headerBytes, @NotNull byte[] payloadBytes) throws SignatureGenerationException {
         try {
             ECPrivateKey privateKey = keyProvider.getPrivateKey();
             if (privateKey == null) {
@@ -71,9 +75,10 @@ class ECDSAAlgorithm extends Algorithm {
         }
     }
 
+    @NotNull
     @Override
     @Deprecated
-    public byte[] sign(byte[] contentBytes) throws SignatureGenerationException {
+    public byte[] sign(@NotNull byte[] contentBytes) throws SignatureGenerationException {
         try {
             ECPrivateKey privateKey = keyProvider.getPrivateKey();
             if (privateKey == null) {
@@ -215,21 +220,25 @@ class ECDSAAlgorithm extends Algorithm {
     }
 
     //Visible for testing
+    @Contract("null,null -> fail")
     static ECDSAKeyProvider providerForKeys(final ECPublicKey publicKey, final ECPrivateKey privateKey) {
         if (publicKey == null && privateKey == null) {
             throw new IllegalArgumentException("Both provided Keys cannot be null.");
         }
         return new ECDSAKeyProvider() {
+            @Nullable
             @Override
             public ECPublicKey getPublicKeyById(String keyId) {
                 return publicKey;
             }
 
+            @Nullable
             @Override
             public ECPrivateKey getPrivateKey() {
                 return privateKey;
             }
 
+            @Nullable
             @Override
             public String getPrivateKeyId() {
                 return null;

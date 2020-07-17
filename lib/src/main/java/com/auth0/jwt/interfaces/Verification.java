@@ -1,6 +1,9 @@
 package com.auth0.jwt.interfaces;
 
 import com.auth0.jwt.JWTVerifier;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Range;
 
 import java.util.Date;
 
@@ -14,7 +17,8 @@ public interface Verification {
      * @param issuer the required Issuer value. If multiple values are given, the claim must at least match one of them
      * @return this same Verification instance.
      */
-    Verification withIssuer(String... issuer);
+    @NotNull
+    Verification withIssuer(@Nullable String... issuer);
 
     /**
      * Require a specific Subject ("sub") claim.
@@ -22,7 +26,8 @@ public interface Verification {
      * @param subject the required Subject value
      * @return this same Verification instance.
      */
-    Verification withSubject(String subject);
+    @NotNull
+    Verification withSubject(@Nullable String subject);
 
     /**
      * Require a specific Audience ("aud") claim.
@@ -30,7 +35,8 @@ public interface Verification {
      * @param audience the required Audience value
      * @return this same Verification instance.
      */
-    Verification withAudience(String... audience);
+    @NotNull
+    Verification withAudience(@Nullable String... audience);
 
     /**
      * Define the default window in seconds in which the Not Before, Issued At and Expires At Claims will still be valid.
@@ -40,7 +46,8 @@ public interface Verification {
      * @return this same Verification instance.
      * @throws IllegalArgumentException if leeway is negative.
      */
-    Verification acceptLeeway(long leeway) throws IllegalArgumentException;
+    @NotNull
+    Verification acceptLeeway(@Range(from = 0, to = Long.MAX_VALUE) long leeway) throws IllegalArgumentException;
 
     /**
      * Set a specific leeway window in seconds in which the Expires At ("exp") Claim will still be valid.
@@ -50,7 +57,8 @@ public interface Verification {
      * @return this same Verification instance.
      * @throws IllegalArgumentException if leeway is negative.
      */
-    Verification acceptExpiresAt(long leeway) throws IllegalArgumentException;
+    @NotNull
+    Verification acceptExpiresAt(@Range(from = 0, to = Long.MAX_VALUE) long leeway) throws IllegalArgumentException;
 
     /**
      * Set a specific leeway window in seconds in which the Not Before ("nbf") Claim will still be valid.
@@ -60,7 +68,8 @@ public interface Verification {
      * @return this same Verification instance.
      * @throws IllegalArgumentException if leeway is negative.
      */
-    Verification acceptNotBefore(long leeway) throws IllegalArgumentException;
+    @NotNull
+    Verification acceptNotBefore(@Range(from = 0, to = Long.MAX_VALUE) long leeway) throws IllegalArgumentException;
 
     /**
      * Set a specific leeway window in seconds in which the Issued At ("iat") Claim will still be valid.
@@ -70,7 +79,8 @@ public interface Verification {
      * @return this same Verification instance.
      * @throws IllegalArgumentException if leeway is negative.
      */
-    Verification acceptIssuedAt(long leeway) throws IllegalArgumentException;
+    @NotNull
+    Verification acceptIssuedAt(@Range(from = 0, to = Long.MAX_VALUE) long leeway) throws IllegalArgumentException;
 
     /**
      * Require a specific JWT Id ("jti") claim.
@@ -78,7 +88,8 @@ public interface Verification {
      * @param jwtId the required Id value
      * @return this same Verification instance.
      */
-    Verification withJWTId(String jwtId);
+    @NotNull
+    Verification withJWTId(@Nullable String jwtId);
 
     /**
      * Require a specific Claim value.
@@ -88,7 +99,8 @@ public interface Verification {
      * @return this same Verification instance.
      * @throws IllegalArgumentException if the name is null.
      */
-    Verification withClaim(String name, Boolean value) throws IllegalArgumentException;
+    @NotNull
+    Verification withClaim(@NotNull String name, @Nullable Boolean value) throws IllegalArgumentException;
 
     /**
      * Require a specific Claim value.
@@ -98,7 +110,8 @@ public interface Verification {
      * @return this same Verification instance.
      * @throws IllegalArgumentException if the name is null.
      */
-    Verification withClaim(String name, Integer value) throws IllegalArgumentException;
+    @NotNull
+    Verification withClaim(@NotNull String name, @Nullable Integer value) throws IllegalArgumentException;
 
     /**
      * Require a specific Claim value.
@@ -108,7 +121,8 @@ public interface Verification {
      * @return this same Verification instance.
      * @throws IllegalArgumentException if the name is null.
      */
-    Verification withClaim(String name, Long value) throws IllegalArgumentException;
+    @NotNull
+    Verification withClaim(@NotNull String name, @Nullable Long value) throws IllegalArgumentException;
 
     /**
      * Require a specific Claim value.
@@ -118,7 +132,8 @@ public interface Verification {
      * @return this same Verification instance.
      * @throws IllegalArgumentException if the name is null.
      */
-    Verification withClaim(String name, Double value) throws IllegalArgumentException;
+    @NotNull
+    Verification withClaim(@NotNull String name, @Nullable Double value) throws IllegalArgumentException;
 
     /**
      * Require a specific Claim value.
@@ -128,7 +143,8 @@ public interface Verification {
      * @return this same Verification instance.
      * @throws IllegalArgumentException if the name is null.
      */
-    Verification withClaim(String name, String value) throws IllegalArgumentException;
+    @NotNull
+    Verification withClaim(@NotNull String name, @Nullable String value) throws IllegalArgumentException;
 
     /**
      * Require a specific Claim value.
@@ -138,7 +154,8 @@ public interface Verification {
      * @return this same Verification instance.
      * @throws IllegalArgumentException if the name is null.
      */
-    Verification withClaim(String name, Date value) throws IllegalArgumentException;
+    @NotNull
+    Verification withClaim(@NotNull String name, @Nullable Date value) throws IllegalArgumentException;
 
     /**
      * Require a specific Array Claim to contain at least the given items.
@@ -148,7 +165,8 @@ public interface Verification {
      * @return this same Verification instance.
      * @throws IllegalArgumentException if the name is null.
      */
-    Verification withArrayClaim(String name, String... items) throws IllegalArgumentException;
+    @NotNull
+    Verification withArrayClaim(@NotNull String name, @Nullable String... items) throws IllegalArgumentException;
 
     /**
      * Require a specific Array Claim to contain at least the given items.
@@ -158,7 +176,8 @@ public interface Verification {
      * @return this same Verification instance.
      * @throws IllegalArgumentException if the name is null.
      */
-    Verification withArrayClaim(String name, Integer... items) throws IllegalArgumentException;
+    @NotNull
+    Verification withArrayClaim(@NotNull String name, @Nullable Integer... items) throws IllegalArgumentException;
 
     /**
      * Require a specific Array Claim to contain at least the given items.
@@ -169,13 +188,15 @@ public interface Verification {
      * @throws IllegalArgumentException if the name is null.
      */
 
-    Verification withArrayClaim(String name, Long ... items) throws IllegalArgumentException;
+    @NotNull
+    Verification withArrayClaim(@NotNull String name, @Nullable Long ... items) throws IllegalArgumentException;
 
     /**
      * Skip the Issued At ("iat") date verification. By default, the verification is performed.
      *
      * @return this same Verification instance.
      */
+    @NotNull
     Verification ignoreIssuedAt();
 
     /**
@@ -183,5 +204,6 @@ public interface Verification {
      *
      * @return a new JWTVerifier instance.
      */
+    @NotNull
     JWTVerifier build();
 }

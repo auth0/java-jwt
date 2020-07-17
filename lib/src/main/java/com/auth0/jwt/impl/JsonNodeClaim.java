@@ -8,6 +8,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.lang.reflect.Array;
@@ -29,31 +31,37 @@ class JsonNodeClaim implements Claim {
         this.objectReader = objectReader;
     }
 
+    @Nullable
     @Override
     public Boolean asBoolean() {
         return !data.isBoolean() ? null : data.asBoolean();
     }
 
+    @Nullable
     @Override
     public Integer asInt() {
         return !data.isNumber() ? null : data.asInt();
     }
 
+    @Nullable
     @Override
     public Long asLong() {
         return !data.isNumber() ? null : data.asLong();
     }
 
+    @Nullable
     @Override
     public Double asDouble() {
         return !data.isNumber() ? null : data.asDouble();
     }
 
+    @Nullable
     @Override
     public String asString() {
         return !data.isTextual() ? null : data.asText();
     }
 
+    @Nullable
     @Override
     public Date asDate() {
         if (!data.canConvertToLong()) {
@@ -63,9 +71,10 @@ class JsonNodeClaim implements Claim {
         return new Date(seconds * 1000);
     }
 
+    @Nullable
     @Override
     @SuppressWarnings("unchecked")
-    public <T> T[] asArray(Class<T> tClazz) throws JWTDecodeException {
+    public <T> T[] asArray(@NotNull Class<T> tClazz) throws JWTDecodeException {
         if (!data.isArray()) {
             return null;
         }
@@ -81,8 +90,9 @@ class JsonNodeClaim implements Claim {
         return arr;
     }
 
+    @Nullable
     @Override
-    public <T> List<T> asList(Class<T> tClazz) throws JWTDecodeException {
+    public <T> List<T> asList(@NotNull Class<T> tClazz) throws JWTDecodeException {
         if (!data.isArray()) {
             return null;
         }
@@ -98,6 +108,7 @@ class JsonNodeClaim implements Claim {
         return list;
     }
 
+    @Nullable
     @Override
     public Map<String, Object> asMap() throws JWTDecodeException {
         if (!data.isObject()) {
@@ -114,8 +125,9 @@ class JsonNodeClaim implements Claim {
         }
     }
 
+    @Nullable
     @Override
-    public <T> T as(Class<T> tClazz) throws JWTDecodeException {
+    public <T> T as(@NotNull Class<T> tClazz) throws JWTDecodeException {
         try {
             return objectReader.treeAsTokens(data).readValueAs(tClazz);
         } catch (IOException e) {
@@ -135,7 +147,8 @@ class JsonNodeClaim implements Claim {
      * @param tree      the JsonNode tree to search the Claim in.
      * @return a valid non-null Claim.
      */
-    static Claim extractClaim(String claimName, Map<String, JsonNode> tree, ObjectReader objectReader) {
+    @NotNull
+    static Claim extractClaim(@NotNull String claimName, @NotNull Map<String, JsonNode> tree, @NotNull ObjectReader objectReader) {
         JsonNode node = tree.get(claimName);
         return claimFromNode(node, objectReader);
     }
@@ -146,7 +159,8 @@ class JsonNodeClaim implements Claim {
      * @param node the JsonNode to convert into a Claim.
      * @return a valid Claim instance. If the node is null or missing, a NullClaim will be returned.
      */
-    static Claim claimFromNode(JsonNode node, ObjectReader objectReader) {
+    @NotNull
+    static Claim claimFromNode(@Nullable JsonNode node, @NotNull ObjectReader objectReader) {
         if (node == null || node.isNull() || node.isMissingNode()) {
             return new NullClaim();
         }

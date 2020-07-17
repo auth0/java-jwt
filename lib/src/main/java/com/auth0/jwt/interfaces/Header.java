@@ -1,5 +1,8 @@
 package com.auth0.jwt.interfaces;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 /**
  * The Header class represents the 1st part of the JWT, where the Header value is hold.
  */
@@ -10,6 +13,7 @@ public interface Header {
      *
      * @return the Algorithm defined or null.
      */
+    @Nullable
     String getAlgorithm();
 
     /**
@@ -17,6 +21,7 @@ public interface Header {
      *
      * @return the Type defined or null.
      */
+    @Nullable
     String getType();
 
     /**
@@ -24,6 +29,7 @@ public interface Header {
      *
      * @return the Content Type defined or null.
      */
+    @Nullable
     String getContentType();
 
     /**
@@ -31,6 +37,7 @@ public interface Header {
      *
      * @return the Key ID value or null.
      */
+    @Nullable
     String getKeyId();
 
     /**
@@ -39,5 +46,6 @@ public interface Header {
      * @param name the name of the Claim to retrieve.
      * @return a non-null Claim.
      */
-    Claim getHeaderClaim(String name);
+    @NotNull
+    Claim getHeaderClaim(@NotNull String name);
 }

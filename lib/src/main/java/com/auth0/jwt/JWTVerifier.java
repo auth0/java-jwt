@@ -8,6 +8,8 @@ import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.Clock;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.Verification;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Range;
 
 import java.util.*;
 
@@ -37,7 +39,8 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
      * @return a JWTVerifier.Verification instance to configure.
      * @throws IllegalArgumentException if the provided algorithm is null.
      */
-    static Verification init(Algorithm algorithm) throws IllegalArgumentException {
+    @NotNull
+    static Verification init(@NotNull Algorithm algorithm) throws IllegalArgumentException {
         return new BaseVerification(algorithm);
     }
 
@@ -47,7 +50,7 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
         private long defaultLeeway;
         private boolean ignoreIssuedAt;
 
-        BaseVerification(Algorithm algorithm) throws IllegalArgumentException {
+        BaseVerification(@NotNull Algorithm algorithm) throws IllegalArgumentException {
             if (algorithm == null) {
                 throw new IllegalArgumentException("The Algorithm cannot be null.");
             }
@@ -57,127 +60,146 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
             this.defaultLeeway = 0;
         }
 
+        @NotNull
         @Override
         public Verification withIssuer(String... issuer) {
             requireClaim(PublicClaims.ISSUER, isNullOrEmpty(issuer) ? null : Arrays.asList(issuer));
             return this;
         }
 
+        @NotNull
         @Override
         public Verification withSubject(String subject) {
             requireClaim(PublicClaims.SUBJECT, subject);
             return this;
         }
 
+        @NotNull
         @Override
         public Verification withAudience(String... audience) {
             requireClaim(PublicClaims.AUDIENCE, isNullOrEmpty(audience) ? null : Arrays.asList(audience));
             return this;
         }
 
+        @NotNull
         @Override
-        public Verification acceptLeeway(long leeway) throws IllegalArgumentException {
+        public Verification acceptLeeway(@Range(from = 0, to = Long.MAX_VALUE) long leeway) throws IllegalArgumentException {
             assertPositive(leeway);
             this.defaultLeeway = leeway;
             return this;
         }
 
+        @NotNull
         @Override
-        public Verification acceptExpiresAt(long leeway) throws IllegalArgumentException {
+        public Verification acceptExpiresAt(@Range(from = 0, to = Long.MAX_VALUE) long leeway) throws IllegalArgumentException {
             assertPositive(leeway);
             requireClaim(PublicClaims.EXPIRES_AT, leeway);
             return this;
         }
 
+        @NotNull
         @Override
-        public Verification acceptNotBefore(long leeway) throws IllegalArgumentException {
+        public Verification acceptNotBefore(@Range(from = 0, to = Long.MAX_VALUE) long leeway) throws IllegalArgumentException {
             assertPositive(leeway);
             requireClaim(PublicClaims.NOT_BEFORE, leeway);
             return this;
         }
 
+        @NotNull
         @Override
-        public Verification acceptIssuedAt(long leeway) throws IllegalArgumentException {
+        public Verification acceptIssuedAt(@Range(from = 0, to = Long.MAX_VALUE) long leeway) throws IllegalArgumentException {
             assertPositive(leeway);
             requireClaim(PublicClaims.ISSUED_AT, leeway);
             return this;
         }
 
+        @NotNull
         @Override
         public Verification ignoreIssuedAt() {
             this.ignoreIssuedAt = true;
             return this;
         }
 
+        @NotNull
         @Override
         public Verification withJWTId(String jwtId) {
             requireClaim(PublicClaims.JWT_ID, jwtId);
             return this;
         }
 
+        @NotNull
         @Override
-        public Verification withClaim(String name, Boolean value) throws IllegalArgumentException {
+        public Verification withClaim(@NotNull String name, Boolean value) throws IllegalArgumentException {
             assertNonNull(name);
             requireClaim(name, value);
             return this;
         }
 
+        @NotNull
         @Override
-        public Verification withClaim(String name, Integer value) throws IllegalArgumentException {
+        public Verification withClaim(@NotNull String name, Integer value) throws IllegalArgumentException {
             assertNonNull(name);
             requireClaim(name, value);
             return this;
         }
 
+        @NotNull
         @Override
-        public Verification withClaim(String name, Long value) throws IllegalArgumentException {
+        public Verification withClaim(@NotNull String name, Long value) throws IllegalArgumentException {
             assertNonNull(name);
             requireClaim(name, value);
             return this;
         }
 
+        @NotNull
         @Override
-        public Verification withClaim(String name, Double value) throws IllegalArgumentException {
+        public Verification withClaim(@NotNull String name, Double value) throws IllegalArgumentException {
             assertNonNull(name);
             requireClaim(name, value);
             return this;
         }
 
+        @NotNull
         @Override
-        public Verification withClaim(String name, String value) throws IllegalArgumentException {
+        public Verification withClaim(@NotNull String name, String value) throws IllegalArgumentException {
             assertNonNull(name);
             requireClaim(name, value);
             return this;
         }
 
+        @NotNull
         @Override
-        public Verification withClaim(String name, Date value) throws IllegalArgumentException {
+        public Verification withClaim(@NotNull String name, Date value) throws IllegalArgumentException {
             assertNonNull(name);
             requireClaim(name, value);
             return this;
         }
 
+        @NotNull
         @Override
-        public Verification withArrayClaim(String name, String... items) throws IllegalArgumentException {
+        public Verification withArrayClaim(@NotNull String name, String... items) throws IllegalArgumentException {
             assertNonNull(name);
             requireClaim(name, items);
             return this;
         }
 
+        @NotNull
         @Override
-        public Verification withArrayClaim(String name, Integer... items) throws IllegalArgumentException {
+        public Verification withArrayClaim(@NotNull String name, Integer... items) throws IllegalArgumentException {
             assertNonNull(name);
             requireClaim(name, items);
             return this;
         }
 
+        @NotNull
         @Override
-        public Verification withArrayClaim(String name, Long... items) throws IllegalArgumentException {
+        public Verification withArrayClaim(@NotNull String name, Long... items) throws IllegalArgumentException {
             assertNonNull(name);
             requireClaim(name, items);
             return this;
         }
 
+        @NotNull
         @Override
         public JWTVerifier build() {
             return this.build(new ClockImpl());
@@ -257,8 +279,9 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
      * @throws TokenExpiredException          if the token has expired.
      * @throws InvalidClaimException          if a claim contained a different value than the expected one.
      */
+    @NotNull
     @Override
-    public DecodedJWT verify(String token) throws JWTVerificationException {
+    public DecodedJWT verify(@NotNull String token) throws JWTVerificationException {
         DecodedJWT jwt = new JWTDecoder(parser, token);
         return verify(jwt);
     }
@@ -273,8 +296,9 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
      * @throws TokenExpiredException          if the token has expired.
      * @throws InvalidClaimException          if a claim contained a different value than the expected one.
      */
+    @NotNull
     @Override
-    public DecodedJWT verify(DecodedJWT jwt) throws JWTVerificationException {
+    public DecodedJWT verify(@NotNull DecodedJWT jwt) throws JWTVerificationException {
         verifyAlgorithm(jwt, algorithm);
         algorithm.verify(jwt);
         verifyClaims(jwt, claims);

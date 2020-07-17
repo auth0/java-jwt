@@ -1,5 +1,7 @@
 package com.auth0.jwt.interfaces;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * Class that represents a Json Web Token that was decoded from it's string representation.
  */
@@ -9,6 +11,7 @@ public interface DecodedJWT extends Payload, Header {
      *
      * @return the String Token.
      */
+    @NotNull
     String getToken();
 
     /**
@@ -17,6 +20,7 @@ public interface DecodedJWT extends Payload, Header {
      *
      * @return the Header of the JWT.
      */
+    @NotNull
     String getHeader();
 
     /**
@@ -25,6 +29,7 @@ public interface DecodedJWT extends Payload, Header {
      *
      * @return the Payload of the JWT.
      */
+    @NotNull
     String getPayload();
 
     /**
@@ -33,5 +38,6 @@ public interface DecodedJWT extends Payload, Header {
      *
      * @return the Signature of the JWT.
      */
+    @NotNull
     String getSignature();
 }

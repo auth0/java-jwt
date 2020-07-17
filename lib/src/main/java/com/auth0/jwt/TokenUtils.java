@@ -1,6 +1,7 @@
 package com.auth0.jwt;
 
 import com.auth0.jwt.exceptions.JWTDecodeException;
+import org.jetbrains.annotations.NotNull;
 
 abstract class TokenUtils {
 
@@ -11,7 +12,8 @@ abstract class TokenUtils {
      * @return the array representing the 3 parts of the token.
      * @throws JWTDecodeException if the Token doesn't have 3 parts.
      */
-    static String[] splitToken(String token) throws JWTDecodeException {
+    @NotNull
+    static String[] splitToken(@NotNull String token) throws JWTDecodeException {
         String[] parts = token.split("\\.");
         if (parts.length == 2 && token.endsWith(".")) {
             //Tokens with alg='none' have empty String as Signature.

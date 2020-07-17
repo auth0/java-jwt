@@ -11,6 +11,8 @@ import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.apache.commons.codec.binary.Base64;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
@@ -52,6 +54,7 @@ public final class JWTCreator {
      *
      * @return a JWTCreator.Builder instance to configure.
      */
+    @NotNull
     static JWTCreator.Builder init() {
         return new Builder();
     }
@@ -76,7 +79,8 @@ public final class JWTCreator {
          * @param headerClaims the values to use as Claims in the token's Header.
          * @return this same Builder instance.
          */
-        public Builder withHeader(Map<String, Object> headerClaims) {
+        @NotNull
+        public Builder withHeader(@Nullable Map<String, Object> headerClaims) {
             if (headerClaims == null) {
                 return this;
             }
@@ -99,7 +103,8 @@ public final class JWTCreator {
          * @param keyId the Key Id value.
          * @return this same Builder instance.
          */
-        public Builder withKeyId(String keyId) {
+        @NotNull
+        public Builder withKeyId(@Nullable String keyId) {
             this.headerClaims.put(PublicClaims.KEY_ID, keyId);
             return this;
         }
@@ -110,7 +115,8 @@ public final class JWTCreator {
          * @param issuer the Issuer value.
          * @return this same Builder instance.
          */
-        public Builder withIssuer(String issuer) {
+        @NotNull
+        public Builder withIssuer(@Nullable String issuer) {
             addClaim(PublicClaims.ISSUER, issuer);
             return this;
         }
@@ -121,7 +127,8 @@ public final class JWTCreator {
          * @param subject the Subject value.
          * @return this same Builder instance.
          */
-        public Builder withSubject(String subject) {
+        @NotNull
+        public Builder withSubject(@Nullable String subject) {
             addClaim(PublicClaims.SUBJECT, subject);
             return this;
         }
@@ -132,7 +139,8 @@ public final class JWTCreator {
          * @param audience the Audience value.
          * @return this same Builder instance.
          */
-        public Builder withAudience(String... audience) {
+        @NotNull
+        public Builder withAudience(@Nullable String... audience) {
             addClaim(PublicClaims.AUDIENCE, audience);
             return this;
         }
@@ -143,7 +151,8 @@ public final class JWTCreator {
          * @param expiresAt the Expires At value.
          * @return this same Builder instance.
          */
-        public Builder withExpiresAt(Date expiresAt) {
+        @NotNull
+        public Builder withExpiresAt(@Nullable Date expiresAt) {
             addClaim(PublicClaims.EXPIRES_AT, expiresAt);
             return this;
         }
@@ -154,7 +163,8 @@ public final class JWTCreator {
          * @param notBefore the Not Before value.
          * @return this same Builder instance.
          */
-        public Builder withNotBefore(Date notBefore) {
+        @NotNull
+        public Builder withNotBefore(@Nullable Date notBefore) {
             addClaim(PublicClaims.NOT_BEFORE, notBefore);
             return this;
         }
@@ -165,7 +175,8 @@ public final class JWTCreator {
          * @param issuedAt the Issued At value.
          * @return this same Builder instance.
          */
-        public Builder withIssuedAt(Date issuedAt) {
+        @NotNull
+        public Builder withIssuedAt(@Nullable Date issuedAt) {
             addClaim(PublicClaims.ISSUED_AT, issuedAt);
             return this;
         }
@@ -176,7 +187,8 @@ public final class JWTCreator {
          * @param jwtId the Token Id value.
          * @return this same Builder instance.
          */
-        public Builder withJWTId(String jwtId) {
+        @NotNull
+        public Builder withJWTId(@Nullable String jwtId) {
             addClaim(PublicClaims.JWT_ID, jwtId);
             return this;
         }
@@ -189,7 +201,8 @@ public final class JWTCreator {
          * @return this same Builder instance.
          * @throws IllegalArgumentException if the name is null.
          */
-        public Builder withClaim(String name, Boolean value) throws IllegalArgumentException {
+        @NotNull
+        public Builder withClaim(@NotNull String name, @Nullable Boolean value) throws IllegalArgumentException {
             assertNonNull(name);
             addClaim(name, value);
             return this;
@@ -203,7 +216,8 @@ public final class JWTCreator {
          * @return this same Builder instance.
          * @throws IllegalArgumentException if the name is null.
          */
-        public Builder withClaim(String name, Integer value) throws IllegalArgumentException {
+        @NotNull
+        public Builder withClaim(@NotNull String name, @Nullable Integer value) throws IllegalArgumentException {
             assertNonNull(name);
             addClaim(name, value);
             return this;
@@ -217,7 +231,8 @@ public final class JWTCreator {
          * @return this same Builder instance.
          * @throws IllegalArgumentException if the name is null.
          */
-        public Builder withClaim(String name, Long value) throws IllegalArgumentException {
+        @NotNull
+        public Builder withClaim(@NotNull String name, @Nullable Long value) throws IllegalArgumentException {
             assertNonNull(name);
             addClaim(name, value);
             return this;
@@ -231,7 +246,8 @@ public final class JWTCreator {
          * @return this same Builder instance.
          * @throws IllegalArgumentException if the name is null.
          */
-        public Builder withClaim(String name, Double value) throws IllegalArgumentException {
+        @NotNull
+        public Builder withClaim(@NotNull String name, @Nullable Double value) throws IllegalArgumentException {
             assertNonNull(name);
             addClaim(name, value);
             return this;
@@ -245,7 +261,8 @@ public final class JWTCreator {
          * @return this same Builder instance.
          * @throws IllegalArgumentException if the name is null.
          */
-        public Builder withClaim(String name, String value) throws IllegalArgumentException {
+        @NotNull
+        public Builder withClaim(@NotNull String name, @Nullable String value) throws IllegalArgumentException {
             assertNonNull(name);
             addClaim(name, value);
             return this;
@@ -259,7 +276,8 @@ public final class JWTCreator {
          * @return this same Builder instance.
          * @throws IllegalArgumentException if the name is null.
          */
-        public Builder withClaim(String name, Date value) throws IllegalArgumentException {
+        @NotNull
+        public Builder withClaim(@NotNull String name, @Nullable Date value) throws IllegalArgumentException {
             assertNonNull(name);
             addClaim(name, value);
             return this;
@@ -273,7 +291,8 @@ public final class JWTCreator {
          * @return this same Builder instance.
          * @throws IllegalArgumentException if the name is null.
          */
-        public Builder withArrayClaim(String name, String[] items) throws IllegalArgumentException {
+        @NotNull
+        public Builder withArrayClaim(@NotNull String name, @Nullable String[] items) throws IllegalArgumentException {
             assertNonNull(name);
             addClaim(name, items);
             return this;
@@ -287,7 +306,8 @@ public final class JWTCreator {
          * @return this same Builder instance.
          * @throws IllegalArgumentException if the name is null.
          */
-        public Builder withArrayClaim(String name, Integer[] items) throws IllegalArgumentException {
+        @NotNull
+        public Builder withArrayClaim(@NotNull String name, @Nullable Integer[] items) throws IllegalArgumentException {
             assertNonNull(name);
             addClaim(name, items);
             return this;
@@ -301,7 +321,8 @@ public final class JWTCreator {
          * @return this same Builder instance.
          * @throws IllegalArgumentException if the name is null
          */
-        public Builder withArrayClaim(String name, Long[] items) throws IllegalArgumentException {
+        @NotNull
+        public Builder withArrayClaim(@NotNull String name, @Nullable Long[] items) throws IllegalArgumentException {
             assertNonNull(name);
             addClaim(name, items);
             return this;
@@ -320,7 +341,8 @@ public final class JWTCreator {
          * @return this same Builder instance.
          * @throws IllegalArgumentException if the name is null, or if the map contents does not validate.
          */
-        public Builder withClaim(String name, Map<String, ?> map) throws IllegalArgumentException {
+        @NotNull
+        public Builder withClaim(@NotNull String name, @Nullable Map<String, ?> map) throws IllegalArgumentException {
             assertNonNull(name);
             // validate map contents
             if (map != null && !validateClaim(map)) {
@@ -344,7 +366,8 @@ public final class JWTCreator {
          * @throws IllegalArgumentException if the name is null, or if the list contents does not validate.
          */
 
-        public Builder withClaim(String name, List<?> list) throws IllegalArgumentException {
+        @NotNull
+        public Builder withClaim(@NotNull String name, @Nullable List<?> list) throws IllegalArgumentException {
             assertNonNull(name);
             // validate list contents
             if (list != null && !validateClaim(list)) {
@@ -354,7 +377,7 @@ public final class JWTCreator {
             return this;
         }
 
-        private static boolean validateClaim(Map<?, ?> map) {
+        private static boolean validateClaim(@NotNull Map<?, ?> map) {
             // do not accept null values in maps
             for (Entry<?, ?> entry : map.entrySet()) {
                 Object value = entry.getValue();
@@ -369,7 +392,7 @@ public final class JWTCreator {
             return true;
         }
 
-        private static boolean validateClaim(List<?> list) {
+        private static boolean validateClaim(@NotNull List<?> list) {
             // accept null values in list
             for (Object object : list) {
                 if (object != null && !isSupportedType(object)) {
@@ -379,7 +402,7 @@ public final class JWTCreator {
             return true;
         }
 
-        private static boolean isSupportedType(Object value) {
+        private static boolean isSupportedType(@NotNull Object value) {
             if (value instanceof List) {
                 return validateClaim((List<?>) value);
             } else if (value instanceof Map) {
@@ -389,7 +412,7 @@ public final class JWTCreator {
             }
         }
 
-        private static boolean isBasicType(Object value) {
+        private static boolean isBasicType(@NotNull Object value) {
             Class<?> c = value.getClass();
 
             if (c.isArray()) {
@@ -406,7 +429,7 @@ public final class JWTCreator {
          * @throws IllegalArgumentException if the provided algorithm is null.
          * @throws JWTCreationException     if the claims could not be converted to a valid JSON or there was a problem with the signing key.
          */
-        public String sign(Algorithm algorithm) throws IllegalArgumentException, JWTCreationException {
+        public String sign(@NotNull Algorithm algorithm) throws IllegalArgumentException, JWTCreationException {
             if (algorithm == null) {
                 throw new IllegalArgumentException("The Algorithm cannot be null.");
             }
@@ -421,13 +444,13 @@ public final class JWTCreator {
             return new JWTCreator(algorithm, headerClaims, payloadClaims).sign();
         }
 
-        private void assertNonNull(String name) {
+        private void assertNonNull(@NotNull String name) {
             if (name == null) {
                 throw new IllegalArgumentException("The Custom Claim's name can't be null.");
             }
         }
 
-        private void addClaim(String name, Object value) {
+        private void addClaim(@NotNull String name, @Nullable Object value) {
             if (value == null) {
                 payloadClaims.remove(name);
                 return;

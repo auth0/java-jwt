@@ -4,6 +4,7 @@ import com.auth0.jwt.exceptions.SignatureGenerationException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import org.apache.commons.codec.binary.Base64;
+import org.jetbrains.annotations.NotNull;
 
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
@@ -21,7 +22,7 @@ class HMACAlgorithm extends Algorithm {
     private final byte[] secret;
 
     //Visible for testing
-    HMACAlgorithm(CryptoHelper crypto, String id, String algorithm, byte[] secretBytes) throws IllegalArgumentException {
+    HMACAlgorithm(CryptoHelper crypto, String id, String algorithm, @NotNull byte[] secretBytes) throws IllegalArgumentException {
         super(id, algorithm);
         if (secretBytes == null) {
             throw new IllegalArgumentException("The Secret cannot be null");
@@ -30,16 +31,16 @@ class HMACAlgorithm extends Algorithm {
         this.crypto = crypto;
     }
 
-    HMACAlgorithm(String id, String algorithm, byte[] secretBytes) throws IllegalArgumentException {
+    HMACAlgorithm(String id, String algorithm, @NotNull byte[] secretBytes) throws IllegalArgumentException {
         this(new CryptoHelper(), id, algorithm, secretBytes);
     }
 
-    HMACAlgorithm(String id, String algorithm, String secret) throws IllegalArgumentException {
+    HMACAlgorithm(String id, String algorithm, @NotNull String secret) throws IllegalArgumentException {
         this(new CryptoHelper(), id, algorithm, getSecretBytes(secret));
     }
 
     //Visible for testing
-    static byte[] getSecretBytes(String secret) throws IllegalArgumentException {
+    static byte[] getSecretBytes(@NotNull String secret) throws IllegalArgumentException {
         if (secret == null) {
             throw new IllegalArgumentException("The Secret cannot be null");
         }
@@ -47,7 +48,7 @@ class HMACAlgorithm extends Algorithm {
     }
 
     @Override
-    public void verify(DecodedJWT jwt) throws SignatureVerificationException {
+    public void verify(@NotNull DecodedJWT jwt) throws SignatureVerificationException {
         byte[] signatureBytes = Base64.decodeBase64(jwt.getSignature());
 
         try {
@@ -60,8 +61,9 @@ class HMACAlgorithm extends Algorithm {
         }
     }
 
+    @NotNull
     @Override
-    public byte[] sign(byte[] headerBytes, byte[] payloadBytes) throws SignatureGenerationException {
+    public byte[] sign(@NotNull byte[] headerBytes, @NotNull byte[] payloadBytes) throws SignatureGenerationException {
         try {
             return crypto.createSignatureFor(getDescription(), secret, headerBytes, payloadBytes);
         } catch (NoSuchAlgorithmException | InvalidKeyException e) {
@@ -69,9 +71,10 @@ class HMACAlgorithm extends Algorithm {
         }
     }
 
+    @NotNull
     @Override
     @Deprecated
-    public byte[] sign(byte[] contentBytes) throws SignatureGenerationException {
+    public byte[] sign(@NotNull byte[] contentBytes) throws SignatureGenerationException {
         try {
             return crypto.createSignatureFor(getDescription(), secret, contentBytes);
         } catch (NoSuchAlgorithmException | InvalidKeyException e) {

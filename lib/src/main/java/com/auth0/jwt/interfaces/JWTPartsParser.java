@@ -1,6 +1,7 @@
 package com.auth0.jwt.interfaces;
 
 import com.auth0.jwt.exceptions.JWTDecodeException;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * The JWTPartsParser class defines which parts of the JWT should be converted to it's specific Object representation instance.
@@ -14,7 +15,8 @@ public interface JWTPartsParser {
      * @return the Payload.
      * @throws JWTDecodeException if the json doesn't have a proper JSON format.
      */
-    Payload parsePayload(String json) throws JWTDecodeException;
+    @NotNull
+    Payload parsePayload(@NotNull String json) throws JWTDecodeException;
 
     /**
      * Parses the given JSON into a Header instance.
@@ -23,5 +25,6 @@ public interface JWTPartsParser {
      * @return the Header.
      * @throws JWTDecodeException if the json doesn't have a proper JSON format.
      */
-    Header parseHeader(String json) throws JWTDecodeException;
+    @NotNull
+    Header parseHeader(@NotNull String json) throws JWTDecodeException;
 }

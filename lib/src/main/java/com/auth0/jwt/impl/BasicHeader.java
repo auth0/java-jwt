@@ -4,6 +4,8 @@ import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.Header;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectReader;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -38,28 +40,33 @@ class BasicHeader implements Header, Serializable {
         return tree;
     }
 
+    @Nullable
     @Override
     public String getAlgorithm() {
         return algorithm;
     }
 
+    @Nullable
     @Override
     public String getType() {
         return type;
     }
 
+    @Nullable
     @Override
     public String getContentType() {
         return contentType;
     }
 
+    @Nullable
     @Override
     public String getKeyId() {
         return keyId;
     }
 
+    @NotNull
     @Override
-    public Claim getHeaderClaim(String name) {
+    public Claim getHeaderClaim(@NotNull String name) {
         return extractClaim(name, tree, objectReader);
     }
 }

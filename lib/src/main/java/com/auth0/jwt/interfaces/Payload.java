@@ -1,5 +1,9 @@
 package com.auth0.jwt.interfaces;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Unmodifiable;
+
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +18,7 @@ public interface Payload {
      *
      * @return the Issuer value or null.
      */
+    @Nullable
     String getIssuer();
 
     /**
@@ -21,6 +26,7 @@ public interface Payload {
      *
      * @return the Subject value or null.
      */
+    @Nullable
     String getSubject();
 
     /**
@@ -28,6 +34,7 @@ public interface Payload {
      *
      * @return the Audience value or null.
      */
+    @Nullable
     List<String> getAudience();
 
     /**
@@ -35,6 +42,7 @@ public interface Payload {
      *
      * @return the Expiration Time value or null.
      */
+    @Nullable
     Date getExpiresAt();
 
     /**
@@ -42,6 +50,7 @@ public interface Payload {
      *
      * @return the Not Before value or null.
      */
+    @Nullable
     Date getNotBefore();
 
     /**
@@ -49,6 +58,7 @@ public interface Payload {
      *
      * @return the Issued At value or null.
      */
+    @Nullable
     Date getIssuedAt();
 
     /**
@@ -56,6 +66,7 @@ public interface Payload {
      *
      * @return the JWT ID value or null.
      */
+    @Nullable
     String getId();
 
     /**
@@ -64,12 +75,15 @@ public interface Payload {
      * @param name the name of the Claim to retrieve.
      * @return a non-null Claim.
      */
-    Claim getClaim(String name);
+    @NotNull
+    Claim getClaim(@NotNull String name);
 
     /**
      * Get the Claims defined in the Token.
      *
      * @return a non-null Map containing the Claims defined in the Token.
      */
+    @NotNull
+    @Unmodifiable
     Map<String, Claim> getClaims();
 }

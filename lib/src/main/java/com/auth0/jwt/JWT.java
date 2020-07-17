@@ -5,6 +5,7 @@ import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.impl.JWTParser;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.Verification;
+import org.jetbrains.annotations.NotNull;
 
 @SuppressWarnings("WeakerAccess")
 public class JWT {
@@ -28,7 +29,8 @@ public class JWT {
      * @return a decoded JWT.
      * @throws JWTDecodeException if any part of the token contained an invalid jwt or JSON format of each of the jwt parts.
      */
-    public DecodedJWT decodeJwt(String token) throws JWTDecodeException {
+    @NotNull
+    public DecodedJWT decodeJwt(@NotNull String token) throws JWTDecodeException {
         return new JWTDecoder(parser, token);
     }
 
@@ -41,7 +43,8 @@ public class JWT {
      * @return a decoded JWT.
      * @throws JWTDecodeException if any part of the token contained an invalid jwt or JSON format of each of the jwt parts.
      */
-    public static DecodedJWT decode(String token) throws JWTDecodeException {
+    @NotNull
+    public static DecodedJWT decode(@NotNull String token) throws JWTDecodeException {
         return new JWTDecoder(token);
     }
 
@@ -52,7 +55,8 @@ public class JWT {
      * @return {@link JWTVerifier} builder
      * @throws IllegalArgumentException if the provided algorithm is null.
      */
-    public static Verification require(Algorithm algorithm) {
+    @NotNull
+    public static Verification require(@NotNull Algorithm algorithm) {
         return JWTVerifier.init(algorithm);
     }
 
@@ -61,6 +65,7 @@ public class JWT {
      *
      * @return a token builder.
      */
+    @NotNull
     public static JWTCreator.Builder create() {
         return JWTCreator.init();
     }

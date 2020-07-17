@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 
@@ -20,14 +21,15 @@ public class JWTParser implements JWTPartsParser {
         this(getDefaultObjectMapper());
     }
 
-    JWTParser(ObjectMapper mapper) {
+    JWTParser(@NotNull ObjectMapper mapper) {
         addDeserializers(mapper);
         this.payloadReader = mapper.readerFor(Payload.class);
         this.headerReader = mapper.readerFor(Header.class);
     }
 
+    @NotNull
     @Override
-    public Payload parsePayload(String json) throws JWTDecodeException {
+    public Payload parsePayload(@NotNull String json) throws JWTDecodeException {
         if (json == null) {
             throw decodeException();
         }
@@ -39,8 +41,9 @@ public class JWTParser implements JWTPartsParser {
         }
     }
 
+    @NotNull
     @Override
-    public Header parseHeader(String json) throws JWTDecodeException {
+    public Header parseHeader(@NotNull String json) throws JWTDecodeException {
         if (json == null) {
             throw decodeException();
         }

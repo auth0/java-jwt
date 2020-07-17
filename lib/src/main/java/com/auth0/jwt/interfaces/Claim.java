@@ -1,6 +1,8 @@
 package com.auth0.jwt.interfaces;
 
 import com.auth0.jwt.exceptions.JWTDecodeException;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Date;
 import java.util.List;
@@ -24,6 +26,7 @@ public interface Claim {
      *
      * @return the value as a Boolean or null.
      */
+    @Nullable
     Boolean asBoolean();
 
     /**
@@ -32,6 +35,7 @@ public interface Claim {
      *
      * @return the value as an Integer or null.
      */
+    @Nullable
     Integer asInt();
 
     /**
@@ -40,6 +44,7 @@ public interface Claim {
      *
      * @return the value as an Long or null.
      */
+    @Nullable
     Long asLong();
 
     /**
@@ -48,6 +53,7 @@ public interface Claim {
      *
      * @return the value as a Double or null.
      */
+    @Nullable
     Double asDouble();
 
     /**
@@ -56,6 +62,7 @@ public interface Claim {
      *
      * @return the value as a String or null.
      */
+    @Nullable
     String asString();
 
     /**
@@ -64,6 +71,7 @@ public interface Claim {
      *
      * @return the value as a Date or null.
      */
+    @Nullable
     Date asDate();
 
     /**
@@ -74,7 +82,8 @@ public interface Claim {
      * @return the value as an Array or null.
      * @throws JWTDecodeException if the values inside the Array can't be converted to a class T.
      */
-    <T> T[] asArray(Class<T> tClazz) throws JWTDecodeException;
+    @Nullable
+    <T> T[] asArray(@NotNull Class<T> tClazz) throws JWTDecodeException;
 
     /**
      * Get this Claim as a List of type T.
@@ -85,7 +94,8 @@ public interface Claim {
      * @return the value as a List or null.
      * @throws JWTDecodeException if the values inside the List can't be converted to a class T.
      */
-    <T> List<T> asList(Class<T> tClazz) throws JWTDecodeException;
+    @Nullable
+    <T> List<T> asList(@NotNull Class<T> tClazz) throws JWTDecodeException;
 
     /**
      * Get this Claim as a generic Map of values.
@@ -93,6 +103,7 @@ public interface Claim {
      * @return the value as instance of Map.
      * @throws JWTDecodeException if the value can't be converted to a Map.
      */
+    @Nullable
     Map<String, Object> asMap() throws JWTDecodeException;
 
     /**
@@ -103,5 +114,6 @@ public interface Claim {
      * @return the value as instance of T.
      * @throws JWTDecodeException if the value can't be converted to a class T.
      */
-    <T> T as(Class<T> tClazz) throws JWTDecodeException;
+    @Nullable
+    <T> T as(@NotNull Class<T> tClazz) throws JWTDecodeException;
 }

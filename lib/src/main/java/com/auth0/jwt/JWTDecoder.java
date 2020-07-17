@@ -8,6 +8,8 @@ import com.auth0.jwt.interfaces.Header;
 import com.auth0.jwt.interfaces.Payload;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.StringUtils;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -28,11 +30,11 @@ final class JWTDecoder implements DecodedJWT, Serializable {
     private final Header header;
     private final Payload payload;
 
-    JWTDecoder(String jwt) throws JWTDecodeException {
+    JWTDecoder(@NotNull String jwt) throws JWTDecodeException {
         this(new JWTParser(), jwt);
     }
 
-    JWTDecoder(JWTParser converter, String jwt) throws JWTDecodeException {
+    JWTDecoder(@NotNull JWTParser converter, @NotNull String jwt) throws JWTDecodeException {
         parts = TokenUtils.splitToken(jwt);
         String headerJson;
         String payloadJson;
@@ -48,91 +50,109 @@ final class JWTDecoder implements DecodedJWT, Serializable {
         payload = converter.parsePayload(payloadJson);
     }
 
+    @Nullable
     @Override
     public String getAlgorithm() {
         return header.getAlgorithm();
     }
 
+    @Nullable
     @Override
     public String getType() {
         return header.getType();
     }
 
+    @Nullable
     @Override
     public String getContentType() {
         return header.getContentType();
     }
 
+    @Nullable
     @Override
     public String getKeyId() {
         return header.getKeyId();
     }
 
+    @NotNull
     @Override
-    public Claim getHeaderClaim(String name) {
+    public Claim getHeaderClaim(@NotNull String name) {
         return header.getHeaderClaim(name);
     }
 
+    @Nullable
     @Override
     public String getIssuer() {
         return payload.getIssuer();
     }
 
+    @Nullable
     @Override
     public String getSubject() {
         return payload.getSubject();
     }
 
+    @Nullable
     @Override
     public List<String> getAudience() {
         return payload.getAudience();
     }
 
+    @Nullable
     @Override
     public Date getExpiresAt() {
         return payload.getExpiresAt();
     }
 
+    @Nullable
     @Override
     public Date getNotBefore() {
         return payload.getNotBefore();
     }
 
+    @Nullable
     @Override
     public Date getIssuedAt() {
         return payload.getIssuedAt();
     }
 
+    @Nullable
     @Override
     public String getId() {
         return payload.getId();
     }
 
+    @NotNull
     @Override
-    public Claim getClaim(String name) {
+    public Claim getClaim(@NotNull String name) {
         return payload.getClaim(name);
     }
 
+    @NotNull
     @Override
     public Map<String, Claim> getClaims() {
         return payload.getClaims();
     }
 
+    @NotNull
     @Override
     public String getHeader() {
         return parts[0];
     }
 
+    @NotNull
     @Override
     public String getPayload() {
         return parts[1];
     }
 
+    @NotNull
     @Override
     public String getSignature() {
         return parts[2];
     }
 
+    @NotNull
     @Override
     public String getToken() {
         return String.format("%s.%s.%s", parts[0], parts[1], parts[2]);

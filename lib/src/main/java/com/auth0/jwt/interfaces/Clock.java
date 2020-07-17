@@ -1,5 +1,7 @@
 package com.auth0.jwt.interfaces;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Date;
 
 /**
@@ -12,5 +14,6 @@ public interface Clock {
      *
      * @return a new Date representing Today's time.
      */
+    @NotNull
     Date getToday();
 }

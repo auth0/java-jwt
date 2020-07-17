@@ -4,6 +4,8 @@ import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.Payload;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectReader;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.Serializable;
 import java.util.*;
@@ -47,46 +49,55 @@ class PayloadImpl implements Payload, Serializable {
         return tree;
     }
 
+    @Nullable
     @Override
     public String getIssuer() {
         return issuer;
     }
 
+    @Nullable
     @Override
     public String getSubject() {
         return subject;
     }
 
+    @Nullable
     @Override
     public List<String> getAudience() {
         return audience;
     }
 
+    @Nullable
     @Override
     public Date getExpiresAt() {
         return expiresAt;
     }
 
+    @Nullable
     @Override
     public Date getNotBefore() {
         return notBefore;
     }
 
+    @Nullable
     @Override
     public Date getIssuedAt() {
         return issuedAt;
     }
 
+    @Nullable
     @Override
     public String getId() {
         return jwtId;
     }
 
+    @NotNull
     @Override
-    public Claim getClaim(String name) {
+    public Claim getClaim(@NotNull String name) {
         return extractClaim(name, tree, objectReader);
     }
 
+    @NotNull
     @Override
     public Map<String, Claim> getClaims() {
         Map<String, Claim> claims = new HashMap<>(tree.size() * 2);

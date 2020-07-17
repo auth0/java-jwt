@@ -5,6 +5,7 @@ import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.ECDSAKeyProvider;
 import com.auth0.jwt.interfaces.RSAKeyProvider;
+import org.jetbrains.annotations.NotNull;
 
 import java.security.interfaces.*;
 
@@ -361,7 +362,7 @@ public abstract class Algorithm {
      * @param jwt the already decoded JWT that it's going to be verified.
      * @throws SignatureVerificationException if the Token's Signature is invalid, meaning that it doesn't match the signatureBytes, or if the Key is invalid.
      */
-    public abstract void verify(DecodedJWT jwt) throws SignatureVerificationException;
+    public abstract void verify(@NotNull DecodedJWT jwt) throws SignatureVerificationException;
 
     /**
      * Sign the given content using this Algorithm instance.
@@ -371,7 +372,8 @@ public abstract class Algorithm {
      * @return the signature in a base64 encoded array of bytes
      * @throws SignatureGenerationException if the Key is invalid.
      */
-    public byte[] sign(byte[] headerBytes, byte[] payloadBytes) throws SignatureGenerationException {
+    @NotNull
+    public byte[] sign(@NotNull byte[] headerBytes, @NotNull byte[] payloadBytes) throws SignatureGenerationException {
         // default implementation; keep around until sign(byte[]) method is removed
         byte[] contentBytes = new byte[headerBytes.length + 1 + payloadBytes.length];
 
@@ -392,6 +394,7 @@ public abstract class Algorithm {
      */
 
     @Deprecated
-    public abstract byte[] sign(byte[] contentBytes) throws SignatureGenerationException;
+    @NotNull
+    public abstract byte[] sign(@NotNull byte[] contentBytes) throws SignatureGenerationException;
 
 }
