@@ -176,7 +176,48 @@ public abstract class Algorithm {
     public static Algorithm HMAC256(byte[] secret) throws IllegalArgumentException {
         return new HMACAlgorithm("HS256", "HmacSHA256", secret);
     }
-
+    
+    /**
+     * Creates a new Algorithm instance using SHA256withECDSA. Tokens specify this as "ES256K".
+     *
+     * @param keyProvider the provider of the Public Key and Private Key for the verify and signing instance.
+     * @return a valid ECDSA256 Algorithm.
+     * @throws IllegalArgumentException if the Key Provider is null.
+     */
+    public static Algorithm ECDSA256K(ECDSAKeyProvider keyProvider) throws IllegalArgumentException {
+        return new ECDSAAlgorithm("ES256K", "SHA256withECDSA", 32, keyProvider);
+    }
+    
+    /**
+     * Creates a new Algorithm instance using SHA256withECDSA. Tokens specify this as "ES256K".
+     *
+     * @param publicKey  the key to use in the verify instance.
+     * @param privateKey the key to use in the signing instance.
+     * @return a valid ECDSA256 Algorithm.
+     * @throws IllegalArgumentException if the provided Key is null.
+     */
+    public static Algorithm ECDSA256K(ECPublicKey publicKey, ECPrivateKey privateKey) throws IllegalArgumentException {
+        return ECDSA256K(ECDSAAlgorithm.providerForKeys(publicKey, privateKey));
+    }
+    
+    /**
+     * Creates a new Algorithm instance using SHA256withECDSA. Tokens specify this as "ES256".
+     *
+     * @param key the key to use in the verify or signing instance.
+     * @return a valid ECDSA256 Algorithm.
+     * @throws IllegalArgumentException if the provided Key is null.
+     * @deprecated use {@link #ECDSA256(ECPublicKey, ECPrivateKey)} or {@link #ECDSA256(ECDSAKeyProvider)}
+     */
+    @Deprecated
+    public static Algorithm ECDSA256K(ECKey key) throws IllegalArgumentException {
+        ECPublicKey publicKey = key instanceof ECPublicKey ? (ECPublicKey) key : null;
+        ECPrivateKey privateKey = key instanceof ECPrivateKey ? (ECPrivateKey) key : null;
+        return ECDSA256K(publicKey, privateKey);
+    }
+    
+    
+    
+    
     /**
      * Creates a new Algorithm instance using HmacSHA384. Tokens specify this as "HS384".
      *
@@ -198,6 +239,8 @@ public abstract class Algorithm {
     public static Algorithm HMAC512(byte[] secret) throws IllegalArgumentException {
         return new HMACAlgorithm("HS512", "HmacSHA512", secret);
     }
+    
+    
 
     /**
      * Creates a new Algorithm instance using SHA256withECDSA. Tokens specify this as "ES256".
