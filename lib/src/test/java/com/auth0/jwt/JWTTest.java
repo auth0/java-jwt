@@ -12,6 +12,8 @@ import org.junit.rules.ExpectedException;
 
 import java.nio.charset.StandardCharsets;
 import java.security.interfaces.ECKey;
+import java.security.interfaces.ECPrivateKey;
+import java.security.interfaces.ECPublicKey;
 import java.security.interfaces.RSAKey;
 import java.util.Date;
 
@@ -499,7 +501,10 @@ public class JWTTest {
     
     @Test
     public void shouldCreateAnEmptyECDSA256KSignedToken() throws Exception {
-        String signed = JWT.create().sign(Algorithm.ECDSA256K((ECKey) PemUtils.readPrivateKeyFromFile(PRIVATE_KEY_FILE_EC_256K, "EC")));
+        ECPublicKey publicKey = (ECPublicKey) PemUtils.readPublicKeyFromFile(PUBLIC_KEY_FILE_EC_256K, "EC");
+        ECPrivateKey privateKey = (ECPrivateKey) PemUtils.readPrivateKeyFromFile(PRIVATE_KEY_FILE_EC_256K, "EC");
+
+        String signed = JWT.create().sign(Algorithm.ECDSA256K(publicKey, privateKey) );
         assertThat(signed, is(notNullValue()));
         
         String[] parts = signed.split("\\.");
@@ -508,7 +513,7 @@ public class JWTTest {
         assertThat(headerJson, JsonMatcher.hasEntry("typ", "JWT"));
         assertThat(parts[1], is("e30"));
         
-        JWTVerifier verified = JWT.require(Algorithm.ECDSA256K((ECKey) PemUtils.readPublicKeyFromFile(PUBLIC_KEY_FILE_EC_256K, "EC")))
+        JWTVerifier verified = JWT.require(Algorithm.ECDSA256K(publicKey, privateKey))
                 .build();
         assertThat(verified, is(notNullValue()));
     }
