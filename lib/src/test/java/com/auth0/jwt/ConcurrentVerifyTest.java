@@ -10,11 +10,14 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import java.security.interfaces.ECKey;
+import java.security.interfaces.ECPrivateKey;
+import java.security.interfaces.ECPublicKey;
 import java.security.interfaces.RSAKey;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.*;
 
+import static com.auth0.jwt.PemUtils.readPrivateKeyFromFile;
 import static com.auth0.jwt.PemUtils.readPublicKeyFromFile;
 
 //@Ignore("Skipping concurrency tests")
@@ -26,6 +29,7 @@ public class ConcurrentVerifyTest {
     private static final String PUBLIC_KEY_FILE = "src/test/resources/rsa-public.pem";
     private static final String PUBLIC_KEY_FILE_256 = "src/test/resources/ec256-key-public.pem";
     private static final String PUBLIC_KEY_FILE_256K = "src/test/resources/ec256k-key-public.pem";
+    private static final String PRIVATE_KEY_FILE_256K = "src/test/resources/ec256k-key-private.pem";
     private static final String PUBLIC_KEY_FILE_384 = "src/test/resources/ec384-key-public.pem";
     private static final String PUBLIC_KEY_FILE_512 = "src/test/resources/ec512-key-public.pem";
 
@@ -144,8 +148,9 @@ public class ConcurrentVerifyTest {
     @Test
     public void shouldPassECDSA256KVerificationWithJOSESignature() throws Exception {
         String token = "eyJraWQiOiJteS1rZXktaWQiLCJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJpc3MiOiJhdXRoMCJ9.W-AbsnuQ4vqmPftAyQuF09hn3oGn3tN7VGergxyMbK74yEzDV-mLyC3o3fxXrZxcW5h01DM6BckNag7ZcimPjw";
-        ECKey key = (ECKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256K, "EC");
-        Algorithm algorithm = Algorithm.ECDSA256K(key);
+        ECPublicKey publicKey = (ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256K, "EC");
+        ECPrivateKey privateKey = (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_256K, "EC");
+        Algorithm algorithm = Algorithm.ECDSA256K(publicKey, privateKey);
         JWTVerifier verifier = JWTVerifier.init(algorithm).withIssuer("auth0").build();
         
         concurrentVerify(verifier, token);
