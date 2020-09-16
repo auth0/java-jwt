@@ -158,41 +158,40 @@ public class JWTCreatorTest {
         String headerJson = new String(Base64.decodeBase64(parts[0]), StandardCharsets.UTF_8);
         assertThat(headerJson, JsonMatcher.hasEntry("kid", "my-key-id"));
     }
-    
+
     @Test
     public void shouldAddKeyIdIfAvailableFromECDSAKAlgorithms() throws Exception {
-        ECPrivateKey privateKey = (ECPrivateKey) PemUtils.readPrivateKeyFromFile(PRIVATE_KEY_FILE_EC_256K
-                , "EC");
+        ECPrivateKey privateKey = (ECPrivateKey) PemUtils.readPrivateKeyFromFile(PRIVATE_KEY_FILE_EC_256K, "EC");
         ECDSAKeyProvider provider = mock(ECDSAKeyProvider.class);
         when(provider.getPrivateKeyId()).thenReturn("my-key-id");
         when(provider.getPrivateKey()).thenReturn(privateKey);
-        
+
         String signed = JWTCreator.init()
                 .sign(Algorithm.ECDSA256K(provider));
-        
+
         assertThat(signed, is(notNullValue()));
         String[] parts = signed.split("\\.");
         String headerJson = new String(Base64.decodeBase64(parts[0]), StandardCharsets.UTF_8);
         assertThat(headerJson, JsonMatcher.hasEntry("kid", "my-key-id"));
     }
-    
+
     @Test
     public void shouldNotOverwriteKeyIdIfAddedFromECDSAKAlgorithms() throws Exception {
         ECPrivateKey privateKey = (ECPrivateKey) PemUtils.readPrivateKeyFromFile(PRIVATE_KEY_FILE_EC_256K, "EC");
         ECDSAKeyProvider provider = mock(ECDSAKeyProvider.class);
         when(provider.getPrivateKeyId()).thenReturn("my-key-id");
         when(provider.getPrivateKey()).thenReturn(privateKey);
-        
+
         String signed = JWTCreator.init()
                 .withKeyId("real-key-id")
                 .sign(Algorithm.ECDSA256(provider));
-        
+
         assertThat(signed, is(notNullValue()));
         String[] parts = signed.split("\\.");
         String headerJson = new String(Base64.decodeBase64(parts[0]), StandardCharsets.UTF_8);
         assertThat(headerJson, JsonMatcher.hasEntry("kid", "my-key-id"));
     }
-    
+
     @Test
     public void shouldAddKeyIdIfAvailableFromECDSAAlgorithms() throws Exception {
         ECPrivateKey privateKey = (ECPrivateKey) PemUtils.readPrivateKeyFromFile(PRIVATE_KEY_FILE_EC_256, "EC");

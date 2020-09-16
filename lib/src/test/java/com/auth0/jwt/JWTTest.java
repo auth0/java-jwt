@@ -86,8 +86,8 @@ public class JWTTest {
         DecodedJWT decodedJWT = JWT.decode(token);
         RSAKey key = (RSAKey) PemUtils.readPublicKeyFromFile(PUBLIC_KEY_FILE_RSA, "RSA");
         DecodedJWT jwt = JWT.require(Algorithm.RSA512(key))
-            .build()
-            .verify(decodedJWT);
+                .build()
+                .verify(decodedJWT);
 
         assertThat(jwt, is(notNullValue()));
     }
@@ -498,26 +498,26 @@ public class JWTTest {
                 .build();
         assertThat(verified, is(notNullValue()));
     }
-    
+
     @Test
     public void shouldCreateAnEmptyECDSA256KSignedToken() throws Exception {
         ECPublicKey publicKey = (ECPublicKey) PemUtils.readPublicKeyFromFile(PUBLIC_KEY_FILE_EC_256K, "EC");
         ECPrivateKey privateKey = (ECPrivateKey) PemUtils.readPrivateKeyFromFile(PRIVATE_KEY_FILE_EC_256K, "EC");
 
-        String signed = JWT.create().sign(Algorithm.ECDSA256K(publicKey, privateKey) );
+        String signed = JWT.create().sign(Algorithm.ECDSA256K(publicKey, privateKey));
         assertThat(signed, is(notNullValue()));
-        
+
         String[] parts = signed.split("\\.");
         String headerJson = new String(Base64.decodeBase64(parts[0]), StandardCharsets.UTF_8);
         assertThat(headerJson, JsonMatcher.hasEntry("alg", "ES256K"));
         assertThat(headerJson, JsonMatcher.hasEntry("typ", "JWT"));
         assertThat(parts[1], is("e30"));
-        
+
         JWTVerifier verified = JWT.require(Algorithm.ECDSA256K(publicKey, privateKey))
                 .build();
         assertThat(verified, is(notNullValue()));
     }
-    
+
     @Test
     public void shouldCreateAnEmptyECDSA384SignedToken() throws Exception {
         String signed = JWT.create().sign(Algorithm.ECDSA384((ECKey) PemUtils.readPrivateKeyFromFile(PRIVATE_KEY_FILE_EC_384, "EC")));
