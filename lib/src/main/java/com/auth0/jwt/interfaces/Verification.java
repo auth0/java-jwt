@@ -88,8 +88,6 @@ public interface Verification {
      */
     Verification withClaimPresence(String name) throws IllegalArgumentException;
 
-//    Verification withClaimPresence(String name, Class<?> clazz) throws IllegalArgumentException;
-
     /**
      * Require a specific Claim value.
      *
