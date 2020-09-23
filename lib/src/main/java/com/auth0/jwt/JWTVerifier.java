@@ -300,33 +300,37 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
             if (entry.getValue() instanceof NonEmptyClaim) {
                 assertClaimPresent(jwt.getClaim(entry.getKey()), entry.getKey());
             } else {
-                switch (entry.getKey()) {
-                    case PublicClaims.AUDIENCE:
-                        assertValidAudienceClaim(jwt.getAudience(), (List<String>) entry.getValue());
-                        break;
-                    case PublicClaims.EXPIRES_AT:
-                        assertValidDateClaim(jwt.getExpiresAt(), (Long) entry.getValue(), true);
-                        break;
-                    case PublicClaims.ISSUED_AT:
-                        assertValidDateClaim(jwt.getIssuedAt(), (Long) entry.getValue(), false);
-                        break;
-                    case PublicClaims.NOT_BEFORE:
-                        assertValidDateClaim(jwt.getNotBefore(), (Long) entry.getValue(), false);
-                        break;
-                    case PublicClaims.ISSUER:
-                        assertValidIssuerClaim(jwt.getIssuer(), (List<String>) entry.getValue());
-                        break;
-                    case PublicClaims.JWT_ID:
-                        assertValidStringClaim(entry.getKey(), jwt.getId(), (String) entry.getValue());
-                        break;
-                    case PublicClaims.SUBJECT:
-                        assertValidStringClaim(entry.getKey(), jwt.getSubject(), (String) entry.getValue());
-                        break;
-                    default:
-                        assertValidClaim(jwt.getClaim(entry.getKey()), entry.getKey(), entry.getValue());
-                        break;
-                }
+                verifyClaimValues(jwt, entry);
             }
+        }
+    }
+
+    private void verifyClaimValues(DecodedJWT jwt, Map.Entry<String, Object> entry) {
+        switch (entry.getKey()) {
+            case PublicClaims.AUDIENCE:
+                assertValidAudienceClaim(jwt.getAudience(), (List<String>) entry.getValue());
+                break;
+            case PublicClaims.EXPIRES_AT:
+                assertValidDateClaim(jwt.getExpiresAt(), (Long) entry.getValue(), true);
+                break;
+            case PublicClaims.ISSUED_AT:
+                assertValidDateClaim(jwt.getIssuedAt(), (Long) entry.getValue(), false);
+                break;
+            case PublicClaims.NOT_BEFORE:
+                assertValidDateClaim(jwt.getNotBefore(), (Long) entry.getValue(), false);
+                break;
+            case PublicClaims.ISSUER:
+                assertValidIssuerClaim(jwt.getIssuer(), (List<String>) entry.getValue());
+                break;
+            case PublicClaims.JWT_ID:
+                assertValidStringClaim(entry.getKey(), jwt.getId(), (String) entry.getValue());
+                break;
+            case PublicClaims.SUBJECT:
+                assertValidStringClaim(entry.getKey(), jwt.getSubject(), (String) entry.getValue());
+                break;
+            default:
+                assertValidClaim(jwt.getClaim(entry.getKey()), entry.getKey(), entry.getValue());
+                break;
         }
     }
 
