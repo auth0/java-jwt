@@ -119,7 +119,7 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
         @Override
         public Verification withClaimPresence(String name) throws IllegalArgumentException {
             assertNonNull(name);
-            requireClaim(name, new NonEmptyClaim(){});
+            requireClaim(name, NonEmptyClaim.getInstance());
             return this;
         }
 
@@ -420,7 +420,18 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
     }
 
     /**
-     * Marker interface used to verify a claim is present, regardless of the claim's value.
+     * Simple singleton used to mark that a claim should only be verified for presence.
      */
-    private interface NonEmptyClaim {}
+    private static class NonEmptyClaim {
+        private static NonEmptyClaim nonEmptyClaim;
+
+        private NonEmptyClaim() {}
+
+        public static NonEmptyClaim getInstance() {
+            if (nonEmptyClaim == null) {
+                nonEmptyClaim = new NonEmptyClaim();
+            }
+            return nonEmptyClaim;
+        }
+    }
 }
