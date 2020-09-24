@@ -81,6 +81,14 @@ public interface Verification {
     Verification withJWTId(String jwtId);
 
     /**
+     * Require a claim to be present, with any value.
+     * @param name the Claim's name.
+     * @return this same Verification instance
+     * @throws IllegalArgumentException if the name is null.
+     */
+    Verification withClaimPresence(String name) throws IllegalArgumentException;
+
+    /**
      * Require a specific Claim value.
      *
      * @param name  the Claim's name.

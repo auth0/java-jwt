@@ -790,4 +790,145 @@ public class JWTVerifierTest {
 
         assertThat(jwt, is(notNullValue()));
     }
+
+    @Test
+    public void shouldThrowWhenVerifyingClaimPresenceButClaimNotPresent() {
+        exception.expect(InvalidClaimException.class);
+        exception.expectMessage("The Claim 'missing' is not present in the JWT.");
+
+        String jwt = JWTCreator.init()
+                .withClaim("custom", "")
+                .sign(Algorithm.HMAC256("secret"));
+
+        JWTVerifier verifier = JWTVerifier.init(Algorithm.HMAC256("secret"))
+                .withClaimPresence("missing")
+                .build();
+
+        verifier.verify(jwt);
+    }
+
+    @Test
+    public void shouldThrowWhenVerifyingClaimPresenceWhenClaimNameIsNull() {
+        exception.expect(IllegalArgumentException.class);
+        exception.expectMessage("The Custom Claim's name can't be null.");
+
+        String jwt = JWTCreator.init()
+                .withClaim("custom", "value")
+                .sign(Algorithm.HMAC256("secret"));
+
+        JWTVerifier.init(Algorithm.HMAC256("secret"))
+                .withClaimPresence(null);
+    }
+
+    @Test
+    public void shouldVerifyStringClaimPresence() {
+        String jwt = JWTCreator.init()
+                .withClaim("custom", "")
+                .sign(Algorithm.HMAC256("secret"));
+
+        JWTVerifier verifier = JWTVerifier.init(Algorithm.HMAC256("secret"))
+                .withClaimPresence("custom")
+                .build();
+
+        DecodedJWT decodedJWT = verifier.verify(jwt);
+        assertThat(decodedJWT, is(notNullValue()));
+    }
+
+    @Test
+    public void shouldVerifyBooleanClaimPresence() {
+        String jwt = JWTCreator.init()
+                .withClaim("custom", true)
+                .sign(Algorithm.HMAC256("secret"));
+
+        JWTVerifier verifier = JWTVerifier.init(Algorithm.HMAC256("secret"))
+                .withClaimPresence("custom")
+                .build();
+
+        DecodedJWT decodedJWT = verifier.verify(jwt);
+        assertThat(decodedJWT, is(notNullValue()));
+    }
+
+    @Test
+    public void shouldVerifyIntegerClaimPresence() {
+        String jwt = JWTCreator.init()
+                .withClaim("custom", 123)
+                .sign(Algorithm.HMAC256("secret"));
+
+        JWTVerifier verifier = JWTVerifier.init(Algorithm.HMAC256("secret"))
+                .withClaimPresence("custom")
+                .build();
+
+        DecodedJWT decodedJWT = verifier.verify(jwt);
+        assertThat(decodedJWT, is(notNullValue()));
+    }
+
+    @Test
+    public void shouldVerifyLongClaimPresence() {
+        String jwt = JWTCreator.init()
+                .withClaim("custom", 922337203685477600L)
+                .sign(Algorithm.HMAC256("secret"));
+
+        JWTVerifier verifier = JWTVerifier.init(Algorithm.HMAC256("secret"))
+                .withClaimPresence("custom")
+                .build();
+
+        DecodedJWT decodedJWT = verifier.verify(jwt);
+        assertThat(decodedJWT, is(notNullValue()));
+    }
+
+    @Test
+    public void shouldVerifyDoubleClaimPresence() {
+        String jwt = JWTCreator.init()
+                .withClaim("custom", 12.34)
+                .sign(Algorithm.HMAC256("secret"));
+
+        JWTVerifier verifier = JWTVerifier.init(Algorithm.HMAC256("secret"))
+                .withClaimPresence("custom")
+                .build();
+
+        DecodedJWT decodedJWT = verifier.verify(jwt);
+        assertThat(decodedJWT, is(notNullValue()));
+    }
+
+    @Test
+    public void shouldVerifyListClaimPresence() {
+        String jwt = JWTCreator.init()
+                .withClaim("custom", Collections.singletonList("item"))
+                .sign(Algorithm.HMAC256("secret"));
+
+        JWTVerifier verifier = JWTVerifier.init(Algorithm.HMAC256("secret"))
+                .withClaimPresence("custom")
+                .build();
+
+        DecodedJWT decodedJWT = verifier.verify(jwt);
+        assertThat(decodedJWT, is(notNullValue()));
+    }
+
+    @Test
+    public void shouldVerifyMapClaimPresence() {
+        String jwt = JWTCreator.init()
+                .withClaim("custom", Collections.singletonMap("key", "value"))
+                .sign(Algorithm.HMAC256("secret"));
+
+        JWTVerifier verifier = JWTVerifier.init(Algorithm.HMAC256("secret"))
+                .withClaimPresence("custom")
+                .build();
+
+        DecodedJWT decodedJWT = verifier.verify(jwt);
+        assertThat(decodedJWT, is(notNullValue()));
+    }
+
+    @Test
+    public void shouldVerifyStandardClaimPresence() {
+        String jwt = JWTCreator.init()
+                .withClaim("aud", "any value")
+                .sign(Algorithm.HMAC256("secret"));
+
+        JWTVerifier verifier = JWTVerifier.init(Algorithm.HMAC256("secret"))
+                .withClaimPresence("aud")
+                .build();
+
+        DecodedJWT decodedJWT = verifier.verify(jwt);
+        assertThat(decodedJWT, is(notNullValue()));
+    }
 }

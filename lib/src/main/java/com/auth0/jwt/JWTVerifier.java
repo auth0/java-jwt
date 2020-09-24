@@ -3,6 +3,7 @@ package com.auth0.jwt;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.*;
 import com.auth0.jwt.impl.JWTParser;
+import com.auth0.jwt.impl.NullClaim;
 import com.auth0.jwt.impl.PublicClaims;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.Clock;
@@ -112,6 +113,13 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
         @Override
         public Verification withJWTId(String jwtId) {
             requireClaim(PublicClaims.JWT_ID, jwtId);
+            return this;
+        }
+
+        @Override
+        public Verification withClaimPresence(String name) throws IllegalArgumentException {
+            assertNonNull(name);
+            requireClaim(name, NonEmptyClaim.getInstance());
             return this;
         }
 
@@ -289,32 +297,46 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
 
     private void verifyClaims(DecodedJWT jwt, Map<String, Object> claims) throws TokenExpiredException, InvalidClaimException {
         for (Map.Entry<String, Object> entry : claims.entrySet()) {
-            switch (entry.getKey()) {
-                case PublicClaims.AUDIENCE:
-                    assertValidAudienceClaim(jwt.getAudience(), (List<String>) entry.getValue());
-                    break;
-                case PublicClaims.EXPIRES_AT:
-                    assertValidDateClaim(jwt.getExpiresAt(), (Long) entry.getValue(), true);
-                    break;
-                case PublicClaims.ISSUED_AT:
-                    assertValidDateClaim(jwt.getIssuedAt(), (Long) entry.getValue(), false);
-                    break;
-                case PublicClaims.NOT_BEFORE:
-                    assertValidDateClaim(jwt.getNotBefore(), (Long) entry.getValue(), false);
-                    break;
-                case PublicClaims.ISSUER:
-                    assertValidIssuerClaim(jwt.getIssuer(), (List<String>) entry.getValue());
-                    break;
-                case PublicClaims.JWT_ID:
-                    assertValidStringClaim(entry.getKey(), jwt.getId(), (String) entry.getValue());
-                    break;
-                case PublicClaims.SUBJECT:
-                    assertValidStringClaim(entry.getKey(), jwt.getSubject(), (String) entry.getValue());
-                    break;
-                default:
-                    assertValidClaim(jwt.getClaim(entry.getKey()), entry.getKey(), entry.getValue());
-                    break;
+            if (entry.getValue() instanceof NonEmptyClaim) {
+                assertClaimPresent(jwt.getClaim(entry.getKey()), entry.getKey());
+            } else {
+                verifyClaimValues(jwt, entry);
             }
+        }
+    }
+
+    private void verifyClaimValues(DecodedJWT jwt, Map.Entry<String, Object> entry) {
+        switch (entry.getKey()) {
+            case PublicClaims.AUDIENCE:
+                assertValidAudienceClaim(jwt.getAudience(), (List<String>) entry.getValue());
+                break;
+            case PublicClaims.EXPIRES_AT:
+                assertValidDateClaim(jwt.getExpiresAt(), (Long) entry.getValue(), true);
+                break;
+            case PublicClaims.ISSUED_AT:
+                assertValidDateClaim(jwt.getIssuedAt(), (Long) entry.getValue(), false);
+                break;
+            case PublicClaims.NOT_BEFORE:
+                assertValidDateClaim(jwt.getNotBefore(), (Long) entry.getValue(), false);
+                break;
+            case PublicClaims.ISSUER:
+                assertValidIssuerClaim(jwt.getIssuer(), (List<String>) entry.getValue());
+                break;
+            case PublicClaims.JWT_ID:
+                assertValidStringClaim(entry.getKey(), jwt.getId(), (String) entry.getValue());
+                break;
+            case PublicClaims.SUBJECT:
+                assertValidStringClaim(entry.getKey(), jwt.getSubject(), (String) entry.getValue());
+                break;
+            default:
+                assertValidClaim(jwt.getClaim(entry.getKey()), entry.getKey(), entry.getValue());
+                break;
+        }
+    }
+
+    private void assertClaimPresent(Claim claim, String claimName) {
+        if (claim instanceof NullClaim) {
+            throw new InvalidClaimException(String.format("The Claim '%s' is not present in the JWT.", claimName));
         }
     }
 
@@ -398,6 +420,22 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
     private void assertValidIssuerClaim(String issuer, List<String> value) {
         if (issuer == null || !value.contains(issuer)) {
             throw new InvalidClaimException("The Claim 'iss' value doesn't match the required issuer.");
+        }
+    }
+
+    /**
+     * Simple singleton used to mark that a claim should only be verified for presence.
+     */
+    private static class NonEmptyClaim {
+        private static NonEmptyClaim nonEmptyClaim;
+
+        private NonEmptyClaim() {}
+
+        public static NonEmptyClaim getInstance() {
+            if (nonEmptyClaim == null) {
+                nonEmptyClaim = new NonEmptyClaim();
+            }
+            return nonEmptyClaim;
         }
     }
 }
