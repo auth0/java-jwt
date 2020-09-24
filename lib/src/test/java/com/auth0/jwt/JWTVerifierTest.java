@@ -808,6 +808,19 @@ public class JWTVerifierTest {
     }
 
     @Test
+    public void shouldThrowWhenVerifyingClaimPresenceWhenClaimNameIsNull() {
+        exception.expect(IllegalArgumentException.class);
+        exception.expectMessage("The Custom Claim's name can't be null.");
+
+        String jwt = JWTCreator.init()
+                .withClaim("custom", "value")
+                .sign(Algorithm.HMAC256("secret"));
+
+        JWTVerifier.init(Algorithm.HMAC256("secret"))
+                .withClaimPresence(null);
+    }
+
+    @Test
     public void shouldVerifyStringClaimPresence() {
         String jwt = JWTCreator.init()
                 .withClaim("custom", "")
