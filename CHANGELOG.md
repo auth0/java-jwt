@@ -1,5 +1,16 @@
 # Change Log
 
+## [3.11.0](https://github.com/auth0/java-jwt/tree/3.11.0) (2020-09-25)
+[Full Changelog](https://github.com/auth0/java-jwt/compare/3.10.3...3.11.0)
+
+**Added**
+- Add ability to verify claim presence [\#442](https://github.com/auth0/java-jwt/pull/442) ([jimmyjames](https://github.com/jimmyjames))
+- Add Support for secp256k1 algorithms (AKA ES256K) [\#439](https://github.com/auth0/java-jwt/pull/439) ([jimmyjames](https://github.com/jimmyjames))
+
+**Fixed**
+- Fix and document thread-safety [\#427](https://github.com/auth0/java-jwt/pull/427) ([lbalmaceda](https://github.com/lbalmaceda))
+- Wrap IllegalArgumentException into JWTDecodeException [\#426](https://github.com/auth0/java-jwt/pull/426) ([lbalmaceda](https://github.com/lbalmaceda))
+
 ## [3.10.3](https://github.com/auth0/java-jwt/tree/3.10.3) (2020-04-24)
 [Full Changelog](https://github.com/auth0/java-jwt/compare/3.10.2...3.10.3)
 
