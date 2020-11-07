@@ -13,7 +13,7 @@ If you're looking for an **Android** version of the JWT Decoder take a look at o
 ## Installation
 
 The library is available on both Maven Central and Bintray, and the Javadoc is published [here](https://javadoc.io/doc/com.auth0/java-jwt/latest/index.html).
- 
+
 ### Maven
 
 ```xml
@@ -34,18 +34,18 @@ implementation 'com.auth0:java-jwt:3.11.0'
 
 The library implements JWT Verification and Signing using the following algorithms:
 
-| JWS | Algorithm | Description |
-| :-------------: | :-------------: | :----- |
-| HS256 | HMAC256 | HMAC with SHA-256 |
-| HS384 | HMAC384 | HMAC with SHA-384 |
-| HS512 | HMAC512 | HMAC with SHA-512 |
-| RS256 | RSA256 | RSASSA-PKCS1-v1_5 with SHA-256 |
-| RS384 | RSA384 | RSASSA-PKCS1-v1_5 with SHA-384 |
-| RS512 | RSA512 | RSASSA-PKCS1-v1_5 with SHA-512 |
-| ES256 | ECDSA256 | ECDSA with curve P-256 and SHA-256 |
-| ES256K | ECDSA256 | ECDSA with curve secp256k1 and SHA-256 |
-| ES384 | ECDSA384 | ECDSA with curve P-384 and SHA-384 |
-| ES512 | ECDSA512 | ECDSA with curve P-521 and SHA-512 |
+|  JWS   | Algorithm | Description                            |
+| :----: | :-------: | :------------------------------------- |
+| HS256  |  HMAC256  | HMAC with SHA-256                      |
+| HS384  |  HMAC384  | HMAC with SHA-384                      |
+| HS512  |  HMAC512  | HMAC with SHA-512                      |
+| RS256  |  RSA256   | RSASSA-PKCS1-v1_5 with SHA-256         |
+| RS384  |  RSA384   | RSASSA-PKCS1-v1_5 with SHA-384         |
+| RS512  |  RSA512   | RSASSA-PKCS1-v1_5 with SHA-512         |
+| ES256  | ECDSA256  | ECDSA with curve P-256 and SHA-256     |
+| ES256K | ECDSA256  | ECDSA with curve secp256k1 and SHA-256 |
+| ES384  | ECDSA384  | ECDSA with curve P-384 and SHA-384     |
+| ES512  | ECDSA512  | ECDSA with curve P-521 and SHA-512     |
 
 ## Usage
 
@@ -54,7 +54,6 @@ The library implements JWT Verification and Signing using the following algorith
 The Algorithm defines how a token is signed and verified. It can be instantiated with the raw value of the secret in the case of HMAC algorithms, or the key pairs or `KeyProvider` in the case of RSA and ECDSA algorithms. Once created, the instance is reusable for token signing and verification operations.
 
 When using RSA or ECDSA algorithms and you just need to **sign** JWTs you can avoid specifying a Public Key by passing a `null` value. The same can be done with the Private Key when you just need to **verify** JWTs.
-
 
 #### Using static secrets or keys:
 
@@ -77,7 +76,6 @@ By using a `KeyProvider` you can change in runtime the key used either to verify
 - `getPublicKeyById(String kid)`: Its called during token signature verification and it should return the key used to verify the token. If key rotation is being used, e.g. [JWK](https://tools.ietf.org/html/rfc7517) it can fetch the correct rotation key using the id. (Or just return the same key all the time).
 - `getPrivateKey()`: Its called during token signing and it should return the key that will be used to sign the JWT.
 - `getPrivateKeyId()`: Its called during token signing and it should return the id of the key that identifies the one returned by `getPrivateKey()`. This value is preferred over the one set in the `JWTCreator.Builder#withKeyId(String)` method. If you don't need to set a `kid` value avoid instantiating an Algorithm using a `KeyProvider`.
-
 
 The following example shows how this would work with `JwkStore`, an imaginary [JWK Set](https://auth0.com/docs/jwks) implementation. For simple key rotation using JWKS, try the [jwks-rsa-java](https://github.com/auth0/jwks-rsa-java) library.
 
@@ -113,7 +111,7 @@ Algorithm algorithm = Algorithm.RSA256(keyProvider);
 
 You'll first need to create a `JWTCreator` instance by calling `JWT.create()`. Use the builder to define the custom Claims your token needs to have. Finally to get the String token call `sign()` and pass the `Algorithm` instance.
 
-* Example using `HS256`
+- Example using `HS256`
 
 ```java
 try {
@@ -126,7 +124,7 @@ try {
 }
 ```
 
-* Example using `RS256`
+- Example using `RS256`
 
 ```java
 RSAPublicKey publicKey = //Get the key instance
@@ -143,12 +141,11 @@ try {
 
 If a Claim couldn't be converted to JSON or the Key used in the signing process was invalid a `JWTCreationException` will raise.
 
-
 ### Verify a Token
 
 You'll first need to create a `JWTVerifier` instance by calling `JWT.require()` and passing the `Algorithm` instance. If you require the token to have specific Claim values, use the builder to define them. The instance returned by the method `build()` is reusable, so you can define it once and use it to verify different tokens. Finally call `verifier.verify()` passing the token.
 
-* Example using `HS256`
+- Example using `HS256`
 
 ```java
 String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXUyJ9.eyJpc3MiOiJhdXRoMCJ9.AbIJTDMFc7yUa5MhvcP03nJPyCPzZtQcGEp-zWfOkEE";
@@ -163,7 +160,7 @@ try {
 }
 ```
 
-* Example using `RS256`
+- Example using `RS256`
 
 ```java
 String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXUyJ9.eyJpc3MiOiJhdXRoMCJ9.AbIJTDMFc7yUa5MhvcP03nJPyCPzZtQcGEp-zWfOkEE";
@@ -182,13 +179,13 @@ try {
 
 If the token has an invalid signature or the Claim requirement is not met, a `JWTVerificationException` will raise.
 
-
 #### Time Validation
 
 The JWT token may include DateNumber fields that can be used to validate that:
-* The token was issued in a past date `"iat" < TODAY`
-* The token hasn't expired yet `"exp" > TODAY` and
-* The token can already be used. `"nbf" < TODAY`
+
+- The token was issued in a past date `"iat" < TODAY`
+- The token hasn't expired yet `"exp" > TODAY` and
+- The token can already be used. `"nbf" < TODAY`
 
 When verifying a token the time validation occurs automatically, resulting in a `JWTVerificationException` being throw when the values are invalid. If any of the previous fields are missing they won't be considered in this validation.
 
@@ -231,7 +228,6 @@ try {
 ```
 
 If the token has an invalid syntax or the header or payload are not JSONs, a `JWTDecodeException` will raise.
-
 
 ### Header Claims
 
@@ -286,7 +282,6 @@ String token = JWT.create()
 ```
 
 > The `alg` and `typ` values will always be included in the Header after the signing process.
-
 
 ### Payload Claims
 
@@ -370,6 +365,16 @@ String token = JWT.create()
         .sign(algorithm);
 ```
 
+Or using `withPayload()` and passing the map of claims.
+
+```java
+Map<String, Object> payloadClaims = new HashMap();
+payloadClaims.put("@context", "https://auth0.com/");
+String token = JWT.create()
+        .withPayload(payloadClaims)
+        .sign(algorithm);
+```
+
 You can also verify custom Claims on the `JWT.require()` by calling `withClaim()` and passing both the name and the required value.
 
 ```java
@@ -382,40 +387,40 @@ DecodedJWT jwt = verifier.verify("my.jwt.token");
 
 > Currently supported classes for custom JWT Claim creation and verification are: Boolean, Integer, Double, String, Date and Arrays of type String and Integer.
 
-
 ### Claim Class
+
 The Claim class is a wrapper for the Claim values. It allows you to get the Claim as different class types. The available helpers are:
 
 #### Primitives
-* **asBoolean()**: Returns the Boolean value or null if it can't be converted.
-* **asInt()**: Returns the Integer value or null if it can't be converted.
-* **asDouble()**: Returns the Double value or null if it can't be converted.
-* **asLong()**: Returns the Long value or null if it can't be converted.
-* **asString()**: Returns the String value or null if it can't be converted.
-* **asDate()**: Returns the Date value or null if it can't be converted. This must be a NumericDate (Unix Epoch/Timestamp). Note that the [JWT Standard](https://tools.ietf.org/html/rfc7519#section-2) specified that all the *NumericDate* values must be in seconds.
+
+- **asBoolean()**: Returns the Boolean value or null if it can't be converted.
+- **asInt()**: Returns the Integer value or null if it can't be converted.
+- **asDouble()**: Returns the Double value or null if it can't be converted.
+- **asLong()**: Returns the Long value or null if it can't be converted.
+- **asString()**: Returns the String value or null if it can't be converted.
+- **asDate()**: Returns the Date value or null if it can't be converted. This must be a NumericDate (Unix Epoch/Timestamp). Note that the [JWT Standard](https://tools.ietf.org/html/rfc7519#section-2) specified that all the _NumericDate_ values must be in seconds.
 
 #### Custom Classes and Collections
+
 To obtain a Claim as a Collection you'll need to provide the **Class Type** of the contents to convert from.
 
-* **as(class)**: Returns the value parsed as **Class Type**. For collections you should use the `asArray` and `asList` methods.
-* **asMap()**: Returns the value parsed as **Map<String, Object>**.
-* **asArray(class)**: Returns the value parsed as an Array of elements of type **Class Type**, or null if the value isn't a JSON Array.
-* **asList(class)**: Returns the value parsed as a List of elements of type **Class Type**, or null if the value isn't a JSON Array.
+- **as(class)**: Returns the value parsed as **Class Type**. For collections you should use the `asArray` and `asList` methods.
+- **asMap()**: Returns the value parsed as **Map<String, Object>**.
+- **asArray(class)**: Returns the value parsed as an Array of elements of type **Class Type**, or null if the value isn't a JSON Array.
+- **asList(class)**: Returns the value parsed as a List of elements of type **Class Type**, or null if the value isn't a JSON Array.
 
 If the values can't be converted to the given **Class Type** a `JWTDecodeException` will raise.
-
-
 
 ## What is Auth0?
 
 Auth0 helps you to:
 
-* Add authentication with [multiple authentication sources](https://docs.auth0.com/identityproviders), either social like **Google, Facebook, Microsoft Account, LinkedIn, GitHub, Twitter, Box, Salesforce, among others**, or enterprise identity systems like **Windows Azure AD, Google Apps, Active Directory, ADFS or any SAML Identity Provider**.
-* Add authentication through more traditional **[username/password databases](https://docs.auth0.com/mysql-connection-tutorial)**.
-* Add support for **[linking different user accounts](https://docs.auth0.com/link-accounts)** with the same user.
-* Support for generating signed [Json Web Tokens](https://docs.auth0.com/jwt) to call your APIs and **flow the user identity** securely.
-* Analytics of how, when and where users are logging in.
-* Pull data from other sources and add it to the user profile, through [JavaScript rules](https://docs.auth0.com/rules).
+- Add authentication with [multiple authentication sources](https://docs.auth0.com/identityproviders), either social like **Google, Facebook, Microsoft Account, LinkedIn, GitHub, Twitter, Box, Salesforce, among others**, or enterprise identity systems like **Windows Azure AD, Google Apps, Active Directory, ADFS or any SAML Identity Provider**.
+- Add authentication through more traditional **[username/password databases](https://docs.auth0.com/mysql-connection-tutorial)**.
+- Add support for **[linking different user accounts](https://docs.auth0.com/link-accounts)** with the same user.
+- Support for generating signed [Json Web Tokens](https://docs.auth0.com/jwt) to call your APIs and **flow the user identity** securely.
+- Analytics of how, when and where users are logging in.
+- Pull data from other sources and add it to the user profile, through [JavaScript rules](https://docs.auth0.com/rules).
 
 ## Create a free account in Auth0
 
@@ -433,6 +438,5 @@ If you have found a bug or if you have a feature request, please report them at 
 ## License
 
 This project is licensed under the MIT license. See the [LICENSE](LICENSE) file for more info.
-
 
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fauth0%2Fjava-jwt.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fauth0%2Fjava-jwt?ref=badge_large)
