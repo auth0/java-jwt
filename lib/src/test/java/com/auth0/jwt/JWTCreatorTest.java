@@ -36,8 +36,7 @@ public class JWTCreatorTest {
     public void shouldThrowWhenRequestingSignWithoutAlgorithm() throws Exception {
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage("The Algorithm cannot be null");
-        JWTCreator.init()
-                .sign(null);
+        JWTCreator.init().sign(null);
     }
 
     @SuppressWarnings("Convert2Diamond")
@@ -45,9 +44,7 @@ public class JWTCreatorTest {
     public void shouldAddHeaderClaim() throws Exception {
         Map<String, Object> header = new HashMap<String, Object>();
         header.put("asd", 123);
-        String signed = JWTCreator.init()
-                .withHeader(header)
-                .sign(Algorithm.HMAC256("secret"));
+        String signed = JWTCreator.init().withHeader(header).sign(Algorithm.HMAC256("secret"));
 
         assertThat(signed, is(notNullValue()));
         String[] parts = signed.split("\\.");
@@ -56,10 +53,8 @@ public class JWTCreatorTest {
     }
 
     @Test
-    public void shouldReturnBuilderIfNullMapIsProvided() throws Exception {
-        String signed = JWTCreator.init()
-                .withHeader(null)
-                .sign(Algorithm.HMAC256("secret"));
+    public void shouldReturnBuilderIfNullMapIsProvidedForHeader() throws Exception {
+        String signed = JWTCreator.init().withHeader(null).sign(Algorithm.HMAC256("secret"));
 
         assertThat(signed, is(notNullValue()));
     }
@@ -69,10 +64,7 @@ public class JWTCreatorTest {
         Map<String, Object> header = new HashMap<String, Object>();
         header.put(PublicClaims.KEY_ID, "xyz");
 
-        String signed = JWTCreator.init()
-                .withKeyId("abc")
-                .withHeader(header)
-                .sign(Algorithm.HMAC256("secret"));
+        String signed = JWTCreator.init().withKeyId("abc").withHeader(header).sign(Algorithm.HMAC256("secret"));
 
         assertThat(signed, is(notNullValue()));
         String[] parts = signed.split("\\.");
@@ -85,10 +77,7 @@ public class JWTCreatorTest {
         Map<String, Object> header = new HashMap<String, Object>();
         header.put(PublicClaims.KEY_ID, "xyz");
 
-        String signed = JWTCreator.init()
-                .withHeader(header)
-                .withKeyId("abc")
-                .sign(Algorithm.HMAC256("secret"));
+        String signed = JWTCreator.init().withHeader(header).withKeyId("abc").sign(Algorithm.HMAC256("secret"));
 
         assertThat(signed, is(notNullValue()));
         String[] parts = signed.split("\\.");
@@ -102,10 +91,7 @@ public class JWTCreatorTest {
         header.put(PublicClaims.KEY_ID, null);
         header.put("test2", "isSet");
 
-        String signed = JWTCreator.init()
-                .withKeyId("test")
-                .withHeader(header)
-                .sign(Algorithm.HMAC256("secret"));
+        String signed = JWTCreator.init().withKeyId("test").withHeader(header).sign(Algorithm.HMAC256("secret"));
 
         assertThat(signed, is(notNullValue()));
         String[] parts = signed.split("\\.");
@@ -116,9 +102,7 @@ public class JWTCreatorTest {
 
     @Test
     public void shouldAddKeyId() throws Exception {
-        String signed = JWTCreator.init()
-                .withKeyId("56a8bd44da435300010000015f5ed")
-                .sign(Algorithm.HMAC256("secret"));
+        String signed = JWTCreator.init().withKeyId("56a8bd44da435300010000015f5ed").sign(Algorithm.HMAC256("secret"));
 
         assertThat(signed, is(notNullValue()));
         String[] parts = signed.split("\\.");
@@ -133,8 +117,7 @@ public class JWTCreatorTest {
         when(provider.getPrivateKeyId()).thenReturn("my-key-id");
         when(provider.getPrivateKey()).thenReturn(privateKey);
 
-        String signed = JWTCreator.init()
-                .sign(Algorithm.RSA256(provider));
+        String signed = JWTCreator.init().sign(Algorithm.RSA256(provider));
 
         assertThat(signed, is(notNullValue()));
         String[] parts = signed.split("\\.");
@@ -149,9 +132,7 @@ public class JWTCreatorTest {
         when(provider.getPrivateKeyId()).thenReturn("my-key-id");
         when(provider.getPrivateKey()).thenReturn(privateKey);
 
-        String signed = JWTCreator.init()
-                .withKeyId("real-key-id")
-                .sign(Algorithm.RSA256(provider));
+        String signed = JWTCreator.init().withKeyId("real-key-id").sign(Algorithm.RSA256(provider));
 
         assertThat(signed, is(notNullValue()));
         String[] parts = signed.split("\\.");
@@ -166,8 +147,7 @@ public class JWTCreatorTest {
         when(provider.getPrivateKeyId()).thenReturn("my-key-id");
         when(provider.getPrivateKey()).thenReturn(privateKey);
 
-        String signed = JWTCreator.init()
-                .sign(Algorithm.ECDSA256K(provider));
+        String signed = JWTCreator.init().sign(Algorithm.ECDSA256K(provider));
 
         assertThat(signed, is(notNullValue()));
         String[] parts = signed.split("\\.");
@@ -182,9 +162,7 @@ public class JWTCreatorTest {
         when(provider.getPrivateKeyId()).thenReturn("my-key-id");
         when(provider.getPrivateKey()).thenReturn(privateKey);
 
-        String signed = JWTCreator.init()
-                .withKeyId("real-key-id")
-                .sign(Algorithm.ECDSA256(provider));
+        String signed = JWTCreator.init().withKeyId("real-key-id").sign(Algorithm.ECDSA256(provider));
 
         assertThat(signed, is(notNullValue()));
         String[] parts = signed.split("\\.");
@@ -199,8 +177,7 @@ public class JWTCreatorTest {
         when(provider.getPrivateKeyId()).thenReturn("my-key-id");
         when(provider.getPrivateKey()).thenReturn(privateKey);
 
-        String signed = JWTCreator.init()
-                .sign(Algorithm.ECDSA256(provider));
+        String signed = JWTCreator.init().sign(Algorithm.ECDSA256(provider));
 
         assertThat(signed, is(notNullValue()));
         String[] parts = signed.split("\\.");
@@ -215,9 +192,7 @@ public class JWTCreatorTest {
         when(provider.getPrivateKeyId()).thenReturn("my-key-id");
         when(provider.getPrivateKey()).thenReturn(privateKey);
 
-        String signed = JWTCreator.init()
-                .withKeyId("real-key-id")
-                .sign(Algorithm.ECDSA256(provider));
+        String signed = JWTCreator.init().withKeyId("real-key-id").sign(Algorithm.ECDSA256(provider));
 
         assertThat(signed, is(notNullValue()));
         String[] parts = signed.split("\\.");
@@ -227,9 +202,7 @@ public class JWTCreatorTest {
 
     @Test
     public void shouldAddIssuer() throws Exception {
-        String signed = JWTCreator.init()
-                .withIssuer("auth0")
-                .sign(Algorithm.HMAC256("secret"));
+        String signed = JWTCreator.init().withIssuer("auth0").sign(Algorithm.HMAC256("secret"));
 
         assertThat(signed, is(notNullValue()));
         assertThat(TokenUtils.splitToken(signed)[1], is("eyJpc3MiOiJhdXRoMCJ9"));
@@ -237,9 +210,7 @@ public class JWTCreatorTest {
 
     @Test
     public void shouldAddSubject() throws Exception {
-        String signed = JWTCreator.init()
-                .withSubject("1234567890")
-                .sign(Algorithm.HMAC256("secret"));
+        String signed = JWTCreator.init().withSubject("1234567890").sign(Algorithm.HMAC256("secret"));
 
         assertThat(signed, is(notNullValue()));
         assertThat(TokenUtils.splitToken(signed)[1], is("eyJzdWIiOiIxMjM0NTY3ODkwIn0"));
@@ -247,17 +218,12 @@ public class JWTCreatorTest {
 
     @Test
     public void shouldAddAudience() throws Exception {
-        String signed = JWTCreator.init()
-                .withAudience("Mark")
-                .sign(Algorithm.HMAC256("secret"));
+        String signed = JWTCreator.init().withAudience("Mark").sign(Algorithm.HMAC256("secret"));
 
         assertThat(signed, is(notNullValue()));
         assertThat(TokenUtils.splitToken(signed)[1], is("eyJhdWQiOiJNYXJrIn0"));
 
-
-        String signedArr = JWTCreator.init()
-                .withAudience("Mark", "David")
-                .sign(Algorithm.HMAC256("secret"));
+        String signedArr = JWTCreator.init().withAudience("Mark", "David").sign(Algorithm.HMAC256("secret"));
 
         assertThat(signedArr, is(notNullValue()));
         assertThat(TokenUtils.splitToken(signedArr)[1], is("eyJhdWQiOlsiTWFyayIsIkRhdmlkIl19"));
@@ -265,9 +231,7 @@ public class JWTCreatorTest {
 
     @Test
     public void shouldAddExpiresAt() throws Exception {
-        String signed = JWTCreator.init()
-                .withExpiresAt(new Date(1477592000))
-                .sign(Algorithm.HMAC256("secret"));
+        String signed = JWTCreator.init().withExpiresAt(new Date(1477592000)).sign(Algorithm.HMAC256("secret"));
 
         assertThat(signed, is(notNullValue()));
         assertThat(TokenUtils.splitToken(signed)[1], is("eyJleHAiOjE0Nzc1OTJ9"));
@@ -275,9 +239,7 @@ public class JWTCreatorTest {
 
     @Test
     public void shouldAddNotBefore() throws Exception {
-        String signed = JWTCreator.init()
-                .withNotBefore(new Date(1477592000))
-                .sign(Algorithm.HMAC256("secret"));
+        String signed = JWTCreator.init().withNotBefore(new Date(1477592000)).sign(Algorithm.HMAC256("secret"));
 
         assertThat(signed, is(notNullValue()));
         assertThat(TokenUtils.splitToken(signed)[1], is("eyJuYmYiOjE0Nzc1OTJ9"));
@@ -285,9 +247,7 @@ public class JWTCreatorTest {
 
     @Test
     public void shouldAddIssuedAt() throws Exception {
-        String signed = JWTCreator.init()
-                .withIssuedAt(new Date(1477592000))
-                .sign(Algorithm.HMAC256("secret"));
+        String signed = JWTCreator.init().withIssuedAt(new Date(1477592000)).sign(Algorithm.HMAC256("secret"));
 
         assertThat(signed, is(notNullValue()));
         assertThat(TokenUtils.splitToken(signed)[1], is("eyJpYXQiOjE0Nzc1OTJ9"));
@@ -295,9 +255,7 @@ public class JWTCreatorTest {
 
     @Test
     public void shouldAddJWTId() throws Exception {
-        String signed = JWTCreator.init()
-                .withJWTId("jwt_id_123")
-                .sign(Algorithm.HMAC256("secret"));
+        String signed = JWTCreator.init().withJWTId("jwt_id_123").sign(Algorithm.HMAC256("secret"));
 
         assertThat(signed, is(notNullValue()));
         assertThat(TokenUtils.splitToken(signed)[1], is("eyJqdGkiOiJqd3RfaWRfMTIzIn0"));
@@ -305,10 +263,7 @@ public class JWTCreatorTest {
 
     @Test
     public void shouldRemoveClaimWhenPassingNull() throws Exception {
-        String signed = JWTCreator.init()
-                .withIssuer("iss")
-                .withIssuer(null)
-                .sign(Algorithm.HMAC256("secret"));
+        String signed = JWTCreator.init().withIssuer("iss").withIssuer(null).sign(Algorithm.HMAC256("secret"));
 
         assertThat(signed, is(notNullValue()));
         assertThat(TokenUtils.splitToken(signed)[1], is("e30"));
@@ -316,8 +271,7 @@ public class JWTCreatorTest {
 
     @Test
     public void shouldSetCorrectAlgorithmInTheHeader() throws Exception {
-        String signed = JWTCreator.init()
-                .sign(Algorithm.HMAC256("secret"));
+        String signed = JWTCreator.init().sign(Algorithm.HMAC256("secret"));
 
         assertThat(signed, is(notNullValue()));
         String[] parts = signed.split("\\.");
@@ -327,8 +281,7 @@ public class JWTCreatorTest {
 
     @Test
     public void shouldSetDefaultTypeInTheHeader() throws Exception {
-        String signed = JWTCreator.init()
-                .sign(Algorithm.HMAC256("secret"));
+        String signed = JWTCreator.init().sign(Algorithm.HMAC256("secret"));
 
         assertThat(signed, is(notNullValue()));
         String[] parts = signed.split("\\.");
@@ -339,9 +292,7 @@ public class JWTCreatorTest {
     @Test
     public void shouldSetCustomTypeInTheHeader() throws Exception {
         Map<String, Object> header = Collections.singletonMap("typ", "passport");
-        String signed = JWTCreator.init()
-                .withHeader(header)
-                .sign(Algorithm.HMAC256("secret"));
+        String signed = JWTCreator.init().withHeader(header).sign(Algorithm.HMAC256("secret"));
 
         assertThat(signed, is(notNullValue()));
         String[] parts = signed.split("\\.");
@@ -351,8 +302,7 @@ public class JWTCreatorTest {
 
     @Test
     public void shouldSetEmptySignatureIfAlgorithmIsNone() throws Exception {
-        String signed = JWTCreator.init()
-                .sign(Algorithm.none());
+        String signed = JWTCreator.init().sign(Algorithm.none());
         assertThat(signed, is(notNullValue()));
         assertThat(TokenUtils.splitToken(signed)[2], is(""));
     }
@@ -361,15 +311,12 @@ public class JWTCreatorTest {
     public void shouldThrowOnNullCustomClaimName() throws Exception {
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage("The Custom Claim's name can't be null.");
-        JWTCreator.init()
-                .withClaim(null, "value");
+        JWTCreator.init().withClaim(null, "value");
     }
 
     @Test
     public void shouldAcceptCustomClaimOfTypeString() throws Exception {
-        String jwt = JWTCreator.init()
-                .withClaim("name", "value")
-                .sign(Algorithm.HMAC256("secret"));
+        String jwt = JWTCreator.init().withClaim("name", "value").sign(Algorithm.HMAC256("secret"));
 
         assertThat(jwt, is(notNullValue()));
         String[] parts = jwt.split("\\.");
@@ -378,9 +325,7 @@ public class JWTCreatorTest {
 
     @Test
     public void shouldAcceptCustomClaimOfTypeInteger() throws Exception {
-        String jwt = JWTCreator.init()
-                .withClaim("name", 123)
-                .sign(Algorithm.HMAC256("secret"));
+        String jwt = JWTCreator.init().withClaim("name", 123).sign(Algorithm.HMAC256("secret"));
 
         assertThat(jwt, is(notNullValue()));
         String[] parts = jwt.split("\\.");
@@ -389,9 +334,7 @@ public class JWTCreatorTest {
 
     @Test
     public void shouldAcceptCustomClaimOfTypeLong() throws Exception {
-        String jwt = JWTCreator.init()
-                .withClaim("name", Long.MAX_VALUE)
-                .sign(Algorithm.HMAC256("secret"));
+        String jwt = JWTCreator.init().withClaim("name", Long.MAX_VALUE).sign(Algorithm.HMAC256("secret"));
 
         assertThat(jwt, is(notNullValue()));
         String[] parts = jwt.split("\\.");
@@ -400,9 +343,7 @@ public class JWTCreatorTest {
 
     @Test
     public void shouldAcceptCustomClaimOfTypeDouble() throws Exception {
-        String jwt = JWTCreator.init()
-                .withClaim("name", 23.45)
-                .sign(Algorithm.HMAC256("secret"));
+        String jwt = JWTCreator.init().withClaim("name", 23.45).sign(Algorithm.HMAC256("secret"));
 
         assertThat(jwt, is(notNullValue()));
         String[] parts = jwt.split("\\.");
@@ -411,9 +352,7 @@ public class JWTCreatorTest {
 
     @Test
     public void shouldAcceptCustomClaimOfTypeBoolean() throws Exception {
-        String jwt = JWTCreator.init()
-                .withClaim("name", true)
-                .sign(Algorithm.HMAC256("secret"));
+        String jwt = JWTCreator.init().withClaim("name", true).sign(Algorithm.HMAC256("secret"));
 
         assertThat(jwt, is(notNullValue()));
         String[] parts = jwt.split("\\.");
@@ -423,9 +362,7 @@ public class JWTCreatorTest {
     @Test
     public void shouldAcceptCustomClaimOfTypeDate() throws Exception {
         Date date = new Date(1478891521000L);
-        String jwt = JWTCreator.init()
-                .withClaim("name", date)
-                .sign(Algorithm.HMAC256("secret"));
+        String jwt = JWTCreator.init().withClaim("name", date).sign(Algorithm.HMAC256("secret"));
 
         assertThat(jwt, is(notNullValue()));
         String[] parts = jwt.split("\\.");
@@ -434,8 +371,7 @@ public class JWTCreatorTest {
 
     @Test
     public void shouldAcceptCustomArrayClaimOfTypeString() throws Exception {
-        String jwt = JWTCreator.init()
-                .withArrayClaim("name", new String[]{"text", "123", "true"})
+        String jwt = JWTCreator.init().withArrayClaim("name", new String[] { "text", "123", "true" })
                 .sign(Algorithm.HMAC256("secret"));
 
         assertThat(jwt, is(notNullValue()));
@@ -445,8 +381,7 @@ public class JWTCreatorTest {
 
     @Test
     public void shouldAcceptCustomArrayClaimOfTypeInteger() throws Exception {
-        String jwt = JWTCreator.init()
-                .withArrayClaim("name", new Integer[]{1, 2, 3})
+        String jwt = JWTCreator.init().withArrayClaim("name", new Integer[] { 1, 2, 3 })
                 .sign(Algorithm.HMAC256("secret"));
 
         assertThat(jwt, is(notNullValue()));
@@ -456,8 +391,7 @@ public class JWTCreatorTest {
 
     @Test
     public void shouldAcceptCustomArrayClaimOfTypeLong() throws Exception {
-        String jwt = JWTCreator.init()
-                .withArrayClaim("name", new Long[]{1L, 2L, 3L})
+        String jwt = JWTCreator.init().withArrayClaim("name", new Long[] { 1L, 2L, 3L })
                 .sign(Algorithm.HMAC256("secret"));
 
         assertThat(jwt, is(notNullValue()));
@@ -470,9 +404,7 @@ public class JWTCreatorTest {
         Map<String, Object> data = new HashMap<>();
         data.put("test1", "abc");
         data.put("test2", "def");
-        String jwt = JWTCreator.init()
-                .withClaim("data", data)
-                .sign(Algorithm.HMAC256("secret"));
+        String jwt = JWTCreator.init().withClaim("data", data).sign(Algorithm.HMAC256("secret"));
 
         assertThat(jwt, is(notNullValue()));
         String[] parts = jwt.split("\\.");
@@ -486,9 +418,7 @@ public class JWTCreatorTest {
 
         exception.expect(IllegalArgumentException.class);
 
-        JWTCreator.init()
-                .withClaim("pojo", data)
-                .sign(Algorithm.HMAC256("secret"));
+        JWTCreator.init().withClaim("pojo", data).sign(Algorithm.HMAC256("secret"));
     }
 
     @SuppressWarnings("unchecked")
@@ -505,9 +435,9 @@ public class JWTCreatorTest {
         data.put("boolean", true);
 
         // array types
-        data.put("intArray", new Integer[]{3, 5});
-        data.put("longArray", new Long[]{Long.MAX_VALUE, Long.MIN_VALUE});
-        data.put("stringArray", new String[]{"string"});
+        data.put("intArray", new Integer[] { 3, 5 });
+        data.put("longArray", new Long[] { Long.MAX_VALUE, Long.MIN_VALUE });
+        data.put("stringArray", new String[] { "string" });
 
         data.put("list", Arrays.asList("a", "b", "c"));
 
@@ -516,9 +446,7 @@ public class JWTCreatorTest {
 
         data.put("map", sub);
 
-        String jwt = JWTCreator.init()
-                .withClaim("data", data)
-                .sign(Algorithm.HMAC256("secret"));
+        String jwt = JWTCreator.init().withClaim("data", data).sign(Algorithm.HMAC256("secret"));
 
         assertThat(jwt, is(notNullValue()));
         String[] parts = jwt.split("\\.");
@@ -535,9 +463,9 @@ public class JWTCreatorTest {
         assertThat(map.get("boolean"), is(true));
 
         // array types
-        assertThat(map.get("intArray"), is(Arrays.asList(new Integer[]{3, 5})));
-        assertThat(map.get("longArray"), is(Arrays.asList(new Long[]{Long.MAX_VALUE, Long.MIN_VALUE})));
-        assertThat(map.get("stringArray"), is(Arrays.asList(new String[]{"string"})));
+        assertThat(map.get("intArray"), is(Arrays.asList(new Integer[] { 3, 5 })));
+        assertThat(map.get("longArray"), is(Arrays.asList(new Long[] { Long.MAX_VALUE, Long.MIN_VALUE })));
+        assertThat(map.get("stringArray"), is(Arrays.asList(new String[] { "string" })));
 
         // list
         assertThat(map.get("list"), is(Arrays.asList("a", "b", "c")));
@@ -559,9 +487,9 @@ public class JWTCreatorTest {
         data.add(true);
 
         // array types
-        data.add(new Integer[]{3, 5});
-        data.add(new Long[]{Long.MAX_VALUE, Long.MIN_VALUE});
-        data.add(new String[]{"string"});
+        data.add(new Integer[] { 3, 5 });
+        data.add(new Long[] { Long.MAX_VALUE, Long.MIN_VALUE });
+        data.add(new String[] { "string" });
 
         data.add(Arrays.asList("a", "b", "c"));
 
@@ -570,9 +498,7 @@ public class JWTCreatorTest {
 
         data.add(sub);
 
-        String jwt = JWTCreator.init()
-                .withClaim("data", data)
-                .sign(Algorithm.HMAC256("secret"));
+        String jwt = JWTCreator.init().withClaim("data", data).sign(Algorithm.HMAC256("secret"));
 
         assertThat(jwt, is(notNullValue()));
         String[] parts = jwt.split("\\.");
@@ -589,9 +515,9 @@ public class JWTCreatorTest {
         assertThat(list.get(5), is(true));
 
         // array types
-        assertThat(list.get(6), is(Arrays.asList(new Integer[]{3, 5})));
-        assertThat(list.get(7), is(Arrays.asList(new Long[]{Long.MAX_VALUE, Long.MIN_VALUE})));
-        assertThat(list.get(8), is(Arrays.asList(new String[]{"string"})));
+        assertThat(list.get(6), is(Arrays.asList(new Integer[] { 3, 5 })));
+        assertThat(list.get(7), is(Arrays.asList(new Long[] { Long.MAX_VALUE, Long.MIN_VALUE })));
+        assertThat(list.get(8), is(Arrays.asList(new String[] { "string" })));
 
         // list
         assertThat(list.get(9), is(Arrays.asList("a", "b", "c")));
@@ -604,17 +530,13 @@ public class JWTCreatorTest {
         Map<String, Object> data = new HashMap<>();
         data.put("test1", Arrays.asList("a", null, "c"));
 
-        JWTCreator.init()
-                .withClaim("pojo", data)
-                .sign(Algorithm.HMAC256("secret"));
+        JWTCreator.init().withClaim("pojo", data).sign(Algorithm.HMAC256("secret"));
     }
 
     @Test
     @SuppressWarnings("unchecked")
     public void shouldAcceptCustomClaimWithNullMapAndRemoveClaim() throws Exception {
-        String jwt = JWTCreator.init()
-                .withClaim("map", "stubValue")
-                .withClaim("map", (Map<String, ?>) null)
+        String jwt = JWTCreator.init().withClaim("map", "stubValue").withClaim("map", (Map<String, ?>) null)
                 .sign(Algorithm.HMAC256("secret"));
 
         assertThat(jwt, is(notNullValue()));
@@ -629,9 +551,7 @@ public class JWTCreatorTest {
     @Test
     @SuppressWarnings("unchecked")
     public void shouldAcceptCustomClaimWithNullListAndRemoveClaim() throws Exception {
-        String jwt = JWTCreator.init()
-                .withClaim("list", "stubValue")
-                .withClaim("list", (List<String>) null)
+        String jwt = JWTCreator.init().withClaim("list", "stubValue").withClaim("list", (List<String>) null)
                 .sign(Algorithm.HMAC256("secret"));
 
         assertThat(jwt, is(notNullValue()));
@@ -650,9 +570,7 @@ public class JWTCreatorTest {
 
         exception.expect(IllegalArgumentException.class);
 
-        JWTCreator.init()
-                .withClaim("pojo", data)
-                .sign(Algorithm.HMAC256("secret"));
+        JWTCreator.init().withClaim("pojo", data).sign(Algorithm.HMAC256("secret"));
     }
 
     @Test
@@ -662,12 +580,10 @@ public class JWTCreatorTest {
 
         exception.expect(IllegalArgumentException.class);
 
-        JWTCreator.init()
-                .withClaim("pojo", data)
-                .sign(Algorithm.HMAC256("secret"));
+        JWTCreator.init().withClaim("pojo", data).sign(Algorithm.HMAC256("secret"));
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Test
     public void shouldRefuseCustomMapClaimForNonStringKey() throws Exception {
         Map data = new HashMap<>();
@@ -675,9 +591,7 @@ public class JWTCreatorTest {
 
         exception.expect(IllegalArgumentException.class);
 
-        JWTCreator.init()
-                .withClaim("pojo", (Map<String, Object>) data)
-                .sign(Algorithm.HMAC256("secret"));
+        JWTCreator.init().withClaim("pojo", (Map<String, Object>) data).sign(Algorithm.HMAC256("secret"));
     }
 
     @Test
@@ -686,9 +600,7 @@ public class JWTCreatorTest {
 
         exception.expect(IllegalArgumentException.class);
 
-        JWTCreator.init()
-                .withClaim("list", list)
-                .sign(Algorithm.HMAC256("secret"));
+        JWTCreator.init().withClaim("list", list).sign(Algorithm.HMAC256("secret"));
     }
 
     @Test
@@ -700,21 +612,89 @@ public class JWTCreatorTest {
 
         exception.expect(IllegalArgumentException.class);
 
-        JWTCreator.init()
-                .withClaim("list", list)
-                .sign(Algorithm.HMAC256("secret"));
+        JWTCreator.init().withClaim("list", list).sign(Algorithm.HMAC256("secret"));
     }
 
     @Test
     public void shouldRefuseCustomListClaimForUnknownArrayType() throws Exception {
         List<Object> list = new ArrayList<>();
-        list.add(new Object[]{"test"});
+        list.add(new Object[] { "test" });
 
         exception.expect(IllegalArgumentException.class);
 
-        JWTCreator.init()
-                .withClaim("list", list)
-                .sign(Algorithm.HMAC256("secret"));
+        JWTCreator.init().withClaim("list", list).sign(Algorithm.HMAC256("secret"));
+    }
+
+    @SuppressWarnings("Convert2Diamond")
+    @Test
+    public void shouldAddPayloadClaim() throws Exception {
+        Map<String, Object> payload = new HashMap<String, Object>();
+        payload.put("asd", 123);
+        String signed = JWTCreator.init().withPayload(payload).sign(Algorithm.HMAC256("secret"));
+
+        assertThat(signed, is(notNullValue()));
+        String[] parts = signed.split("\\.");
+        String payloadJson = new String(Base64.decodeBase64(parts[1]), StandardCharsets.UTF_8);
+        assertThat(payloadJson, JsonMatcher.hasEntry("asd", 123));
+    }
+
+    @Test
+    public void shouldReturnBuilderIfNullMapIsProvidedForPayload() throws Exception {
+        String signed = JWTCreator.init().withPayload(null).sign(Algorithm.HMAC256("secret"));
+
+        assertThat(signed, is(notNullValue()));
+    }
+
+    @Test
+    public void shouldOverwriteExistingPayloadIfPayloadMapContainsTheSameKey() throws Exception {
+        Map<String, Object> payload = new HashMap<String, Object>();
+        payload.put(PublicClaims.KEY_ID, "xyz");
+
+        String signed = JWTCreator.init().withKeyId("abc").withPayload(payload).sign(Algorithm.HMAC256("secret"));
+
+        assertThat(signed, is(notNullValue()));
+        String[] parts = signed.split("\\.");
+        String payloadJson = new String(Base64.decodeBase64(parts[1]), StandardCharsets.UTF_8);
+        assertThat(payloadJson, JsonMatcher.hasEntry(PublicClaims.KEY_ID, "xyz"));
+    }
+
+    @Test
+    public void shouldOverwriteExistingPayloadsWhenSettingSamePayloadKey() throws Exception {
+        Map<String, Object> payload = new HashMap<String, Object>();
+        payload.put(PublicClaims.ISSUER, "xyz");
+
+        String signed = JWTCreator.init().withPayload(payload).withIssuer("abc").sign(Algorithm.HMAC256("secret"));
+
+        assertThat(signed, is(notNullValue()));
+        String[] parts = signed.split("\\.");
+        String payloadJson = new String(Base64.decodeBase64(parts[1]), StandardCharsets.UTF_8);
+        assertThat(payloadJson, JsonMatcher.hasEntry(PublicClaims.ISSUER, "abc"));
+    }
+
+    @Test
+    public void shouldRemovePayloadIfTheValueIsNull() throws Exception {
+        Map<String, Object> payload = new HashMap<String, Object>();
+        payload.put(PublicClaims.KEY_ID, null);
+        payload.put("test2", "isSet");
+
+        String signed = JWTCreator.init().withKeyId("test").withPayload(payload).sign(Algorithm.HMAC256("secret"));
+
+        assertThat(signed, is(notNullValue()));
+        String[] parts = signed.split("\\.");
+        String payloadJson = new String(Base64.decodeBase64(parts[1]), StandardCharsets.UTF_8);
+        assertThat(payloadJson, JsonMatcher.isNotPresent(PublicClaims.KEY_ID));
+        assertThat(payloadJson, JsonMatcher.hasEntry("test2", "isSet"));
+    }
+
+    @Test
+    public void shouldSetCustomTypeInThePayload() throws Exception {
+        Map<String, Object> paylaod = Collections.singletonMap("typ", "passport");
+        String signed = JWTCreator.init().withPayload(paylaod).sign(Algorithm.HMAC256("secret"));
+
+        assertThat(signed, is(notNullValue()));
+        String[] parts = signed.split("\\.");
+        String payloadJson = new String(Base64.decodeBase64(parts[1]), StandardCharsets.UTF_8);
+        assertThat(payloadJson, JsonMatcher.hasEntry("typ", "passport"));
     }
 
 }
