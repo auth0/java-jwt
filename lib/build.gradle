@@ -1,7 +1,8 @@
 plugins {
-    id "com.jfrog.bintray" version "1.8.4"
-    id "com.auth0.gradle.oss-library.java" version "0.11.0"
-    id "jacoco"
+    id 'java'
+    id 'jacoco'
+    id 'com.jfrog.bintray'
+    id 'com.auth0.gradle.oss-library.java'
 }
 
 logger.lifecycle("Using version ${version} for ${group}.${name}")
@@ -28,9 +29,15 @@ oss {
     }
 }
 
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(8)
+    }
+}
+
 compileJava {
-    sourceCompatibility '1.7'
-    targetCompatibility '1.7'
+    sourceCompatibility '1.8'
+    targetCompatibility '1.8'
 }
 
 dependencies {
