@@ -11,6 +11,8 @@ A Java implementation of [JSON Web Token (JWT) - RFC 7519](https://tools.ietf.or
 
 If you're looking for an **Android** version of the JWT Decoder take a look at our [JWTDecode.Android](https://github.com/auth0/JWTDecode.Android) library.
 
+> This library currently supports Java 7. Beginning soon, it will require Java 8 as the minimum supported Java version. See [this issue](https://github.com/auth0/java-jwt/issues/457) for additional information and timelines.
+
 ## Installation
 
 The library is available on both Maven Central and Bintray, and the Javadoc is published [here](https://javadoc.io/doc/com.auth0/java-jwt/latest/index.html).
