@@ -354,6 +354,30 @@ public final class JWTCreator {
             return this;
         }
 
+        /**
+         * Add specific Claims to set as the Payload. If provided map is null then
+         * nothing is changed If provided map contains a claim with null value then that
+         * claim will be removed from the payload
+         *
+         * @param payloadClaims the values to use as Claims in the token's payload.
+         * @return this same Builder instance.
+         */
+        public Builder withPayload(Map<String, Object> payloadClaims) {
+            if (payloadClaims == null) {
+                return this;
+            }
+
+            for (Map.Entry<String, Object> entry : payloadClaims.entrySet()) {
+                if (entry.getValue() == null) {
+                    this.payloadClaims.remove(entry.getKey());
+                } else {
+                    this.payloadClaims.put(entry.getKey(), entry.getValue());
+                }
+            }
+
+            return this;
+        }
+
         private static boolean validateClaim(Map<?, ?> map) {
             // do not accept null values in maps
             for (Entry<?, ?> entry : map.entrySet()) {
