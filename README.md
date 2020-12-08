@@ -34,18 +34,18 @@ implementation 'com.auth0:java-jwt:3.11.0'
 
 The library implements JWT Verification and Signing using the following algorithms:
 
-| JWS | Algorithm | Description |
-| :-------------: | :-------------: | :----- |
-| HS256 | HMAC256 | HMAC with SHA-256 |
-| HS384 | HMAC384 | HMAC with SHA-384 |
-| HS512 | HMAC512 | HMAC with SHA-512 |
-| RS256 | RSA256 | RSASSA-PKCS1-v1_5 with SHA-256 |
-| RS384 | RSA384 | RSASSA-PKCS1-v1_5 with SHA-384 |
-| RS512 | RSA512 | RSASSA-PKCS1-v1_5 with SHA-512 |
-| ES256 | ECDSA256 | ECDSA with curve P-256 and SHA-256 |
-| ES256K | ECDSA256 | ECDSA with curve secp256k1 and SHA-256 |
-| ES384 | ECDSA384 | ECDSA with curve P-384 and SHA-384 |
-| ES512 | ECDSA512 | ECDSA with curve P-521 and SHA-512 |
+|  JWS   | Algorithm | Description                            |
+| :----: | :-------: | :------------------------------------- |
+| HS256  |  HMAC256  | HMAC with SHA-256                      |
+| HS384  |  HMAC384  | HMAC with SHA-384                      |
+| HS512  |  HMAC512  | HMAC with SHA-512                      |
+| RS256  |  RSA256   | RSASSA-PKCS1-v1_5 with SHA-256         |
+| RS384  |  RSA384   | RSASSA-PKCS1-v1_5 with SHA-384         |
+| RS512  |  RSA512   | RSASSA-PKCS1-v1_5 with SHA-512         |
+| ES256  | ECDSA256  | ECDSA with curve P-256 and SHA-256     |
+| ES256K | ECDSA256  | ECDSA with curve secp256k1 and SHA-256 |
+| ES384  | ECDSA384  | ECDSA with curve P-384 and SHA-384     |
+| ES512  | ECDSA512  | ECDSA with curve P-521 and SHA-512     |
 
 ## Usage
 
@@ -367,6 +367,16 @@ When creating a Token with the `JWT.create()` you can specify a custom Claim by 
 String token = JWT.create()
         .withClaim("name", 123)
         .withArrayClaim("array", new Integer[]{1, 2, 3})
+        .sign(algorithm);
+```
+
+Or using `withPayload()` and passing a map of claims.
+
+```java
+Map<String, Object> payloadClaims = new HashMap();
+payloadClaims.put("@context", "https://auth0.com/");
+String token = JWT.create()
+        .withPayload(payloadClaims)
         .sign(algorithm);
 ```
 
