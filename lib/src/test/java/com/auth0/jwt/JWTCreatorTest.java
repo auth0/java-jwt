@@ -717,4 +717,76 @@ public class JWTCreatorTest {
                 .sign(Algorithm.HMAC256("secret"));
     }
 
+    @SuppressWarnings("Convert2Diamond")
+    @Test
+    public void shouldAddPayloadClaim() throws Exception {
+        Map<String, Object> payload = new HashMap<String, Object>();
+        payload.put("asd", 123);
+        String signed = JWTCreator.init().withPayload(payload).sign(Algorithm.HMAC256("secret"));
+
+        assertThat(signed, is(notNullValue()));
+        String[] parts = signed.split("\\.");
+        String payloadJson = new String(Base64.decodeBase64(parts[1]), StandardCharsets.UTF_8);
+        assertThat(payloadJson, JsonMatcher.hasEntry("asd", 123));
+    }
+
+    @Test
+    public void shouldReturnBuilderIfNullMapIsProvidedForPayload() throws Exception {
+        String signed = JWTCreator.init().withPayload(null).sign(Algorithm.HMAC256("secret"));
+
+        assertThat(signed, is(notNullValue()));
+    }
+
+    @Test
+    public void shouldOverwriteExistingPayloadIfPayloadMapContainsTheSameKey() throws Exception {
+        Map<String, Object> payload = new HashMap<String, Object>();
+        payload.put(PublicClaims.KEY_ID, "xyz");
+
+        String signed = JWTCreator.init().withKeyId("abc").withPayload(payload).sign(Algorithm.HMAC256("secret"));
+
+        assertThat(signed, is(notNullValue()));
+        String[] parts = signed.split("\\.");
+        String payloadJson = new String(Base64.decodeBase64(parts[1]), StandardCharsets.UTF_8);
+        assertThat(payloadJson, JsonMatcher.hasEntry(PublicClaims.KEY_ID, "xyz"));
+    }
+
+    @Test
+    public void shouldOverwriteExistingPayloadsWhenSettingSamePayloadKey() throws Exception {
+        Map<String, Object> payload = new HashMap<String, Object>();
+        payload.put(PublicClaims.ISSUER, "xyz");
+
+        String signed = JWTCreator.init().withPayload(payload).withIssuer("abc").sign(Algorithm.HMAC256("secret"));
+
+        assertThat(signed, is(notNullValue()));
+        String[] parts = signed.split("\\.");
+        String payloadJson = new String(Base64.decodeBase64(parts[1]), StandardCharsets.UTF_8);
+        assertThat(payloadJson, JsonMatcher.hasEntry(PublicClaims.ISSUER, "abc"));
+    }
+
+    @Test
+    public void shouldRemovePayloadIfTheValueIsNull() throws Exception {
+        Map<String, Object> payload = new HashMap<String, Object>();
+        payload.put(PublicClaims.KEY_ID, null);
+        payload.put("test2", "isSet");
+
+        String signed = JWTCreator.init().withKeyId("test").withPayload(payload).sign(Algorithm.HMAC256("secret"));
+
+        assertThat(signed, is(notNullValue()));
+        String[] parts = signed.split("\\.");
+        String payloadJson = new String(Base64.decodeBase64(parts[1]), StandardCharsets.UTF_8);
+        assertThat(payloadJson, JsonMatcher.isNotPresent(PublicClaims.KEY_ID));
+        assertThat(payloadJson, JsonMatcher.hasEntry("test2", "isSet"));
+    }
+
+    @Test
+    public void shouldSetCustomTypeInThePayload() throws Exception {
+        Map<String, Object> payload = Collections.singletonMap("typ", "passport");
+        String signed = JWTCreator.init().withPayload(payload).sign(Algorithm.HMAC256("secret"));
+
+        assertThat(signed, is(notNullValue()));
+        String[] parts = signed.split("\\.");
+        String payloadJson = new String(Base64.decodeBase64(parts[1]), StandardCharsets.UTF_8);
+        assertThat(payloadJson, JsonMatcher.hasEntry("typ", "passport"));
+    }
+
 }
