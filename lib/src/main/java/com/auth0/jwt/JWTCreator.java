@@ -356,23 +356,25 @@ public final class JWTCreator {
 
         /**
          * Add specific Claims to set as the Payload. If provided map is null then
-         * nothing is changed If provided map contains a claim with null value then that
+         * nothing is changed. If provided map contains a claim with null value then that
          * claim will be removed from the payload
          *
          * @param payloadClaims the values to use as Claims in the token's payload.
+         * @throws IllegalArgumentException if payloadClaims is not well-formed and not having null values
          * @return this same Builder instance.
          */
-        public Builder withPayload(Map<String, Object> payloadClaims) {
+        public Builder withPayload(Map<?, ?> payloadClaims) throws IllegalArgumentException {
             if (payloadClaims == null) {
                 return this;
             }
 
+            // Checks that all the key-value pairs are valid and neither of them are null
+            if(!validateClaim(payloadClaims)) {
+                throw new IllegalArgumentException("The Custom Payload Claim is not valid.");
+            }
+
             for (Map.Entry<String, Object> entry : payloadClaims.entrySet()) {
-                if (entry.getValue() == null) {
-                    this.payloadClaims.remove(entry.getKey());
-                } else {
-                    this.payloadClaims.put(entry.getKey(), entry.getValue());
-                }
+                this.payloadClaims.put(entry.getKey(), entry.getValue());
             }
 
             return this;
