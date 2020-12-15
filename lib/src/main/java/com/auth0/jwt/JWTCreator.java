@@ -30,15 +30,21 @@ public final class JWTCreator {
     private final Algorithm algorithm;
     private final String headerJson;
     private final String payloadJson;
+    
+    private static final ObjectMapper mapper;
+    private static final SimpleModule module;
+
+    static {
+        mapper = new ObjectMapper();
+        module = new SimpleModule();
+        module.addSerializer(ClaimsHolder.class, new PayloadSerializer());
+        mapper.registerModule(module);
+        mapper.configure(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY, true);
+    }
 
     private JWTCreator(Algorithm algorithm, Map<String, Object> headerClaims, Map<String, Object> payloadClaims) throws JWTCreationException {
         this.algorithm = algorithm;
         try {
-            ObjectMapper mapper = new ObjectMapper();
-            SimpleModule module = new SimpleModule();
-            module.addSerializer(ClaimsHolder.class, new PayloadSerializer());
-            mapper.registerModule(module);
-            mapper.configure(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY, true);
             headerJson = mapper.writeValueAsString(headerClaims);
             payloadJson = mapper.writeValueAsString(new ClaimsHolder(payloadClaims));
         } catch (JsonProcessingException e) {
