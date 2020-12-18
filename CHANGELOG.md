@@ -1,5 +1,17 @@
 # Change Log
 
+## [3.12.0](https://github.com/auth0/java-jwt/tree/3.12.0) (2020-12-18)
+[Full Changelog](https://github.com/auth0/java-jwt/compare/3.11.0...3.12.0)
+
+**Changed**
+- Thread-safe classes should be Shared statically [\#462](https://github.com/auth0/java-jwt/pull/462) ([LeeHainie](https://github.com/LeeHainie))
+
+**Security**
+- Update jackson-databind to 2.10.5.1 (fixes CVE-2020-25649) [\#463](https://github.com/auth0/java-jwt/pull/463) ([overheadhunter](https://github.com/overheadhunter))
+
+**Breaking changes**
+- Target Java 8 [\#455](https://github.com/auth0/java-jwt/pull/455) ([lbalmaceda](https://github.com/lbalmaceda))
+
 ## [3.11.0](https://github.com/auth0/java-jwt/tree/3.11.0) (2020-09-25)
 [Full Changelog](https://github.com/auth0/java-jwt/compare/3.10.3...3.11.0)
 
