@@ -1,5 +1,11 @@
 # Change Log
 
+## [3.12.1](https://github.com/auth0/java-jwt/tree/3.12.1) (2021-01-20)
+[Full Changelog](https://github.com/auth0/java-jwt/compare/3.12.0...3.12.1)
+
+**Changed**
+- Update jackson-databind to 2.11.0 [\#464](https://github.com/auth0/java-jwt/pull/464) ([darveshsingh](https://github.com/darveshsingh))
+
 ## [3.12.0](https://github.com/auth0/java-jwt/tree/3.12.0) (2020-12-18)
 [Full Changelog](https://github.com/auth0/java-jwt/compare/3.11.0...3.12.0)
 
