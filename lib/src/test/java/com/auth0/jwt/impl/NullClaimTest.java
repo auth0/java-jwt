@@ -70,4 +70,8 @@ public class NullClaimTest {
         assertThat(claim.as(Object.class), is(nullValue()));
     }
 
+    @Test
+    public void shouldHaveToString() {
+        assertThat(claim.toString(), is("Null Claim"));
+    }
 }
