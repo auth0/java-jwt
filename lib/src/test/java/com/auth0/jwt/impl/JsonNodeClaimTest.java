@@ -431,4 +431,11 @@ public class JsonNodeClaimTest {
         assertThat(claim, is(instanceOf(JsonNodeClaim.class)));
         assertThat(claim.isNull(), is(false));
     }
+
+    @Test
+    public void shouldDelegateToJsonNodeToString() {
+        JsonNode value = mapper.valueToTree(new UserPojo("john", 123));
+        Claim claim = claimFromNode(value);
+        assertThat(claim.toString(), is(value.toString()));
+    }
 }

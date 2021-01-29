@@ -128,6 +128,11 @@ class JsonNodeClaim implements Claim {
         return false;
     }
 
+    @Override
+    public String toString() {
+        return data.toString();
+    }
+
     /**
      * Helper method to extract a Claim from the given JsonNode tree.
      *
