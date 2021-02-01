@@ -672,12 +672,14 @@ public class JWTVerifierTest {
     @Test
     public void shouldOverrideAcceptIssuedAtWhenIgnoreIssuedAtFlagPassedAndSkipTheVerification() throws Exception {
         Clock clock = mock(Clock.class);
-        when(clock.getToday()).thenReturn(new Date(DATE_TOKEN_MS_VALUE - 1000));
+        when(clock.getToday()).thenReturn(new Date(DATE_TOKEN_MS_VALUE - 10000));
 
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE0Nzc1OTJ9.0WJky9eLN7kuxLyZlmbcXRL3Wy8hLoNCEk5CCl2M4lo";
-        JWTVerifier.BaseVerification verification = (JWTVerifier.BaseVerification) JWTVerifier.init(Algorithm.HMAC256("secret"));
-        DecodedJWT jwt = verification.acceptIssuedAt(20).ignoreIssuedAt()
-                .build()
+        JWTVerifier.BaseVerification verification = (JWTVerifier.BaseVerification) JWTVerifier.init(Algorithm.HMAC256("secret"))
+                .acceptIssuedAt(1)
+                .ignoreIssuedAt();
+        DecodedJWT jwt = verification
+                .build(clock)
                 .verify(token);
 
         assertThat(jwt, is(notNullValue()));
