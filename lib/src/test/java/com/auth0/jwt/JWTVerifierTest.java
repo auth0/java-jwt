@@ -111,6 +111,7 @@ public class JWTVerifierTest {
 
     @Test
     public void shouldValidateAudience() throws Exception {
+        // Token 'aud': ["Mark"]
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJNYXJrIn0.xWB6czYI0XObbVhLAxe55TwChWZg7zO08RxONWU2iY4";
         DecodedJWT jwt = JWTVerifier.init(Algorithm.HMAC256("secret"))
                 .withAudience("Mark")
@@ -129,6 +130,32 @@ public class JWTVerifierTest {
     }
 
     @Test
+    public void shouldThrowIfConfiguringAllOfAfterAnyOfAudienceValidation() {
+        exception.expect(IllegalStateException.class);
+        exception.expectMessage("Audience validation behavior has already been configured.");
+
+        String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJNYXJrIn0.xWB6czYI0XObbVhLAxe55TwChWZg7zO08RxONWU2iY4";
+        DecodedJWT jwt = JWTVerifier.init(Algorithm.HMAC256("secret"))
+                .withAnyOfAudience("Mark")
+                .withAudience("Mark")
+                .build()
+                .verify(token);
+    }
+
+    @Test
+    public void shouldThrowIfConfiguringAnyOfAfterAllOfAudienceValidation() {
+        exception.expect(IllegalStateException.class);
+        exception.expectMessage("Audience validation behavior has already been configured.");
+
+        String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJNYXJrIn0.xWB6czYI0XObbVhLAxe55TwChWZg7zO08RxONWU2iY4";
+        DecodedJWT jwt = JWTVerifier.init(Algorithm.HMAC256("secret"))
+                .withAudience("Mark")
+                .withAnyOfAudience("Mark")
+                .build()
+                .verify(token);
+    }
+
+    @Test
     public void shouldAcceptPartialAudience() throws Exception {
         //Token 'aud' = ["Mark", "David", "John"]
         String tokenArr = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOlsiTWFyayIsIkRhdmlkIiwiSm9obiJdfQ.DX5xXiCaYvr54x_iL0LZsJhK7O6HhAdHeDYkgDeb0Rw";
@@ -141,12 +168,86 @@ public class JWTVerifierTest {
     }
 
     @Test
-    public void shouldThrowOnInvalidAudience() throws Exception {
+    public void shouldAcceptOneOfAudience() {
+        // Token 'aud': ["Mark"]
+        String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJNYXJrIn0.xWB6czYI0XObbVhLAxe55TwChWZg7zO08RxONWU2iY4";
+        DecodedJWT jwt = JWTVerifier.init(Algorithm.HMAC256("secret"))
+                .withAnyOfAudience("Mark")
+                .build()
+                .verify(token);
+
+        assertThat(jwt, is(notNullValue()));
+
+        // Token 'aud' = ["Mark", "David", "John"]
+        String tokenArr = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOlsiTWFyayIsIkRhdmlkIiwiSm9obiJdfQ.DX5xXiCaYvr54x_iL0LZsJhK7O6HhAdHeDYkgDeb0Rw";
+        DecodedJWT jwtArr = JWTVerifier.init(Algorithm.HMAC256("secret"))
+                .withAnyOfAudience("John", "Jim")
+                .build()
+                .verify(tokenArr);
+
+        assertThat(jwtArr, is(notNullValue()));
+    }
+
+    @Test
+    public void shouldAcceptAudienceWhenAnAudienceAndAllContained() {
+        // Token 'aud' = ["Mark", "David", "John"]
+        String tokenArr = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOlsiTWFyayIsIkRhdmlkIiwiSm9obiJdfQ.DX5xXiCaYvr54x_iL0LZsJhK7O6HhAdHeDYkgDeb0Rw";
+        DecodedJWT jwtArr = JWTVerifier.init(Algorithm.HMAC256("secret"))
+                .withAnyOfAudience("Mark", "David", "John")
+                .build()
+                .verify(tokenArr);
+
+        assertThat(jwtArr, is(notNullValue()));
+    }
+
+    @Test
+    public void shouldThrowWhenAudienceHasNoneOfAcceptOneOfAudience() {
         exception.expect(InvalidClaimException.class);
         exception.expectMessage("The Claim 'aud' value doesn't contain the required audience.");
+
+        // Token 'aud' = ["Mark", "David", "John"]
+        String tokenArr = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOlsiTWFyayIsIkRhdmlkIiwiSm9obiJdfQ.DX5xXiCaYvr54x_iL0LZsJhK7O6HhAdHeDYkgDeb0Rw";
+        DecodedJWT jwtArr = JWTVerifier.init(Algorithm.HMAC256("secret"))
+                .withAnyOfAudience("Joe", "Jim")
+                .build()
+                .verify(tokenArr);
+    }
+
+    @Test
+    public void shouldThrowWhenAudienceClaimDoesNotContainAllExpected() throws Exception {
+        exception.expect(InvalidClaimException.class);
+        exception.expectMessage("The Claim 'aud' value doesn't contain the required audience.");
+
+        // Token 'aud' = ["Mark", "David", "John"]
+        String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOlsiTWFyayIsIkRhdmlkIiwiSm9obiJdfQ.DX5xXiCaYvr54x_iL0LZsJhK7O6HhAdHeDYkgDeb0Rw";
+        JWTVerifier.init(Algorithm.HMAC256("secret"))
+                .withAudience("Mark", "Joe")
+                .build()
+                .verify(token);
+    }
+
+    @Test
+    public void shouldThrowWhenAudienceClaimIsNull() throws Exception {
+        exception.expect(InvalidClaimException.class);
+        exception.expectMessage("The Claim 'aud' value doesn't contain the required audience.");
+
+        // Token 'aud': null
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.Rq8IxqeX7eA6GgYxlcHdPFVRNFFZc5rEI3MQTZZbK3I";
         JWTVerifier.init(Algorithm.HMAC256("secret"))
                 .withAudience("nope")
+                .build()
+                .verify(token);
+    }
+
+    @Test
+    public void shouldThrowWhenAudienceClaimIsNullWithAnAudience() throws Exception {
+        exception.expect(InvalidClaimException.class);
+        exception.expectMessage("The Claim 'aud' value doesn't contain the required audience.");
+
+        // Token 'aud': null
+        String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.Rq8IxqeX7eA6GgYxlcHdPFVRNFFZc5rEI3MQTZZbK3I";
+        JWTVerifier.init(Algorithm.HMAC256("secret"))
+                .withAnyOfAudience("nope")
                 .build()
                 .verify(token);
     }
@@ -185,6 +286,39 @@ public class JWTVerifierTest {
     }
 
     @Test
+    public void shouldRemoveAudienceWhenPassingNullReferenceWithAnyOfAudience() throws Exception {
+        Algorithm algorithm = mock(Algorithm.class);
+        JWTVerifier verifier = JWTVerifier.init(algorithm)
+                .withAnyOfAudience((String) null)
+                .build();
+
+        assertThat(verifier.claims, is(notNullValue()));
+        assertThat(verifier.claims, not(hasKey("aud")));
+
+        verifier = JWTVerifier.init(algorithm)
+                .withAnyOfAudience((String[]) null)
+                .build();
+
+        assertThat(verifier.claims, is(notNullValue()));
+        assertThat(verifier.claims, not(hasKey("aud")));
+
+        verifier = JWTVerifier.init(algorithm)
+                .withAnyOfAudience()
+                .build();
+
+        assertThat(verifier.claims, is(notNullValue()));
+        assertThat(verifier.claims, not(hasKey("aud")));
+
+        String emptyAud = "   ";
+        verifier = JWTVerifier.init(algorithm)
+                .withAnyOfAudience(emptyAud)
+                .build();
+
+        assertThat(verifier.claims, is(notNullValue()));
+        assertThat(verifier.claims, hasEntry("aud", Collections.singletonList(emptyAud)));
+    }
+
+    @Test
     public void shouldRemoveAudienceWhenPassingNull() throws Exception {
         Algorithm algorithm = mock(Algorithm.class);
         JWTVerifier verifier = JWTVerifier.init(algorithm)
@@ -198,6 +332,26 @@ public class JWTVerifierTest {
         verifier = JWTVerifier.init(algorithm)
                 .withAudience("John")
                 .withAudience((String[]) null)
+                .build();
+
+        assertThat(verifier.claims, is(notNullValue()));
+        assertThat(verifier.claims, not(hasKey("aud")));
+    }
+
+    @Test
+    public void shouldRemoveAudienceWhenPassingNullWithAnyAudience() throws Exception {
+        Algorithm algorithm = mock(Algorithm.class);
+        JWTVerifier verifier = JWTVerifier.init(algorithm)
+                .withAnyOfAudience("John")
+                .withAnyOfAudience((String) null)
+                .build();
+
+        assertThat(verifier.claims, is(notNullValue()));
+        assertThat(verifier.claims, not(hasKey("aud")));
+
+        verifier = JWTVerifier.init(algorithm)
+                .withAnyOfAudience("John")
+                .withAnyOfAudience((String[]) null)
                 .build();
 
         assertThat(verifier.claims, is(notNullValue()));
@@ -297,7 +451,7 @@ public class JWTVerifierTest {
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjpbInNvbWV0aGluZyJdfQ.3ENLez6tU_fG0SVFrGmISltZPiXLSHaz_dyn-XFTEGQ";
         Map<String, Object> map = new HashMap<>();
         map.put("name", new Object());
-        JWTVerifier verifier = new JWTVerifier(Algorithm.HMAC256("secret"), map, new ClockImpl());
+        JWTVerifier verifier = new JWTVerifier(Algorithm.HMAC256("secret"), map, new ClockImpl(), JWTVerifier.AudienceVerificationStrategy.EXACT);
         verifier.verify(token);
     }
 

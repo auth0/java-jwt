@@ -11,6 +11,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.Verification;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * The JWTVerifier class holds the verify method to assert that a given Token has not only a proper JWT format, but also it's signature matches.
@@ -23,12 +24,14 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
     final Map<String, Object> claims;
     private final Clock clock;
     private final JWTParser parser;
+    private final AudienceVerificationStrategy audienceVerificationStrategy;
 
-    JWTVerifier(Algorithm algorithm, Map<String, Object> claims, Clock clock) {
+    JWTVerifier(Algorithm algorithm, Map<String, Object> claims, Clock clock, AudienceVerificationStrategy audienceVerificationStrategy) {
         this.algorithm = algorithm;
         this.claims = Collections.unmodifiableMap(claims);
         this.clock = clock;
         this.parser = new JWTParser();
+        this.audienceVerificationStrategy = audienceVerificationStrategy;
     }
 
     /**
@@ -47,6 +50,7 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
         private final Map<String, Object> claims;
         private long defaultLeeway;
         private boolean ignoreIssuedAt;
+        private AudienceVerificationStrategy audienceVerificationStrategy = AudienceVerificationStrategy.UNSET;
 
         BaseVerification(Algorithm algorithm) throws IllegalArgumentException {
             if (algorithm == null) {
@@ -72,6 +76,20 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
 
         @Override
         public Verification withAudience(String... audience) {
+            if (audienceVerificationStrategy == AudienceVerificationStrategy.CONTAINS) {
+                throw new IllegalStateException("Audience validation behavior has already been configured.");
+            }
+            audienceVerificationStrategy = AudienceVerificationStrategy.EXACT;
+            requireClaim(PublicClaims.AUDIENCE, isNullOrEmpty(audience) ? null : Arrays.asList(audience));
+            return this;
+        }
+
+        @Override
+        public Verification withAnyOfAudience(String... audience) {
+            if (audienceVerificationStrategy == AudienceVerificationStrategy.EXACT) {
+                throw new IllegalStateException("Audience validation behavior has already been configured.");
+            }
+            audienceVerificationStrategy = AudienceVerificationStrategy.CONTAINS;
             requireClaim(PublicClaims.AUDIENCE, isNullOrEmpty(audience) ? null : Arrays.asList(audience));
             return this;
         }
@@ -200,7 +218,7 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
          */
         public JWTVerifier build(Clock clock) {
             addLeewayToDateClaims();
-            return new JWTVerifier(algorithm, claims, clock);
+            return new JWTVerifier(algorithm, claims, clock, audienceVerificationStrategy);
         }
 
         private void assertPositive(long leeway) {
@@ -412,8 +430,19 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
     }
 
     private void assertValidAudienceClaim(List<String> audience, List<String> value) {
-        if (audience == null || !audience.containsAll(value)) {
-            throw new InvalidClaimException("The Claim 'aud' value doesn't contain the required audience.");
+        String invalidMessage = "The Claim 'aud' value doesn't contain the required audience.";
+        if (audience == null) {
+            throw new InvalidClaimException(invalidMessage);
+        }
+
+        if (audienceVerificationStrategy == AudienceVerificationStrategy.CONTAINS) {
+            if (Collections.disjoint(audience, value)) {
+                throw new InvalidClaimException(invalidMessage);
+            }
+        } else {
+            if (!audience.containsAll(value)) {
+                throw new InvalidClaimException(invalidMessage);
+            }
         }
     }
 
@@ -437,5 +466,25 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
             }
             return nonEmptyClaim;
         }
+    }
+
+    /**
+     * Represents how the audience will be validated.
+     */
+    enum AudienceVerificationStrategy {
+        /**
+         * No audience validation configured.
+         */
+        UNSET,
+
+        /**
+         * The JWT audience must match the expected audiences exactly.
+         */
+        EXACT,
+
+        /**
+         * The JWT audience must contain at least one of the expected audiences.
+         */
+        CONTAINS
     }
 }
