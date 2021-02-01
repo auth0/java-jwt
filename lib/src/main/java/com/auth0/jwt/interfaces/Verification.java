@@ -25,13 +25,35 @@ public interface Verification {
     Verification withSubject(String subject);
 
     /**
-     * Require a specific Audience ("aud") claim.
+     * Require a specific Audience ("aud") claim. If multiple audiences are specified, they must all be present
+     * in the "aud" claim.
+     * An {@linkplain IllegalStateException} will be thrown if this Verification instance has already been
+     * configured with {@link #withAnyOfAudience(String...)}
      *
      * @param audience the required Audience value
      * @return this same Verification instance.
      */
     Verification withAudience(String... audience);
 
+    /**
+     * Require that the Audience ("aud") claim contain at least one of the specified audiences.
+     * An {@linkplain IllegalStateException} will be thrown if this Verification instance has already been
+     * configured with {@link #withAudience(String...)}
+     *
+     * @apiNote This method was added after the interface was released.
+     *          It is defined as a default method for compatibility reasons.
+     *          From version 4.0 on, the method will be abstract and all implementations of this interface
+     *          will have to provide their own implementation.
+     *
+     * @implSpec The default implementation throws an {@linkplain UnsupportedOperationException}.
+     * 
+     * @param audience the required Audience value for which the "aud" claim must contain at least one value.
+     * @return this same Verification instance.
+     */
+    default Verification withAnyOfAudience(String... audience) {
+        throw new UnsupportedOperationException("withAnyOfAudience");
+    }
+    
     /**
      * Define the default window in seconds in which the Not Before, Issued At and Expires At Claims will still be valid.
      * Setting a specific leeway value on a given Claim will override this value for that Claim.
