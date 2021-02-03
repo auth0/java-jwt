@@ -27,8 +27,9 @@ public interface Verification {
     /**
      * Require a specific Audience ("aud") claim. If multiple audiences are specified, they must all be present
      * in the "aud" claim.
-     * An {@linkplain IllegalStateException} will be thrown if this Verification instance has already been
-     * configured with {@link #withAnyOfAudience(String...)}
+     *
+     * If this is used in conjunction with {@link #withAnyOfAudience(String...)}, whichever one is configured last will
+     * determine the audience validation behavior.
      *
      * @param audience the required Audience value
      * @return this same Verification instance.
@@ -37,8 +38,9 @@ public interface Verification {
 
     /**
      * Require that the Audience ("aud") claim contain at least one of the specified audiences.
-     * An {@linkplain IllegalStateException} will be thrown if this Verification instance has already been
-     * configured with {@link #withAudience(String...)}
+     *
+     * If this is used in conjunction with {@link #withAudience(String...)}, whichever one is configured last will
+     * determine the audience validation behavior.
      *
      * @apiNote This method was added after the interface was released.
      *          It is defined as a default method for compatibility reasons.

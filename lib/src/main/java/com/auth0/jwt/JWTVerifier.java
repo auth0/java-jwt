@@ -24,14 +24,15 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
     final Map<String, Object> claims;
     private final Clock clock;
     private final JWTParser parser;
-    private final AudienceVerificationStrategy audienceVerificationStrategy;
 
-    JWTVerifier(Algorithm algorithm, Map<String, Object> claims, Clock clock, AudienceVerificationStrategy audienceVerificationStrategy) {
+    static final String AUDIENCE_EXACT = "AUDIENCE_EXACT";
+    static final String AUDIENCE_CONTAINS = "AUDIENCE_CONTAINS";
+
+    JWTVerifier(Algorithm algorithm, Map<String, Object> claims, Clock clock) {
         this.algorithm = algorithm;
         this.claims = Collections.unmodifiableMap(claims);
         this.clock = clock;
         this.parser = new JWTParser();
-        this.audienceVerificationStrategy = audienceVerificationStrategy;
     }
 
     /**
@@ -50,7 +51,6 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
         private final Map<String, Object> claims;
         private long defaultLeeway;
         private boolean ignoreIssuedAt;
-        private AudienceVerificationStrategy audienceVerificationStrategy = AudienceVerificationStrategy.UNSET;
 
         BaseVerification(Algorithm algorithm) throws IllegalArgumentException {
             if (algorithm == null) {
@@ -76,21 +76,15 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
 
         @Override
         public Verification withAudience(String... audience) {
-            if (audienceVerificationStrategy == AudienceVerificationStrategy.CONTAINS) {
-                throw new IllegalStateException("Audience validation behavior has already been configured.");
-            }
-            audienceVerificationStrategy = AudienceVerificationStrategy.EXACT;
-            requireClaim(PublicClaims.AUDIENCE, isNullOrEmpty(audience) ? null : Arrays.asList(audience));
+            claims.remove(AUDIENCE_CONTAINS);
+            requireClaim(AUDIENCE_EXACT, isNullOrEmpty(audience) ? null : Arrays.asList(audience));
             return this;
         }
 
         @Override
         public Verification withAnyOfAudience(String... audience) {
-            if (audienceVerificationStrategy == AudienceVerificationStrategy.EXACT) {
-                throw new IllegalStateException("Audience validation behavior has already been configured.");
-            }
-            audienceVerificationStrategy = AudienceVerificationStrategy.CONTAINS;
-            requireClaim(PublicClaims.AUDIENCE, isNullOrEmpty(audience) ? null : Arrays.asList(audience));
+            claims.remove(AUDIENCE_EXACT);
+            requireClaim(AUDIENCE_CONTAINS, isNullOrEmpty(audience) ? null : Arrays.asList(audience));
             return this;
         }
 
@@ -218,7 +212,7 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
          */
         public JWTVerifier build(Clock clock) {
             addLeewayToDateClaims();
-            return new JWTVerifier(algorithm, claims, clock, audienceVerificationStrategy);
+            return new JWTVerifier(algorithm, claims, clock);
         }
 
         private void assertPositive(long leeway) {
@@ -323,31 +317,36 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
         }
     }
 
-    private void verifyClaimValues(DecodedJWT jwt, Map.Entry<String, Object> entry) {
-        switch (entry.getKey()) {
-            case PublicClaims.AUDIENCE:
-                assertValidAudienceClaim(jwt.getAudience(), (List<String>) entry.getValue());
+    private void verifyClaimValues(DecodedJWT jwt, Map.Entry<String, Object> expectedClaim) {
+        switch (expectedClaim.getKey()) {
+            // We use custom keys for audience in the expected claims to differentiate between validating that the audience
+            // contains all expected values, or validating that the audience contains at least one of the expected values.
+            case AUDIENCE_EXACT:
+                assertValidAudienceClaim(jwt.getAudience(), (List<String>) expectedClaim.getValue(), true);
+                break;
+            case AUDIENCE_CONTAINS:
+                assertValidAudienceClaim(jwt.getAudience(), (List<String>) expectedClaim.getValue(), false);
                 break;
             case PublicClaims.EXPIRES_AT:
-                assertValidDateClaim(jwt.getExpiresAt(), (Long) entry.getValue(), true);
+                assertValidDateClaim(jwt.getExpiresAt(), (Long) expectedClaim.getValue(), true);
                 break;
             case PublicClaims.ISSUED_AT:
-                assertValidDateClaim(jwt.getIssuedAt(), (Long) entry.getValue(), false);
+                assertValidDateClaim(jwt.getIssuedAt(), (Long) expectedClaim.getValue(), false);
                 break;
             case PublicClaims.NOT_BEFORE:
-                assertValidDateClaim(jwt.getNotBefore(), (Long) entry.getValue(), false);
+                assertValidDateClaim(jwt.getNotBefore(), (Long) expectedClaim.getValue(), false);
                 break;
             case PublicClaims.ISSUER:
-                assertValidIssuerClaim(jwt.getIssuer(), (List<String>) entry.getValue());
+                assertValidIssuerClaim(jwt.getIssuer(), (List<String>) expectedClaim.getValue());
                 break;
             case PublicClaims.JWT_ID:
-                assertValidStringClaim(entry.getKey(), jwt.getId(), (String) entry.getValue());
+                assertValidStringClaim(expectedClaim.getKey(), jwt.getId(), (String) expectedClaim.getValue());
                 break;
             case PublicClaims.SUBJECT:
-                assertValidStringClaim(entry.getKey(), jwt.getSubject(), (String) entry.getValue());
+                assertValidStringClaim(expectedClaim.getKey(), jwt.getSubject(), (String) expectedClaim.getValue());
                 break;
             default:
-                assertValidClaim(jwt.getClaim(entry.getKey()), entry.getKey(), entry.getValue());
+                assertValidClaim(jwt.getClaim(expectedClaim.getKey()), expectedClaim.getKey(), expectedClaim.getValue());
                 break;
         }
     }
@@ -429,20 +428,10 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
         }
     }
 
-    private void assertValidAudienceClaim(List<String> audience, List<String> value) {
-        String invalidMessage = "The Claim 'aud' value doesn't contain the required audience.";
-        if (audience == null) {
-            throw new InvalidClaimException(invalidMessage);
-        }
-
-        if (audienceVerificationStrategy == AudienceVerificationStrategy.CONTAINS) {
-            if (Collections.disjoint(audience, value)) {
-                throw new InvalidClaimException(invalidMessage);
-            }
-        } else {
-            if (!audience.containsAll(value)) {
-                throw new InvalidClaimException(invalidMessage);
-            }
+    private void assertValidAudienceClaim(List<String> audience, List<String> values, boolean shouldContainAll) {
+        if (audience == null || (shouldContainAll && !audience.containsAll(values)) ||
+                (!shouldContainAll && Collections.disjoint(audience, values))) {
+            throw new InvalidClaimException("The Claim 'aud' value doesn't contain the required audience.");
         }
     }
 
@@ -466,25 +455,5 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
             }
             return nonEmptyClaim;
         }
-    }
-
-    /**
-     * Represents how the audience will be validated.
-     */
-    enum AudienceVerificationStrategy {
-        /**
-         * No audience validation configured.
-         */
-        UNSET,
-
-        /**
-         * The JWT audience must match the expected audiences exactly.
-         */
-        EXACT,
-
-        /**
-         * The JWT audience must contain at least one of the expected audiences.
-         */
-        CONTAINS
     }
 }
