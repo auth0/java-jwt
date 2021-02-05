@@ -42,12 +42,12 @@ public interface Verification {
      * If this is used in conjunction with {@link #withAudience(String...)}, whichever one is configured last will
      * determine the audience validation behavior.
      *
-     * @apiNote This method was added after the interface was released.
-     *          It is defined as a default method for compatibility reasons.
-     *          From version 4.0 on, the method will be abstract and all implementations of this interface
-     *          will have to provide their own implementation.
+     * Note: This method was added after the interface was released.
+     * It is defined as a default method for compatibility reasons.
+     * From version 4.0 on, the method will be abstract and all implementations of this interface
+     * will have to provide their own implementation.
      *
-     * @implSpec The default implementation throws an {@linkplain UnsupportedOperationException}.
+     * The default implementation throws an {@linkplain UnsupportedOperationException}.
      * 
      * @param audience the required Audience value for which the "aud" claim must contain at least one value.
      * @return this same Verification instance.
