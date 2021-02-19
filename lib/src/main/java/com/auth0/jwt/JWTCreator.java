@@ -375,7 +375,7 @@ public final class JWTCreator {
          * @throws IllegalArgumentException if any of the claim keys or null, or if the values are not of a supported type.
          * @return this same Builder instance.
          */
-        public Builder withPayload(Map<String, Object> payloadClaims) throws IllegalArgumentException {
+        public Builder withPayload(Map<String, ?> payloadClaims) throws IllegalArgumentException {
             if (payloadClaims == null) {
                 return this;
             }
@@ -385,15 +385,15 @@ public final class JWTCreator {
             }
 
             // add claims only after validating all claims so as not to corrupt the claims map of this builder
-            for (Map.Entry<String, Object> entry : payloadClaims.entrySet()) {
+            for (Map.Entry<String, ?> entry : payloadClaims.entrySet()) {
                 addClaim(entry.getKey(), entry.getValue());
             }
 
             return this;
         }
 
-        private boolean validatePayload(Map<String, Object> payload) {
-            for (Map.Entry<String, Object> entry : payload.entrySet()) {
+        private boolean validatePayload(Map<String, ?> payload) {
+            for (Map.Entry<String, ?> entry : payload.entrySet()) {
                 String key = entry.getKey();
                 assertNonNull(key);
 
