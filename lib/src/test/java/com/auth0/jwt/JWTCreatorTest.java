@@ -15,9 +15,7 @@ import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.RSAPrivateKey;
 import java.util.*;
 
-import static org.hamcrest.Matchers.anEmptyMap;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -717,4 +715,170 @@ public class JWTCreatorTest {
                 .sign(Algorithm.HMAC256("secret"));
     }
 
+    @Test
+    public void withPayloadShouldAddBasicClaim() {
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("asd", 123);
+        String jwt = JWTCreator.init()
+                .withPayload(payload)
+                .sign(Algorithm.HMAC256("secret"));
+
+        assertThat(jwt, is(notNullValue()));
+        String[] parts = jwt.split("\\.");
+        String payloadJson = new String(Base64.decodeBase64(parts[1]), StandardCharsets.UTF_8);
+        assertThat(payloadJson, JsonMatcher.hasEntry("asd", 123));
+    }
+
+    @Test
+    public void withPayloadShouldCreateJwtWithEmptyBodyIfPayloadNull() {
+        String jwt = JWTCreator.init()
+                .withPayload(null)
+                .sign(Algorithm.HMAC256("secret"));
+
+        assertThat(jwt, is(notNullValue()));
+        String[] parts = jwt.split("\\.");
+        String payloadJson = new String(Base64.decodeBase64(parts[1]), StandardCharsets.UTF_8);
+        assertThat(payloadJson, is("{}"));
+    }
+
+    @Test
+    public void withPayloadShouldOverwriteExistingClaimIfPayloadMapContainsTheSameKey() {
+        Map<String, Object> payload = new HashMap<>();
+        payload.put(PublicClaims.KEY_ID, "xyz");
+
+        String jwt = JWTCreator.init()
+                .withKeyId("abc")
+                .withPayload(payload)
+                .sign(Algorithm.HMAC256("secret"));
+
+        assertThat(jwt, is(notNullValue()));
+        String[] parts = jwt.split("\\.");
+        String payloadJson = new String(Base64.decodeBase64(parts[1]), StandardCharsets.UTF_8);
+        assertThat(payloadJson, JsonMatcher.hasEntry(PublicClaims.KEY_ID, "xyz"));
+    }
+
+    @Test
+    public void shouldOverwriteExistingPayloadWhenSettingSamePayloadKey() {
+        Map<String, Object> payload = new HashMap<>();
+        payload.put(PublicClaims.ISSUER, "xyz");
+
+        String jwt = JWTCreator.init()
+                .withPayload(payload)
+                .withIssuer("abc")
+                .sign(Algorithm.HMAC256("secret"));
+
+        assertThat(jwt, is(notNullValue()));
+        String[] parts = jwt.split("\\.");
+        String payloadJson = new String(Base64.decodeBase64(parts[1]), StandardCharsets.UTF_8);
+        assertThat(payloadJson, JsonMatcher.hasEntry(PublicClaims.ISSUER, "abc"));
+    }
+
+    @Test
+    public void shouldRemovePayloadIfTheValueIsNull() throws Exception {
+        String jwt = JWTCreator.init()
+                .withClaim("key", "stubValue")
+                .withPayload(Collections.singletonMap("key", (Map<String, ?>) null))
+                .sign(Algorithm.HMAC256("secret"));
+
+        assertThat(jwt, is(notNullValue()));
+        String[] parts = jwt.split("\\.");
+
+        String body = new String(Base64.decodeBase64(parts[1]), StandardCharsets.UTF_8);
+        ObjectMapper mapper = new ObjectMapper();
+        Map<String, Object> map = (Map<String, Object>) mapper.readValue(body, Map.class);
+        assertThat(map, anEmptyMap());
+    }
+
+    @Test
+    public void withPayloadShouldNotAllowCustomType() {
+        exception.expect(IllegalArgumentException.class);
+        exception.expectMessage("Claim values must only be of types Map, List, Boolean, Integer, Long, Double, String and Date");
+
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("entry", "value");
+        payload.put("pojo", new UserPojo("name", 42));
+        String jwt = JWTCreator.init()
+                .withPayload(payload)
+                .sign(Algorithm.HMAC256("secret"));
+    }
+
+    @Test
+    public void withPayloadShouldAllowNullListItems() {
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("list", Arrays.asList("item1", null, "item2"));
+        String jwt = JWTCreator.init()
+                .withPayload(payload)
+                .sign(Algorithm.HMAC256("secret"));
+
+        assertThat(jwt, is(notNullValue()));
+        String[] parts = jwt.split("\\.");
+        String payloadJson = new String(Base64.decodeBase64(parts[1]), StandardCharsets.UTF_8);
+        assertThat(payloadJson, JsonMatcher.hasEntry("list", Arrays.asList("item1", null, "item2")));
+    }
+
+    @Test
+    public void withPayloadShouldNotAllowListWithCustomType() {
+        exception.expect(IllegalArgumentException.class);
+        exception.expectMessage("Claim values must only be of types Map, List, Boolean, Integer, Long, Double, String and Date");
+
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("list", Arrays.asList("item1", new UserPojo("name", 42)));
+        String jwt = JWTCreator.init()
+                .withPayload(payload)
+                .sign(Algorithm.HMAC256("secret"));
+    }
+
+    @Test
+    public void withPayloadShouldNotAllowMapWithCustomType() {
+        exception.expect(IllegalArgumentException.class);
+        exception.expectMessage("Claim values must only be of types Map, List, Boolean, Integer, Long, Double, String and Date");
+
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("entry", "value");
+        payload.put("map", Collections.singletonMap("pojo", new UserPojo("name", 42)));
+        String jwt = JWTCreator.init()
+                .withPayload(payload)
+                .sign(Algorithm.HMAC256("secret"));
+    }
+
+    @Test
+    public void withPayloadShouldAllowNestedSupportedTypes() {
+        /*
+        JWT:
+        {
+          "stringClaim": "string",
+          "intClaim": 41,
+          "listClaim": [
+            1, 2, {
+              "nestedObjKey": true
+            }
+          ],
+          "objClaim": {
+            "objKey": ["nestedList1", "nestedList2"]
+          }
+        }
+         */
+
+        List<?> listClaim = Arrays.asList(1, 2, Collections.singletonMap("nestedObjKey", "nestedObjValue"));
+        Map<String, Object> mapClaim = new HashMap<>();
+        mapClaim.put("objKey", Arrays.asList("nestedList1", true));
+
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("stringClaim", "string");
+        payload.put("intClaim", 41);
+        payload.put("listClaim", listClaim);
+        payload.put("objClaim", mapClaim);
+
+        String jwt = JWTCreator.init()
+                .withPayload(payload)
+                .sign(Algorithm.HMAC256("secret"));
+
+        assertThat(jwt, is(notNullValue()));
+        String[] parts = jwt.split("\\.");
+        String payloadJson = new String(Base64.decodeBase64(parts[1]), StandardCharsets.UTF_8);
+        assertThat(payloadJson, JsonMatcher.hasEntry("stringClaim", "string"));
+        assertThat(payloadJson, JsonMatcher.hasEntry("intClaim", 41));
+        assertThat(payloadJson, JsonMatcher.hasEntry("listClaim", listClaim));
+        assertThat(payloadJson, JsonMatcher.hasEntry("objClaim", mapClaim));
+    }
 }

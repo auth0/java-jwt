@@ -373,6 +373,16 @@ String token = JWT.create()
         .sign(algorithm);
 ```
 
+You can also create a JWT by calling `withPayload()` and passing a map of claim names to values:
+
+```java
+Map<String, Object> payloadClaims = new HashMap<>();
+payloadClaims.put("@context", "https://auth0.com/");
+String token = JWT.create()
+        .withPayload(payloadClaims)
+        .sign(algorithm);
+```
+
 You can also verify custom Claims on the `JWT.require()` by calling `withClaim()` and passing both the name and the required value.
 
 ```java
