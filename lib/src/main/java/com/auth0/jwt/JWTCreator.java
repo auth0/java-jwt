@@ -13,10 +13,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.apache.commons.codec.binary.Base64;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 
 /**
@@ -358,6 +355,58 @@ public final class JWTCreator {
             }
             addClaim(name, list);
             return this;
+        }
+
+        /**
+         * Add specific Claims to set as the Payload. If the provided map is null then
+         * nothing is changed.
+         * <p>
+         * Accepted types are {@linkplain Map} and {@linkplain List} with basic types
+         * {@linkplain Boolean}, {@linkplain Integer}, {@linkplain Long}, {@linkplain Double},
+         * {@linkplain String} and {@linkplain Date}. {@linkplain Map}s cannot contain null keys or values.
+         * {@linkplain List}s can contain null elements.
+         * </p>
+         *
+         * <p>
+         * If any of the claims are invalid, none will be added.
+         * </p>
+         *
+         * @param payloadClaims the values to use as Claims in the token's payload.
+         * @throws IllegalArgumentException if any of the claim keys or null, or if the values are not of a supported type.
+         * @return this same Builder instance.
+         */
+        public Builder withPayload(Map<String, ?> payloadClaims) throws IllegalArgumentException {
+            if (payloadClaims == null) {
+                return this;
+            }
+
+            if (!validatePayload(payloadClaims)) {
+                throw new IllegalArgumentException("Claim values must only be of types Map, List, Boolean, Integer, Long, Double, String and Date");
+            }
+
+            // add claims only after validating all claims so as not to corrupt the claims map of this builder
+            for (Map.Entry<String, ?> entry : payloadClaims.entrySet()) {
+                addClaim(entry.getKey(), entry.getValue());
+            }
+
+            return this;
+        }
+
+        private boolean validatePayload(Map<String, ?> payload) {
+            for (Map.Entry<String, ?> entry : payload.entrySet()) {
+                String key = entry.getKey();
+                assertNonNull(key);
+
+                Object value = entry.getValue();
+                if (value instanceof List && !validateClaim((List<?>) value)) {
+                    return false;
+                } else if (value instanceof Map && !validateClaim((Map<?, ?>) value)) {
+                    return false;
+                } else if (value != null && !isSupportedType(value)) {
+                    return false;
+                }
+            }
+            return true;
         }
 
         private static boolean validateClaim(Map<?, ?> map) {
