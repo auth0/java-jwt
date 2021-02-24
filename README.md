@@ -73,6 +73,10 @@ Algorithm algorithmRS = Algorithm.RSA256(publicKey, privateKey);
 
 > Note: How you obtain or read keys is not in the scope of this library. For an example of how you might implement this, see [this gist](https://gist.github.com/lbalmaceda/9a0c7890c2965826c04119dcfb1a5469).
 
+##### HMAC Key Length and Security
+
+When using a Hash-based Message Authenticaton Code, e.g. HS256 or HS512, in order to comply with the strict requirements of the JSON Web Algorithms (JWA) specification (RFC7518), you **must** use a secret key which has the same (or larger) bit length as the size of the output hash. This is to avoid weakening the security strength of the authentication code (see NIST recomendations NIST SP 800-117). For example, when using HMAC256, the secret key length must be a minimum of 256 bits.
+
 #### Using a KeyProvider:
 
 By using a `KeyProvider` you can change in runtime the key used either to verify the token signature or to sign a new token for RSA or ECDSA algorithms. This is achieved by implementing either `RSAKeyProvider` or `ECDSAKeyProvider` methods:
