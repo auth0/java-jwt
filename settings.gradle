@@ -5,7 +5,7 @@ pluginManagement {
     }
     plugins {
         id 'com.jfrog.bintray' version '1.8.5'
-        id 'com.auth0.gradle.oss-library.java' version '0.12.1'
+        id 'com.auth0.gradle.oss-library.java' version '0.14.0'
     }
 }
 

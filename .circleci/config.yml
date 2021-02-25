@@ -1,8 +1,7 @@
-version: 2
-jobs:
-  build:
-    docker:
-      - image: openjdk:8-jdk
+version: 2.1
+
+commands:
+  checkout-and-build:
     steps:
       - checkout
       - run: chmod +x gradlew
@@ -12,17 +11,53 @@ jobs:
           - v1-dependencies-{{ checksum "build.gradle" }}
           # fallback to using the latest cache if no exact match is found
           - v1-dependencies-
-      # run tests!
-      - run: ./gradlew clean check jacocoTestReport --continue --console=plain
-      - run:
-          name: Upload Coverage
-          when: on_success
-          command: bash <(curl -s https://codecov.io/bash) -Z -C $CIRCLE_SHA1
+      - run: ./gradlew clean build
       - save_cache:
           paths:
             - ~/.m2
           key: v1-dependencies-{{ checksum "build.gradle" }}
+  run-tests:
+    steps:
+      - run: ./gradlew check jacocoTestReport --continue --console=plain
+      - run:
+          name: Upload Coverage
+          when: on_success
+          command: bash <(curl -s https://codecov.io/bash) -Z -C $CIRCLE_SHA1
+  run-api-diff:
+    steps:
+      # run apiDiff task
+      - run: ./gradlew apiDiff
+      - store_artifacts:
+         path: lib/build/reports/apiDiff/apiDiff.txt
+      - store_artifacts:
+         path: lib/build/reports/apiDiff/apiDiff.html
+
+jobs:
+  build:
+    docker:
+      - image: openjdk:8-jdk
+    steps:
+      - checkout-and-build
+      - run-tests
     environment:
       GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx2048m -XX:+HeapDumpOnOutOfMemoryError"'
       _JAVA_OPTIONS: "-Xms512m -Xmx1024m"
       TERM: dumb
+  api-diff:
+    docker:
+      - image: openjdk:8-jdk
+    steps:
+      - checkout-and-build
+      - run-api-diff
+    environment:
+      GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx2048m -XX:+HeapDumpOnOutOfMemoryError"'
+      _JAVA_OPTIONS: "-Xms512m -Xmx1024m"
+      TERM: dumb
+
+workflows:
+  build-and-test:
+    jobs:
+      - build
+  api-diff:
+    jobs:
+      - api-diff
