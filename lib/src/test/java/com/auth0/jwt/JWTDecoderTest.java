@@ -35,7 +35,8 @@ public class JWTDecoderTest {
     @Test
     public void shouldThrowIfTheContentIsNotProperlyEncoded() throws Exception {
         exception.expect(JWTDecodeException.class);
-        exception.expectMessage("The input is not a valid base 64 encoded string.");
+        exception.expectMessage(startsWith("The string '"));
+        exception.expectMessage(endsWith("' doesn't have a valid JSON format."));
         JWT.decode("eyJ0eXAiOiJKV1QiLCJhbGciO-corrupted.eyJ0ZXN0IjoxMjN9.sLtFC2rLAzN0-UJ13OLQX6ezNptAQzespaOGwCnpqk");
     }
 

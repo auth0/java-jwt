@@ -151,8 +151,8 @@ public class ECDSABouncyCastleProviderTests {
     public void shouldFailECDSA256KVerificationOnInvalidJOSESignatureLength() throws Exception {
         exception.expect(SignatureVerificationException.class);
         exception.expectMessage("The Token's Signature resulted invalid when verified using the Algorithm: SHA256withECDSA");
-        exception.expectCause(isA(SignatureException.class));
-        exception.expectCause(hasMessage(is("Invalid JOSE signature format.")));
+        exception.expectCause(isA(IllegalArgumentException.class));
+        exception.expectCause(hasMessage(is("Last unit does not have enough valid bits")));
         
         String jwt = ES256K_JWT.substring(0,ES256K_JWT.length()-1);
         Algorithm algorithm = Algorithm.ECDSA256K((ECPublicKey) readPublicKeyFromFile(INVALID_PUBLIC_KEY_FILE_256K, "EC"), null);
