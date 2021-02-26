@@ -23,14 +23,14 @@ The library is available on both Maven Central and Bintray, and the Javadoc is p
 <dependency>
     <groupId>com.auth0</groupId>
     <artifactId>java-jwt</artifactId>
-    <version>3.13.0</version>
+    <version>3.14.0</version>
 </dependency>
 ```
 
 ### Gradle
 
 ```gradle
-implementation 'com.auth0:java-jwt:3.13.0'
+implementation 'com.auth0:java-jwt:3.14.0'
 ```
 
 ## Available Algorithms
