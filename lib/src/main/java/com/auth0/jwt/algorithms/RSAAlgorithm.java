@@ -4,7 +4,6 @@ import com.auth0.jwt.exceptions.SignatureGenerationException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.RSAKeyProvider;
-import org.apache.commons.codec.binary.Base64;
 
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
@@ -12,6 +11,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
+import java.util.Base64;
 
 /**
  * Subclass representing an RSA signing algorithm
@@ -39,9 +39,8 @@ class RSAAlgorithm extends Algorithm {
 
     @Override
     public void verify(DecodedJWT jwt) throws SignatureVerificationException {
-        byte[] signatureBytes = Base64.decodeBase64(jwt.getSignature());
-
         try {
+            byte[] signatureBytes = Base64.getUrlDecoder().decode(jwt.getSignature());
             RSAPublicKey publicKey = keyProvider.getPublicKeyById(jwt.getKeyId());
             if (publicKey == null) {
                 throw new IllegalStateException("The given Public Key is null.");
@@ -50,7 +49,7 @@ class RSAAlgorithm extends Algorithm {
             if (!valid) {
                 throw new SignatureVerificationException(this);
             }
-        } catch (NoSuchAlgorithmException | SignatureException | InvalidKeyException | IllegalStateException e) {
+        } catch (NoSuchAlgorithmException | SignatureException | InvalidKeyException | IllegalArgumentException | IllegalStateException e) {
             throw new SignatureVerificationException(this, e);
         }
     }

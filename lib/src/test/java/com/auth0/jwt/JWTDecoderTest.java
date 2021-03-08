@@ -4,7 +4,6 @@ import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.impl.NullClaim;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import org.apache.commons.codec.binary.Base64;
 import org.hamcrest.collection.IsCollectionWithSize;
 import org.hamcrest.core.IsCollectionContaining;
 import org.junit.Assert;
@@ -14,6 +13,7 @@ import org.junit.rules.ExpectedException;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.Date;
 import java.util.Map;
 
@@ -35,7 +35,8 @@ public class JWTDecoderTest {
     @Test
     public void shouldThrowIfTheContentIsNotProperlyEncoded() throws Exception {
         exception.expect(JWTDecodeException.class);
-        exception.expectMessage("The input is not a valid base 64 encoded string.");
+        exception.expectMessage(startsWith("The string '"));
+        exception.expectMessage(endsWith("' doesn't have a valid JSON format."));
         JWT.decode("eyJ0eXAiOiJKV1QiLCJhbGciO-corrupted.eyJ0ZXN0IjoxMjN9.sLtFC2rLAzN0-UJ13OLQX6ezNptAQzespaOGwCnpqk");
     }
 
@@ -69,6 +70,24 @@ public class JWTDecoderTest {
         exception.expect(JWTDecodeException.class);
         exception.expectMessage(String.format("The string '%s' doesn't have a valid JSON format.", invalidJson));
         customJWT(invalidJson, validJson, "signature");
+    }
+
+    @Test
+    public void shouldThrowWhenHeaderNotValidBase64() {
+        exception.expect(JWTDecodeException.class);
+        exception.expectCause(isA(IllegalArgumentException.class));
+
+        String jwt = "eyJhbGciOiJub25l+IiwiY3R5IjoiSldUIn0.eyJpc3MiOiJhdXRoMCJ9.Ox-WRXRaGAuWt2KfPvWiGcCrPqZtbp_4OnQzZXaTfss";
+        JWT.decode(jwt);
+    }
+
+    @Test
+    public void shouldThrowWhenPayloadNotValidBase64() {
+        exception.expect(JWTDecodeException.class);
+        exception.expectCause(isA(IllegalArgumentException.class));
+
+        String jwt = "eyJhbGciOiJub25lIiwiY3R5IjoiSldUIn0.eyJpc3MiOiJhdXRo+MCJ9.Ox-WRXRaGAuWt2KfPvWiGcCrPqZtbp_4OnQzZXaTfss";
+        JWT.decode(jwt);
     }
 
     // Parts
@@ -328,8 +347,8 @@ public class JWTDecoderTest {
     //Helper Methods
 
     private DecodedJWT customJWT(String jsonHeader, String jsonPayload, String signature) {
-        String header = Base64.encodeBase64URLSafeString(jsonHeader.getBytes(StandardCharsets.UTF_8));
-        String body = Base64.encodeBase64URLSafeString(jsonPayload.getBytes(StandardCharsets.UTF_8));
+        String header = Base64.getUrlEncoder().withoutPadding().encodeToString(jsonHeader.getBytes(StandardCharsets.UTF_8));
+        String body = Base64.getUrlEncoder().withoutPadding().encodeToString(jsonPayload.getBytes(StandardCharsets.UTF_8));
         return JWT.decode(String.format("%s.%s.%s", header, body, signature));
     }
 
