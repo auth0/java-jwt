@@ -12,6 +12,7 @@ oss {
     repository "java-jwt"
     organization "auth0"
     description "Java implementation of JSON Web Token (JWT)"
+    baselineCompareVersion "3.13.0"
 
     developers {
         auth0 {

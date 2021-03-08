@@ -1,5 +1,11 @@
 # Change Log
 
+## [3.14.0](https://github.com/auth0/java-jwt/tree/3.14.0) (2021-02-26)
+[Full Changelog](https://github.com/auth0/java-jwt/compare/3.13.0...3.14.0)
+
+**Added**
+- Add withPayload to JWTCreator.Builder [\#475](https://github.com/auth0/java-jwt/pull/475) ([jimmyjames](https://github.com/jimmyjames))
+
 ## [3.13.0](https://github.com/auth0/java-jwt/tree/3.13.0) (2021-02-05)
 [Full Changelog](https://github.com/auth0/java-jwt/compare/3.12.1...3.13.0)
 
