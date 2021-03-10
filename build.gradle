@@ -4,6 +4,6 @@ allprojects {
     group = 'com.auth0'
 
     repositories {
-        jcenter()
+        mavenCentral()
     }
 }
