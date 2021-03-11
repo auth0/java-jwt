@@ -33,13 +33,14 @@ oss {
 def javaVersion = 8
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(javaVersion)
+        languageVersion = JavaLanguageVersion.of(11)
     }
 }
 
 compileJava {
-    sourceCompatibility "$javaVersion"
-    targetCompatibility "$javaVersion"
+    exclude 'module-info.java'
+
+    options.compilerArgs = ['--release', "$javaVersion"]
 }
 
 // Use latest JDK for javadoc generation
@@ -51,7 +52,7 @@ tasks.withType(Javadoc).configureEach {
 
 javadoc {
     // Exclude internal implementation package from javadoc
-    excludes = ['com/auth0/jwt/impl']
+    excludes = ['com/auth0/jwt/impl', 'module-info.java']
     // Specify Java version this project uses
     // Otherwise would use version of javadoc toolchain by default which could
     // cause compilation error mismatch between compileJava and javadoc creation
@@ -80,3 +81,28 @@ test {
         exceptionFormat "short"
     }
 }
+
+task compileModuleInfoJava(type: JavaCompile) {
+    classpath = files()
+    source = 'src/main/java/module-info.java'
+    destinationDir = compileJava.destinationDir
+    doLast {
+        def descriptor = new File(compileJava.destinationDir, 'module-info.class')
+        def dest = new File(compileJava.destinationDir, 'META-INF/versions/9')
+        ant.move file: descriptor, todir: dest
+    }
+
+    doFirst {
+        options.compilerArgs = [
+                '--release', '9',
+                '--module-path', compileJava.classpath.asPath
+        ]
+    }
+}
+
+jar {
+    manifest.attributes('Multi-Release': 'true')
+}
+
+compileModuleInfoJava.dependsOn compileJava
+classes.dependsOn compileModuleInfoJava
