@@ -4,7 +4,7 @@
 
 [![CircleCI](https://img.shields.io/circleci/project/github/auth0/java-jwt.svg?style=flat-square)](https://circleci.com/gh/auth0/java-jwt/tree/master)
 [![Coverage Status](https://img.shields.io/codecov/c/github/auth0/java-jwt.svg?style=flat-square)](https://codecov.io/github/auth0/java-jwt)
-[![License](http://img.shields.io/:license-mit-blue.svg?style=flat)](http://doge.mit-license.org)
+[![License](https://img.shields.io/:license-mit-blue.svg?style=flat)](https://doge.mit-license.org)
 [![Javadoc](https://javadoc.io/badge2/com.auth0/java-jwt/javadoc.svg)](https://javadoc.io/doc/com.auth0/java-jwt/latest/index.html)
 
 A Java implementation of [JSON Web Token (JWT) - RFC 7519](https://tools.ietf.org/html/rfc7519).
@@ -122,31 +122,31 @@ You'll first need to create a `JWTCreator` instance by calling `JWT.create()`. U
 
 * Example using `HS256`
 
-```java
-try {
-    Algorithm algorithm = Algorithm.HMAC256("secret");
-    String token = JWT.create()
-        .withIssuer("auth0")
-        .sign(algorithm);
-} catch (JWTCreationException exception){
-    //Invalid Signing configuration / Couldn't convert Claims.
-}
-```
+    ```java
+    try {
+        Algorithm algorithm = Algorithm.HMAC256("secret");
+        String token = JWT.create()
+            .withIssuer("auth0")
+            .sign(algorithm);
+    } catch (JWTCreationException exception){
+        //Invalid Signing configuration / Couldn't convert Claims.
+    }
+    ```
 
 * Example using `RS256`
 
-```java
-RSAPublicKey publicKey = //Get the key instance
-RSAPrivateKey privateKey = //Get the key instance
-try {
-    Algorithm algorithm = Algorithm.RSA256(publicKey, privateKey);
-    String token = JWT.create()
-        .withIssuer("auth0")
-        .sign(algorithm);
-} catch (JWTCreationException exception){
-    //Invalid Signing configuration / Couldn't convert Claims.
-}
-```
+    ```java
+    RSAPublicKey publicKey = //Get the key instance
+    RSAPrivateKey privateKey = //Get the key instance
+    try {
+        Algorithm algorithm = Algorithm.RSA256(publicKey, privateKey);
+        String token = JWT.create()
+            .withIssuer("auth0")
+            .sign(algorithm);
+    } catch (JWTCreationException exception){
+        //Invalid Signing configuration / Couldn't convert Claims.
+    }
+    ```
 
 If a Claim couldn't be converted to JSON or the Key used in the signing process was invalid a `JWTCreationException` will raise.
 
@@ -157,35 +157,35 @@ You'll first need to create a `JWTVerifier` instance by calling `JWT.require()` 
 
 * Example using `HS256`
 
-```java
-String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXUyJ9.eyJpc3MiOiJhdXRoMCJ9.AbIJTDMFc7yUa5MhvcP03nJPyCPzZtQcGEp-zWfOkEE";
-try {
-    Algorithm algorithm = Algorithm.HMAC256("secret");
-    JWTVerifier verifier = JWT.require(algorithm)
-        .withIssuer("auth0")
-        .build(); //Reusable verifier instance
-    DecodedJWT jwt = verifier.verify(token);
-} catch (JWTVerificationException exception){
-    //Invalid signature/claims
-}
-```
+    ```java
+    String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXUyJ9.eyJpc3MiOiJhdXRoMCJ9.AbIJTDMFc7yUa5MhvcP03nJPyCPzZtQcGEp-zWfOkEE";
+    try {
+        Algorithm algorithm = Algorithm.HMAC256("secret");
+        JWTVerifier verifier = JWT.require(algorithm)
+            .withIssuer("auth0")
+            .build(); //Reusable verifier instance
+        DecodedJWT jwt = verifier.verify(token);
+    } catch (JWTVerificationException exception){
+        //Invalid signature/claims
+    }
+    ```
 
 * Example using `RS256`
 
-```java
-String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXUyJ9.eyJpc3MiOiJhdXRoMCJ9.AbIJTDMFc7yUa5MhvcP03nJPyCPzZtQcGEp-zWfOkEE";
-RSAPublicKey publicKey = //Get the key instance
-RSAPrivateKey privateKey = //Get the key instance
-try {
-    Algorithm algorithm = Algorithm.RSA256(publicKey, privateKey);
-    JWTVerifier verifier = JWT.require(algorithm)
-        .withIssuer("auth0")
-        .build(); //Reusable verifier instance
-    DecodedJWT jwt = verifier.verify(token);
-} catch (JWTVerificationException exception){
-    //Invalid signature/claims
-}
-```
+    ```java
+    String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXUyJ9.eyJpc3MiOiJhdXRoMCJ9.AbIJTDMFc7yUa5MhvcP03nJPyCPzZtQcGEp-zWfOkEE";
+    RSAPublicKey publicKey = //Get the key instance
+    RSAPrivateKey privateKey = //Get the key instance
+    try {
+        Algorithm algorithm = Algorithm.RSA256(publicKey, privateKey);
+        JWTVerifier verifier = JWT.require(algorithm)
+            .withIssuer("auth0")
+            .build(); //Reusable verifier instance
+        DecodedJWT jwt = verifier.verify(token);
+    } catch (JWTVerificationException exception){
+        //Invalid signature/claims
+    }
+    ```
 
 If the token has an invalid signature or the Claim requirement is not met, a `JWTVerificationException` will raise.
 
