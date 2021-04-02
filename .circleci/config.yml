@@ -35,7 +35,7 @@ commands:
 jobs:
   build:
     docker:
-      - image: openjdk:8-jdk
+      - image: openjdk:11.0-jdk
     steps:
       - checkout-and-build
       - run-tests
@@ -45,7 +45,7 @@ jobs:
       TERM: dumb
   api-diff:
     docker:
-      - image: openjdk:8-jdk
+      - image: openjdk:11.0-jdk
     steps:
       - checkout-and-build
       - run-api-diff
