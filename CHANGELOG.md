@@ -1,5 +1,12 @@
 # Change Log
 
+## [3.15.0](https://github.com/auth0/java-jwt/tree/3.15.0) (2021-04-05)
+[Full Changelog](https://github.com/auth0/java-jwt/compare/3.14.0...3.15.0)
+
+**Changed**
+- Remove jcenter [\#482](https://github.com/auth0/java-jwt/pull/482) ([jimmyjames](https://github.com/jimmyjames))
+- Move form commons-codec Base64 to j.u.Base64 [\#478](https://github.com/auth0/java-jwt/pull/478) ([XakepSDK](https://github.com/XakepSDK))
+
 ## [3.14.0](https://github.com/auth0/java-jwt/tree/3.14.0) (2021-02-26)
 [Full Changelog](https://github.com/auth0/java-jwt/compare/3.13.0...3.14.0)
 
