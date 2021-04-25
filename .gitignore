@@ -57,6 +57,11 @@ crashlytics.properties
 crashlytics-build.properties
 fabric.properties
 
+# Eclipse IDE
+.classpath
+.project
+.settings/
+
 ### Java template
 *.class
 
