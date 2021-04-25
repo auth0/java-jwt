@@ -50,6 +50,8 @@ tasks.withType(Javadoc).configureEach {
 }
 
 javadoc {
+    // Exclude internal implementation package from javadoc
+    excludes = ['com/auth0/jwt/impl']
     // Specify Java version this project uses
     // Otherwise would use version of javadoc toolchain by default which could
     // cause compilation error mismatch between compileJava and javadoc creation
