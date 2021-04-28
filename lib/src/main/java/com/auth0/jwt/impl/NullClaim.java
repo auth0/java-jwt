@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * The {@link NullClaim} class is a Claim implementation that returns null when any of it's methods it's called.
+ * The {@code NullClaim} class is a Claim implementation that returns null when any of it's methods is called.
  */
 public class NullClaim implements Claim {
     @Override
