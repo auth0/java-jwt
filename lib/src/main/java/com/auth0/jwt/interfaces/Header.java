@@ -34,7 +34,8 @@ public interface Header {
     String getKeyId();
 
     /**
-     * Get a Private Claim given it's name. If the Claim wasn't specified in the Header, a NullClaim will be returned.
+     * Get a Private Claim given it's name. If the Claim wasn't specified in the Header, a 'null claim' will be
+     * returned. All of the methods of that claim will return {@code null}.
      *
      * @param name the name of the Claim to retrieve.
      * @return a non-null Claim.
