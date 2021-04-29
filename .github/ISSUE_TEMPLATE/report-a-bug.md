@@ -29,7 +29,7 @@ By submitting an Issue to this repository, you agree to the terms within the Aut
 ### Reproduction
 <!--
 > Detail the steps taken to reproduce this error, and whether this issue can be reproduced consistently or if it is intermittent.
-> **Note**: If clear, reproducable steps or the smallest sample app demonstrating misbehavior cannot be provided, we may not be able to follow up on this bug report.
+> **Note**: If clear, reproducible steps or the smallest sample app demonstrating misbehavior cannot be provided, we may not be able to follow up on this bug report.
 
 > Where possible, please include:
 >
