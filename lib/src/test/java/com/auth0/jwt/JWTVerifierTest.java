@@ -69,6 +69,7 @@ public class JWTVerifierTest {
     public void shouldThrowOnInvalidIssuer() throws Exception {
         exception.expect(InvalidClaimException.class);
         exception.expectMessage("The Claim 'iss' value doesn't match the required issuer.");
+        exception.expect(hasProperty("claimName", equalTo("iss")));
         String token = "eyJhbGciOiJIUzI1NiIsImN0eSI6IkpXVCJ9.eyJpc3MiOiJhdXRoMCJ9.mZ0m_N1J4PgeqWmi903JuUoDRZDBPB7HwkS4nVyWH1M";
         JWTVerifier.init(Algorithm.HMAC256("secret"))
                 .withIssuer("invalid")
@@ -80,6 +81,7 @@ public class JWTVerifierTest {
     public void shouldThrowOnNullIssuer() throws Exception {
         exception.expect(InvalidClaimException.class);
         exception.expectMessage("The Claim 'iss' value doesn't match the required issuer.");
+        exception.expect(hasProperty("claimName", equalTo("iss")));
 
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.e30.t-IDcSemACt8x4iTMCda8Yhe3iZaWbvV5XKSTbuAn0M";
         JWTVerifier.init(Algorithm.HMAC256("secret"))
@@ -103,6 +105,7 @@ public class JWTVerifierTest {
     public void shouldThrowOnInvalidSubject() throws Exception {
         exception.expect(InvalidClaimException.class);
         exception.expectMessage("The Claim 'sub' value doesn't match the required one.");
+        exception.expect(hasProperty("claimName", equalTo("sub")));
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.Rq8IxqeX7eA6GgYxlcHdPFVRNFFZc5rEI3MQTZZbK3I";
         JWTVerifier.init(Algorithm.HMAC256("secret"))
                 .withSubject("invalid")
@@ -148,6 +151,7 @@ public class JWTVerifierTest {
         assertThat(exception, is(notNullValue()));
         assertThat(exception, is(instanceOf(InvalidClaimException.class)));
         assertThat(exception.getMessage(), is("The Claim 'aud' value doesn't contain the required audience."));
+        assertThat(exception, hasProperty("claimName", equalTo("aud")));
 
         DecodedJWT jwt = verification.withAnyOfAudience("Mark", "Jim").build().verify(token);
         assertThat(jwt, is(notNullValue()));
@@ -170,6 +174,7 @@ public class JWTVerifierTest {
         assertThat(exception, is(notNullValue()));
         assertThat(exception, is(instanceOf(InvalidClaimException.class)));
         assertThat(exception.getMessage(), is("The Claim 'aud' value doesn't contain the required audience."));
+        assertThat(exception, hasProperty("claimName", equalTo("aud")));
 
         DecodedJWT jwt = verification.withAudience("Mark").build().verify(token);
         assertThat(jwt, is(notNullValue()));
@@ -203,6 +208,7 @@ public class JWTVerifierTest {
     public void shouldThrowWhenAudienceHasNoneOfExpectedAnyOfAudience() {
         exception.expect(InvalidClaimException.class);
         exception.expectMessage("The Claim 'aud' value doesn't contain the required audience.");
+        exception.expect(hasProperty("claimName", equalTo("aud")));
 
         // Token 'aud' = ["Mark", "David", "John"]
         String tokenArr = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOlsiTWFyayIsIkRhdmlkIiwiSm9obiJdfQ.DX5xXiCaYvr54x_iL0LZsJhK7O6HhAdHeDYkgDeb0Rw";
@@ -216,6 +222,7 @@ public class JWTVerifierTest {
     public void shouldThrowWhenAudienceClaimDoesNotContainAllExpected() throws Exception {
         exception.expect(InvalidClaimException.class);
         exception.expectMessage("The Claim 'aud' value doesn't contain the required audience.");
+        exception.expect(hasProperty("claimName", equalTo("aud")));
 
         // Token 'aud' = ["Mark", "David", "John"]
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOlsiTWFyayIsIkRhdmlkIiwiSm9obiJdfQ.DX5xXiCaYvr54x_iL0LZsJhK7O6HhAdHeDYkgDeb0Rw";
@@ -229,6 +236,7 @@ public class JWTVerifierTest {
     public void shouldThrowWhenAudienceClaimIsNull() throws Exception {
         exception.expect(InvalidClaimException.class);
         exception.expectMessage("The Claim 'aud' value doesn't contain the required audience.");
+        exception.expect(hasProperty("claimName", equalTo("aud")));
 
         // Token 'aud': null
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.Rq8IxqeX7eA6GgYxlcHdPFVRNFFZc5rEI3MQTZZbK3I";
@@ -242,6 +250,7 @@ public class JWTVerifierTest {
     public void shouldThrowWhenAudienceClaimIsNullWithAnAudience() throws Exception {
         exception.expect(InvalidClaimException.class);
         exception.expectMessage("The Claim 'aud' value doesn't contain the required audience.");
+        exception.expect(hasProperty("claimName", equalTo("aud")));
 
         // Token 'aud': null
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.Rq8IxqeX7eA6GgYxlcHdPFVRNFFZc5rEI3MQTZZbK3I";
@@ -369,6 +378,7 @@ public class JWTVerifierTest {
     public void shouldThrowWhenExpectedArrayClaimIsMissing() throws Exception {
         exception.expect(InvalidClaimException.class);
         exception.expectMessage("The Claim 'missing' value doesn't match the required one.");
+        exception.expect(hasProperty("claimName", equalTo("missing")));
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcnJheSI6WzEsMiwzXX0.wKNFBcMdwIpdF9rXRxvexrzSM6umgSFqRO1WZj992YM";
         JWTVerifier.init(Algorithm.HMAC256("secret"))
                 .withArrayClaim("missing", 1, 2, 3)
@@ -380,6 +390,7 @@ public class JWTVerifierTest {
     public void shouldThrowWhenExpectedClaimIsMissing() throws Exception {
         exception.expect(InvalidClaimException.class);
         exception.expectMessage("The Claim 'missing' value doesn't match the required one.");
+        exception.expect(hasProperty("claimName", equalTo("missing")));
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGFpbSI6InRleHQifQ.aZ27Ze35VvTqxpaSIK5ZcnYHr4SrvANlUbDR8fw9qsQ";
         JWTVerifier.init(Algorithm.HMAC256("secret"))
                 .withClaim("missing", "text")
@@ -391,6 +402,7 @@ public class JWTVerifierTest {
     public void shouldThrowOnInvalidCustomClaimValueOfTypeString() throws Exception {
         exception.expect(InvalidClaimException.class);
         exception.expectMessage("The Claim 'name' value doesn't match the required one.");
+        exception.expect(hasProperty("claimName", equalTo("name")));
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjpbInNvbWV0aGluZyJdfQ.3ENLez6tU_fG0SVFrGmISltZPiXLSHaz_dyn-XFTEGQ";
         JWTVerifier.init(Algorithm.HMAC256("secret"))
                 .withClaim("name", "value")
@@ -402,6 +414,7 @@ public class JWTVerifierTest {
     public void shouldThrowOnInvalidCustomClaimValueOfTypeInteger() throws Exception {
         exception.expect(InvalidClaimException.class);
         exception.expectMessage("The Claim 'name' value doesn't match the required one.");
+        exception.expect(hasProperty("claimName", equalTo("name")));
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjpbInNvbWV0aGluZyJdfQ.3ENLez6tU_fG0SVFrGmISltZPiXLSHaz_dyn-XFTEGQ";
         JWTVerifier.init(Algorithm.HMAC256("secret"))
                 .withClaim("name", 123)
@@ -413,6 +426,7 @@ public class JWTVerifierTest {
     public void shouldThrowOnInvalidCustomClaimValueOfTypeDouble() throws Exception {
         exception.expect(InvalidClaimException.class);
         exception.expectMessage("The Claim 'name' value doesn't match the required one.");
+        exception.expect(hasProperty("claimName", equalTo("name")));
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjpbInNvbWV0aGluZyJdfQ.3ENLez6tU_fG0SVFrGmISltZPiXLSHaz_dyn-XFTEGQ";
         JWTVerifier.init(Algorithm.HMAC256("secret"))
                 .withClaim("name", 23.45)
@@ -424,6 +438,7 @@ public class JWTVerifierTest {
     public void shouldThrowOnInvalidCustomClaimValueOfTypeBoolean() throws Exception {
         exception.expect(InvalidClaimException.class);
         exception.expectMessage("The Claim 'name' value doesn't match the required one.");
+        exception.expect(hasProperty("claimName", equalTo("name")));
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjpbInNvbWV0aGluZyJdfQ.3ENLez6tU_fG0SVFrGmISltZPiXLSHaz_dyn-XFTEGQ";
         JWTVerifier.init(Algorithm.HMAC256("secret"))
                 .withClaim("name", true)
@@ -436,6 +451,7 @@ public class JWTVerifierTest {
     public void shouldThrowOnInvalidCustomClaimValueOfTypeDate() throws Exception {
         exception.expect(InvalidClaimException.class);
         exception.expectMessage("The Claim 'name' value doesn't match the required one.");
+        exception.expect(hasProperty("claimName", equalTo("name")));
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjpbInNvbWV0aGluZyJdfQ.3ENLez6tU_fG0SVFrGmISltZPiXLSHaz_dyn-XFTEGQ";
         JWTVerifier.init(Algorithm.HMAC256("secret"))
                 .withClaim("name", new Date())
@@ -447,6 +463,7 @@ public class JWTVerifierTest {
     public void shouldThrowOnInvalidCustomClaimValue() throws Exception {
         exception.expect(InvalidClaimException.class);
         exception.expectMessage("The Claim 'name' value doesn't match the required one.");
+        exception.expect(hasProperty("claimName", equalTo("name")));
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjpbInNvbWV0aGluZyJdfQ.3ENLez6tU_fG0SVFrGmISltZPiXLSHaz_dyn-XFTEGQ";
         Map<String, Object> map = new HashMap<>();
         map.put("name", new Object());
@@ -748,6 +765,7 @@ public class JWTVerifierTest {
     public void shouldThrowOnInvalidNotBeforeIfPresent() throws Exception {
         exception.expect(InvalidClaimException.class);
         exception.expectMessage(startsWith("The Token can't be used before"));
+        exception.expect(hasProperty("claimName", equalTo("nbf")));
         Clock clock = mock(Clock.class);
         when(clock.getToday()).thenReturn(new Date(DATE_TOKEN_MS_VALUE - 1000));
 
@@ -812,6 +830,7 @@ public class JWTVerifierTest {
     public void shouldThrowOnInvalidIssuedAtIfPresent() throws Exception {
         exception.expect(InvalidClaimException.class);
         exception.expectMessage(startsWith("The Token can't be used before"));
+        exception.expect(hasProperty("claimName", equalTo("iat")));
         Clock clock = mock(Clock.class);
         when(clock.getToday()).thenReturn(new Date(DATE_TOKEN_MS_VALUE - 1000));
 
@@ -876,6 +895,7 @@ public class JWTVerifierTest {
     public void shouldThrowOnInvalidJWTId() throws Exception {
         exception.expect(InvalidClaimException.class);
         exception.expectMessage("The Claim 'jti' value doesn't match the required one.");
+        exception.expect(hasProperty("claimName", equalTo("jti")));
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJqd3RfaWRfMTIzIn0.0kegfXUvwOYioP8PDaLMY1IlV8HOAzSVz3EGL7-jWF4";
         JWTVerifier.init(Algorithm.HMAC256("secret"))
                 .withJWTId("invalid")
@@ -950,6 +970,7 @@ public class JWTVerifierTest {
     public void shouldThrowWhenVerifyingClaimPresenceButClaimNotPresent() {
         exception.expect(InvalidClaimException.class);
         exception.expectMessage("The Claim 'missing' is not present in the JWT.");
+        exception.expect(hasProperty("claimName", equalTo("missing")));
 
         String jwt = JWTCreator.init()
                 .withClaim("custom", "")

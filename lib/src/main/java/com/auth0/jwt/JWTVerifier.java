@@ -328,13 +328,13 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
                 assertValidAudienceClaim(jwt.getAudience(), (List<String>) expectedClaim.getValue(), false);
                 break;
             case PublicClaims.EXPIRES_AT:
-                assertValidDateClaim(jwt.getExpiresAt(), (Long) expectedClaim.getValue(), true);
+                assertValidDateClaim(jwt.getExpiresAt(), (Long) expectedClaim.getValue(), true, PublicClaims.EXPIRES_AT);
                 break;
             case PublicClaims.ISSUED_AT:
-                assertValidDateClaim(jwt.getIssuedAt(), (Long) expectedClaim.getValue(), false);
+                assertValidDateClaim(jwt.getIssuedAt(), (Long) expectedClaim.getValue(), false, PublicClaims.ISSUED_AT);
                 break;
             case PublicClaims.NOT_BEFORE:
-                assertValidDateClaim(jwt.getNotBefore(), (Long) expectedClaim.getValue(), false);
+                assertValidDateClaim(jwt.getNotBefore(), (Long) expectedClaim.getValue(), false, PublicClaims.NOT_BEFORE);
                 break;
             case PublicClaims.ISSUER:
                 assertValidIssuerClaim(jwt.getIssuer(), (List<String>) expectedClaim.getValue());
@@ -353,7 +353,7 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
 
     private void assertClaimPresent(Claim claim, String claimName) {
         if (claim instanceof NullClaim) {
-            throw new InvalidClaimException(String.format("The Claim '%s' is not present in the JWT.", claimName));
+            throw new InvalidClaimException(String.format("The Claim '%s' is not present in the JWT.", claimName), claimName);
         }
     }
 
@@ -394,23 +394,23 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
         }
 
         if (!isValid) {
-            throw new InvalidClaimException(String.format("The Claim '%s' value doesn't match the required one.", claimName));
+            throw new InvalidClaimException(String.format("The Claim '%s' value doesn't match the required one.", claimName), claimName);
         }
     }
 
     private void assertValidStringClaim(String claimName, String value, String expectedValue) {
         if (!expectedValue.equals(value)) {
-            throw new InvalidClaimException(String.format("The Claim '%s' value doesn't match the required one.", claimName));
+            throw new InvalidClaimException(String.format("The Claim '%s' value doesn't match the required one.", claimName), claimName);
         }
     }
 
-    private void assertValidDateClaim(Date date, long leeway, boolean shouldBeFuture) {
+    private void assertValidDateClaim(Date date, long leeway, boolean shouldBeFuture, String claimName) {
         Date today = new Date(clock.getToday().getTime());
         today.setTime(today.getTime() / 1000 * 1000); // truncate millis
         if (shouldBeFuture) {
             assertDateIsFuture(date, leeway, today);
         } else {
-            assertDateIsPast(date, leeway, today);
+            assertDateIsPast(date, leeway, today, claimName);
         }
     }
 
@@ -421,23 +421,23 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
         }
     }
 
-    private void assertDateIsPast(Date date, long leeway, Date today) {
+    private void assertDateIsPast(Date date, long leeway, Date today, String claimName) {
         today.setTime(today.getTime() + leeway * 1000);
         if (date != null && today.before(date)) {
-            throw new InvalidClaimException(String.format("The Token can't be used before %s.", date));
+            throw new InvalidClaimException(String.format("The Token can't be used before %s.", date), claimName);
         }
     }
 
     private void assertValidAudienceClaim(List<String> audience, List<String> values, boolean shouldContainAll) {
         if (audience == null || (shouldContainAll && !audience.containsAll(values)) ||
                 (!shouldContainAll && Collections.disjoint(audience, values))) {
-            throw new InvalidClaimException("The Claim 'aud' value doesn't contain the required audience.");
+            throw new InvalidClaimException("The Claim 'aud' value doesn't contain the required audience.", PublicClaims.AUDIENCE);
         }
     }
 
     private void assertValidIssuerClaim(String issuer, List<String> value) {
         if (issuer == null || !value.contains(issuer)) {
-            throw new InvalidClaimException("The Claim 'iss' value doesn't match the required issuer.");
+            throw new InvalidClaimException("The Claim 'iss' value doesn't match the required issuer.", PublicClaims.ISSUER);
         }
     }
 
