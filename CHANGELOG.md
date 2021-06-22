@@ -1,5 +1,12 @@
 # Change Log
 
+## [3.16.0](https://github.com/auth0/java-jwt/tree/3.16.0) (2021-05-10)
+[Full Changelog](https://github.com/auth0/java-jwt/compare/3.15.0...3.16.0)
+
+**Changed**
+- Improve Javadoc generation [\#496](https://github.com/auth0/java-jwt/pull/496) ([Marcono1234](https://github.com/Marcono1234))
+- Add package-info.java for internal `impl` package [\#495](https://github.com/auth0/java-jwt/pull/495) ([Marcono1234](https://github.com/Marcono1234))
+
 ## [3.15.0](https://github.com/auth0/java-jwt/tree/3.15.0) (2021-04-05)
 [Full Changelog](https://github.com/auth0/java-jwt/compare/3.14.0...3.15.0)
 
