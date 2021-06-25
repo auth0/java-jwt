@@ -1,5 +1,11 @@
 # Change Log
 
+## [3.17.0](https://github.com/auth0/java-jwt/tree/3.17.0) (2021-06-25)
+[Full Changelog](https://github.com/auth0/java-jwt/compare/3.16.0...3.17.0)
+
+**Added**
+- Add module system support [\#484](https://github.com/auth0/java-jwt/pull/484) ([XakepSDK](https://github.com/XakepSDK))
+
 ## [3.16.0](https://github.com/auth0/java-jwt/tree/3.16.0) (2021-05-10)
 [Full Changelog](https://github.com/auth0/java-jwt/compare/3.15.0...3.16.0)
 
