@@ -30,33 +30,13 @@ oss {
     }
 }
 
-def javaVersion = 8
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(11)
-    }
-}
-
 compileJava {
     exclude 'module-info.java'
-
-    options.compilerArgs = ['--release', "$javaVersion"]
-}
-
-// Use latest JDK for javadoc generation
-tasks.withType(Javadoc).configureEach {
-    javadocTool = javaToolchains.javadocToolFor {
-        languageVersion = JavaLanguageVersion.of(16)
-    }
 }
 
 javadoc {
     // Exclude internal implementation package from javadoc
     excludes = ['com/auth0/jwt/impl', 'module-info.java']
-    // Specify Java version this project uses
-    // Otherwise would use version of javadoc toolchain by default which could
-    // cause compilation error mismatch between compileJava and javadoc creation
-    options.addStringOption('-release', "$javaVersion")
 }
 
 dependencies {
