@@ -3,7 +3,6 @@ pluginManagement {
         gradlePluginPortal()
     }
     plugins {
-        id 'com.jfrog.bintray' version '1.8.5'
         id 'com.auth0.gradle.oss-library.java' version '0.16.0'
     }
 }
