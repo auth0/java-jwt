@@ -11,7 +11,6 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.Verification;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * The JWTVerifier class holds the verify method to assert that a given Token has not only a proper JWT format, but also it's signature matches.
@@ -275,7 +274,8 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
      * @throws AlgorithmMismatchException     if the algorithm stated in the token's header it's not equal to the one defined in the {@link JWTVerifier}.
      * @throws SignatureVerificationException if the signature is invalid.
      * @throws TokenExpiredException          if the token has expired.
-     * @throws InvalidClaimException          if a claim contained a different value than the expected one.
+     * @throws MissingClaimException          if an expected claim is missing.
+     * @throws WrongClaimValueException       if a claim contained a different value than the expected one.
      */
     @Override
     public DecodedJWT verify(String token) throws JWTVerificationException {
@@ -353,7 +353,7 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
 
     private void assertClaimPresent(Claim claim, String claimName) {
         if (claim instanceof NullClaim) {
-            throw new InvalidClaimException(String.format("The Claim '%s' is not present in the JWT.", claimName), claimName);
+            throw new MissingClaimException(claimName);
         }
     }
 
@@ -394,13 +394,13 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
         }
 
         if (!isValid) {
-            throw new InvalidClaimException(String.format("The Claim '%s' value doesn't match the required one.", claimName), claimName);
+            throw new WrongClaimValueException(String.format("The Claim '%s' value doesn't match the required one.", claimName), claimName, claim);
         }
     }
 
     private void assertValidStringClaim(String claimName, String value, String expectedValue) {
         if (!expectedValue.equals(value)) {
-            throw new InvalidClaimException(String.format("The Claim '%s' value doesn't match the required one.", claimName), claimName);
+            throw new WrongClaimValueException(String.format("The Claim '%s' value doesn't match the required one.", claimName), claimName, value);
         }
     }
 
@@ -424,20 +424,20 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
     private void assertDateIsPast(Date date, long leeway, Date today, String claimName) {
         today.setTime(today.getTime() + leeway * 1000);
         if (date != null && today.before(date)) {
-            throw new InvalidClaimException(String.format("The Token can't be used before %s.", date), claimName);
+            throw new WrongClaimValueException(String.format("The Token can't be used before %s.", date), claimName, date);
         }
     }
 
     private void assertValidAudienceClaim(List<String> audience, List<String> values, boolean shouldContainAll) {
         if (audience == null || (shouldContainAll && !audience.containsAll(values)) ||
                 (!shouldContainAll && Collections.disjoint(audience, values))) {
-            throw new InvalidClaimException("The Claim 'aud' value doesn't contain the required audience.", PublicClaims.AUDIENCE);
+            throw new WrongClaimValueException("The Claim 'aud' value doesn't contain the required audience.", PublicClaims.AUDIENCE, audience);
         }
     }
 
     private void assertValidIssuerClaim(String issuer, List<String> value) {
         if (issuer == null || !value.contains(issuer)) {
-            throw new InvalidClaimException("The Claim 'iss' value doesn't match the required issuer.", PublicClaims.ISSUER);
+            throw new WrongClaimValueException("The Claim 'iss' value doesn't match the required issuer.", PublicClaims.ISSUER, issuer);
         }
     }
 
