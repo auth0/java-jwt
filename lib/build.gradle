@@ -29,6 +29,12 @@ oss {
     }
 }
 
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(11)
+    }
+}
+
 compileJava {
     exclude 'module-info.java'
 }
