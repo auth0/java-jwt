@@ -1,5 +1,11 @@
 # Change Log
 
+## [3.18.0](https://github.com/auth0/java-jwt/tree/3.18.0) (2021-07-05)
+[Full Changelog](https://github.com/auth0/java-jwt/compare/3.17.0...3.18.0)
+
+**Changed**
+- Update OSS release plugin version [\#501](https://github.com/auth0/java-jwt/pull/501) ([lbalmaceda](https://github.com/lbalmaceda))
+
 ## [3.17.0](https://github.com/auth0/java-jwt/tree/3.17.0) (2021-06-25)
 [Full Changelog](https://github.com/auth0/java-jwt/compare/3.16.0...3.17.0)
 
