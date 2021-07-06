@@ -1,5 +1,11 @@
 # Change Log
 
+## [3.18.1](https://github.com/auth0/java-jwt/tree/3.18.1) (2021-07-06)
+[Full Changelog](https://github.com/auth0/java-jwt/compare/3.18.0...3.18.1)
+
+**Fixed**
+- Fix min JDK version regression [\#504](https://github.com/auth0/java-jwt/pull/504) ([lbalmaceda](https://github.com/lbalmaceda))
+
 ## [3.18.0](https://github.com/auth0/java-jwt/tree/3.18.0) (2021-07-05)
 [Full Changelog](https://github.com/auth0/java-jwt/compare/3.17.0...3.18.0)
 
