@@ -37,6 +37,8 @@ java {
 
 compileJava {
     exclude 'module-info.java'
+    // Required to be compatible with JDK 8+
+    options.compilerArgs = ['--release', "8"]
 }
 
 javadoc {
