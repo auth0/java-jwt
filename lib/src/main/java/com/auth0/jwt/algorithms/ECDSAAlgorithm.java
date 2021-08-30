@@ -5,11 +5,7 @@ import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.ECDSAKeyProvider;
 
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.SignatureException;
-import java.security.interfaces.ECPrivateKey;
-import java.security.interfaces.ECPublicKey;
+import java.security.*;
 import java.util.Base64;
 
 /**
@@ -42,7 +38,7 @@ class ECDSAAlgorithm extends Algorithm {
     public void verify(DecodedJWT jwt) throws SignatureVerificationException {
         try {
             byte[] signatureBytes = Base64.getUrlDecoder().decode(jwt.getSignature());
-            ECPublicKey publicKey = keyProvider.getPublicKeyById(jwt.getKeyId());
+            PublicKey publicKey = keyProvider.getPublicKeyById(jwt.getKeyId());
             if (publicKey == null) {
                 throw new IllegalStateException("The given Public Key is null.");
             }
@@ -59,7 +55,7 @@ class ECDSAAlgorithm extends Algorithm {
     @Override
     public byte[] sign(byte[] headerBytes, byte[] payloadBytes) throws SignatureGenerationException {
         try {
-            ECPrivateKey privateKey = keyProvider.getPrivateKey();
+            PrivateKey privateKey = keyProvider.getPrivateKey();
             if (privateKey == null) {
                 throw new IllegalStateException("The given Private Key is null.");
             }
@@ -74,7 +70,7 @@ class ECDSAAlgorithm extends Algorithm {
     @Deprecated
     public byte[] sign(byte[] contentBytes) throws SignatureGenerationException {
         try {
-            ECPrivateKey privateKey = keyProvider.getPrivateKey();
+            PrivateKey privateKey = keyProvider.getPrivateKey();
             if (privateKey == null) {
                 throw new IllegalStateException("The given Private Key is null.");
             }
@@ -214,18 +210,18 @@ class ECDSAAlgorithm extends Algorithm {
     }
 
     //Visible for testing
-    static ECDSAKeyProvider providerForKeys(final ECPublicKey publicKey, final ECPrivateKey privateKey) {
+    static ECDSAKeyProvider providerForKeys(final PublicKey publicKey, final PrivateKey privateKey) {
         if (publicKey == null && privateKey == null) {
             throw new IllegalArgumentException("Both provided Keys cannot be null.");
         }
         return new ECDSAKeyProvider() {
             @Override
-            public ECPublicKey getPublicKeyById(String keyId) {
+            public PublicKey getPublicKeyById(String keyId) {
                 return publicKey;
             }
 
             @Override
-            public ECPrivateKey getPrivateKey() {
+            public PrivateKey getPrivateKey() {
                 return privateKey;
             }
 

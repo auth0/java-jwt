@@ -6,6 +6,8 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.ECDSAKeyProvider;
 import com.auth0.jwt.interfaces.RSAKeyProvider;
 
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.security.interfaces.*;
 
 /**
@@ -196,7 +198,7 @@ public abstract class Algorithm {
      * @return a valid ECDSA256 Algorithm.
      * @throws IllegalArgumentException if the provided Key is null.
      */
-    public static Algorithm ECDSA256K(ECPublicKey publicKey, ECPrivateKey privateKey) throws IllegalArgumentException {
+    public static Algorithm ECDSA256K(PublicKey publicKey, PrivateKey privateKey) throws IllegalArgumentException {
         return ECDSA256K(ECDSAAlgorithm.providerForKeys(publicKey, privateKey));
     }
 
@@ -243,7 +245,7 @@ public abstract class Algorithm {
      * @return a valid ECDSA256 Algorithm.
      * @throws IllegalArgumentException if the provided Key is null.
      */
-    public static Algorithm ECDSA256(ECPublicKey publicKey, ECPrivateKey privateKey) throws IllegalArgumentException {
+    public static Algorithm ECDSA256(PublicKey publicKey, PrivateKey privateKey) throws IllegalArgumentException {
         return ECDSA256(ECDSAAlgorithm.providerForKeys(publicKey, privateKey));
     }
 
@@ -257,8 +259,8 @@ public abstract class Algorithm {
      */
     @Deprecated
     public static Algorithm ECDSA256(ECKey key) throws IllegalArgumentException {
-        ECPublicKey publicKey = key instanceof ECPublicKey ? (ECPublicKey) key : null;
-        ECPrivateKey privateKey = key instanceof ECPrivateKey ? (ECPrivateKey) key : null;
+        PublicKey publicKey = key instanceof PublicKey ? (PublicKey) key : null;
+        PrivateKey privateKey = key instanceof PrivateKey ? (PrivateKey) key : null;
         return ECDSA256(publicKey, privateKey);
     }
 
@@ -281,7 +283,7 @@ public abstract class Algorithm {
      * @return a valid ECDSA384 Algorithm.
      * @throws IllegalArgumentException if the provided Key is null.
      */
-    public static Algorithm ECDSA384(ECPublicKey publicKey, ECPrivateKey privateKey) throws IllegalArgumentException {
+    public static Algorithm ECDSA384(PublicKey publicKey, PrivateKey privateKey) throws IllegalArgumentException {
         return ECDSA384(ECDSAAlgorithm.providerForKeys(publicKey, privateKey));
     }
 
@@ -295,8 +297,8 @@ public abstract class Algorithm {
      */
     @Deprecated
     public static Algorithm ECDSA384(ECKey key) throws IllegalArgumentException {
-        ECPublicKey publicKey = key instanceof ECPublicKey ? (ECPublicKey) key : null;
-        ECPrivateKey privateKey = key instanceof ECPrivateKey ? (ECPrivateKey) key : null;
+        PublicKey publicKey = key instanceof PublicKey ? (PublicKey) key : null;
+        PrivateKey privateKey = key instanceof PrivateKey ? (PrivateKey) key : null;
         return ECDSA384(publicKey, privateKey);
     }
 
@@ -319,7 +321,7 @@ public abstract class Algorithm {
      * @return a valid ECDSA512 Algorithm.
      * @throws IllegalArgumentException if the provided Key is null.
      */
-    public static Algorithm ECDSA512(ECPublicKey publicKey, ECPrivateKey privateKey) throws IllegalArgumentException {
+    public static Algorithm ECDSA512(PublicKey publicKey, PrivateKey privateKey) throws IllegalArgumentException {
         return ECDSA512(ECDSAAlgorithm.providerForKeys(publicKey, privateKey));
     }
 
@@ -333,8 +335,8 @@ public abstract class Algorithm {
      */
     @Deprecated
     public static Algorithm ECDSA512(ECKey key) throws IllegalArgumentException {
-        ECPublicKey publicKey = key instanceof ECPublicKey ? (ECPublicKey) key : null;
-        ECPrivateKey privateKey = key instanceof ECPrivateKey ? (ECPrivateKey) key : null;
+        PublicKey publicKey = key instanceof PublicKey ? (PublicKey) key : null;
+        PrivateKey privateKey = key instanceof PrivateKey ? (PrivateKey) key : null;
         return ECDSA512(publicKey, privateKey);
     }
 
