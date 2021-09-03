@@ -8,6 +8,17 @@ import java.util.Date;
  * Holds the Claims and claim-based configurations required for a JWT to be considered valid.
  */
 public interface Verification {
+
+    /**
+     * Require a specific Issuer ("iss") claim.
+     *
+     * @param issuer the required Issuer value.
+     * @return this same Verification instance.
+     */
+    default Verification withIssuer(String issuer) {
+        return withIssuer(new String[]{issuer});
+    }
+
     /**
      * Require a specific Issuer ("iss") claim.
      *
