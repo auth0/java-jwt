@@ -9,10 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.StringWriter;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
@@ -74,6 +71,60 @@ public class PayloadSerializerTest {
     @Test
     public void shouldSkipSerializationOnEmptyAudience() throws Exception {
         ClaimsHolder holder = holderFor("aud", new String[0]);
+        serializer.serialize(holder, jsonGenerator, serializerProvider);
+        jsonGenerator.flush();
+
+        assertThat(writer.toString(), is(equalTo("{}")));
+    }
+
+    @Test
+    public void shouldSerializeSingleItemAudienceAsArrayWhenAList() throws Exception {
+        ClaimsHolder holder = holderFor("aud", Collections.singletonList("auth0"));
+        serializer.serialize(holder, jsonGenerator, serializerProvider);
+        jsonGenerator.flush();
+
+        assertThat(writer.toString(), is(equalTo("{\"aud\":\"auth0\"}")));
+    }
+
+    @Test
+    public void shouldSerializeMultipleItemsAudienceAsArrayWhenAList() throws Exception {
+        ClaimsHolder holder = holderFor("aud", Arrays.asList("auth0", "auth10"));
+        serializer.serialize(holder, jsonGenerator, serializerProvider);
+        jsonGenerator.flush();
+
+        assertThat(writer.toString(), is(equalTo("{\"aud\":[\"auth0\",\"auth10\"]}")));
+    }
+
+    @Test
+    public void shouldSkipSerializationOnEmptyAudienceWhenList() throws Exception {
+        ClaimsHolder holder = holderFor("aud", new ArrayList());
+        serializer.serialize(holder, jsonGenerator, serializerProvider);
+        jsonGenerator.flush();
+
+        assertThat(writer.toString(), is(equalTo("{}")));
+    }
+
+    @Test
+    public void shouldSkipNonStringsOnAudienceWhenSingleItemList() throws Exception {
+        ClaimsHolder holder = holderFor("aud", Collections.singletonList(2));
+        serializer.serialize(holder, jsonGenerator, serializerProvider);
+        jsonGenerator.flush();
+
+        assertThat(writer.toString(), is(equalTo("{}")));
+    }
+
+    @Test
+    public void shouldSkipNonStringsOnAudienceWhenList() throws Exception {
+        ClaimsHolder holder = holderFor("aud", Arrays.asList("auth0", 2, "auth10"));
+        serializer.serialize(holder, jsonGenerator, serializerProvider);
+        jsonGenerator.flush();
+
+        assertThat(writer.toString(), is(equalTo("{\"aud\":[\"auth0\",\"auth10\"]}")));
+    }
+
+    @Test
+    public void shouldSkipNonStringsOnAudience() throws Exception {
+        ClaimsHolder holder = holderFor("aud", 4);
         serializer.serialize(holder, jsonGenerator, serializerProvider);
         jsonGenerator.flush();
 
