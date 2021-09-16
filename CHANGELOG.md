@@ -1,5 +1,12 @@
 # Change Log
 
+## [3.18.2](https://github.com/auth0/java-jwt/tree/3.18.2) (2021-09-16)
+[Full Changelog](https://github.com/auth0/java-jwt/compare/3.18.1...3.18.2)
+
+**Fixed**
+- [SDK-2758] Restore withIssuer [\#513](https://github.com/auth0/java-jwt/pull/513) ([jimmyjames](https://github.com/jimmyjames))
+- [SDK-2751] Serialize audience claim when a List [\#512](https://github.com/auth0/java-jwt/pull/512) ([jimmyjames](https://github.com/jimmyjames))
+
 ## [3.18.1](https://github.com/auth0/java-jwt/tree/3.18.1) (2021-07-06)
 [Full Changelog](https://github.com/auth0/java-jwt/compare/3.18.0...3.18.1)
 
