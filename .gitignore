@@ -81,6 +81,7 @@ hs_err_pid*
 build/
 target/
 dependency-reduced-pom.xml
+local.properties
 
 # Ignore Gradle GUI config
 gradle-app.setting
