@@ -11,7 +11,7 @@ oss {
     repository "java-jwt"
     organization "auth0"
     description "Java implementation of JSON Web Token (JWT)"
-    baselineCompareVersion "3.13.0"
+    baselineCompareVersion "3.18.2"
 
     developers {
         auth0 {
@@ -47,7 +47,7 @@ javadoc {
 }
 
 dependencies {
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.11.0'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.6'
     testImplementation 'org.bouncycastle:bcprov-jdk15on:1.60'
     testImplementation 'junit:junit:4.12'
     testImplementation 'net.jodah:concurrentunit:0.4.3'
