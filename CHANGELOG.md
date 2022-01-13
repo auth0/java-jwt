@@ -1,5 +1,11 @@
 # Change Log
 
+## [3.18.3](https://github.com/auth0/java-jwt/tree/3.18.3) (2022-01-13)
+[Full Changelog](https://github.com/auth0/java-jwt/compare/3.18.2...3.18.3)
+
+**Security**
+- Update jackson dependency [\#523](https://github.com/auth0/java-jwt/pull/523) ([poovamraj](https://github.com/poovamraj))
+
 ## [3.18.2](https://github.com/auth0/java-jwt/tree/3.18.2) (2021-09-16)
 [Full Changelog](https://github.com/auth0/java-jwt/compare/3.18.1...3.18.2)
 
