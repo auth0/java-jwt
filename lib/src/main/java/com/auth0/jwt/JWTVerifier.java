@@ -14,7 +14,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * The JWTVerifier class holds the verify method to assert that a given Token has not only a proper JWT format, but also it's signature matches.
+ * The JWTVerifier class holds the verify method to assert that a given Token has not only a proper JWT format, but also its signature matches.
  * <p>
  * This class is thread-safe.
  */
