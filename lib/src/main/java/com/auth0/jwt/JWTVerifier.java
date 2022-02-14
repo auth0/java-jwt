@@ -272,7 +272,7 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
      *
      * @param token to verify.
      * @return a verified and decoded JWT.
-     * @throws AlgorithmMismatchException     if the algorithm stated in the token's header it's not equal to the one defined in the {@link JWTVerifier}.
+     * @throws AlgorithmMismatchException     if the algorithm stated in the token's header is not equal to the one defined in the {@link JWTVerifier}.
      * @throws SignatureVerificationException if the signature is invalid.
      * @throws TokenExpiredException          if the token has expired.
      * @throws InvalidClaimException          if a claim contained a different value than the expected one.
@@ -288,7 +288,7 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
      *
      * @param jwt to verify.
      * @return a verified and decoded JWT.
-     * @throws AlgorithmMismatchException     if the algorithm stated in the token's header it's not equal to the one defined in the {@link JWTVerifier}.
+     * @throws AlgorithmMismatchException     if the algorithm stated in the token's header is not equal to the one defined in the {@link JWTVerifier}.
      * @throws SignatureVerificationException if the signature is invalid.
      * @throws TokenExpiredException          if the token has expired.
      * @throws InvalidClaimException          if a claim contained a different value than the expected one.
