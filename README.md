@@ -49,7 +49,7 @@ The library implements JWT Verification and Signing using the following algorith
 | ES384 | ECDSA384 | ECDSA with curve P-384 and SHA-384 |
 | ES512 | ECDSA512 | ECDSA with curve P-521 and SHA-512 |
 
-⚠️ Note - ECDSA with curve secp256k1 and SHA-256 will not be supported further by this library since it has been (disabled in Java 15)[https://www.oracle.com/java/technologies/javase/15-relnote-issues.html#JDK-8237219]
+⚠️ Note - ECDSA with curve secp256k1 and SHA-256 will not be supported for Java 15+ by this library since it has been (disabled in Java 15)[https://www.oracle.com/java/technologies/javase/15-relnote-issues.html#JDK-8237219]
 
 ## Usage
 
