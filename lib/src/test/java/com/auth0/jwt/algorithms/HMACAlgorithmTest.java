@@ -19,8 +19,8 @@ import static com.auth0.jwt.algorithms.CryptoTestHelper.asJWT;
 import static com.auth0.jwt.algorithms.CryptoTestHelper.assertSignaturePresent;
 import static com.auth0.jwt.algorithms.CryptoTestHelper.assertSignatureValue;
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertArrayEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -36,8 +36,8 @@ public class HMACAlgorithmTest {
     @Test
     public void shouldGetStringBytes() throws Exception {
         String text = "abcdef123456!@#$%^";
-        byte[] expectedBytes = text.getBytes("UTF-8");
-        assertTrue(Arrays.equals(expectedBytes, HMACAlgorithm.getSecretBytes(text)));
+        byte[] expectedBytes = text.getBytes(StandardCharsets.UTF_8);
+        assertArrayEquals(expectedBytes, HMACAlgorithm.getSecretBytes(text));
     }
 
     @Test

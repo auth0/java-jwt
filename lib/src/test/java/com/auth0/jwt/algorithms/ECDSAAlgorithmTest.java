@@ -6,7 +6,6 @@ import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.interfaces.ECDSAKeyProvider;
 import org.hamcrest.Matchers;
 import org.hamcrest.collection.IsIn;
-import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -27,14 +26,13 @@ import static com.auth0.jwt.algorithms.CryptoTestHelper.assertSignaturePresent;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.internal.matchers.ThrowableMessageMatcher.hasMessage;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@SuppressWarnings("deprecation")
 public class ECDSAAlgorithmTest {
 
     private static final String PRIVATE_KEY_FILE_256 = "src/test/resources/ec256-key-private.pem";
@@ -1136,10 +1134,10 @@ public class ECDSAAlgorithmTest {
 
     //Test Helpers
     static void assertValidJOSESignature(byte[] joseSignature, int numberSize, boolean withRPadding, boolean withSPadding) {
-        Assert.assertThat(joseSignature, is(Matchers.notNullValue()));
-        Assert.assertThat(numberSize, is(IsIn.oneOf(32, 48, 66)));
+        assertThat(joseSignature, is(Matchers.notNullValue()));
+        assertThat(numberSize, is(IsIn.oneOf(32, 48, 66)));
 
-        Assert.assertThat(joseSignature.length, is(numberSize * 2));
+        assertThat(joseSignature.length, is(numberSize * 2));
 
         byte[] rCopy = Arrays.copyOfRange(joseSignature, 0, numberSize);
         byte[] sCopy = Arrays.copyOfRange(joseSignature, numberSize, numberSize * 2);
@@ -1154,12 +1152,12 @@ public class ECDSAAlgorithmTest {
         if (withSPadding) {
             sNumber[0] = (byte) 0;
         }
-        Assert.assertThat(Arrays.equals(rNumber, rCopy), is(true));
-        Assert.assertThat(Arrays.equals(sNumber, sCopy), is(true));
+        assertThat(Arrays.equals(rNumber, rCopy), is(true));
+        assertThat(Arrays.equals(sNumber, sCopy), is(true));
     }
 
     static byte[] createDERSignature(int numberSize, boolean withRPadding, boolean withSPadding) {
-        Assert.assertThat(numberSize, is(IsIn.oneOf(32, 48, 66)));
+        assertThat(numberSize, is(IsIn.oneOf(32, 48, 66)));
 
         int rLength = withRPadding ? numberSize - 1 : numberSize;
         int sLength = withSPadding ? numberSize - 1 : numberSize;
@@ -1202,7 +1200,7 @@ public class ECDSAAlgorithmTest {
     }
 
     static byte[] createJOSESignature(int numberSize, boolean withRPadding, boolean withSPadding) {
-        Assert.assertThat(numberSize, is(IsIn.oneOf(32, 48, 66)));
+        assertThat(numberSize, is(IsIn.oneOf(32, 48, 66)));
 
         byte[] rNumber = new byte[numberSize];
         byte[] sNumber = new byte[numberSize];
@@ -1221,8 +1219,8 @@ public class ECDSAAlgorithmTest {
     }
 
     static void assertValidDERSignature(byte[] derSignature, int numberSize, boolean withRPadding, boolean withSPadding) {
-        Assert.assertThat(derSignature, is(Matchers.notNullValue()));
-        Assert.assertThat(numberSize, is(IsIn.oneOf(32, 48, 66)));
+        assertThat(derSignature, is(Matchers.notNullValue()));
+        assertThat(numberSize, is(IsIn.oneOf(32, 48, 66)));
 
         int rLength = withRPadding ? numberSize - 1 : numberSize;
         int sLength = withSPadding ? numberSize - 1 : numberSize;
@@ -1230,24 +1228,24 @@ public class ECDSAAlgorithmTest {
         int offset = 0;
 
         //Start sequence
-        Assert.assertThat(derSignature[offset++], is((byte) 0x30));
+        assertThat(derSignature[offset++], is((byte) 0x30));
         if (totalLength > 0x7f) {
             //Add sign before sequence length
             totalLength++;
-            Assert.assertThat(derSignature[offset++], is((byte) 0x81));
+            assertThat(derSignature[offset++], is((byte) 0x81));
         }
         //Sequence length
-        Assert.assertThat(derSignature[offset++], is((byte) (totalLength - offset)));
+        assertThat(derSignature[offset++], is((byte) (totalLength - offset)));
 
         //R number
-        Assert.assertThat(derSignature[offset++], is((byte) 0x02));
-        Assert.assertThat(derSignature[offset++], is((byte) rLength));
+        assertThat(derSignature[offset++], is((byte) 0x02));
+        assertThat(derSignature[offset++], is((byte) rLength));
         byte[] rCopy = Arrays.copyOfRange(derSignature, offset, offset + rLength);
         offset += rLength;
 
         //S number
-        Assert.assertThat(derSignature[offset++], is((byte) 0x02));
-        Assert.assertThat(derSignature[offset++], is((byte) sLength));
+        assertThat(derSignature[offset++], is((byte) 0x02));
+        assertThat(derSignature[offset++], is((byte) sLength));
         byte[] sCopy = Arrays.copyOfRange(derSignature, offset, offset + sLength);
 
 
@@ -1255,9 +1253,9 @@ public class ECDSAAlgorithmTest {
         byte[] sNumber = new byte[sLength];
         Arrays.fill(rNumber, (byte) 0x11);
         Arrays.fill(sNumber, (byte) 0x22);
-        Assert.assertThat(Arrays.equals(rNumber, rCopy), is(true));
-        Assert.assertThat(Arrays.equals(sNumber, sCopy), is(true));
-        Assert.assertThat(derSignature.length, is(totalLength));
+        assertThat(Arrays.equals(rNumber, rCopy), is(true));
+        assertThat(Arrays.equals(sNumber, sCopy), is(true));
+        assertThat(derSignature.length, is(totalLength));
     }
 
     @Test

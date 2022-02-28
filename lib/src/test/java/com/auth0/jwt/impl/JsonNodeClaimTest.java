@@ -27,7 +27,7 @@ import static com.auth0.jwt.impl.JsonNodeClaim.claimFromNode;
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.hamcrest.core.IsNull.nullValue;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.*;
 
 public class JsonNodeClaimTest {
