@@ -17,7 +17,7 @@ import java.security.interfaces.RSAPublicKey;
 import static com.auth0.jwt.PemUtils.readPrivateKeyFromFile;
 import static com.auth0.jwt.PemUtils.readPublicKeyFromFile;
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.internal.matchers.ThrowableMessageMatcher.hasMessage;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -25,7 +25,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static com.auth0.jwt.algorithms.CryptoTestHelper.*;
 
-@SuppressWarnings("deprecation")
 public class RSAAlgorithmTest {
 
     private static final String PRIVATE_KEY_FILE = "src/test/resources/rsa-private.pem";

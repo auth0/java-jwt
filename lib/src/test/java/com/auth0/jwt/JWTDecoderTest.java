@@ -6,7 +6,6 @@ import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import org.hamcrest.collection.IsCollectionWithSize;
 import org.hamcrest.core.IsCollectionContaining;
-import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -244,24 +243,24 @@ public class JWTDecoderTest {
     public void shouldGetCustomClaimOfTypeInteger() throws Exception {
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoxMjN9.XZAudnA7h3_Al5kJydzLjw6RzZC3Q6OvnLEYlhNW7HA";
         DecodedJWT jwt = JWT.decode(token);
-        Assert.assertThat(jwt, is(notNullValue()));
-        Assert.assertThat(jwt.getClaim("name").asInt(), is(123));
+        assertThat(jwt, is(notNullValue()));
+        assertThat(jwt.getClaim("name").asInt(), is(123));
     }
 
     @Test
     public void shouldGetCustomClaimOfTypeDouble() throws Exception {
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoyMy40NX0.7pyX2OmEGaU9q15T8bGFqRm-d3RVTYnqmZNZtxMKSlA";
         DecodedJWT jwt = JWT.decode(token);
-        Assert.assertThat(jwt, is(notNullValue()));
-        Assert.assertThat(jwt.getClaim("name").asDouble(), is(23.45));
+        assertThat(jwt, is(notNullValue()));
+        assertThat(jwt.getClaim("name").asDouble(), is(23.45));
     }
 
     @Test
     public void shouldGetCustomClaimOfTypeBoolean() throws Exception {
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjp0cnVlfQ.FwQ8VfsZNRqBa9PXMinSIQplfLU4-rkCLfIlTLg_MV0";
         DecodedJWT jwt = JWT.decode(token);
-        Assert.assertThat(jwt, is(notNullValue()));
-        Assert.assertThat(jwt.getClaim("name").asBoolean(), is(true));
+        assertThat(jwt, is(notNullValue()));
+        assertThat(jwt.getClaim("name").asBoolean(), is(true));
     }
 
     @Test
@@ -269,35 +268,35 @@ public class JWTDecoderTest {
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoxNDc4ODkxNTIxfQ.mhioumeok8fghQEhTKF3QtQAksSvZ_9wIhJmgZLhJ6c";
         Date date = new Date(1478891521000L);
         DecodedJWT jwt = JWT.decode(token);
-        Assert.assertThat(jwt, is(notNullValue()));
-        Assert.assertThat(jwt.getClaim("name").asDate().getTime(), is(date.getTime()));
+        assertThat(jwt, is(notNullValue()));
+        assertThat(jwt.getClaim("name").asDate().getTime(), is(date.getTime()));
     }
 
     @Test
     public void shouldGetCustomArrayClaimOfTypeString() throws Exception {
         String token = "eyJhbGciOiJIUzI1NiJ9.eyJuYW1lIjpbInRleHQiLCIxMjMiLCJ0cnVlIl19.lxM8EcmK1uSZRAPd0HUhXGZJdauRmZmLjoeqz4J9yAA";
         DecodedJWT jwt = JWT.decode(token);
-        Assert.assertThat(jwt, is(notNullValue()));
-        Assert.assertThat(jwt.getClaim("name").asArray(String.class), arrayContaining("text", "123", "true"));
+        assertThat(jwt, is(notNullValue()));
+        assertThat(jwt.getClaim("name").asArray(String.class), arrayContaining("text", "123", "true"));
     }
 
     @Test
     public void shouldGetCustomArrayClaimOfTypeInteger() throws Exception {
         String token = "eyJhbGciOiJIUzI1NiJ9.eyJuYW1lIjpbMSwyLDNdfQ.UEuMKRQYrzKAiPpPLhIVawWkKWA1zj0_GderrWUIyFE";
         DecodedJWT jwt = JWT.decode(token);
-        Assert.assertThat(jwt, is(notNullValue()));
-        Assert.assertThat(jwt.getClaim("name").asArray(Integer.class), arrayContaining(1, 2, 3));
+        assertThat(jwt, is(notNullValue()));
+        assertThat(jwt.getClaim("name").asArray(Integer.class), arrayContaining(1, 2, 3));
     }
 
     @Test
     public void shouldGetCustomMapClaim() throws Exception {
         String token = "eyJhbGciOiJIUzI1NiJ9.eyJuYW1lIjp7InN0cmluZyI6InZhbHVlIiwibnVtYmVyIjoxLCJib29sZWFuIjp0cnVlfX0.-8aIaXd2-rp1lLuDEQmCeisCBX9X_zbqdPn2llGxNoc";
         DecodedJWT jwt = JWT.decode(token);
-        Assert.assertThat(jwt, is(notNullValue()));
+        assertThat(jwt, is(notNullValue()));
         Map<String, Object> map = jwt.getClaim("name").asMap();
-        Assert.assertThat(map, hasEntry("string", (Object) "value"));
-        Assert.assertThat(map, hasEntry("number", (Object) 1));
-        Assert.assertThat(map, hasEntry("boolean", (Object) true));
+        assertThat(map, hasEntry("string", (Object) "value"));
+        assertThat(map, hasEntry("number", (Object) 1));
+        assertThat(map, hasEntry("boolean", (Object) true));
     }
 
     @Test
