@@ -1,7 +1,6 @@
 package com.auth0.jwt;
 
 import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.interfaces.Clock;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import org.hamcrest.collection.IsCollectionWithSize;
 import org.hamcrest.core.IsCollectionContaining;
@@ -14,6 +13,9 @@ import java.security.interfaces.ECKey;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
 import java.security.interfaces.RSAKey;
+import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.Base64;
 import java.util.Date;
 
@@ -35,7 +37,6 @@ public class JWTTest {
     private static final String PRIVATE_KEY_FILE_EC_256K = "src/test/resources/ec256k-key-private.pem";
     private static final String PRIVATE_KEY_FILE_EC_384 = "src/test/resources/ec384-key-private.pem";
     private static final String PRIVATE_KEY_FILE_EC_512 = "src/test/resources/ec512-key-private.pem";
-
 
     @Rule
     public ExpectedException exception = ExpectedException.none();
@@ -274,9 +275,8 @@ public class JWTTest {
 
     @Test
     public void shouldGetExpirationTime() throws Exception {
-        Date expectedDate = new Date(1477592 * 1000);
-        Clock clock = mock(Clock.class);
-        when(clock.getToday()).thenReturn(expectedDate);
+        long seconds = 1477592L;
+        Clock clock = Clock.fixed(Instant.ofEpochSecond(seconds), ZoneId.of("UTC"));
 
         String token = "eyJhbGciOiJIUzI1NiJ9.eyJleHAiOjE0Nzc1OTJ9.x_ZjkPkKYUV5tdvc0l8go6D_z2kez1MQcOxokXrDc3k";
         JWTVerifier.BaseVerification verification = (JWTVerifier.BaseVerification) JWT.require(Algorithm.HMAC256("secret"));
@@ -287,14 +287,13 @@ public class JWTTest {
         assertThat(jwt, is(notNullValue()));
         assertThat(jwt.getExpiresAt(), is(instanceOf(Date.class)));
         assertThat(jwt.getExpiresAt(), is(notNullValue()));
-        assertThat(jwt.getExpiresAt(), is(equalTo(expectedDate)));
+        assertThat(jwt.getExpiresAt(), is(equalTo(new Date(seconds * 1000))));
     }
 
     @Test
-    public void shouldGetNotBefore() throws Exception {
-        Date expectedDate = new Date(1477592 * 1000);
-        Clock clock = mock(Clock.class);
-        when(clock.getToday()).thenReturn(expectedDate);
+    public void shouldGetNotBefore() {
+        long seconds = 1477592;
+        Clock clock = Clock.fixed(Instant.ofEpochSecond(seconds), ZoneId.of("UTC"));
 
         String token = "eyJhbGciOiJIUzI1NiJ9.eyJuYmYiOjE0Nzc1OTJ9.mWYSOPoNXstjKbZkKrqgkwPOQWEx3F3gMm6PMcfuJd8";
         JWTVerifier.BaseVerification verification = (JWTVerifier.BaseVerification) JWT.require(Algorithm.HMAC256("secret"));
@@ -305,14 +304,13 @@ public class JWTTest {
         assertThat(jwt, is(notNullValue()));
         assertThat(jwt.getNotBefore(), is(instanceOf(Date.class)));
         assertThat(jwt.getNotBefore(), is(notNullValue()));
-        assertThat(jwt.getNotBefore(), is(equalTo(expectedDate)));
+        assertThat(jwt.getNotBefore(), is(equalTo(new Date(seconds * 1000))));
     }
 
     @Test
     public void shouldGetIssuedAt() throws Exception {
-        Date expectedDate = new Date(1477592 * 1000);
-        Clock clock = mock(Clock.class);
-        when(clock.getToday()).thenReturn(expectedDate);
+        long seconds = 1477592;
+        Clock clock = Clock.fixed(Instant.ofEpochSecond(seconds), ZoneId.of("UTC"));
 
         String token = "eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE0Nzc1OTJ9.5o1CKlLFjKKcddZzoarQ37pq7qZqNPav3sdZ_bsZaD4";
         JWTVerifier.BaseVerification verification = (JWTVerifier.BaseVerification) JWT.require(Algorithm.HMAC256("secret"));
@@ -323,7 +321,7 @@ public class JWTTest {
         assertThat(jwt, is(notNullValue()));
         assertThat(jwt.getIssuedAt(), is(instanceOf(Date.class)));
         assertThat(jwt.getIssuedAt(), is(notNullValue()));
-        assertThat(jwt.getIssuedAt(), is(equalTo(expectedDate)));
+        assertThat(jwt.getIssuedAt(), is(equalTo(new Date(seconds * 1000))));
     }
 
     @Test

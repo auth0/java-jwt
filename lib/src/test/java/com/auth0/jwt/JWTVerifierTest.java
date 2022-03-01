@@ -4,13 +4,16 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.AlgorithmMismatchException;
 import com.auth0.jwt.exceptions.InvalidClaimException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
-import com.auth0.jwt.interfaces.Clock;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.Verification;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import java.time.Clock;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -23,7 +26,10 @@ import static org.mockito.Mockito.*;
 
 public class JWTVerifierTest {
 
-    private static final long DATE_TOKEN_MS_VALUE = 1477592 * 1000;
+    private Clock mockNow = Clock.fixed(Instant.ofEpochSecond(1477592), ZoneId.of("UTC"));
+    private Clock mockOneSecondEarlier = Clock.offset(mockNow, Duration.ofSeconds(-1));
+    private Clock mockOneSecondLater = Clock.offset(mockNow, Duration.ofSeconds(1));
+
     @Rule
     public ExpectedException exception = ExpectedException.none();
 
@@ -450,7 +456,7 @@ public class JWTVerifierTest {
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjpbInNvbWV0aGluZyJdfQ.3ENLez6tU_fG0SVFrGmISltZPiXLSHaz_dyn-XFTEGQ";
         Map<String, Object> map = new HashMap<>();
         map.put("name", new Object());
-        JWTVerifier verifier = new JWTVerifier(Algorithm.HMAC256("secret"), map, new ClockImpl());
+        JWTVerifier verifier = new JWTVerifier(Algorithm.HMAC256("secret"), map, Clock.systemUTC());
         verifier.verify(token);
     }
 
@@ -658,48 +664,25 @@ public class JWTVerifierTest {
                 .acceptLeeway(-1);
     }
 
-    @Test
-    public void shouldNotModifyOriginalClockDateWhenVerifying() throws Exception {
-        Clock clock = mock(Clock.class);
-        Date clockDate = spy(new Date(DATE_TOKEN_MS_VALUE));
-        when(clock.getToday()).thenReturn(clockDate);
-
-        String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE0Nzc1OTJ9.isvT0Pqx0yjnZk53mUFSeYFJLDs-Ls9IsNAm86gIdZo";
-        JWTVerifier.BaseVerification verification = (JWTVerifier.BaseVerification) JWTVerifier.init(Algorithm.HMAC256("secret"));
-        JWTVerifier verifier = verification
-                .build(clock);
-
-        DecodedJWT jwt = verifier.verify(token);
-        assertThat(jwt, is(notNullValue()));
-
-        verify(clockDate, never()).setTime(anyLong());
-    }
-
     // Expires At
     @Test
     public void shouldValidateExpiresAtWithLeeway() throws Exception {
-        Clock clock = mock(Clock.class);
-        when(clock.getToday()).thenReturn(new Date(DATE_TOKEN_MS_VALUE + 1000));
-
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE0Nzc1OTJ9.isvT0Pqx0yjnZk53mUFSeYFJLDs-Ls9IsNAm86gIdZo";
         JWTVerifier.BaseVerification verification = (JWTVerifier.BaseVerification) JWTVerifier.init(Algorithm.HMAC256("secret"))
                 .acceptExpiresAt(2);
         DecodedJWT jwt = verification
-                .build(clock)
+                .build(mockOneSecondLater)
                 .verify(token);
 
         assertThat(jwt, is(notNullValue()));
     }
 
     @Test
-    public void shouldValidateExpiresAtIfPresent() throws Exception {
-        Clock clock = mock(Clock.class);
-        when(clock.getToday()).thenReturn(new Date(DATE_TOKEN_MS_VALUE));
-
+    public void shouldValidateExpiresAtIfPresent() {
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE0Nzc1OTJ9.isvT0Pqx0yjnZk53mUFSeYFJLDs-Ls9IsNAm86gIdZo";
         JWTVerifier.BaseVerification verification = (JWTVerifier.BaseVerification) JWTVerifier.init(Algorithm.HMAC256("secret"));
         DecodedJWT jwt = verification
-                .build(clock)
+                .build(mockNow)
                 .verify(token);
 
         assertThat(jwt, is(notNullValue()));
@@ -709,13 +692,11 @@ public class JWTVerifierTest {
     public void shouldThrowOnInvalidExpiresAtIfPresent() throws Exception {
         exception.expect(TokenExpiredException.class);
         exception.expectMessage(startsWith("The Token has expired on"));
-        Clock clock = mock(Clock.class);
-        when(clock.getToday()).thenReturn(new Date(DATE_TOKEN_MS_VALUE + 1000));
 
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE0Nzc1OTJ9.isvT0Pqx0yjnZk53mUFSeYFJLDs-Ls9IsNAm86gIdZo";
         JWTVerifier.BaseVerification verification = (JWTVerifier.BaseVerification) JWTVerifier.init(Algorithm.HMAC256("secret"));
         verification
-                .build(clock)
+                .build(mockOneSecondLater)
                 .verify(token);
     }
 
@@ -731,14 +712,11 @@ public class JWTVerifierTest {
     // Not before
     @Test
     public void shouldValidateNotBeforeWithLeeway() throws Exception {
-        Clock clock = mock(Clock.class);
-        when(clock.getToday()).thenReturn(new Date(DATE_TOKEN_MS_VALUE - 1000));
-
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYmYiOjE0Nzc1OTJ9.wq4ZmnSF2VOxcQBxPLfeh1J2Ozy1Tj5iUaERm3FKaw8";
         JWTVerifier.BaseVerification verification = (JWTVerifier.BaseVerification) JWTVerifier.init(Algorithm.HMAC256("secret"))
                 .acceptNotBefore(2);
         DecodedJWT jwt = verification
-                .build(clock)
+                .build(mockOneSecondEarlier)
                 .verify(token);
 
         assertThat(jwt, is(notNullValue()));
@@ -748,25 +726,20 @@ public class JWTVerifierTest {
     public void shouldThrowOnInvalidNotBeforeIfPresent() throws Exception {
         exception.expect(InvalidClaimException.class);
         exception.expectMessage(startsWith("The Token can't be used before"));
-        Clock clock = mock(Clock.class);
-        when(clock.getToday()).thenReturn(new Date(DATE_TOKEN_MS_VALUE - 1000));
 
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYmYiOjE0Nzc1OTJ9.wq4ZmnSF2VOxcQBxPLfeh1J2Ozy1Tj5iUaERm3FKaw8";
         JWTVerifier.BaseVerification verification = (JWTVerifier.BaseVerification) JWTVerifier.init(Algorithm.HMAC256("secret"));
         verification
-                .build(clock)
+                .build(mockOneSecondEarlier)
                 .verify(token);
     }
 
     @Test
     public void shouldValidateNotBeforeIfPresent() throws Exception {
-        Clock clock = mock(Clock.class);
-        when(clock.getToday()).thenReturn(new Date(DATE_TOKEN_MS_VALUE));
-
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE0Nzc1OTJ9.isvT0Pqx0yjnZk53mUFSeYFJLDs-Ls9IsNAm86gIdZo";
         JWTVerifier.BaseVerification verification = (JWTVerifier.BaseVerification) JWTVerifier.init(Algorithm.HMAC256("secret"));
         DecodedJWT jwt = verification
-                .build(clock)
+                .build(mockNow)
                 .verify(token);
 
         assertThat(jwt, is(notNullValue()));
@@ -784,27 +757,21 @@ public class JWTVerifierTest {
     // Issued At with future date
     @Test(expected = InvalidClaimException.class)
     public void shouldThrowOnFutureIssuedAt() throws Exception {
-        Clock clock = mock(Clock.class);
-        when(clock.getToday()).thenReturn(new Date(DATE_TOKEN_MS_VALUE - 1000));
-
         String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE0Nzc1OTJ9.CWq-6pUXl1bFg81vqOUZbZrheO2kUBd2Xr3FUZmvudE";
         JWTVerifier.BaseVerification verification = (JWTVerifier.BaseVerification) JWTVerifier.init(Algorithm.HMAC256("secret"));
 
-        DecodedJWT jwt = verification.build(clock).verify(token);
+        DecodedJWT jwt = verification.build(mockOneSecondEarlier).verify(token);
         assertThat(jwt, is(notNullValue()));
     }
 
     // Issued At with future date and ignore flag
     @Test
     public void shouldSkipIssuedAtVerificationWhenFlagIsPassed() throws Exception {
-        Clock clock = mock(Clock.class);
-        when(clock.getToday()).thenReturn(new Date(DATE_TOKEN_MS_VALUE - 1000));
-
         String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE0Nzc1OTJ9.CWq-6pUXl1bFg81vqOUZbZrheO2kUBd2Xr3FUZmvudE";
         JWTVerifier.BaseVerification verification = (JWTVerifier.BaseVerification) JWTVerifier.init(Algorithm.HMAC256("secret"));
         verification.ignoreIssuedAt();
 
-        DecodedJWT jwt = verification.build(clock).verify(token);
+        DecodedJWT jwt = verification.build(mockOneSecondEarlier).verify(token);
         assertThat(jwt, is(notNullValue()));
     }
 
@@ -812,27 +779,22 @@ public class JWTVerifierTest {
     public void shouldThrowOnInvalidIssuedAtIfPresent() throws Exception {
         exception.expect(InvalidClaimException.class);
         exception.expectMessage(startsWith("The Token can't be used before"));
-        Clock clock = mock(Clock.class);
-        when(clock.getToday()).thenReturn(new Date(DATE_TOKEN_MS_VALUE - 1000));
 
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE0Nzc1OTJ9.0WJky9eLN7kuxLyZlmbcXRL3Wy8hLoNCEk5CCl2M4lo";
         JWTVerifier.BaseVerification verification = (JWTVerifier.BaseVerification) JWTVerifier.init(Algorithm.HMAC256("secret"));
         verification
-                .build(clock)
+                .build(mockOneSecondEarlier)
                 .verify(token);
     }
 
     @Test
     public void shouldOverrideAcceptIssuedAtWhenIgnoreIssuedAtFlagPassedAndSkipTheVerification() throws Exception {
-        Clock clock = mock(Clock.class);
-        when(clock.getToday()).thenReturn(new Date(DATE_TOKEN_MS_VALUE - 10000));
-
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE0Nzc1OTJ9.0WJky9eLN7kuxLyZlmbcXRL3Wy8hLoNCEk5CCl2M4lo";
         JWTVerifier.BaseVerification verification = (JWTVerifier.BaseVerification) JWTVerifier.init(Algorithm.HMAC256("secret"))
                 .acceptIssuedAt(1)
                 .ignoreIssuedAt();
         DecodedJWT jwt = verification
-                .build(clock)
+                .build(mockOneSecondEarlier)
                 .verify(token);
 
         assertThat(jwt, is(notNullValue()));
@@ -840,13 +802,10 @@ public class JWTVerifierTest {
 
     @Test
     public void shouldValidateIssuedAtIfPresent() throws Exception {
-        Clock clock = mock(Clock.class);
-        when(clock.getToday()).thenReturn(new Date(DATE_TOKEN_MS_VALUE));
-
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE0Nzc1OTJ9.0WJky9eLN7kuxLyZlmbcXRL3Wy8hLoNCEk5CCl2M4lo";
         JWTVerifier.BaseVerification verification = (JWTVerifier.BaseVerification) JWTVerifier.init(Algorithm.HMAC256("secret"));
         DecodedJWT jwt = verification
-                .build(clock)
+                .build(mockNow)
                 .verify(token);
 
         assertThat(jwt, is(notNullValue()));
