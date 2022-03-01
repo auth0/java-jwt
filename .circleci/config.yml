@@ -23,15 +23,15 @@ commands:
           name: Upload Coverage
           when: on_success
           command: bash <(curl -s https://codecov.io/bash) -Z -C $CIRCLE_SHA1
-  run-api-diff:
-    steps:
-      # run apiDiff task
-      - run: ./gradlew apiDiff
-      - store_artifacts:
-         path: lib/build/reports/apiDiff/apiDiff.txt
-      - store_artifacts:
-         path: lib/build/reports/apiDiff/apiDiff.html
-
+#  TODO re-enable once 4.0.0 is released
+#  run-api-diff:
+#    steps:
+#      # run apiDiff task
+#      - run: ./gradlew apiDiff
+#      - store_artifacts:
+#          path: lib/build/reports/apiDiff/apiDiff.txt
+#      - store_artifacts:
+#          path: lib/build/reports/apiDiff/apiDiff.html
 jobs:
   build:
     docker:
@@ -43,21 +43,21 @@ jobs:
       GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx2048m -XX:+HeapDumpOnOutOfMemoryError"'
       _JAVA_OPTIONS: "-Xms512m -Xmx1024m"
       TERM: dumb
-  api-diff:
-    docker:
-      - image: openjdk:11.0-jdk
-    steps:
-      - checkout-and-build
-      - run-api-diff
-    environment:
-      GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx2048m -XX:+HeapDumpOnOutOfMemoryError"'
-      _JAVA_OPTIONS: "-Xms512m -Xmx1024m"
-      TERM: dumb
+#  api-diff:
+#    docker:
+#      - image: openjdk:11.0-jdk
+#    steps:
+#      - checkout-and-build
+#      - run-api-diff
+#    environment:
+#      GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx2048m -XX:+HeapDumpOnOutOfMemoryError"'
+#      _JAVA_OPTIONS: "-Xms512m -Xmx1024m"
+#      TERM: dumb
 
 workflows:
   build-and-test:
     jobs:
       - build
-  api-diff:
-    jobs:
-      - api-diff
+#  api-diff:
+#    jobs:
+#      - api-diff
