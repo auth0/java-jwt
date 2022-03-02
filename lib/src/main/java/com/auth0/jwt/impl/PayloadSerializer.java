@@ -33,11 +33,7 @@ public class PayloadSerializer extends StdSerializer<ClaimsHolder> {
                 writeAudience(gen, e);
             } else {
                 gen.writeFieldName(e.getKey());
-                if (e.getValue() instanceof Date) { // true for EXPIRES_AT, ISSUED_AT, NOT_BEFORE
-                    gen.writeNumber(dateToSeconds((Date) e.getValue()));
-                } else {
-                    gen.writeObject(e.getValue());
-                }
+                handleSerialization(e.getValue(), gen);
             }
         }
 
@@ -72,6 +68,41 @@ public class PayloadSerializer extends StdSerializer<ClaimsHolder> {
                 gen.writeEndArray();
             }
         }
+    }
+
+    /**
+     * Serializes {@linkplain Date} to epoch second values, traversing maps and lists as needed.
+     * @param value the object to serialize
+     * @param gen the JsonGenerator to use for JSON serialization
+     */
+    private void handleSerialization(Object value, JsonGenerator gen) throws IOException {
+        if (value instanceof Date) { // EXPIRES_AT, ISSUED_AT, NOT_BEFORE, custom date claims
+            gen.writeNumber(dateToSeconds((Date) value));
+        } else if (value instanceof Map) {
+            serializeMap((Map<?, ?>) value, gen);
+        } else if (value instanceof List) {
+            serializeList((List<?>) value, gen);
+        } else {
+            gen.writeObject(value);
+        }
+    }
+
+    private void serializeMap(Map<?, ?> map, JsonGenerator gen) throws IOException {
+        gen.writeStartObject();
+        for (Map.Entry<?, ?> entry : map.entrySet()) {
+            gen.writeFieldName((String) entry.getKey());
+            Object value = entry.getValue();
+            handleSerialization(value, gen);
+        }
+        gen.writeEndObject();
+    }
+
+    private void serializeList(List<?> list, JsonGenerator gen) throws IOException {
+        gen.writeStartArray();
+        for (Object entry : list) {
+            handleSerialization(entry, gen);
+        }
+        gen.writeEndArray();
     }
 
     private long dateToSeconds(Date date) {

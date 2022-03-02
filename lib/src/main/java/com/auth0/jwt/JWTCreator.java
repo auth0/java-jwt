@@ -140,7 +140,8 @@ public final class JWTCreator {
         }
 
         /**
-         * Add a specific Expires At ("exp") claim to the Payload.
+         * Add a specific Expires At ("exp") claim to the payload. The claim will be written as seconds since the epoch;
+         * milliseconds will be truncated.
          *
          * @param expiresAt the Expires At value.
          * @return this same Builder instance.
@@ -151,7 +152,8 @@ public final class JWTCreator {
         }
 
         /**
-         * Add a specific Not Before ("nbf") claim to the Payload.
+         * Add a specific Not Before ("nbf") claim to the Payload. The claim will be written as seconds since the epoch;
+         * milliseconds will be truncated.
          *
          * @param notBefore the Not Before value.
          * @return this same Builder instance.
@@ -162,7 +164,8 @@ public final class JWTCreator {
         }
 
         /**
-         * Add a specific Issued At ("iat") claim to the Payload.
+         * Add a specific Issued At ("iat") claim to the Payload. The claim will be written as seconds since the epoch;
+         * milliseconds will be truncated.
          *
          * @param issuedAt the Issued At value.
          * @return this same Builder instance.
@@ -254,7 +257,8 @@ public final class JWTCreator {
         }
 
         /**
-         * Add a custom Claim value.
+         * Add a custom Claim value. The claim will be written as seconds since the epoch;
+         * milliseconds will be truncated.
          *
          * @param name  the Claim's name.
          * @param value the Claim's value.
