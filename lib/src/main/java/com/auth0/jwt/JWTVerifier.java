@@ -6,12 +6,11 @@ import com.auth0.jwt.impl.JWTParser;
 import com.auth0.jwt.impl.NullClaim;
 import com.auth0.jwt.impl.PublicClaims;
 import com.auth0.jwt.interfaces.Claim;
-import com.auth0.jwt.interfaces.Clock;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.Verification;
 
 import java.util.*;
-import java.util.stream.Collectors;
+import java.time.Clock;
 
 /**
  * The JWTVerifier class holds the verify method to assert that a given Token has not only a proper JWT format, but also its signature matches.
@@ -200,7 +199,7 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
 
         @Override
         public JWTVerifier build() {
-            return this.build(new ClockImpl());
+            return this.build(Clock.systemUTC());
         }
 
         /**
@@ -208,7 +207,7 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
          * ONLY FOR TEST PURPOSES.
          *
          * @param clock the instance that will handle the current time.
-         * @return a new JWTVerifier instance with a custom Clock.
+         * @return a new JWTVerifier instance with a custom {@link java.time.Clock}
          */
         public JWTVerifier build(Clock clock) {
             addLeewayToDateClaims();
@@ -405,7 +404,7 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
     }
 
     private void assertValidDateClaim(Date date, long leeway, boolean shouldBeFuture) {
-        Date today = new Date(clock.getToday().getTime());
+        Date today = new Date(clock.millis());
         today.setTime(today.getTime() / 1000 * 1000); // truncate millis
         if (shouldBeFuture) {
             assertDateIsFuture(date, leeway, today);
