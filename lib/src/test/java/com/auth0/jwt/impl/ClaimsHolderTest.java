@@ -13,7 +13,7 @@ public class ClaimsHolderTest {
 
     @SuppressWarnings("RedundantCast")
     @Test
-    public void shouldGetClaims() throws Exception {
+    public void shouldGetClaims() {
         HashMap<String, Object> claims = new HashMap<>();
         claims.put("iss", "auth0");
         ClaimsHolder holder = new ClaimsHolder(claims);
@@ -24,7 +24,7 @@ public class ClaimsHolderTest {
     }
 
     @Test
-    public void shouldGetNotNullClaims() throws Exception {
+    public void shouldGetNotNullClaims() {
         ClaimsHolder holder = new ClaimsHolder(null);
         assertThat(holder, is(notNullValue()));
         assertThat(holder.getClaims(), is(notNullValue()));

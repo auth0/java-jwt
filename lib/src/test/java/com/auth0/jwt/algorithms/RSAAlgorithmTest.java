@@ -61,7 +61,7 @@ public class RSAAlgorithmTest {
     }
 
     @Test
-    public void shouldFailRSA256VerificationWhenProvidedPublicKeyIsNull() throws Exception {
+    public void shouldFailRSA256VerificationWhenProvidedPublicKeyIsNull() {
         exception.expect(SignatureVerificationException.class);
         exception.expectMessage("The Token's Signature resulted invalid when verified using the Algorithm: SHA256withRSA");
         exception.expectCause(isA(IllegalStateException.class));
@@ -118,7 +118,7 @@ public class RSAAlgorithmTest {
     }
 
     @Test
-    public void shouldFailRSA384VerificationWhenProvidedPublicKeyIsNull() throws Exception {
+    public void shouldFailRSA384VerificationWhenProvidedPublicKeyIsNull() {
         exception.expect(SignatureVerificationException.class);
         exception.expectMessage("The Token's Signature resulted invalid when verified using the Algorithm: SHA384withRSA");
         exception.expectCause(isA(IllegalStateException.class));
@@ -175,7 +175,7 @@ public class RSAAlgorithmTest {
     }
 
     @Test
-    public void shouldFailRSA512VerificationWhenProvidedPublicKeyIsNull() throws Exception {
+    public void shouldFailRSA512VerificationWhenProvidedPublicKeyIsNull() {
         exception.expect(SignatureVerificationException.class);
         exception.expectMessage("The Token's Signature resulted invalid when verified using the Algorithm: SHA512withRSA");
         exception.expectCause(isA(IllegalStateException.class));
@@ -309,7 +309,7 @@ public class RSAAlgorithmTest {
     }
 
     @Test
-    public void shouldFailOnRSA256SigningWhenProvidedPrivateKeyIsNull() throws Exception {
+    public void shouldFailOnRSA256SigningWhenProvidedPrivateKeyIsNull() {
         exception.expect(SignatureGenerationException.class);
         exception.expectMessage("The Token's Signature couldn't be generated when signing using the Algorithm: SHA256withRSA");
         exception.expectCause(isA(IllegalStateException.class));
@@ -373,7 +373,7 @@ public class RSAAlgorithmTest {
     }
 
     @Test
-    public void shouldFailOnRSA384SigningWhenProvidedPrivateKeyIsNull() throws Exception {
+    public void shouldFailOnRSA384SigningWhenProvidedPrivateKeyIsNull() {
         exception.expect(SignatureGenerationException.class);
         exception.expectMessage("The Token's Signature couldn't be generated when signing using the Algorithm: SHA384withRSA");
         exception.expectCause(isA(IllegalStateException.class));
@@ -437,7 +437,7 @@ public class RSAAlgorithmTest {
     }
 
     @Test
-    public void shouldFailOnRSA512SigningWhenProvidedPrivateKeyIsNull() throws Exception {
+    public void shouldFailOnRSA512SigningWhenProvidedPrivateKeyIsNull() {
         exception.expect(SignatureGenerationException.class);
         exception.expectMessage("The Token's Signature couldn't be generated when signing using the Algorithm: SHA512withRSA");
         exception.expectCause(isA(IllegalStateException.class));
@@ -512,7 +512,7 @@ public class RSAAlgorithmTest {
     }
 
     @Test
-    public void shouldReturnNullSigningKeyIdIfCreatedWithDefaultProvider() throws Exception {
+    public void shouldReturnNullSigningKeyIdIfCreatedWithDefaultProvider() {
         RSAPublicKey publicKey = mock(RSAPublicKey.class);
         RSAPrivateKey privateKey = mock(RSAPrivateKey.class);
         RSAKeyProvider provider = RSAAlgorithm.providerForKeys(publicKey, privateKey);
@@ -522,7 +522,7 @@ public class RSAAlgorithmTest {
     }
 
     @Test
-    public void shouldReturnSigningKeyIdFromProvider() throws Exception {
+    public void shouldReturnSigningKeyIdFromProvider() {
         RSAKeyProvider provider = mock(RSAKeyProvider.class);
         when(provider.getPrivateKeyId()).thenReturn("keyId");
         Algorithm algorithm = new RSAAlgorithm("some-alg", "some-algorithm", provider);
@@ -552,11 +552,10 @@ public class RSAAlgorithmTest {
      * Test deprecated signing method error handling.
      * 
      * @see {@linkplain #shouldFailOnRSA256SigningWhenProvidedPrivateKeyIsNull}
-     * @throws Exception expected exception
      */
     
     @Test
-    public void shouldFailOnRSA256SigningWithDeprecatedMethodWhenProvidedPrivateKeyIsNull() throws Exception {
+    public void shouldFailOnRSA256SigningWithDeprecatedMethodWhenProvidedPrivateKeyIsNull() {
         exception.expect(SignatureGenerationException.class);
         exception.expectMessage("The Token's Signature couldn't be generated when signing using the Algorithm: SHA256withRSA");
         exception.expectCause(isA(IllegalStateException.class));

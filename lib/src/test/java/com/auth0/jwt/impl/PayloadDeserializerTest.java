@@ -35,7 +35,7 @@ public class PayloadDeserializerTest {
     private PayloadDeserializer deserializer;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         deserializer = new PayloadDeserializer(new ObjectMapper().reader());
     }
 
@@ -109,7 +109,7 @@ public class PayloadDeserializerTest {
     }
 
     @Test
-    public void shouldGetStringArrayWhenParsingArrayNode() throws Exception {
+    public void shouldGetStringArrayWhenParsingArrayNode() {
         Map<String, JsonNode> tree = new HashMap<>();
         List<JsonNode> subNodes = new ArrayList<>();
         TextNode textNode1 = new TextNode("one");
@@ -126,7 +126,7 @@ public class PayloadDeserializerTest {
     }
 
     @Test
-    public void shouldGetStringArrayWhenParsingTextNode() throws Exception {
+    public void shouldGetStringArrayWhenParsingTextNode() {
         Map<String, JsonNode> tree = new HashMap<>();
         TextNode textNode = new TextNode("something");
         tree.put("key", textNode);
@@ -138,7 +138,7 @@ public class PayloadDeserializerTest {
     }
 
     @Test
-    public void shouldGetEmptyStringArrayWhenParsingEmptyTextNode() throws Exception {
+    public void shouldGetEmptyStringArrayWhenParsingEmptyTextNode() {
         Map<String, JsonNode> tree = new HashMap<>();
         TextNode textNode = new TextNode("");
         tree.put("key", textNode);
@@ -149,7 +149,7 @@ public class PayloadDeserializerTest {
     }
 
     @Test
-    public void shouldGetNullArrayWhenParsingNullNode() throws Exception {
+    public void shouldGetNullArrayWhenParsingNullNode() {
         Map<String, JsonNode> tree = new HashMap<>();
         NullNode node = NullNode.getInstance();
         tree.put("key", node);
@@ -159,7 +159,7 @@ public class PayloadDeserializerTest {
     }
 
     @Test
-    public void shouldGetNullArrayWhenParsingNullNodeValue() throws Exception {
+    public void shouldGetNullArrayWhenParsingNullNodeValue() {
         Map<String, JsonNode> tree = new HashMap<>();
         tree.put("key", null);
 
@@ -168,7 +168,7 @@ public class PayloadDeserializerTest {
     }
 
     @Test
-    public void shouldGetNullArrayWhenParsingNonArrayOrTextNode() throws Exception {
+    public void shouldGetNullArrayWhenParsingNonArrayOrTextNode() {
         Map<String, JsonNode> tree = new HashMap<>();
         IntNode node = new IntNode(456789);
         tree.put("key", node);
@@ -179,7 +179,7 @@ public class PayloadDeserializerTest {
 
 
     @Test
-    public void shouldGetNullDateWhenParsingNullNode() throws Exception {
+    public void shouldGetNullDateWhenParsingNullNode() {
         Map<String, JsonNode> tree = new HashMap<>();
         NullNode node = NullNode.getInstance();
         tree.put("key", node);
@@ -189,7 +189,7 @@ public class PayloadDeserializerTest {
     }
 
     @Test
-    public void shouldGetNullDateWhenParsingNull() throws Exception {
+    public void shouldGetNullDateWhenParsingNull() {
         Map<String, JsonNode> tree = new HashMap<>();
         tree.put("key", null);
 
@@ -198,7 +198,7 @@ public class PayloadDeserializerTest {
     }
 
     @Test
-    public void shouldThrowWhenParsingNonNumericNode() throws Exception {
+    public void shouldThrowWhenParsingNonNumericNode() {
         exception.expect(JWTDecodeException.class);
         exception.expectMessage("The claim 'key' contained a non-numeric date value.");
 
@@ -210,7 +210,7 @@ public class PayloadDeserializerTest {
     }
 
     @Test
-    public void shouldGetDateWhenParsingNumericNode() throws Exception {
+    public void shouldGetDateWhenParsingNumericNode() {
         Map<String, JsonNode> tree = new HashMap<>();
         long seconds = 1478627949 / 1000;
         LongNode node = new LongNode(seconds);
@@ -222,7 +222,7 @@ public class PayloadDeserializerTest {
     }
 
     @Test
-    public void shouldGetLargeDateWhenParsingNumericNode() throws Exception {
+    public void shouldGetLargeDateWhenParsingNumericNode() {
         Map<String, JsonNode> tree = new HashMap<>();
         long seconds = Integer.MAX_VALUE + 10000L;
         LongNode node = new LongNode(seconds);
@@ -235,7 +235,7 @@ public class PayloadDeserializerTest {
     }
 
     @Test
-    public void shouldGetNullStringWhenParsingNullNode() throws Exception {
+    public void shouldGetNullStringWhenParsingNullNode() {
         Map<String, JsonNode> tree = new HashMap<>();
         NullNode node = NullNode.getInstance();
         tree.put("key", node);
@@ -245,7 +245,7 @@ public class PayloadDeserializerTest {
     }
 
     @Test
-    public void shouldGetNullStringWhenParsingNull() throws Exception {
+    public void shouldGetNullStringWhenParsingNull() {
         Map<String, JsonNode> tree = new HashMap<>();
         tree.put("key", null);
 
@@ -254,7 +254,7 @@ public class PayloadDeserializerTest {
     }
 
     @Test
-    public void shouldGetStringWhenParsingTextNode() throws Exception {
+    public void shouldGetStringWhenParsingTextNode() {
         Map<String, JsonNode> tree = new HashMap<>();
         TextNode node = new TextNode("something here");
         tree.put("key", node);
