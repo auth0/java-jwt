@@ -2,7 +2,6 @@ package com.auth0.jwt;
 
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.impl.PublicClaims;
-import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.ECDSAKeyProvider;
 import com.auth0.jwt.interfaces.RSAKeyProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,8 +13,6 @@ import org.junit.rules.ExpectedException;
 import java.nio.charset.StandardCharsets;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.RSAPrivateKey;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 import static org.hamcrest.Matchers.*;
@@ -502,7 +499,7 @@ public class JWTCreatorTest {
         data.put("integer", 1);
         data.put("long", Long.MAX_VALUE);
         data.put("double", 123.456d);
-        data.put("date", new Date(123456789));
+        data.put("date", new Date(123000));
         data.put("boolean", true);
 
         // array types
@@ -533,13 +530,13 @@ public class JWTCreatorTest {
         assertThat(map.get("long"), is(Long.MAX_VALUE));
         assertThat(map.get("double"), is(123.456d));
 
-        assertThat(map.get("date"), is(123456));
+        assertThat(map.get("date"), is(123));
         assertThat(map.get("boolean"), is(true));
 
         // array types
-        assertThat(map.get("intArray"), is(Arrays.asList(new Integer[]{3, 5})));
-        assertThat(map.get("longArray"), is(Arrays.asList(new Long[]{Long.MAX_VALUE, Long.MIN_VALUE})));
-        assertThat(map.get("stringArray"), is(Arrays.asList(new String[]{"string"})));
+        assertThat(map.get("intArray"), is(Arrays.asList(3, 5)));
+        assertThat(map.get("longArray"), is(Arrays.asList(Long.MAX_VALUE, Long.MIN_VALUE)));
+        assertThat(map.get("stringArray"), is(Arrays.asList("string")));
 
         // list
         assertThat(map.get("list"), is(Arrays.asList("a", "b", "c")));
@@ -557,7 +554,7 @@ public class JWTCreatorTest {
         data.add(1);
         data.add(Long.MAX_VALUE);
         data.add(123.456d);
-        data.add(new Date(123456789));
+        data.add(new Date(123000));
         data.add(true);
 
         // array types
@@ -587,13 +584,13 @@ public class JWTCreatorTest {
         assertThat(list.get(1), is(1));
         assertThat(list.get(2), is(Long.MAX_VALUE));
         assertThat(list.get(3), is(123.456d));
-        assertThat(list.get(4), is(123456));
+        assertThat(list.get(4), is(123));
         assertThat(list.get(5), is(true));
 
         // array types
-        assertThat(list.get(6), is(Arrays.asList(new Integer[]{3, 5})));
-        assertThat(list.get(7), is(Arrays.asList(new Long[]{Long.MAX_VALUE, Long.MIN_VALUE})));
-        assertThat(list.get(8), is(Arrays.asList(new String[]{"string"})));
+        assertThat(list.get(6), is(Arrays.asList(3, 5)));
+        assertThat(list.get(7), is(Arrays.asList(Long.MAX_VALUE, Long.MIN_VALUE)));
+        assertThat(list.get(8), is(Arrays.asList("string")));
 
         // list
         assertThat(list.get(9), is(Arrays.asList("a", "b", "c")));
