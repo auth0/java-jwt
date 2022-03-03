@@ -113,7 +113,7 @@ public class ECDSAAlgorithmTest {
     }
 
     @Test
-    public void shouldFailECDSA256VerificationWhenProvidedPublicKeyIsNull() throws Exception {
+    public void shouldFailECDSA256VerificationWhenProvidedPublicKeyIsNull() {
         exception.expect(SignatureVerificationException.class);
         exception.expectMessage("The Token's Signature resulted invalid when verified using the Algorithm: SHA256withECDSA");
         exception.expectCause(isA(IllegalStateException.class));
@@ -225,7 +225,7 @@ public class ECDSAAlgorithmTest {
     }
     
     @Test
-    public void shouldFailECDSA256KVerificationWhenProvidedPublicKeyIsNull() throws Exception {
+    public void shouldFailECDSA256KVerificationWhenProvidedPublicKeyIsNull() {
         exception.expect(SignatureVerificationException.class);
         exception.expectMessage("The Token's Signature resulted invalid when verified using the Algorithm: SHA256withECDSA");
         exception.expectCause(isA(IllegalStateException.class));
@@ -343,7 +343,7 @@ public class ECDSAAlgorithmTest {
     }
 
     @Test
-    public void shouldFailECDSA384VerificationWhenProvidedPublicKeyIsNull() throws Exception {
+    public void shouldFailECDSA384VerificationWhenProvidedPublicKeyIsNull() {
         exception.expect(SignatureVerificationException.class);
         exception.expectMessage("The Token's Signature resulted invalid when verified using the Algorithm: SHA384withECDSA");
         exception.expectCause(isA(IllegalStateException.class));
@@ -468,7 +468,7 @@ public class ECDSAAlgorithmTest {
     }
 
     @Test
-    public void shouldFailECDSA512VerificationWhenProvidedPublicKeyIsNull() throws Exception {
+    public void shouldFailECDSA512VerificationWhenProvidedPublicKeyIsNull() {
         exception.expect(SignatureVerificationException.class);
         exception.expectMessage("The Token's Signature resulted invalid when verified using the Algorithm: SHA512withECDSA");
         exception.expectCause(isA(IllegalStateException.class));
@@ -675,7 +675,7 @@ public class ECDSAAlgorithmTest {
     }
 
     @Test
-    public void shouldFailOnECDSA256SigningWhenProvidedPrivateKeyIsNull() throws Exception {
+    public void shouldFailOnECDSA256SigningWhenProvidedPrivateKeyIsNull() {
         exception.expect(SignatureGenerationException.class);
         exception.expectMessage("The Token's Signature couldn't be generated when signing using the Algorithm: SHA256withECDSA");
         exception.expectCause(isA(IllegalStateException.class));
@@ -733,7 +733,7 @@ public class ECDSAAlgorithmTest {
     }
 
     @Test
-    public void shouldFailOnECDSA384SigningWhenProvidedPrivateKeyIsNull() throws Exception {
+    public void shouldFailOnECDSA384SigningWhenProvidedPrivateKeyIsNull() {
         exception.expect(SignatureGenerationException.class);
         exception.expectMessage("The Token's Signature couldn't be generated when signing using the Algorithm: SHA384withECDSA");
         exception.expectCause(isA(IllegalStateException.class));
@@ -794,7 +794,7 @@ public class ECDSAAlgorithmTest {
     }
 
     @Test
-    public void shouldFailOnECDSA512SigningWhenProvidedPrivateKeyIsNull() throws Exception {
+    public void shouldFailOnECDSA512SigningWhenProvidedPrivateKeyIsNull() {
         exception.expect(SignatureGenerationException.class);
         exception.expectMessage("The Token's Signature couldn't be generated when signing using the Algorithm: SHA512withECDSA");
         exception.expectCause(isA(IllegalStateException.class));
@@ -869,7 +869,7 @@ public class ECDSAAlgorithmTest {
     }
 
     @Test
-    public void shouldReturnNullSigningKeyIdIfCreatedWithDefaultProvider() throws Exception {
+    public void shouldReturnNullSigningKeyIdIfCreatedWithDefaultProvider() {
         ECPublicKey publicKey = mock(ECPublicKey.class);
         ECPrivateKey privateKey = mock(ECPrivateKey.class);
         ECDSAKeyProvider provider = ECDSAAlgorithm.providerForKeys(publicKey, privateKey);
@@ -879,7 +879,7 @@ public class ECDSAAlgorithmTest {
     }
 
     @Test
-    public void shouldReturnSigningKeyIdFromProvider() throws Exception {
+    public void shouldReturnSigningKeyIdFromProvider() {
         ECDSAKeyProvider provider = mock(ECDSAKeyProvider.class);
         when(provider.getPrivateKeyId()).thenReturn("keyId");
         Algorithm algorithm = new ECDSAAlgorithm("some-alg", "some-algorithm", 32, provider);
@@ -1295,7 +1295,7 @@ public class ECDSAAlgorithmTest {
      */
 
     @Test
-    public void shouldFailOnECDSA256SigningWithDeprecatedMethodWhenProvidedPrivateKeyIsNull() throws Exception {
+    public void shouldFailOnECDSA256SigningWithDeprecatedMethodWhenProvidedPrivateKeyIsNull() {
         exception.expect(SignatureGenerationException.class);
         exception.expectMessage("The Token's Signature couldn't be generated when signing using the Algorithm: SHA256withECDSA");
         exception.expectCause(isA(IllegalStateException.class));

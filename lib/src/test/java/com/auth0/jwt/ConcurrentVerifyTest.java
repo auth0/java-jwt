@@ -38,12 +38,12 @@ public class ConcurrentVerifyTest {
     private static ExecutorService executor;
 
     @BeforeClass
-    public static void beforeAll() throws Exception {
+    public static void beforeAll() {
         executor = Executors.newFixedThreadPool(THREAD_COUNT);
     }
 
     @AfterClass
-    public static void afterAll() throws Exception {
+    public static void afterAll() {
         executor.shutdown();
     }
 
@@ -68,7 +68,7 @@ public class ConcurrentVerifyTest {
         }
 
         @Override
-        public DecodedJWT call() throws Exception {
+        public DecodedJWT call() {
             DecodedJWT jwt = null;
             try {
                 jwt = verifier.verify(token);

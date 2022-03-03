@@ -25,7 +25,7 @@ public class AlgorithmTest {
 
 
     @Test
-    public void shouldThrowHMAC256InstanceWithNullSecretBytes() throws Exception {
+    public void shouldThrowHMAC256InstanceWithNullSecretBytes() {
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage("The Secret cannot be null");
         byte[] secret = null;
@@ -33,7 +33,7 @@ public class AlgorithmTest {
     }
 
     @Test
-    public void shouldThrowHMAC384InstanceWithNullSecretBytes() throws Exception {
+    public void shouldThrowHMAC384InstanceWithNullSecretBytes() {
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage("The Secret cannot be null");
         byte[] secret = null;
@@ -41,7 +41,7 @@ public class AlgorithmTest {
     }
 
     @Test
-    public void shouldThrowHMAC512InstanceWithNullSecretBytes() throws Exception {
+    public void shouldThrowHMAC512InstanceWithNullSecretBytes() {
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage("The Secret cannot be null");
         byte[] secret = null;
@@ -49,7 +49,7 @@ public class AlgorithmTest {
     }
 
     @Test
-    public void shouldThrowHMAC256InstanceWithNullSecret() throws Exception {
+    public void shouldThrowHMAC256InstanceWithNullSecret() {
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage("The Secret cannot be null");
         String secret = null;
@@ -57,7 +57,7 @@ public class AlgorithmTest {
     }
 
     @Test
-    public void shouldThrowHMAC384InstanceWithNullSecret() throws Exception {
+    public void shouldThrowHMAC384InstanceWithNullSecret() {
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage("The Secret cannot be null");
         String secret = null;
@@ -65,7 +65,7 @@ public class AlgorithmTest {
     }
 
     @Test
-    public void shouldThrowHMAC512InstanceWithNullSecret() throws Exception {
+    public void shouldThrowHMAC512InstanceWithNullSecret() {
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage("The Secret cannot be null");
         String secret = null;
@@ -73,7 +73,7 @@ public class AlgorithmTest {
     }
 
     @Test
-    public void shouldThrowRSA256InstanceWithNullKey() throws Exception {
+    public void shouldThrowRSA256InstanceWithNullKey() {
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage("Both provided Keys cannot be null.");
         RSAKey key = null;
@@ -81,14 +81,14 @@ public class AlgorithmTest {
     }
 
     @Test
-    public void shouldThrowRSA256InstanceWithNullKeys() throws Exception {
+    public void shouldThrowRSA256InstanceWithNullKeys() {
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage("Both provided Keys cannot be null.");
         Algorithm.RSA256(null, null);
     }
 
     @Test
-    public void shouldThrowRSA256InstanceWithNullKeyProvider() throws Exception {
+    public void shouldThrowRSA256InstanceWithNullKeyProvider() {
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage("The Key Provider cannot be null.");
         RSAKeyProvider provider = null;
@@ -96,7 +96,7 @@ public class AlgorithmTest {
     }
 
     @Test
-    public void shouldThrowRSA384InstanceWithNullKey() throws Exception {
+    public void shouldThrowRSA384InstanceWithNullKey() {
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage("Both provided Keys cannot be null.");
         RSAKey key = null;
@@ -104,14 +104,14 @@ public class AlgorithmTest {
     }
 
     @Test
-    public void shouldThrowRSA384InstanceWithNullKeys() throws Exception {
+    public void shouldThrowRSA384InstanceWithNullKeys() {
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage("Both provided Keys cannot be null.");
         Algorithm.RSA384(null, null);
     }
 
     @Test
-    public void shouldThrowRSA384InstanceWithNullKeyProvider() throws Exception {
+    public void shouldThrowRSA384InstanceWithNullKeyProvider() {
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage("The Key Provider cannot be null.");
         RSAKeyProvider provider = null;
@@ -119,7 +119,7 @@ public class AlgorithmTest {
     }
 
     @Test
-    public void shouldThrowRSA512InstanceWithNullKey() throws Exception {
+    public void shouldThrowRSA512InstanceWithNullKey() {
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage("Both provided Keys cannot be null.");
         RSAKey key = null;
@@ -127,14 +127,14 @@ public class AlgorithmTest {
     }
 
     @Test
-    public void shouldThrowRSA512InstanceWithNullKeys() throws Exception {
+    public void shouldThrowRSA512InstanceWithNullKeys() {
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage("Both provided Keys cannot be null.");
         Algorithm.RSA512(null, null);
     }
 
     @Test
-    public void shouldThrowRSA512InstanceWithNullKeyProvider() throws Exception {
+    public void shouldThrowRSA512InstanceWithNullKeyProvider() {
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage("The Key Provider cannot be null.");
         RSAKeyProvider provider = null;
@@ -142,7 +142,7 @@ public class AlgorithmTest {
     }
 
     @Test
-    public void shouldThrowECDSA256InstanceWithNullKey() throws Exception {
+    public void shouldThrowECDSA256InstanceWithNullKey() {
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage("Both provided Keys cannot be null.");
         ECKey key = null;
@@ -150,14 +150,14 @@ public class AlgorithmTest {
     }
 
     @Test
-    public void shouldThrowECDSA256InstanceWithNullKeys() throws Exception {
+    public void shouldThrowECDSA256InstanceWithNullKeys() {
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage("Both provided Keys cannot be null.");
         Algorithm.ECDSA256(null, null);
     }
 
     @Test
-    public void shouldThrowECDSA256InstanceWithNullKeyProvider() throws Exception {
+    public void shouldThrowECDSA256InstanceWithNullKeyProvider() {
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage("The Key Provider cannot be null.");
         ECDSAKeyProvider provider = null;
@@ -165,7 +165,7 @@ public class AlgorithmTest {
     }
 
     @Test
-    public void shouldThrowECDSA384InstanceWithNullKey() throws Exception {
+    public void shouldThrowECDSA384InstanceWithNullKey() {
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage("Both provided Keys cannot be null.");
         ECKey key = null;
@@ -173,14 +173,14 @@ public class AlgorithmTest {
     }
 
     @Test
-    public void shouldThrowECDSA384InstanceWithNullKeys() throws Exception {
+    public void shouldThrowECDSA384InstanceWithNullKeys() {
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage("Both provided Keys cannot be null.");
         Algorithm.ECDSA384(null, null);
     }
 
     @Test
-    public void shouldThrowECDSA384InstanceWithNullKeyProvider() throws Exception {
+    public void shouldThrowECDSA384InstanceWithNullKeyProvider() {
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage("The Key Provider cannot be null.");
         ECDSAKeyProvider provider = null;
@@ -188,7 +188,7 @@ public class AlgorithmTest {
     }
 
     @Test
-    public void shouldThrowECDSA512InstanceWithNullKey() throws Exception {
+    public void shouldThrowECDSA512InstanceWithNullKey() {
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage("Both provided Keys cannot be null.");
         ECKey key = null;
@@ -196,14 +196,14 @@ public class AlgorithmTest {
     }
 
     @Test
-    public void shouldThrowECDSA512InstanceWithNullKeys() throws Exception {
+    public void shouldThrowECDSA512InstanceWithNullKeys() {
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage("Both provided Keys cannot be null.");
         Algorithm.ECDSA512(null, null);
     }
 
     @Test
-    public void shouldThrowECDSA512InstanceWithNullKeyProvider() throws Exception {
+    public void shouldThrowECDSA512InstanceWithNullKeyProvider() {
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage("The Key Provider cannot be null.");
         ECDSAKeyProvider provider = null;
@@ -211,7 +211,7 @@ public class AlgorithmTest {
     }
 
     @Test
-    public void shouldCreateHMAC256AlgorithmWithBytes() throws Exception {
+    public void shouldCreateHMAC256AlgorithmWithBytes() {
         Algorithm algorithm = Algorithm.HMAC256("secret".getBytes(StandardCharsets.UTF_8));
 
         assertThat(algorithm, is(notNullValue()));
@@ -221,7 +221,7 @@ public class AlgorithmTest {
     }
 
     @Test
-    public void shouldCreateHMAC384AlgorithmWithBytes() throws Exception {
+    public void shouldCreateHMAC384AlgorithmWithBytes() {
         Algorithm algorithm = Algorithm.HMAC384("secret".getBytes(StandardCharsets.UTF_8));
 
         assertThat(algorithm, is(notNullValue()));
@@ -231,7 +231,7 @@ public class AlgorithmTest {
     }
 
     @Test
-    public void shouldCreateHMAC512AlgorithmWithBytes() throws Exception {
+    public void shouldCreateHMAC512AlgorithmWithBytes() {
         Algorithm algorithm = Algorithm.HMAC512("secret".getBytes(StandardCharsets.UTF_8));
 
         assertThat(algorithm, is(notNullValue()));
@@ -241,7 +241,7 @@ public class AlgorithmTest {
     }
 
     @Test
-    public void shouldCreateHMAC256AlgorithmWithString() throws Exception {
+    public void shouldCreateHMAC256AlgorithmWithString() {
         Algorithm algorithm = Algorithm.HMAC256("secret");
 
         assertThat(algorithm, is(notNullValue()));
@@ -251,7 +251,7 @@ public class AlgorithmTest {
     }
 
     @Test
-    public void shouldCreateHMAC384AlgorithmWithString() throws Exception {
+    public void shouldCreateHMAC384AlgorithmWithString() {
         Algorithm algorithm = Algorithm.HMAC384("secret");
 
         assertThat(algorithm, is(notNullValue()));
@@ -261,7 +261,7 @@ public class AlgorithmTest {
     }
 
     @Test
-    public void shouldCreateHMAC512AlgorithmWithString() throws Exception {
+    public void shouldCreateHMAC512AlgorithmWithString() {
         Algorithm algorithm = Algorithm.HMAC512("secret");
 
         assertThat(algorithm, is(notNullValue()));
@@ -271,7 +271,7 @@ public class AlgorithmTest {
     }
 
     @Test
-    public void shouldCreateRSA256AlgorithmWithPublicKey() throws Exception {
+    public void shouldCreateRSA256AlgorithmWithPublicKey() {
         RSAKey key = mock(RSAKey.class, withSettings().extraInterfaces(RSAPublicKey.class));
         Algorithm algorithm = Algorithm.RSA256(key);
 
@@ -282,7 +282,7 @@ public class AlgorithmTest {
     }
 
     @Test
-    public void shouldCreateRSA256AlgorithmWithPrivateKey() throws Exception {
+    public void shouldCreateRSA256AlgorithmWithPrivateKey() {
         RSAKey key = mock(RSAKey.class, withSettings().extraInterfaces(RSAPrivateKey.class));
         Algorithm algorithm = Algorithm.RSA256(key);
 
@@ -293,7 +293,7 @@ public class AlgorithmTest {
     }
 
     @Test
-    public void shouldCreateRSA256AlgorithmWithBothKeys() throws Exception {
+    public void shouldCreateRSA256AlgorithmWithBothKeys() {
         RSAPublicKey publicKey = mock(RSAPublicKey.class);
         RSAPrivateKey privateKey = mock(RSAPrivateKey.class);
         Algorithm algorithm = Algorithm.RSA256(publicKey, privateKey);
@@ -305,7 +305,7 @@ public class AlgorithmTest {
     }
 
     @Test
-    public void shouldCreateRSA256AlgorithmWithProvider() throws Exception {
+    public void shouldCreateRSA256AlgorithmWithProvider() {
         RSAKeyProvider provider = mock(RSAKeyProvider.class);
         Algorithm algorithm = Algorithm.RSA256(provider);
 
@@ -316,7 +316,7 @@ public class AlgorithmTest {
     }
 
     @Test
-    public void shouldCreateRSA384AlgorithmWithPublicKey() throws Exception {
+    public void shouldCreateRSA384AlgorithmWithPublicKey() {
         RSAKey key = mock(RSAKey.class, withSettings().extraInterfaces(RSAPublicKey.class));
         Algorithm algorithm = Algorithm.RSA384(key);
 
@@ -327,7 +327,7 @@ public class AlgorithmTest {
     }
 
     @Test
-    public void shouldCreateRSA384AlgorithmWithPrivateKey() throws Exception {
+    public void shouldCreateRSA384AlgorithmWithPrivateKey() {
         RSAKey key = mock(RSAKey.class, withSettings().extraInterfaces(RSAPrivateKey.class));
         Algorithm algorithm = Algorithm.RSA384(key);
 
@@ -338,7 +338,7 @@ public class AlgorithmTest {
     }
 
     @Test
-    public void shouldCreateRSA384AlgorithmWithBothKeys() throws Exception {
+    public void shouldCreateRSA384AlgorithmWithBothKeys() {
         RSAPublicKey publicKey = mock(RSAPublicKey.class);
         RSAPrivateKey privateKey = mock(RSAPrivateKey.class);
         Algorithm algorithm = Algorithm.RSA384(publicKey, privateKey);
@@ -350,7 +350,7 @@ public class AlgorithmTest {
     }
 
     @Test
-    public void shouldCreateRSA384AlgorithmWithProvider() throws Exception {
+    public void shouldCreateRSA384AlgorithmWithProvider() {
         RSAKeyProvider provider = mock(RSAKeyProvider.class);
         Algorithm algorithm = Algorithm.RSA384(provider);
 
@@ -361,7 +361,7 @@ public class AlgorithmTest {
     }
 
     @Test
-    public void shouldCreateRSA512AlgorithmWithPublicKey() throws Exception {
+    public void shouldCreateRSA512AlgorithmWithPublicKey() {
         RSAKey key = mock(RSAKey.class, withSettings().extraInterfaces(RSAPublicKey.class));
         Algorithm algorithm = Algorithm.RSA512(key);
 
@@ -372,7 +372,7 @@ public class AlgorithmTest {
     }
 
     @Test
-    public void shouldCreateRSA512AlgorithmWithPrivateKey() throws Exception {
+    public void shouldCreateRSA512AlgorithmWithPrivateKey() {
         RSAKey key = mock(RSAKey.class, withSettings().extraInterfaces(RSAPrivateKey.class));
         Algorithm algorithm = Algorithm.RSA512(key);
 
@@ -383,7 +383,7 @@ public class AlgorithmTest {
     }
 
     @Test
-    public void shouldCreateRSA512AlgorithmWithBothKeys() throws Exception {
+    public void shouldCreateRSA512AlgorithmWithBothKeys() {
         RSAPublicKey publicKey = mock(RSAPublicKey.class);
         RSAPrivateKey privateKey = mock(RSAPrivateKey.class);
         Algorithm algorithm = Algorithm.RSA512(publicKey, privateKey);
@@ -395,7 +395,7 @@ public class AlgorithmTest {
     }
 
     @Test
-    public void shouldCreateRSA512AlgorithmWithProvider() throws Exception {
+    public void shouldCreateRSA512AlgorithmWithProvider() {
         RSAKeyProvider provider = mock(RSAKeyProvider.class);
         Algorithm algorithm = Algorithm.RSA512(provider);
 
@@ -406,7 +406,7 @@ public class AlgorithmTest {
     }
 
     @Test
-    public void shouldCreateECDSA256AlgorithmWithPublicKey() throws Exception {
+    public void shouldCreateECDSA256AlgorithmWithPublicKey() {
         ECKey key = mock(ECKey.class, withSettings().extraInterfaces(ECPublicKey.class));
         Algorithm algorithm = Algorithm.ECDSA256(key);
 
@@ -417,7 +417,7 @@ public class AlgorithmTest {
     }
 
     @Test
-    public void shouldCreateECDSA256AlgorithmWithPrivateKey() throws Exception {
+    public void shouldCreateECDSA256AlgorithmWithPrivateKey() {
         ECKey key = mock(ECKey.class, withSettings().extraInterfaces(ECPrivateKey.class));
         Algorithm algorithm = Algorithm.ECDSA256(key);
 
@@ -428,7 +428,7 @@ public class AlgorithmTest {
     }
 
     @Test
-    public void shouldCreateECDSA256AlgorithmWithBothKeys() throws Exception {
+    public void shouldCreateECDSA256AlgorithmWithBothKeys() {
         ECPublicKey publicKey = mock(ECPublicKey.class);
         ECPrivateKey privateKey = mock(ECPrivateKey.class);
         Algorithm algorithm = Algorithm.ECDSA256(publicKey, privateKey);
@@ -440,7 +440,7 @@ public class AlgorithmTest {
     }
 
     @Test
-    public void shouldCreateECDSA256AlgorithmWithProvider() throws Exception {
+    public void shouldCreateECDSA256AlgorithmWithProvider() {
         ECDSAKeyProvider provider = mock(ECDSAKeyProvider.class);
         Algorithm algorithm = Algorithm.ECDSA256(provider);
 
@@ -451,22 +451,11 @@ public class AlgorithmTest {
     }
 
     @Test
-    public void shouldCreateECDSA256KAlgorithmWithBothKeys() throws Exception {
+    public void shouldCreateECDSA256KAlgorithmWithBothKeys() {
         ECPublicKey publicKey = mock(ECPublicKey.class);
         ECPrivateKey privateKey = mock(ECPrivateKey.class);
         Algorithm algorithm = Algorithm.ECDSA256K(publicKey, privateKey);
-        
-        assertThat(algorithm, is(notNullValue()));
-        assertThat(algorithm, is(instanceOf(ECDSAAlgorithm.class)));
-        assertThat(algorithm.getDescription(), is("SHA256withECDSA"));
-        assertThat(algorithm.getName(), is("ES256K"));
-    }
-    
-    @Test
-    public void shouldCreateECDSA256KAlgorithmWithProvider() throws Exception {
-        ECDSAKeyProvider provider = mock(ECDSAKeyProvider.class);
-        Algorithm algorithm = Algorithm.ECDSA256K(provider);
-        
+
         assertThat(algorithm, is(notNullValue()));
         assertThat(algorithm, is(instanceOf(ECDSAAlgorithm.class)));
         assertThat(algorithm.getDescription(), is("SHA256withECDSA"));
@@ -474,7 +463,18 @@ public class AlgorithmTest {
     }
 
     @Test
-    public void shouldCreateECDSA384AlgorithmWithPublicKey() throws Exception {
+    public void shouldCreateECDSA256KAlgorithmWithProvider() {
+        ECDSAKeyProvider provider = mock(ECDSAKeyProvider.class);
+        Algorithm algorithm = Algorithm.ECDSA256K(provider);
+
+        assertThat(algorithm, is(notNullValue()));
+        assertThat(algorithm, is(instanceOf(ECDSAAlgorithm.class)));
+        assertThat(algorithm.getDescription(), is("SHA256withECDSA"));
+        assertThat(algorithm.getName(), is("ES256K"));
+    }
+
+    @Test
+    public void shouldCreateECDSA384AlgorithmWithPublicKey() {
         ECKey key = mock(ECKey.class, withSettings().extraInterfaces(ECPublicKey.class));
         Algorithm algorithm = Algorithm.ECDSA384(key);
 
@@ -485,7 +485,7 @@ public class AlgorithmTest {
     }
 
     @Test
-    public void shouldCreateECDSA384AlgorithmWithPrivateKey() throws Exception {
+    public void shouldCreateECDSA384AlgorithmWithPrivateKey() {
         ECKey key = mock(ECKey.class, withSettings().extraInterfaces(ECPrivateKey.class));
         Algorithm algorithm = Algorithm.ECDSA384(key);
 
@@ -496,7 +496,7 @@ public class AlgorithmTest {
     }
 
     @Test
-    public void shouldCreateECDSA384AlgorithmWithBothKeys() throws Exception {
+    public void shouldCreateECDSA384AlgorithmWithBothKeys() {
         ECPublicKey publicKey = mock(ECPublicKey.class);
         ECPrivateKey privateKey = mock(ECPrivateKey.class);
         Algorithm algorithm = Algorithm.ECDSA384(publicKey, privateKey);
@@ -508,7 +508,7 @@ public class AlgorithmTest {
     }
 
     @Test
-    public void shouldCreateECDSA384AlgorithmWithProvider() throws Exception {
+    public void shouldCreateECDSA384AlgorithmWithProvider() {
         ECDSAKeyProvider provider = mock(ECDSAKeyProvider.class);
         Algorithm algorithm = Algorithm.ECDSA384(provider);
 
@@ -519,7 +519,7 @@ public class AlgorithmTest {
     }
 
     @Test
-    public void shouldCreateECDSA512AlgorithmWithPublicKey() throws Exception {
+    public void shouldCreateECDSA512AlgorithmWithPublicKey() {
         ECKey key = mock(ECKey.class, withSettings().extraInterfaces(ECPublicKey.class));
         Algorithm algorithm = Algorithm.ECDSA512(key);
 
@@ -530,7 +530,7 @@ public class AlgorithmTest {
     }
 
     @Test
-    public void shouldCreateECDSA512AlgorithmWithPrivateKey() throws Exception {
+    public void shouldCreateECDSA512AlgorithmWithPrivateKey() {
         ECKey key = mock(ECKey.class, withSettings().extraInterfaces(ECPrivateKey.class));
         Algorithm algorithm = Algorithm.ECDSA512(key);
 
@@ -541,7 +541,7 @@ public class AlgorithmTest {
     }
 
     @Test
-    public void shouldCreateECDSA512AlgorithmWithBothKeys() throws Exception {
+    public void shouldCreateECDSA512AlgorithmWithBothKeys() {
         ECPublicKey publicKey = mock(ECPublicKey.class);
         ECPrivateKey privateKey = mock(ECPrivateKey.class);
         Algorithm algorithm = Algorithm.ECDSA512(publicKey, privateKey);
@@ -553,7 +553,7 @@ public class AlgorithmTest {
     }
 
     @Test
-    public void shouldCreateECDSA512AlgorithmWithProvider() throws Exception {
+    public void shouldCreateECDSA512AlgorithmWithProvider() {
         ECDSAKeyProvider provider = mock(ECDSAKeyProvider.class);
         Algorithm algorithm = Algorithm.ECDSA512(provider);
 
@@ -564,7 +564,7 @@ public class AlgorithmTest {
     }
 
     @Test
-    public void shouldCreateNoneAlgorithm() throws Exception {
+    public void shouldCreateNoneAlgorithm() {
         Algorithm algorithm = Algorithm.none();
 
         assertThat(algorithm, is(notNullValue()));
