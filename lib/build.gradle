@@ -55,6 +55,10 @@ dependencies {
     testImplementation 'org.mockito:mockito-core:2.18.3'
 }
 
+jacoco {
+    toolVersion = "0.8.7"
+}
+
 jacocoTestReport {
     reports {
         xml.enabled = true
@@ -85,6 +89,35 @@ task compileModuleInfoJava(type: JavaCompile) {
                 '--module-path', compileJava.classpath.asPath
         ]
     }
+}
+
+compileTestJava {
+    options.compilerArgs = ['--release', "8"]
+}
+
+def testJava8 = tasks.register('testJava8', Test) {
+    description = 'Runs unit tests on Java 8.'
+    group = 'verification'
+
+    javaLauncher.set(javaToolchains.launcherFor {
+        languageVersion = JavaLanguageVersion.of(8)
+    })
+    shouldRunAfter(tasks.named('test'))
+}
+
+def testJava17 = tasks.register('testJava17', Test) {
+    description = 'Runs unit tests on Java 17.'
+    group = 'verification'
+
+    javaLauncher.set(javaToolchains.launcherFor {
+        languageVersion = JavaLanguageVersion.of(17)
+    })
+    shouldRunAfter(tasks.named('test'))
+}
+
+tasks.named('check') {
+    dependsOn(testJava8)
+    dependsOn(testJava17)
 }
 
 jar {
