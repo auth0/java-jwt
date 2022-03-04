@@ -99,7 +99,6 @@ public class ECDSABouncyCastleProviderTests {
     }
     
     @Test
-    @Ignore //todo: handle curve secp256k1 disabled in Java 15+
     public void shouldPassECDSA256KVerificationWithJOSESignatureWithBothKeys() throws Exception {
         Algorithm algorithm = Algorithm.ECDSA256K((ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256K, "EC")
                 , (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_256K, "EC"));
@@ -107,7 +106,6 @@ public class ECDSABouncyCastleProviderTests {
     }
     
     @Test
-    @Ignore //todo: handle curve secp256k1 disabled in Java 15+
     public void shouldPassECDSA256KVerificationWithProvidedPublicKey() throws Exception {
         ECDSAKeyProvider provider = mock(ECDSAKeyProvider.class);
         PublicKey publicKey = readPublicKeyFromFile(PUBLIC_KEY_FILE_256K, "EC");

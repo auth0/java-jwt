@@ -159,7 +159,6 @@ public class JWTCreatorTest {
     }
 
     @Test
-    @Ignore //todo: handle ecdsa curve secp256k1 disabled in Java 15+
     public void shouldAddKeyIdIfAvailableFromECDSAKAlgorithms() throws Exception {
         ECPrivateKey privateKey = (ECPrivateKey) PemUtils.readPrivateKeyFromFile(PRIVATE_KEY_FILE_EC_256K, "EC");
         ECDSAKeyProvider provider = mock(ECDSAKeyProvider.class);
@@ -176,7 +175,6 @@ public class JWTCreatorTest {
     }
 
     @Test
-    @Ignore //todo: handle ecdsa curve secp256k1 disabled in Java 15+
     public void shouldNotOverwriteKeyIdIfAddedFromECDSAKAlgorithms() throws Exception {
         ECPrivateKey privateKey = (ECPrivateKey) PemUtils.readPrivateKeyFromFile(PRIVATE_KEY_FILE_EC_256K, "EC");
         ECDSAKeyProvider provider = mock(ECDSAKeyProvider.class);

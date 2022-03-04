@@ -499,7 +499,6 @@ public class JWTTest {
     }
 
     @Test
-    @Ignore //todo: handle ecdsa curve secp256k1 disabled in Java 15+
     public void shouldCreateAnEmptyECDSA256KSignedToken() throws Exception {
         ECPublicKey publicKey = (ECPublicKey) PemUtils.readPublicKeyFromFile(PUBLIC_KEY_FILE_EC_256K, "EC");
         ECPrivateKey privateKey = (ECPrivateKey) PemUtils.readPrivateKeyFromFile(PRIVATE_KEY_FILE_EC_256K, "EC");
