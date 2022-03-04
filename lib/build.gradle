@@ -113,6 +113,19 @@ def testJava17 = tasks.register('testJava17', Test) {
         languageVersion = JavaLanguageVersion.of(17)
     })
     shouldRunAfter(tasks.named('test'))
+
+    //Following Tests are excluded in Java 17 since secp256k1 curve is disabled Java 15+
+    filter {
+        excludeTestsMatching "*.jwt.ConcurrentVerifyTest.shouldPassECDSA256KVerificationWithJOSESignature"
+        excludeTestsMatching "*.jwt.JWTCreatorTest.shouldAddKeyIdIfAvailableFromECDSAKAlgorithms"
+        excludeTestsMatching "*.jwt.JWTCreatorTest.shouldNotOverwriteKeyIdIfAddedFromECDSAKAlgorithms"
+        excludeTestsMatching "*.jwt.JWTTest.shouldCreateAnEmptyECDSA256KSignedToken"
+        excludeTestsMatching "*.jwt.algorithms.ECDSAAlgorithmTest.shouldPassECDSA256KVerificationWithJOSESignature"
+        excludeTestsMatching "*.jwt.algorithms.ECDSAAlgorithmTest.shouldPassECDSA256KVerificationWithJOSESignatureWithBothKeys"
+        excludeTestsMatching "*.jwt.algorithms.ECDSAAlgorithmTest.shouldPassECDSA256KVerificationWithProvidedPublicKey"
+        excludeTestsMatching "*.jwt.ECDSABouncyCastleProviderTests.shouldPassECDSA256KVerificationWithJOSESignatureWithBothKeys"
+        excludeTestsMatching "*.jwt.ECDSABouncyCastleProviderTests.shouldPassECDSA256KVerificationWithProvidedPublicKey"
+    }
 }
 
 tasks.named('check') {
