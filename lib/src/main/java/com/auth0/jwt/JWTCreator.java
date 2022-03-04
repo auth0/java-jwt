@@ -140,8 +140,8 @@ public final class JWTCreator {
         }
 
         /**
-         * Add a specific Expires At ("exp") claim to the payload. The claim will be written as seconds since the epoch;
-         * milliseconds will be truncated.
+         * Add a specific Expires At ("exp") claim to the payload. The claim will be written as seconds since the epoch.
+         * Milliseconds will be truncated by rounding down to the nearest second.
          *
          * @param expiresAt the Expires At value.
          * @return this same Builder instance.
@@ -152,8 +152,8 @@ public final class JWTCreator {
         }
 
         /**
-         * Add a specific Not Before ("nbf") claim to the Payload. The claim will be written as seconds since the epoch;
-         * milliseconds will be truncated.
+         * Add a specific Not Before ("nbf") claim to the Payload. The claim will be written as seconds since the epoch.
+         * Milliseconds will be truncated by rounding down to the nearest second.
          *
          * @param notBefore the Not Before value.
          * @return this same Builder instance.
@@ -164,8 +164,8 @@ public final class JWTCreator {
         }
 
         /**
-         * Add a specific Issued At ("iat") claim to the Payload. The claim will be written as seconds since the epoch;
-         * milliseconds will be truncated.
+         * Add a specific Issued At ("iat") claim to the Payload. The claim will be written as seconds since the epoch.
+         * Milliseconds will be truncated by rounding down to the nearest second.
          *
          * @param issuedAt the Issued At value.
          * @return this same Builder instance.
@@ -257,8 +257,8 @@ public final class JWTCreator {
         }
 
         /**
-         * Add a custom Claim value. The claim will be written as seconds since the epoch;
-         * milliseconds will be truncated.
+         * Add a custom Claim value. The claim will be written as seconds since the epoch.
+         * Milliseconds will be truncated by rounding down to the nearest second.
          *
          * @param name  the Claim's name.
          * @param value the Claim's value.
