@@ -2,6 +2,7 @@ package com.auth0.jwt.interfaces;
 
 import com.auth0.jwt.exceptions.JWTDecodeException;
 
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -65,6 +66,17 @@ public interface Claim {
      * @return the value as a Date or null.
      */
     Date asDate();
+
+    /**
+     * Get this Claim as an Instant.
+     * If the value can't be converted to an Instant, null will be returned.
+     *
+     * @return the value as a Date or null.
+     */
+    default Instant asInstant() {
+        Date date = asDate();
+        return date != null? date.toInstant() : null;
+    }
 
     /**
      * Get this Claim as an Array of type T.

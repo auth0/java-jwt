@@ -51,6 +51,11 @@ public class NullClaimTest {
     }
 
     @Test
+    public void shouldGetAsInstant() {
+        assertThat(claim.asDate(), is(nullValue()));
+    }
+
+    @Test
     public void shouldGetAsArray() {
         assertThat(claim.asArray(Object.class), is(nullValue()));
     }

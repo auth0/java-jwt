@@ -9,8 +9,11 @@ import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.Verification;
 
-import java.util.*;
 import java.time.Clock;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
 
 /**
  * The JWTVerifier class holds the verify method to assert that a given Token has not only a proper JWT format, but also its signature matches.
@@ -327,13 +330,13 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
                 assertValidAudienceClaim(jwt.getAudience(), (List<String>) expectedClaim.getValue(), false);
                 break;
             case PublicClaims.EXPIRES_AT:
-                assertValidDateClaim(jwt.getExpiresAt(), (Long) expectedClaim.getValue(), true);
+                assertValidInstantClaim(jwt.getExpiresAtAsInstant(), (Long) expectedClaim.getValue(), true);
                 break;
             case PublicClaims.ISSUED_AT:
-                assertValidDateClaim(jwt.getIssuedAt(), (Long) expectedClaim.getValue(), false);
+                assertValidInstantClaim(jwt.getIssuedAtAsInstant(), (Long) expectedClaim.getValue(), false);
                 break;
             case PublicClaims.NOT_BEFORE:
-                assertValidDateClaim(jwt.getNotBefore(), (Long) expectedClaim.getValue(), false);
+                assertValidInstantClaim(jwt.getNotBeforeAsInstant(), (Long) expectedClaim.getValue(), false);
                 break;
             case PublicClaims.ISSUER:
                 assertValidIssuerClaim(jwt.getIssuer(), (List<String>) expectedClaim.getValue());
@@ -370,6 +373,8 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
             isValid = value.equals(claim.asDouble());
         } else if (value instanceof Date) {
             isValid = value.equals(claim.asDate());
+        } else if (value instanceof Instant) {
+            isValid = value.equals(claim.asInstant());
         } else if (value instanceof Object[]) {
             List<Object> claimArr;
             Object[] claimAsObject = claim.as(Object[].class);
@@ -403,27 +408,24 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
         }
     }
 
-    private void assertValidDateClaim(Date date, long leeway, boolean shouldBeFuture) {
-        Date today = new Date(clock.millis());
-        today.setTime(today.getTime() / 1000 * 1000); // truncate millis
+    private void assertValidInstantClaim(Instant claimVal, long leeway, boolean shouldBeFuture) {
+        Instant now = clock.instant().truncatedTo(ChronoUnit.SECONDS);
         if (shouldBeFuture) {
-            assertDateIsFuture(date, leeway, today);
+            assertInstantIsFuture(claimVal, leeway, now);
         } else {
-            assertDateIsPast(date, leeway, today);
+            assertInstantIsPast(claimVal, leeway, now);
         }
     }
 
-    private void assertDateIsFuture(Date date, long leeway, Date today) {
-        today.setTime(today.getTime() - leeway * 1000);
-        if (date != null && today.after(date)) {
-            throw new TokenExpiredException(String.format("The Token has expired on %s.", date));
+    private void assertInstantIsFuture(Instant claimVal, long leeway, Instant now) {
+        if (claimVal != null && now.minus(Duration.ofSeconds(leeway)).isAfter(claimVal)) {
+            throw new TokenExpiredException(String.format("The Token has expired on %s.", claimVal));
         }
     }
 
-    private void assertDateIsPast(Date date, long leeway, Date today) {
-        today.setTime(today.getTime() + leeway * 1000);
-        if (date != null && today.before(date)) {
-            throw new InvalidClaimException(String.format("The Token can't be used before %s.", date));
+    private void assertInstantIsPast(Instant claimVal, long leeway, Instant now) {
+        if (claimVal != null && now.plus(Duration.ofSeconds(leeway)).isBefore(claimVal)) {
+            throw new InvalidClaimException(String.format("The Token can't be used before %s.", claimVal));
         }
     }
 

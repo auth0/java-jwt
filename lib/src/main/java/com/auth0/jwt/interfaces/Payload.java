@@ -1,5 +1,6 @@
 package com.auth0.jwt.interfaces;
 
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +39,15 @@ public interface Payload {
     Date getExpiresAt();
 
     /**
+     * Get the value of the "exp" claim as an {@linkplain Instant}, or null if it's not available.
+     *
+     * @return the Expiration Time value or null.
+     */
+    default Instant getExpiresAtAsInstant() {
+        return getExpiresAt() != null ? getExpiresAt().toInstant() : null ;
+    }
+
+    /**
      * Get the value of the "nbf" claim, or null if it's not available.
      *
      * @return the Not Before value or null.
@@ -45,11 +55,29 @@ public interface Payload {
     Date getNotBefore();
 
     /**
+     * Get the value of the "nbf" claim as an {@linkplain Instant}, or null if it's not available.
+     *
+     * @return the Not Before value or null.
+     */
+    default Instant getNotBeforeAsInstant() {
+        return getNotBefore() != null ? getNotBefore().toInstant() : null;
+    }
+
+    /**
      * Get the value of the "iat" claim, or null if it's not available.
      *
      * @return the Issued At value or null.
      */
     Date getIssuedAt();
+
+    /**
+     * Get the value of the "iat" claim as an {@linkplain Instant}, or null if it's not available.
+     *
+     * @return the Issued At value or null.
+     */
+    default Instant getIssuedAtAsInstant() {
+        return getIssuedAt() != null? getIssuedAt().toInstant() : null;
+    }
 
     /**
      * Get the value of the "jti" claim, or null if it's not available.

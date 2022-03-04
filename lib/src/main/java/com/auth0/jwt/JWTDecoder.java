@@ -9,6 +9,7 @@ import com.auth0.jwt.interfaces.Payload;
 
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
@@ -94,13 +95,28 @@ final class JWTDecoder implements DecodedJWT, Serializable {
     }
 
     @Override
+    public Instant getExpiresAtAsInstant() {
+        return payload.getExpiresAtAsInstant();
+    }
+
+    @Override
     public Date getNotBefore() {
         return payload.getNotBefore();
     }
 
     @Override
+    public Instant getNotBeforeAsInstant() {
+        return  payload.getNotBeforeAsInstant();
+    }
+
+    @Override
     public Date getIssuedAt() {
         return payload.getIssuedAt();
+    }
+
+    @Override
+    public Instant getIssuedAtAsInstant() {
+        return payload.getIssuedAtAsInstant();
     }
 
     @Override

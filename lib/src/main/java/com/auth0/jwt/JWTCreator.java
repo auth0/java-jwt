@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.*;
 import java.util.Map.Entry;
 
@@ -152,7 +153,19 @@ public final class JWTCreator {
         }
 
         /**
-         * Add a specific Not Before ("nbf") claim to the Payload. The claim will be written as seconds since the epoch.
+         * Add a specific Expires At ("exp") claim to the payload. The claim will be written as seconds since the epoch;
+         * Milliseconds will be truncated by rounding down to the nearest second.
+         *
+         * @param expiresAt the Expires At value.
+         * @return this same Builder instance.
+         */
+        public Builder withExpiresAt(Instant expiresAt) {
+            addClaim(PublicClaims.EXPIRES_AT, expiresAt);
+            return this;
+        }
+
+        /**
+         * Add a specific Not Before ("nbf") claim to the Payload. The claim will be written as seconds since the epoch;
          * Milliseconds will be truncated by rounding down to the nearest second.
          *
          * @param notBefore the Not Before value.
@@ -164,13 +177,37 @@ public final class JWTCreator {
         }
 
         /**
-         * Add a specific Issued At ("iat") claim to the Payload. The claim will be written as seconds since the epoch.
+         * Add a specific Not Before ("nbf") claim to the Payload. The claim will be written as seconds since the epoch;
+         * Milliseconds will be truncated by rounding down to the nearest second.
+         *
+         * @param notBefore the Not Before value.
+         * @return this same Builder instance.
+         */
+        public Builder withNotBefore(Instant notBefore) {
+            addClaim(PublicClaims.NOT_BEFORE, notBefore);
+            return this;
+        }
+
+        /**
+         * Add a specific Issued At ("iat") claim to the Payload. The claim will be written as seconds since the epoch;
          * Milliseconds will be truncated by rounding down to the nearest second.
          *
          * @param issuedAt the Issued At value.
          * @return this same Builder instance.
          */
         public Builder withIssuedAt(Date issuedAt) {
+            addClaim(PublicClaims.ISSUED_AT, issuedAt);
+            return this;
+        }
+
+        /**
+         * Add a specific Issued At ("iat") claim to the Payload. The claim will be written as seconds since the epoch;
+         * Milliseconds will be truncated by rounding down to the nearest second.
+         *
+         * @param issuedAt the Issued At value.
+         * @return this same Builder instance.
+         */
+        public Builder withIssuedAt(Instant issuedAt) {
             addClaim(PublicClaims.ISSUED_AT, issuedAt);
             return this;
         }
@@ -266,6 +303,12 @@ public final class JWTCreator {
          * @throws IllegalArgumentException if the name is null.
          */
         public Builder withClaim(String name, Date value) throws IllegalArgumentException {
+            assertNonNull(name);
+            addClaim(name, value);
+            return this;
+        }
+
+        public Builder withClaim(String name, Instant value) throws IllegalArgumentException {
             assertNonNull(name);
             addClaim(name, value);
             return this;
@@ -453,7 +496,7 @@ public final class JWTCreator {
             if (c.isArray()) {
                 return c == Integer[].class || c == Long[].class || c == String[].class;
             }
-            return c == String.class || c == Integer.class || c == Long.class || c == Double.class || c == Date.class || c == Boolean.class;
+            return c == String.class || c == Integer.class || c == Long.class || c == Double.class || c == Date.class || c == Instant.class || c == Boolean.class;
         }
 
         /**

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.*;
 
 /**
@@ -71,13 +72,15 @@ public class PayloadSerializer extends StdSerializer<ClaimsHolder> {
     }
 
     /**
-     * Serializes {@linkplain Date} to epoch second values, traversing maps and lists as needed.
+     * Serializes {@linkplain Instant} to epoch second values, traversing maps and lists as needed.
      * @param value the object to serialize
      * @param gen the JsonGenerator to use for JSON serialization
      */
     private void handleSerialization(Object value, JsonGenerator gen) throws IOException {
-        if (value instanceof Date) { // EXPIRES_AT, ISSUED_AT, NOT_BEFORE, custom date claims
+        if (value instanceof Date) {
             gen.writeNumber(dateToSeconds((Date) value));
+        } else if (value instanceof Instant) { // EXPIRES_AT, ISSUED_AT, NOT_BEFORE, custom Instant claims
+            gen.writeNumber(instantToSeconds((Instant) value));
         } else if (value instanceof Map) {
             serializeMap((Map<?, ?>) value, gen);
         } else if (value instanceof List) {
@@ -103,6 +106,10 @@ public class PayloadSerializer extends StdSerializer<ClaimsHolder> {
             handleSerialization(entry, gen);
         }
         gen.writeEndArray();
+    }
+
+    private long instantToSeconds(Instant instant) {
+        return instant.getEpochSecond();
     }
 
     private long dateToSeconds(Date date) {

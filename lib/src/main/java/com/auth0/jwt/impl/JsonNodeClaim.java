@@ -6,11 +6,11 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 
 import java.io.IOException;
 import java.lang.reflect.Array;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -61,6 +61,15 @@ class JsonNodeClaim implements Claim {
         }
         long seconds = data.asLong();
         return new Date(seconds * 1000);
+    }
+
+    @Override
+    public Instant asInstant() {
+        if (!data.canConvertToLong()) {
+            return null;
+        }
+        long seconds = data.asLong();
+        return Instant.ofEpochSecond(seconds);
     }
 
     @Override
