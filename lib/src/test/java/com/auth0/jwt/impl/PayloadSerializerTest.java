@@ -176,15 +176,32 @@ public class PayloadSerializerTest {
         claims.put("nbf", date);
         claims.put("exp", date);
         claims.put("ctm", date);
+        claims.put("map", Collections.singletonMap("date", date));
+        claims.put("list", Collections.singletonList(date));
+
+        Map<String, Object> nestedInMap = new HashMap<>();
+        nestedInMap.put("list", Collections.singletonList(date));
+        claims.put("nestedInMap", nestedInMap);
+
+        List<Object> nestedInList = new ArrayList<>();
+        nestedInList.add(Collections.singletonMap("nested", date));
+        claims.put("nestedInList", nestedInList);
+
         ClaimsHolder holder = new ClaimsHolder(claims);
         serializer.serialize(holder, jsonGenerator, serializerProvider);
         jsonGenerator.flush();
 
         String json = writer.toString();
+        System.out.println(json);
+
         assertThat(json, containsString("\"iat\":2147493647"));
         assertThat(json, containsString("\"nbf\":2147493647"));
         assertThat(json, containsString("\"exp\":2147493647"));
         assertThat(json, containsString("\"ctm\":2147493647"));
+        assertThat(json, containsString("\"map\":{\"date\":2147493647"));
+        assertThat(json, containsString("\"list\":[2147493647]"));
+        assertThat(json, containsString("\"nestedInMap\":{\"list\":[2147493647]}"));
+        assertThat(json, containsString("\"nestedInList\":[{\"nested\":2147493647}]"));
     }
 
     @Test
