@@ -44,7 +44,7 @@ public interface Payload {
      * @return the Expiration Time value or null.
      */
     default Instant getExpiresAtAsInstant() {
-        return getExpiresAt() != null ? getExpiresAt().toInstant() : null ;
+        return getExpiresAt() != null ? getExpiresAt().toInstant() : null;
     }
 
     /**
@@ -76,7 +76,7 @@ public interface Payload {
      * @return the Issued At value or null.
      */
     default Instant getIssuedAtAsInstant() {
-        return getIssuedAt() != null? getIssuedAt().toInstant() : null;
+        return getIssuedAt() != null ? getIssuedAt().toInstant() : null;
     }
 
     /**

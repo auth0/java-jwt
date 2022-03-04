@@ -75,7 +75,7 @@ public interface Claim {
      */
     default Instant asInstant() {
         Date date = asDate();
-        return date != null? date.toInstant() : null;
+        return date != null ? date.toInstant() : null;
     }
 
     /**
