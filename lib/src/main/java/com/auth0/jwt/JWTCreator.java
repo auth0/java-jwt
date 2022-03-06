@@ -308,6 +308,15 @@ public final class JWTCreator {
             return this;
         }
 
+        /**
+         * Add a custom Claim value. The claim will be written as seconds since the epoch.
+         * Milliseconds will be truncated by rounding down to the nearest second.
+         *
+         * @param name  the Claim's name.
+         * @param value the Claim's value.
+         * @return this same Builder instance.
+         * @throws IllegalArgumentException if the name is null.
+         */
         public Builder withClaim(String name, Instant value) throws IllegalArgumentException {
             assertNonNull(name);
             addClaim(name, value);
