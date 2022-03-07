@@ -373,8 +373,6 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
             isValid = value.equals(claim.asDouble());
         } else if (value instanceof Date) {
             isValid = value.equals(claim.asDate());
-        } else if (value instanceof Instant) {
-            isValid = value.equals(claim.asInstant());
         } else if (value instanceof Object[]) {
             List<Object> claimArr;
             Object[] claimAsObject = claim.as(Object[].class);
