@@ -52,7 +52,7 @@ public class NullClaimTest {
 
     @Test
     public void shouldGetAsInstant() {
-        assertThat(claim.asDate(), is(nullValue()));
+        assertThat(claim.asInstant(), is(nullValue()));
     }
 
     @Test
