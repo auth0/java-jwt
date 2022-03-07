@@ -6,7 +6,6 @@ import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.interfaces.ECDSAKeyProvider;
 import org.hamcrest.Matchers;
 import org.hamcrest.collection.IsIn;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
