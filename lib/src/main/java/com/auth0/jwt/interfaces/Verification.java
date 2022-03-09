@@ -2,6 +2,7 @@ package com.auth0.jwt.interfaces;
 
 import com.auth0.jwt.JWTVerifier;
 
+import java.time.Instant;
 import java.util.Date;
 
 /**
@@ -176,7 +177,8 @@ public interface Verification {
     Verification withClaim(String name, String value) throws IllegalArgumentException;
 
     /**
-     * Require a specific Claim value.
+     * Require a specific Claim value. Note that date-time claims are serialized as seconds since the epoch; when verifying
+     * date-time claim value, any time units more granular than seconds will be discarded.
      *
      * @param name  the Claim's name.
      * @param value the Claim's value.
@@ -184,6 +186,19 @@ public interface Verification {
      * @throws IllegalArgumentException if the name is null.
      */
     Verification withClaim(String name, Date value) throws IllegalArgumentException;
+
+    /**
+     * Require a specific Claim value. Note that date-time claims are serialized as seconds since the epoch; when verifying
+     * a date-time claim value, any time units more granular than seconds will be discarded.
+     *
+     * @param name  the Claim's name.
+     * @param value the Claim's value.
+     * @return this same Verification instance.
+     * @throws IllegalArgumentException if the name is null.
+     */
+    default Verification withClaim(String name, Instant value) throws IllegalArgumentException {
+        return withClaim(name, value != null ? Date.from(value) : null);
+    }
 
     /**
      * Require a specific Array Claim to contain at least the given items.

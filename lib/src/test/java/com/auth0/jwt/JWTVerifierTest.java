@@ -517,7 +517,7 @@ public class JWTVerifierTest {
     @Test
     public void shouldValidateCustomClaimOfTypeDate() {
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoxNDc4ODkxNTIxfQ.mhioumeok8fghQEhTKF3QtQAksSvZ_9wIhJmgZLhJ6c";
-        Date date = new Date(1478891521000L);
+        Date date = new Date(1478891521123L);
         DecodedJWT jwt = JWTVerifier.init(Algorithm.HMAC256("secret"))
                 .withClaim("name", date)
                 .build()

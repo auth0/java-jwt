@@ -174,8 +174,14 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
 
         @Override
         public Verification withClaim(String name, Date value) throws IllegalArgumentException {
+            return withClaim(name, value != null ? value.toInstant() : null);
+        }
+
+        @Override
+        public Verification withClaim(String name, Instant value) throws IllegalArgumentException {
             assertNonNull(name);
-            requireClaim(name, value);
+            // Since date-time claims are serialized as epoch seconds, we need to compare them with only seconds-granularity
+            requireClaim(name, value != null ? value.truncatedTo(ChronoUnit.SECONDS) : null);
             return this;
         }
 
@@ -371,8 +377,8 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
             isValid = value.equals(claim.asBoolean());
         } else if (value instanceof Double) {
             isValid = value.equals(claim.asDouble());
-        } else if (value instanceof Date) {
-            isValid = value.equals(claim.asDate());
+        } else if (value instanceof Instant) {
+            isValid = value.equals(claim.asInstant());
         } else if (value instanceof Object[]) {
             List<Object> claimArr;
             Object[] claimAsObject = claim.as(Object[].class);
