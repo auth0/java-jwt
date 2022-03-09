@@ -13,6 +13,7 @@ import org.junit.rules.ExpectedException;
 import java.nio.charset.StandardCharsets;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.RSAPrivateKey;
+import java.time.Instant;
 import java.util.*;
 
 import static org.hamcrest.Matchers.*;
@@ -64,7 +65,7 @@ public class JWTCreatorTest {
 
     @Test
     public void shouldOverwriteExistingHeaderIfHeaderMapContainsTheSameKey() {
-        Map<String, Object> header = new HashMap<String, Object>();
+        Map<String, Object> header = new HashMap<>();
         header.put(PublicClaims.KEY_ID, "xyz");
 
         String signed = JWTCreator.init()
@@ -80,7 +81,7 @@ public class JWTCreatorTest {
 
     @Test
     public void shouldOverwriteExistingHeadersWhenSettingSameHeaderKey() {
-        Map<String, Object> header = new HashMap<String, Object>();
+        Map<String, Object> header = new HashMap<>();
         header.put(PublicClaims.KEY_ID, "xyz");
 
         String signed = JWTCreator.init()
@@ -96,7 +97,7 @@ public class JWTCreatorTest {
 
     @Test
     public void shouldRemoveHeaderIfTheValueIsNull() {
-        Map<String, Object> header = new HashMap<String, Object>();
+        Map<String, Object> header = new HashMap<>();
         header.put(PublicClaims.KEY_ID, null);
         header.put("test2", "isSet");
 
@@ -272,6 +273,17 @@ public class JWTCreatorTest {
     }
 
     @Test
+    public void shouldAddExpiresAtInstant() {
+        String signed = JWTCreator.init()
+                .withExpiresAt(Instant.ofEpochSecond(1477592))
+                .sign(Algorithm.HMAC256("secret"));
+
+        System.out.println(signed);
+        assertThat(signed, is(notNullValue()));
+        assertThat(TokenUtils.splitToken(signed)[1], is("eyJleHAiOjE0Nzc1OTJ9"));
+    }
+
+    @Test
     public void shouldAddNotBefore() {
         String signed = JWTCreator.init()
                 .withNotBefore(new Date(1477592000))
@@ -282,9 +294,29 @@ public class JWTCreatorTest {
     }
 
     @Test
+    public void shouldAddNotBeforeInstant() {
+        String signed = JWTCreator.init()
+                .withNotBefore(Instant.ofEpochSecond(1477592))
+                .sign(Algorithm.HMAC256("secret"));
+
+        assertThat(signed, is(notNullValue()));
+        assertThat(TokenUtils.splitToken(signed)[1], is("eyJuYmYiOjE0Nzc1OTJ9"));
+    }
+
+    @Test
     public void shouldAddIssuedAt() {
         String signed = JWTCreator.init()
                 .withIssuedAt(new Date(1477592000))
+                .sign(Algorithm.HMAC256("secret"));
+
+        assertThat(signed, is(notNullValue()));
+        assertThat(TokenUtils.splitToken(signed)[1], is("eyJpYXQiOjE0Nzc1OTJ9"));
+    }
+
+    @Test
+    public void shouldAddIssuedAtInstant() {
+        String signed = JWTCreator.init()
+                .withIssuedAt(Instant.ofEpochSecond(1477592))
                 .sign(Algorithm.HMAC256("secret"));
 
         assertThat(signed, is(notNullValue()));
@@ -431,6 +463,18 @@ public class JWTCreatorTest {
     }
 
     @Test
+    public void shouldAcceptCustomClaimOfTypeDateInstant() {
+        Instant instant = Instant.ofEpochSecond(1478891521);
+        String jwt = JWTCreator.init()
+                .withClaim("name", instant)
+                .sign(Algorithm.HMAC256("secret"));
+
+        assertThat(jwt, is(notNullValue()));
+        String[] parts = jwt.split("\\.");
+        assertThat(parts[1], is("eyJuYW1lIjoxNDc4ODkxNTIxfQ"));
+    }
+
+    @Test
     public void shouldAcceptCustomArrayClaimOfTypeString() {
         String jwt = JWTCreator.init()
                 .withArrayClaim("name", new String[]{"text", "123", "true"})
@@ -499,7 +543,8 @@ public class JWTCreatorTest {
         data.put("integer", 1);
         data.put("long", Long.MAX_VALUE);
         data.put("double", 123.456d);
-        data.put("date", new Date(123000));
+        data.put("date", new Date(123000L));
+        data.put("instant", Instant.ofEpochSecond(123));
         data.put("boolean", true);
 
         // array types
@@ -531,12 +576,13 @@ public class JWTCreatorTest {
         assertThat(map.get("double"), is(123.456d));
 
         assertThat(map.get("date"), is(123));
+        assertThat(map.get("instant"), is(123));
         assertThat(map.get("boolean"), is(true));
 
         // array types
         assertThat(map.get("intArray"), is(Arrays.asList(3, 5)));
         assertThat(map.get("longArray"), is(Arrays.asList(Long.MAX_VALUE, Long.MIN_VALUE)));
-        assertThat(map.get("stringArray"), is(Arrays.asList("string")));
+        assertThat(map.get("stringArray"), is(Collections.singletonList("string")));
 
         // list
         assertThat(map.get("list"), is(Arrays.asList("a", "b", "c")));
@@ -554,7 +600,8 @@ public class JWTCreatorTest {
         data.add(1);
         data.add(Long.MAX_VALUE);
         data.add(123.456d);
-        data.add(new Date(123000));
+        data.add(new Date(123000L));
+        data.add(Instant.ofEpochSecond(123));
         data.add(true);
 
         // array types
@@ -585,17 +632,17 @@ public class JWTCreatorTest {
         assertThat(list.get(2), is(Long.MAX_VALUE));
         assertThat(list.get(3), is(123.456d));
         assertThat(list.get(4), is(123));
-        assertThat(list.get(5), is(true));
+        assertThat(list.get(5), is(123));
+        assertThat(list.get(6), is(true));
 
         // array types
-        assertThat(list.get(6), is(Arrays.asList(3, 5)));
-        assertThat(list.get(7), is(Arrays.asList(Long.MAX_VALUE, Long.MIN_VALUE)));
-        assertThat(list.get(8), is(Arrays.asList("string")));
+        assertThat(list.get(7), is(Arrays.asList(3, 5)));
+        assertThat(list.get(8), is(Arrays.asList(Long.MAX_VALUE, Long.MIN_VALUE)));
+        assertThat(list.get(9), is(Arrays.asList("string")));
 
         // list
-        assertThat(list.get(9), is(Arrays.asList("a", "b", "c")));
-        assertThat(list.get(10), is(sub));
-
+        assertThat(list.get(10), is(Arrays.asList("a", "b", "c")));
+        assertThat(list.get(11), is(sub));
     }
 
     @Test
@@ -681,7 +728,7 @@ public class JWTCreatorTest {
 
     @Test
     public void shouldRefuseCustomListClaimForUnknownListElement() {
-        List<Object> list = Arrays.asList(new UserPojo("Michael", 255));
+        List<Object> list = Collections.singletonList(new UserPojo("Michael", 255));
 
         exception.expect(IllegalArgumentException.class);
 
@@ -692,7 +739,7 @@ public class JWTCreatorTest {
 
     @Test
     public void shouldRefuseCustomListClaimForUnknownListElementWrappedInAMap() {
-        List<Object> list = Arrays.asList(new UserPojo("Michael", 255));
+        List<Object> list = Collections.singletonList(new UserPojo("Michael", 255));
 
         Map<String, Object> data = new HashMap<>();
         data.put("someList", list);
@@ -798,7 +845,7 @@ public class JWTCreatorTest {
         Map<String, Object> payload = new HashMap<>();
         payload.put("entry", "value");
         payload.put("pojo", new UserPojo("name", 42));
-        String jwt = JWTCreator.init()
+        JWTCreator.init()
                 .withPayload(payload)
                 .sign(Algorithm.HMAC256("secret"));
     }
@@ -824,7 +871,7 @@ public class JWTCreatorTest {
 
         Map<String, Object> payload = new HashMap<>();
         payload.put("list", Arrays.asList("item1", new UserPojo("name", 42)));
-        String jwt = JWTCreator.init()
+        JWTCreator.init()
                 .withPayload(payload)
                 .sign(Algorithm.HMAC256("secret"));
     }
@@ -837,7 +884,7 @@ public class JWTCreatorTest {
         Map<String, Object> payload = new HashMap<>();
         payload.put("entry", "value");
         payload.put("map", Collections.singletonMap("pojo", new UserPojo("name", 42)));
-        String jwt = JWTCreator.init()
+        JWTCreator.init()
                 .withPayload(payload)
                 .sign(Algorithm.HMAC256("secret"));
     }

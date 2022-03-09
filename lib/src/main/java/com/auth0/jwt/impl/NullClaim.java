@@ -3,6 +3,7 @@ package com.auth0.jwt.impl;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.interfaces.Claim;
 
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -43,6 +44,11 @@ public class NullClaim implements Claim {
 
     @Override
     public Date asDate() {
+        return null;
+    }
+
+    @Override
+    public Instant asInstant() {
         return null;
     }
 

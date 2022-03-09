@@ -21,8 +21,6 @@ import java.util.Date;
 
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class JWTTest {
 
@@ -285,9 +283,9 @@ public class JWTTest {
                 .verify(token);
 
         assertThat(jwt, is(notNullValue()));
-        assertThat(jwt.getExpiresAt(), is(instanceOf(Date.class)));
-        assertThat(jwt.getExpiresAt(), is(notNullValue()));
         assertThat(jwt.getExpiresAt(), is(equalTo(new Date(seconds * 1000))));
+        assertThat(jwt.getExpiresAtAsInstant(), is(equalTo(Instant.ofEpochSecond(seconds))));
+
     }
 
     @Test
@@ -302,9 +300,8 @@ public class JWTTest {
                 .verify(token);
 
         assertThat(jwt, is(notNullValue()));
-        assertThat(jwt.getNotBefore(), is(instanceOf(Date.class)));
-        assertThat(jwt.getNotBefore(), is(notNullValue()));
         assertThat(jwt.getNotBefore(), is(equalTo(new Date(seconds * 1000))));
+        assertThat(jwt.getNotBeforeAsInstant(), is(equalTo(Instant.ofEpochSecond(seconds))));
     }
 
     @Test
@@ -319,9 +316,8 @@ public class JWTTest {
                 .verify(token);
 
         assertThat(jwt, is(notNullValue()));
-        assertThat(jwt.getIssuedAt(), is(instanceOf(Date.class)));
-        assertThat(jwt.getIssuedAt(), is(notNullValue()));
         assertThat(jwt.getIssuedAt(), is(equalTo(new Date(seconds * 1000))));
+        assertThat(jwt.getIssuedAtAsInstant(), is(equalTo(Instant.ofEpochSecond(seconds))));
     }
 
     @Test

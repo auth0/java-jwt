@@ -19,17 +19,15 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.hamcrest.Matchers.startsWith;
-import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.*;
-import static org.junit.Assert.assertThrows;
+import static org.hamcrest.Matchers.*;
+import static org.mockito.Mockito.mock;
 
 public class JWTVerifierTest {
 
-    private Clock mockNow = Clock.fixed(Instant.ofEpochSecond(1477592), ZoneId.of("UTC"));
-    private Clock mockOneSecondEarlier = Clock.offset(mockNow, Duration.ofSeconds(-1));
-    private Clock mockOneSecondLater = Clock.offset(mockNow, Duration.ofSeconds(1));
+    private final Clock mockNow = Clock.fixed(Instant.ofEpochSecond(1477592), ZoneId.of("UTC"));
+    private final Clock mockOneSecondEarlier = Clock.offset(mockNow, Duration.ofSeconds(-1));
+    private final Clock mockOneSecondLater = Clock.offset(mockNow, Duration.ofSeconds(1));
 
     @Rule
     public ExpectedException exception = ExpectedException.none();

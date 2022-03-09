@@ -11,8 +11,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.mockito.Mockito;
 
+import java.time.Instant;
 import java.util.*;
 
 import static com.auth0.jwt.impl.JWTParser.getDefaultObjectMapper;
@@ -25,38 +25,33 @@ public class PayloadImplTest {
     public ExpectedException exception = ExpectedException.none();
 
     private PayloadImpl payload;
-    private Date expiresAt;
-    private Date notBefore;
-    private Date issuedAt;
+    private final Instant expiresAt = Instant.now().plusSeconds(10);
+    private final Instant notBefore = Instant.now();
+    private final Instant issuedAt = Instant.now();
 
-    private ObjectMapper mapper;
     private ObjectReader objectReader;
 
     @Before
     public void setUp() {
-        mapper = getDefaultObjectMapper();
+        ObjectMapper mapper = getDefaultObjectMapper();
         objectReader = mapper.reader();
 
-        expiresAt = Mockito.mock(Date.class);
-        notBefore = Mockito.mock(Date.class);
-        issuedAt = Mockito.mock(Date.class);
         Map<String, JsonNode> tree = new HashMap<>();
         tree.put("extraClaim", new TextNode("extraValue"));
         payload = new PayloadImpl("issuer", "subject", Collections.singletonList("audience"), expiresAt, notBefore, issuedAt, "jwtId", tree, objectReader);
     }
 
-    @SuppressWarnings("Convert2Diamond")
     @Test
     public void shouldHaveUnmodifiableTree() {
         exception.expect(UnsupportedOperationException.class);
-        PayloadImpl payload = new PayloadImpl(null, null, null, null, null, null, null, new HashMap<String, JsonNode>(), objectReader);
+        PayloadImpl payload = new PayloadImpl(null, null, null, null, null, null, null, new HashMap<>(), objectReader);
         payload.getTree().put("something", null);
     }
 
     @Test
     public void shouldHaveUnmodifiableAudience() {
         exception.expect(UnsupportedOperationException.class);
-        PayloadImpl payload = new PayloadImpl(null, null, new ArrayList<String>(), null, null, null, null, null, objectReader);
+        PayloadImpl payload = new PayloadImpl(null, null, new ArrayList<>(), null, null, null, null, null, objectReader);
         payload.getAudience().add("something");
     }
 
@@ -104,7 +99,8 @@ public class PayloadImplTest {
     @Test
     public void shouldGetExpiresAt() {
         assertThat(payload, is(notNullValue()));
-        assertThat(payload.getExpiresAt(), is(expiresAt));
+        assertThat(payload.getExpiresAt(), is(Date.from(expiresAt)));
+        assertThat(payload.getExpiresAtAsInstant(), is(expiresAt));
     }
 
     @Test
@@ -112,12 +108,14 @@ public class PayloadImplTest {
         PayloadImpl payload = new PayloadImpl(null, null, null, null, null, null, null, null, objectReader);
         assertThat(payload, is(notNullValue()));
         assertThat(payload.getExpiresAt(), is(nullValue()));
+        assertThat(payload.getExpiresAtAsInstant(), is(nullValue()));
     }
 
     @Test
     public void shouldGetNotBefore() {
         assertThat(payload, is(notNullValue()));
-        assertThat(payload.getNotBefore(), is(notBefore));
+        assertThat(payload.getNotBefore(), is(Date.from(notBefore)));
+        assertThat(payload.getNotBeforeAsInstant(), is(notBefore));
     }
 
     @Test
@@ -125,12 +123,14 @@ public class PayloadImplTest {
         PayloadImpl payload = new PayloadImpl(null, null, null, null, null, null, null, null, objectReader);
         assertThat(payload, is(notNullValue()));
         assertThat(payload.getNotBefore(), is(nullValue()));
+        assertThat(payload.getNotBeforeAsInstant(), is(nullValue()));
     }
 
     @Test
     public void shouldGetIssuedAt() {
         assertThat(payload, is(notNullValue()));
-        assertThat(payload.getIssuedAt(), is(issuedAt));
+        assertThat(payload.getIssuedAt(), is(Date.from(issuedAt)));
+        assertThat(payload.getIssuedAtAsInstant(), is(issuedAt));
     }
 
     @Test
@@ -138,6 +138,7 @@ public class PayloadImplTest {
         PayloadImpl payload = new PayloadImpl(null, null, null, null, null, null, null, null, objectReader);
         assertThat(payload, is(notNullValue()));
         assertThat(payload.getIssuedAt(), is(nullValue()));
+        assertThat(payload.getIssuedAtAsInstant(), is(nullValue()));
     }
 
     @Test
