@@ -527,6 +527,17 @@ public class JWTVerifierTest {
     }
 
     @Test
+    public void shouldRemoveCustomClaimOfTypeDateWhenNull() {
+        JWTVerifier verifier = JWTVerifier.init(Algorithm.HMAC256("secret"))
+                .withClaim("name", new Date())
+                .withClaim("name", (Date) null)
+                .build();
+
+        assertThat(verifier.claims, is(notNullValue()));
+        assertThat(verifier.claims, not(hasKey("iss")));
+    }
+
+    @Test
     public void shouldValidateCustomArrayClaimOfTypeString() {
         String token = "eyJhbGciOiJIUzI1NiJ9.eyJuYW1lIjpbInRleHQiLCIxMjMiLCJ0cnVlIl19.lxM8EcmK1uSZRAPd0HUhXGZJdauRmZmLjoeqz4J9yAA";
         DecodedJWT jwt = JWTVerifier.init(Algorithm.HMAC256("secret"))
