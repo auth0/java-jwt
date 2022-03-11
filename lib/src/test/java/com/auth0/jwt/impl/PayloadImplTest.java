@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.node.TextNode;
 import org.hamcrest.collection.IsCollectionWithSize;
-import org.hamcrest.core.IsCollectionContaining;
+import org.hamcrest.core.IsIterableContaining;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -86,7 +86,7 @@ public class PayloadImplTest {
         assertThat(payload, is(notNullValue()));
 
         assertThat(payload.getAudience(), is(IsCollectionWithSize.hasSize(1)));
-        assertThat(payload.getAudience(), is(IsCollectionContaining.hasItems("audience")));
+        assertThat(payload.getAudience(), is(IsIterableContaining.hasItems("audience")));
     }
 
     @Test

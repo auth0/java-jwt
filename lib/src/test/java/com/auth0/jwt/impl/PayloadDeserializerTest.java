@@ -12,7 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.*;
 import org.hamcrest.collection.IsCollectionWithSize;
 import org.hamcrest.collection.IsEmptyCollection;
-import org.hamcrest.core.IsCollectionContaining;
+import org.hamcrest.core.IsIterableContaining;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -93,7 +93,7 @@ public class PayloadDeserializerTest {
         assertThat(payload, is(notNullValue()));
         assertThat(payload.getIssuer(), is("auth0"));
         assertThat(payload.getSubject(), is("emails"));
-        assertThat(payload.getAudience(), is(IsCollectionContaining.hasItem("users")));
+        assertThat(payload.getAudience(), is(IsIterableContaining.hasItem("users")));
         assertThat(payload.getIssuedAt().getTime(), is(10101010L * 1000));
         assertThat(payload.getExpiresAt().getTime(), is(11111111L * 1000));
         assertThat(payload.getNotBefore().getTime(), is(10101011L * 1000));
@@ -126,7 +126,7 @@ public class PayloadDeserializerTest {
         List<String> values = deserializer.getStringOrArray(tree, "key");
         assertThat(values, is(notNullValue()));
         assertThat(values, is(IsCollectionWithSize.hasSize(2)));
-        assertThat(values, is(IsCollectionContaining.hasItems("one", "two")));
+        assertThat(values, is(IsIterableContaining.hasItems("one", "two")));
     }
 
     @Test
@@ -138,7 +138,7 @@ public class PayloadDeserializerTest {
         List<String> values = deserializer.getStringOrArray(tree, "key");
         assertThat(values, is(notNullValue()));
         assertThat(values, is(IsCollectionWithSize.hasSize(1)));
-        assertThat(values, is(IsCollectionContaining.hasItems("something")));
+        assertThat(values, is(IsIterableContaining.hasItems("something")));
     }
 
     @Test

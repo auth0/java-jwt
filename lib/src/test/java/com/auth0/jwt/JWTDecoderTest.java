@@ -5,7 +5,7 @@ import com.auth0.jwt.impl.NullClaim;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import org.hamcrest.collection.IsCollectionWithSize;
-import org.hamcrest.core.IsCollectionContaining;
+import org.hamcrest.core.IsIterableContaining;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -142,7 +142,7 @@ public class JWTDecoderTest {
         DecodedJWT jwt = JWT.decode("eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOlsiSG9wZSIsIlRyYXZpcyIsIlNvbG9tb24iXX0.Tm4W8WnfPjlmHSmKFakdij0on2rWPETpoM7Sh0u6-S4");
         assertThat(jwt, is(notNullValue()));
         assertThat(jwt.getAudience(), is(IsCollectionWithSize.hasSize(3)));
-        assertThat(jwt.getAudience(), is(IsCollectionContaining.hasItems("Hope", "Travis", "Solomon")));
+        assertThat(jwt.getAudience(), is(IsIterableContaining.hasItems("Hope", "Travis", "Solomon")));
     }
 
     @Test
@@ -150,7 +150,7 @@ public class JWTDecoderTest {
         DecodedJWT jwt = JWT.decode("eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJKYWNrIFJleWVzIn0.a4I9BBhPt1OB1GW67g2P1bEHgi6zgOjGUL4LvhE9Dgc");
         assertThat(jwt, is(notNullValue()));
         assertThat(jwt.getAudience(), is(IsCollectionWithSize.hasSize(1)));
-        assertThat(jwt.getAudience(), is(IsCollectionContaining.hasItems("Jack Reyes")));
+        assertThat(jwt.getAudience(), is(IsIterableContaining.hasItems("Jack Reyes")));
     }
 
     @Test

@@ -3,7 +3,7 @@ package com.auth0.jwt;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import org.hamcrest.collection.IsCollectionWithSize;
-import org.hamcrest.core.IsCollectionContaining;
+import org.hamcrest.core.IsIterableContaining;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -256,7 +256,7 @@ public class JWTTest {
 
         assertThat(jwt, is(notNullValue()));
         assertThat(jwt.getAudience(), is(IsCollectionWithSize.hasSize(3)));
-        assertThat(jwt.getAudience(), is(IsCollectionContaining.hasItems("Hope", "Travis", "Solomon")));
+        assertThat(jwt.getAudience(), is(IsIterableContaining.hasItems("Hope", "Travis", "Solomon")));
     }
 
     @Test
@@ -268,7 +268,7 @@ public class JWTTest {
 
         assertThat(jwt, is(notNullValue()));
         assertThat(jwt.getAudience(), is(IsCollectionWithSize.hasSize(1)));
-        assertThat(jwt.getAudience(), is(IsCollectionContaining.hasItems("Jack Reyes")));
+        assertThat(jwt.getAudience(), is(IsIterableContaining.hasItems("Jack Reyes")));
     }
 
     @Test

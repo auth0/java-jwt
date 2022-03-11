@@ -48,11 +48,12 @@ javadoc {
 
 dependencies {
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.6'
-    testImplementation 'org.bouncycastle:bcprov-jdk15on:1.60'
-    testImplementation 'junit:junit:4.12'
-    testImplementation 'net.jodah:concurrentunit:0.4.3'
-    testImplementation 'org.hamcrest:java-hamcrest:2.0.0.0'
-    testImplementation 'org.mockito:mockito-core:2.18.3'
+
+    testImplementation 'org.bouncycastle:bcprov-jdk15on:1.70'
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'net.jodah:concurrentunit:0.4.6'
+    testImplementation 'org.hamcrest:hamcrest:2.2'
+    testImplementation 'org.mockito:mockito-core:4.4.0'
 }
 
 jacoco {
@@ -92,7 +93,7 @@ task compileModuleInfoJava(type: JavaCompile) {
 }
 
 compileTestJava {
-    options.compilerArgs = ['--release', "8"]
+    options.compilerArgs = ['--release', "8", "-Xlint:deprecation"]
 }
 
 def testJava8 = tasks.register('testJava8', Test) {
