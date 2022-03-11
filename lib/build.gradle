@@ -118,7 +118,6 @@ def testJava17 = tasks.register('testJava17', Test) {
     filter {
         excludeTestsMatching "*.jwt.ConcurrentVerifyTest.shouldPassECDSA256KVerificationWithJOSESignature"
         excludeTestsMatching "*.jwt.JWTCreatorTest.shouldAddKeyIdIfAvailableFromECDSAKAlgorithms"
-        excludeTestsMatching "*.jwt.JWTCreatorTest.shouldNotOverwriteKeyIdIfAddedFromECDSAKAlgorithms"
         excludeTestsMatching "*.jwt.JWTTest.shouldCreateAnEmptyECDSA256KSignedToken"
         excludeTestsMatching "*.jwt.algorithms.ECDSAAlgorithmTest.shouldPassECDSA256KVerificationWithJOSESignature"
         excludeTestsMatching "*.jwt.algorithms.ECDSAAlgorithmTest.shouldPassECDSA256KVerificationWithJOSESignatureWithBothKeys"

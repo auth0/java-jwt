@@ -176,7 +176,7 @@ public class JWTCreatorTest {
 
     @Test
     public void shouldNotOverwriteKeyIdIfAddedFromECDSAKAlgorithms() throws Exception {
-        ECPrivateKey privateKey = (ECPrivateKey) PemUtils.readPrivateKeyFromFile(PRIVATE_KEY_FILE_EC_256K, "EC");
+        ECPrivateKey privateKey = (ECPrivateKey) PemUtils.readPrivateKeyFromFile(PRIVATE_KEY_FILE_EC_256, "EC");
         ECDSAKeyProvider provider = mock(ECDSAKeyProvider.class);
         when(provider.getPrivateKeyId()).thenReturn("my-key-id");
         when(provider.getPrivateKey()).thenReturn(privateKey);
