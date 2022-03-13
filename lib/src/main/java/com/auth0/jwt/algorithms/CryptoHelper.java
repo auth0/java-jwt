@@ -131,6 +131,7 @@ class CryptoHelper {
 
     /**
      * Verify signature.
+     * For valid verification, ensure the content is in the format {HEADER}.{PAYLOAD}
      *
      * @param algorithm algorithm name.
      * @param secretBytes algorithm secret.
@@ -139,16 +140,15 @@ class CryptoHelper {
      * @return true if signature is valid.
      * @throws NoSuchAlgorithmException if the algorithm is not supported.
      * @throws InvalidKeyException if the given key is inappropriate for initializing the specified algorithm.
-     * @deprecated rather use corresponding method which takes header and payload as separate inputs
      */
 
-    @Deprecated
     boolean verifySignatureFor(String algorithm, byte[] secretBytes, byte[] contentBytes, byte[] signatureBytes) throws NoSuchAlgorithmException, InvalidKeyException {
         return MessageDigest.isEqual(createSignatureFor(algorithm, secretBytes, contentBytes), signatureBytes);
     }
 
     /**
      * Create signature.
+     * To get the correct JWT Signature, ensure the content is in the format {HEADER}.{PAYLOAD}
      *
      * @param algorithm algorithm name.
      * @param secretBytes algorithm secret.
@@ -156,10 +156,8 @@ class CryptoHelper {
      * @return the signature bytes.
      * @throws NoSuchAlgorithmException if the algorithm is not supported.
      * @throws InvalidKeyException if the given key is inappropriate for initializing the specified algorithm.
-     * @deprecated rather use corresponding method which takes header and payload as separate inputs
      */
 
-    @Deprecated
     byte[] createSignatureFor(String algorithm, byte[] secretBytes, byte[] contentBytes) throws NoSuchAlgorithmException, InvalidKeyException {
         final Mac mac = Mac.getInstance(algorithm);
         mac.init(new SecretKeySpec(secretBytes, algorithm));
@@ -168,6 +166,7 @@ class CryptoHelper {
 
     /**
      * Verify signature using a public key.
+     * For valid verification, ensure the content is in the format {HEADER}.{PAYLOAD}
      *
      * @param algorithm algorithm name.
      * @param publicKey algorithm public key.
@@ -177,10 +176,8 @@ class CryptoHelper {
      * @throws NoSuchAlgorithmException if the algorithm is not supported.
      * @throws InvalidKeyException if the given key is inappropriate for initializing the specified algorithm.
      * @throws SignatureException if this signature object is not initialized properly or if this signature algorithm is unable to process the input data provided.
-     * @deprecated rather use corresponding method which takes header and payload as separate inputs
      */
 
-    @Deprecated
     boolean verifySignatureFor(String algorithm, PublicKey publicKey, byte[] contentBytes, byte[] signatureBytes) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
         final Signature s = Signature.getInstance(algorithm);
         s.initVerify(publicKey);
@@ -190,6 +187,7 @@ class CryptoHelper {
 
     /**
      * Create signature using a private key.
+     * To get the correct JWT Signature, ensure the content is in the format {HEADER}.{PAYLOAD}
      *
      * @param algorithm algorithm name.
      * @param privateKey the private key to use for signing.
@@ -198,10 +196,8 @@ class CryptoHelper {
      * @throws NoSuchAlgorithmException if the algorithm is not supported.
      * @throws InvalidKeyException if the given key is inappropriate for initializing the specified algorithm.
      * @throws SignatureException if this signature object is not initialized properly or if this signature algorithm is unable to process the input data provided.
-     * @deprecated rather use corresponding method which takes header and payload as separate inputs
      */
 
-    @Deprecated
     byte[] createSignatureFor(String algorithm, PrivateKey privateKey, byte[] contentBytes) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
         final Signature s = Signature.getInstance(algorithm);
         s.initSign(privateKey);

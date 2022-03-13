@@ -71,7 +71,6 @@ class ECDSAAlgorithm extends Algorithm {
     }
 
     @Override
-    @Deprecated
     public byte[] sign(byte[] contentBytes) throws SignatureGenerationException {
         try {
             ECPrivateKey privateKey = keyProvider.getPrivateKey();
