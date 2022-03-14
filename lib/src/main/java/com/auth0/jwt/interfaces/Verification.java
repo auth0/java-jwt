@@ -178,7 +178,7 @@ public interface Verification {
 
     /**
      * Require a specific Claim value. Note that date-time claims are serialized as seconds since the epoch; when verifying
-     * date-time claim value, any time units more granular than seconds will be discarded.
+     * date-time claim value, any time units more granular than seconds will not be considered.
      *
      * @param name  the Claim's name.
      * @param value the Claim's value.
@@ -189,7 +189,7 @@ public interface Verification {
 
     /**
      * Require a specific Claim value. Note that date-time claims are serialized as seconds since the epoch; when verifying
-     * a date-time claim value, any time units more granular than seconds will be discarded.
+     * a date-time claim value, any time units more granular than seconds will not be considered.
      *
      * @param name  the Claim's name.
      * @param value the Claim's value.
