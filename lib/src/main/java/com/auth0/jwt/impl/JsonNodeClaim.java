@@ -60,7 +60,7 @@ class JsonNodeClaim implements Claim {
             return null;
         }
         long seconds = data.asLong();
-        return new Date(seconds * 1000);
+        return new Date(seconds);
     }
 
     @Override

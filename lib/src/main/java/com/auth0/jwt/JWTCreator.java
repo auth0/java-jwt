@@ -481,6 +481,14 @@ public final class JWTCreator {
             }
         }
 
+        private void addClaim(String name, Date value) {
+            if (value == null) {
+                payloadClaims.remove(name);
+                return;
+            }
+            payloadClaims.put(name, value.getTime());
+        }
+
         private void addClaim(String name, Object value) {
             if (value == null) {
                 payloadClaims.remove(name);

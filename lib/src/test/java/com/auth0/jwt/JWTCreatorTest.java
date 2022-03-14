@@ -2,6 +2,7 @@ package com.auth0.jwt;
 
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.impl.PublicClaims;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.ECDSAKeyProvider;
 import com.auth0.jwt.interfaces.RSAKeyProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -29,6 +30,21 @@ public class JWTCreatorTest {
 
     @Rule
     public ExpectedException exception = ExpectedException.none();
+
+    @Test
+    public void shouldReturnSameDateWithMilliAccuracy() {
+        long date = 1647277221778L;
+        System.out.println(date);
+        Date in = new Date(date);
+        System.out.println(in);
+        String token = JWTCreator.init()
+                               .withClaim("aDate", in)
+                               .sign(Algorithm.HMAC256("secret"));
+        JWTVerifier verifier = JWT.require(Algorithm.HMAC256("secret")).build();
+        DecodedJWT jwt = verifier.verify(token);
+        Date out = jwt.getClaim("aDate").asDate();
+        assertThat(out.getTime(), is(in.getTime()));
+    }
 
     @Test
     public void shouldThrowWhenRequestingSignWithoutAlgorithm() throws Exception {
@@ -574,7 +590,7 @@ public class JWTCreatorTest {
 
         assertThat(jwt, is(notNullValue()));
         String[] parts = jwt.split("\\.");
-        
+
         String body = new String(Base64.getUrlDecoder().decode(parts[1]), StandardCharsets.UTF_8);
         ObjectMapper mapper = new ObjectMapper();
         List<Object> list = (List<Object>) mapper.readValue(body, Map.class).get("data");
