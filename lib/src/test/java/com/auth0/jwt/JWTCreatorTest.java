@@ -34,9 +34,7 @@ public class JWTCreatorTest {
     @Test
     public void shouldReturnSameDateWithMilliAccuracy() {
         long date = 1647277221778L;
-        System.out.println(date);
         Date in = new Date(date);
-        System.out.println(in);
         String token = JWTCreator.init()
                                .withClaim("aDate", in)
                                .sign(Algorithm.HMAC256("secret"));
