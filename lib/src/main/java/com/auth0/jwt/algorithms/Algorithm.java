@@ -177,7 +177,11 @@ public abstract class Algorithm {
      * @param keyProvider the provider of the Public Key and Private Key for the verify and signing instance.
      * @return a valid ECDSA256 Algorithm.
      * @throws IllegalArgumentException if the Key Provider is null.
+     * @deprecated The SECP-256K1 Curve algorithm has been disabled beginning in Java 15.
+     * Use of this method in those unsupported Java versions will throw a {@link java.security.SignatureException}.
+     * This method will be removed in the next major version. See for additional information
      */
+    @Deprecated
     public static Algorithm ECDSA256K(ECDSAKeyProvider keyProvider) throws IllegalArgumentException {
         return new ECDSAAlgorithm("ES256K", "SHA256withECDSA", 32, keyProvider);
     }
@@ -189,7 +193,11 @@ public abstract class Algorithm {
      * @param privateKey the key to use in the signing instance.
      * @return a valid ECDSA256 Algorithm.
      * @throws IllegalArgumentException if the provided Key is null.
+     * @deprecated The SECP-256K1 Curve algorithm has been disabled beginning in Java 15.
+     * Use of this method in those unsupported Java versions will throw a {@link java.security.SignatureException}.
+     * This method will be removed in the next major version. See for additional information
      */
+    @Deprecated
     public static Algorithm ECDSA256K(ECPublicKey publicKey, ECPrivateKey privateKey) throws IllegalArgumentException {
         return ECDSA256K(ECDSAAlgorithm.providerForKeys(publicKey, privateKey));
     }
