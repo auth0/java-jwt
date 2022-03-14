@@ -1,5 +1,17 @@
 # Change Log
 
+## [3.19.0](https://github.com/auth0/java-jwt/tree/3.19.0) (2022-03-14)
+[Full Changelog](https://github.com/auth0/java-jwt/compare/3.18.3...3.19.0)
+
+**Deprecated**
+- Deprecate ES256K Algorithm [\#543](https://github.com/auth0/java-jwt/pull/543) ([poovamraj](https://github.com/poovamraj))
+
+**Fixed**
+- fix typos in JWTVerifier#verify docstring [\#526](https://github.com/auth0/java-jwt/pull/526) ([OdunlamiZO](https://github.com/OdunlamiZO))
+
+**Security**
+- Bump `jackson-databind` dependency to 2.13.2 [\#542](https://github.com/auth0/java-jwt/pull/542) ([evansims](https://github.com/evansims))
+
 ## [3.18.3](https://github.com/auth0/java-jwt/tree/3.18.3) (2022-01-13)
 [Full Changelog](https://github.com/auth0/java-jwt/compare/3.18.2...3.18.3)
 
