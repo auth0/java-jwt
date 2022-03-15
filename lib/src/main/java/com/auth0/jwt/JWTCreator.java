@@ -3,9 +3,7 @@ package com.auth0.jwt;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.SignatureGenerationException;
-import com.auth0.jwt.impl.ClaimsHolder;
-import com.auth0.jwt.impl.PayloadSerializer;
-import com.auth0.jwt.impl.PublicClaims;
+import com.auth0.jwt.impl.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -34,7 +32,8 @@ public final class JWTCreator {
     static {
         mapper = new ObjectMapper();
         module = new SimpleModule();
-        module.addSerializer(ClaimsHolder.class, new PayloadSerializer());
+        module.addSerializer(PayloadClaimsHolder.class, new PayloadSerializer());
+        module.addSerializer(HeaderClaimsHolder.class, new HeaderSerializer());
         mapper.registerModule(module);
         mapper.configure(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY, true);
     }
@@ -42,8 +41,8 @@ public final class JWTCreator {
     private JWTCreator(Algorithm algorithm, Map<String, Object> headerClaims, Map<String, Object> payloadClaims) throws JWTCreationException {
         this.algorithm = algorithm;
         try {
-            headerJson = mapper.writeValueAsString(headerClaims);
-            payloadJson = mapper.writeValueAsString(new ClaimsHolder(payloadClaims));
+            headerJson = mapper.writeValueAsString(new HeaderClaimsHolder(headerClaims));
+            payloadJson = mapper.writeValueAsString(new PayloadClaimsHolder(payloadClaims));
         } catch (JsonProcessingException e) {
             throw new JWTCreationException("Some of the Claims couldn't be converted to a valid JSON format.", e);
         }
