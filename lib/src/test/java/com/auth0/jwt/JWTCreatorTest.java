@@ -5,7 +5,6 @@ import com.auth0.jwt.impl.PublicClaims;
 import com.auth0.jwt.interfaces.ECDSAKeyProvider;
 import com.auth0.jwt.interfaces.RSAKeyProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -16,8 +15,8 @@ import java.security.interfaces.RSAPrivateKey;
 import java.time.Instant;
 import java.util.*;
 
-import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -39,11 +38,32 @@ public class JWTCreatorTest {
                 .sign(null);
     }
 
-    @SuppressWarnings("Convert2Diamond")
     @Test
     public void shouldAddHeaderClaim() {
-        Map<String, Object> header = new HashMap<String, Object>();
-        header.put("asd", 123);
+        Date date = new Date(123000);
+        Instant instant = date.toInstant();
+
+        List<Object> list = Arrays.asList(date, instant);
+        Map<String, Object> map = new HashMap<>();
+        map.put("date", date);
+        map.put("instant", instant);
+
+        List<Object> expectedSerializedList = Arrays.asList(date.getTime() / 1000, instant.getEpochSecond());
+        Map<String, Object> expectedSerializedMap = new HashMap<>();
+        expectedSerializedMap.put("date", date.getTime() / 1000);
+        expectedSerializedMap.put("instant", instant.getEpochSecond());
+
+        Map<String, Object> header = new HashMap<>();
+        header.put("string", "string");
+        header.put("int", 42);
+        header.put("long", 4200000000L);
+        header.put("double", 123.123);
+        header.put("bool", true);
+        header.put("date", date);
+        header.put("instant", instant);
+        header.put("list", list);
+        header.put("map", map);
+
         String signed = JWTCreator.init()
                 .withHeader(header)
                 .sign(Algorithm.HMAC256("secret"));
@@ -51,7 +71,15 @@ public class JWTCreatorTest {
         assertThat(signed, is(notNullValue()));
         String[] parts = signed.split("\\.");
         String headerJson = new String(Base64.getUrlDecoder().decode(parts[0]), StandardCharsets.UTF_8);
-        assertThat(headerJson, JsonMatcher.hasEntry("asd", 123));
+        assertThat(headerJson, JsonMatcher.hasEntry("string", "string"));
+        assertThat(headerJson, JsonMatcher.hasEntry("int", 42));
+        assertThat(headerJson, JsonMatcher.hasEntry("long", 4200000000L));
+        assertThat(headerJson, JsonMatcher.hasEntry("double", 123.123));
+        assertThat(headerJson, JsonMatcher.hasEntry("bool", true));
+        assertThat(headerJson, JsonMatcher.hasEntry("date", 123));
+        assertThat(headerJson, JsonMatcher.hasEntry("instant", 123));
+        assertThat(headerJson, JsonMatcher.hasEntry("list", expectedSerializedList));
+        assertThat(headerJson, JsonMatcher.hasEntry("map", expectedSerializedMap));
     }
 
     @Test
