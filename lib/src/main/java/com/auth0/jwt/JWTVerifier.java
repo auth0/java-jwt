@@ -14,6 +14,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.function.BiPredicate;
 
 /**
  * The JWTVerifier class holds the verify method to assert that a given Token has not only a proper JWT format, but also its signature matches.
@@ -207,6 +208,13 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
         }
 
         @Override
+        public Verification withClaim(String name, BiPredicate<Claim, DecodedJWT> predicate) throws IllegalArgumentException {
+            assertNonNull(name);
+            requireClaim(name, predicate);
+            return this;
+        }
+
+        @Override
         public JWTVerifier build() {
             return this.build(Clock.systemUTC());
         }
@@ -354,7 +362,7 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
                 assertValidStringClaim(expectedClaim.getKey(), jwt.getSubject(), (String) expectedClaim.getValue());
                 break;
             default:
-                assertValidClaim(jwt.getClaim(expectedClaim.getKey()), expectedClaim.getKey(), expectedClaim.getValue());
+                assertValidClaim(jwt, expectedClaim);
                 break;
         }
     }
@@ -365,26 +373,32 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
         }
     }
 
-    private void assertValidClaim(Claim claim, String claimName, Object value) {
+    private void assertValidClaim(DecodedJWT jwt, Map.Entry<String, Object> expectedClaim) {
         boolean isValid = false;
-        if (value instanceof String) {
-            isValid = value.equals(claim.asString());
-        } else if (value instanceof Integer) {
-            isValid = value.equals(claim.asInt());
-        } else if (value instanceof Long) {
-            isValid = value.equals(claim.asLong());
-        } else if (value instanceof Boolean) {
-            isValid = value.equals(claim.asBoolean());
-        } else if (value instanceof Double) {
-            isValid = value.equals(claim.asDouble());
-        } else if (value instanceof Instant) {
-            isValid = value.equals(claim.asInstant());
-        } else if (value instanceof Object[]) {
+        String claimName = expectedClaim.getKey();
+        Object expectedClaimValue = expectedClaim.getValue();
+        Claim claim = jwt.getClaim(claimName);
+
+        if (expectedClaimValue instanceof String) {
+            isValid = expectedClaimValue.equals(claim.asString());
+        } else if (expectedClaimValue instanceof Integer) {
+            isValid = expectedClaimValue.equals(claim.asInt());
+        } else if (expectedClaimValue instanceof Long) {
+            isValid = expectedClaimValue.equals(claim.asLong());
+        } else if (expectedClaimValue instanceof Boolean) {
+            isValid = expectedClaimValue.equals(claim.asBoolean());
+        } else if (expectedClaimValue instanceof Double) {
+            isValid = expectedClaimValue.equals(claim.asDouble());
+        } else if (expectedClaimValue instanceof Instant) {
+            isValid = expectedClaimValue.equals(claim.asInstant());
+        } else if (expectedClaimValue instanceof BiPredicate) {
+            isValid = ((BiPredicate) expectedClaimValue).test(claim, jwt);
+        } else if (expectedClaimValue instanceof Object[]) {
             List<Object> claimArr;
             Object[] claimAsObject = claim.as(Object[].class);
 
             // Jackson uses 'natural' mapping which uses Integer if value fits in 32 bits.
-            if (value instanceof Long[]) {
+            if (expectedClaimValue instanceof Long[]) {
                 // convert Integers to Longs for comparison with equals
                 claimArr = new ArrayList<>(claimAsObject.length);
                 for (Object cao : claimAsObject) {
@@ -397,7 +411,7 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
             } else {
                 claimArr = claim.isNull() ? Collections.emptyList() : Arrays.asList(claim.as(Object[].class));
             }
-            List<Object> valueArr = Arrays.asList((Object[]) value);
+            List<Object> valueArr = Arrays.asList((Object[]) expectedClaimValue);
             isValid = claimArr.containsAll(valueArr);
         }
 

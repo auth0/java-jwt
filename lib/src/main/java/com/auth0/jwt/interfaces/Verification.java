@@ -4,6 +4,7 @@ import com.auth0.jwt.JWTVerifier;
 
 import java.time.Instant;
 import java.util.Date;
+import java.util.function.BiPredicate;
 
 /**
  * Holds the Claims and claim-based configurations required for a JWT to be considered valid.
@@ -230,6 +231,8 @@ public interface Verification {
      */
 
     Verification withArrayClaim(String name, Long ... items) throws IllegalArgumentException;
+
+    Verification withClaim(String name, BiPredicate<Claim, DecodedJWT> predicate) throws IllegalArgumentException;
 
     /**
      * Skip the Issued At ("iat") date verification. By default, the verification is performed.

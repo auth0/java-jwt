@@ -7,6 +7,7 @@ import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.BiPredicate;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasEntry;
@@ -146,6 +147,11 @@ public class VerificationTest {
 
         @Override
         public Verification withArrayClaim(String name, Long... items) throws IllegalArgumentException {
+            return null;
+        }
+
+        @Override
+        public Verification withClaim(String name, BiPredicate<Claim, DecodedJWT> predicate) throws IllegalArgumentException {
             return null;
         }
 
