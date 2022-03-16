@@ -48,9 +48,7 @@ public abstract class Algorithm {
      * @param key the key to use in the verify or signing instance.
      * @return a valid RSA256 Algorithm.
      * @throws IllegalArgumentException if the Key Provider is null.
-     * @deprecated use {@link #RSA256(RSAPublicKey, RSAPrivateKey)} or {@link #RSA256(RSAKeyProvider)}
      */
-    @Deprecated
     public static Algorithm RSA256(RSAKey key) throws IllegalArgumentException {
         RSAPublicKey publicKey = key instanceof RSAPublicKey ? (RSAPublicKey) key : null;
         RSAPrivateKey privateKey = key instanceof RSAPrivateKey ? (RSAPrivateKey) key : null;
@@ -86,9 +84,7 @@ public abstract class Algorithm {
      * @param key the key to use in the verify or signing instance.
      * @return a valid RSA384 Algorithm.
      * @throws IllegalArgumentException if the provided Key is null.
-     * @deprecated use {@link #RSA384(RSAPublicKey, RSAPrivateKey)} or {@link #RSA384(RSAKeyProvider)}
      */
-    @Deprecated
     public static Algorithm RSA384(RSAKey key) throws IllegalArgumentException {
         RSAPublicKey publicKey = key instanceof RSAPublicKey ? (RSAPublicKey) key : null;
         RSAPrivateKey privateKey = key instanceof RSAPrivateKey ? (RSAPrivateKey) key : null;
@@ -124,9 +120,7 @@ public abstract class Algorithm {
      * @param key the key to use in the verify or signing instance.
      * @return a valid RSA512 Algorithm.
      * @throws IllegalArgumentException if the provided Key is null.
-     * @deprecated use {@link #RSA512(RSAPublicKey, RSAPrivateKey)} or {@link #RSA512(RSAKeyProvider)}
      */
-    @Deprecated
     public static Algorithm RSA512(RSAKey key) throws IllegalArgumentException {
         RSAPublicKey publicKey = key instanceof RSAPublicKey ? (RSAPublicKey) key : null;
         RSAPrivateKey privateKey = key instanceof RSAPrivateKey ? (RSAPrivateKey) key : null;
@@ -253,9 +247,7 @@ public abstract class Algorithm {
      * @param key the key to use in the verify or signing instance.
      * @return a valid ECDSA256 Algorithm.
      * @throws IllegalArgumentException if the provided Key is null.
-     * @deprecated use {@link #ECDSA256(ECPublicKey, ECPrivateKey)} or {@link #ECDSA256(ECDSAKeyProvider)}
      */
-    @Deprecated
     public static Algorithm ECDSA256(ECKey key) throws IllegalArgumentException {
         ECPublicKey publicKey = key instanceof ECPublicKey ? (ECPublicKey) key : null;
         ECPrivateKey privateKey = key instanceof ECPrivateKey ? (ECPrivateKey) key : null;
@@ -291,9 +283,7 @@ public abstract class Algorithm {
      * @param key the key to use in the verify or signing instance.
      * @return a valid ECDSA384 Algorithm.
      * @throws IllegalArgumentException if the provided Key is null.
-     * @deprecated use {@link #ECDSA384(ECPublicKey, ECPrivateKey)} or {@link #ECDSA384(ECDSAKeyProvider)}
      */
-    @Deprecated
     public static Algorithm ECDSA384(ECKey key) throws IllegalArgumentException {
         ECPublicKey publicKey = key instanceof ECPublicKey ? (ECPublicKey) key : null;
         ECPrivateKey privateKey = key instanceof ECPrivateKey ? (ECPrivateKey) key : null;
@@ -329,9 +319,7 @@ public abstract class Algorithm {
      * @param key the key to use in the verify or signing instance.
      * @return a valid ECDSA512 Algorithm.
      * @throws IllegalArgumentException if the provided Key is null.
-     * @deprecated use {@link #ECDSA512(ECPublicKey, ECPrivateKey)} or {@link #ECDSA512(ECDSAKeyProvider)}
      */
-    @Deprecated
     public static Algorithm ECDSA512(ECKey key) throws IllegalArgumentException {
         ECPublicKey publicKey = key instanceof ECPublicKey ? (ECPublicKey) key : null;
         ECPrivateKey privateKey = key instanceof ECPrivateKey ? (ECPrivateKey) key : null;
