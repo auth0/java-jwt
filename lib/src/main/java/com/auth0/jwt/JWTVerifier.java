@@ -23,16 +23,16 @@ import java.util.*;
 @SuppressWarnings("WeakerAccess")
 public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
     private final Algorithm algorithm;
-    final Map<String, Object> claims;
+    final Map<String, Object> expectedClaims;
     private final Clock clock;
     private final JWTParser parser;
 
     static final String AUDIENCE_EXACT = "AUDIENCE_EXACT";
     static final String AUDIENCE_CONTAINS = "AUDIENCE_CONTAINS";
 
-    JWTVerifier(Algorithm algorithm, Map<String, Object> claims, Clock clock) {
+    JWTVerifier(Algorithm algorithm, Map<String, Object> expectedClaims, Clock clock) {
         this.algorithm = algorithm;
-        this.claims = Collections.unmodifiableMap(claims);
+        this.expectedClaims = Collections.unmodifiableMap(expectedClaims);
         this.clock = clock;
         this.parser = new JWTParser();
     }
@@ -50,7 +50,7 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
 
     public static class BaseVerification implements Verification {
         private final Algorithm algorithm;
-        private final Map<String, Object> claims;
+        private final Map<String, Object> expectedClaims;
         private long defaultLeeway;
         private boolean ignoreIssuedAt;
 
@@ -60,7 +60,7 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
             }
 
             this.algorithm = algorithm;
-            this.claims = new HashMap<>();
+            this.expectedClaims = new HashMap<>();
             this.defaultLeeway = 0;
         }
 
@@ -78,14 +78,14 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
 
         @Override
         public Verification withAudience(String... audience) {
-            claims.remove(AUDIENCE_CONTAINS);
+            expectedClaims.remove(AUDIENCE_CONTAINS);
             requireClaim(AUDIENCE_EXACT, isNullOrEmpty(audience) ? null : Arrays.asList(audience));
             return this;
         }
 
         @Override
         public Verification withAnyOfAudience(String... audience) {
-            claims.remove(AUDIENCE_EXACT);
+            expectedClaims.remove(AUDIENCE_EXACT);
             requireClaim(AUDIENCE_CONTAINS, isNullOrEmpty(audience) ? null : Arrays.asList(audience));
             return this;
         }
@@ -220,7 +220,7 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
          */
         public JWTVerifier build(Clock clock) {
             addLeewayToDateClaims();
-            return new JWTVerifier(algorithm, claims, clock);
+            return new JWTVerifier(algorithm, expectedClaims, clock);
         }
 
         private void assertPositive(long leeway) {
@@ -236,27 +236,27 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
         }
 
         private void addLeewayToDateClaims() {
-            if (!claims.containsKey(PublicClaims.EXPIRES_AT)) {
-                claims.put(PublicClaims.EXPIRES_AT, defaultLeeway);
+            if (!expectedClaims.containsKey(PublicClaims.EXPIRES_AT)) {
+                expectedClaims.put(PublicClaims.EXPIRES_AT, defaultLeeway);
             }
-            if (!claims.containsKey(PublicClaims.NOT_BEFORE)) {
-                claims.put(PublicClaims.NOT_BEFORE, defaultLeeway);
+            if (!expectedClaims.containsKey(PublicClaims.NOT_BEFORE)) {
+                expectedClaims.put(PublicClaims.NOT_BEFORE, defaultLeeway);
             }
             if (ignoreIssuedAt) {
-                claims.remove(PublicClaims.ISSUED_AT);
+                expectedClaims.remove(PublicClaims.ISSUED_AT);
                 return;
             }
-            if (!claims.containsKey(PublicClaims.ISSUED_AT)) {
-                claims.put(PublicClaims.ISSUED_AT, defaultLeeway);
+            if (!expectedClaims.containsKey(PublicClaims.ISSUED_AT)) {
+                expectedClaims.put(PublicClaims.ISSUED_AT, defaultLeeway);
             }
         }
 
         private void requireClaim(String name, Object value) {
             if (value == null) {
-                claims.remove(name);
+                expectedClaims.remove(name);
                 return;
             }
-            claims.put(name, value);
+            expectedClaims.put(name, value);
         }
     }
 
@@ -305,7 +305,7 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
     public DecodedJWT verify(DecodedJWT jwt) throws JWTVerificationException {
         verifyAlgorithm(jwt, algorithm);
         algorithm.verify(jwt);
-        verifyClaims(jwt, claims);
+        verifyClaims(jwt, expectedClaims);
         return jwt;
     }
 
