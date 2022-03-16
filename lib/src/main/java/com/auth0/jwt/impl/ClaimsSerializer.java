@@ -24,7 +24,6 @@ public class ClaimsSerializer<T extends ClaimsHolder> extends StdSerializer<T> {
     @Override
     public void serialize(T holder, JsonGenerator gen, SerializerProvider provider) throws IOException {
         gen.writeStartObject();
-        holder.getClaims().forEach((key, val) -> System.out.println(key + ": " + val));
         for (Map.Entry<String, Object> entry : holder.getClaims().entrySet()) {
             writeClaim(entry, gen);
         }
