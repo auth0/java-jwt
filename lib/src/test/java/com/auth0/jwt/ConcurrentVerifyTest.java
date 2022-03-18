@@ -28,8 +28,6 @@ public class ConcurrentVerifyTest {
     private static final int REPEAT_COUNT = 1000;
     private static final String PUBLIC_KEY_FILE = "src/test/resources/rsa-public.pem";
     private static final String PUBLIC_KEY_FILE_256 = "src/test/resources/ec256-key-public.pem";
-    private static final String PUBLIC_KEY_FILE_256K = "src/test/resources/ec256k-key-public.pem";
-    private static final String PRIVATE_KEY_FILE_256K = "src/test/resources/ec256k-key-private.pem";
     private static final String PUBLIC_KEY_FILE_384 = "src/test/resources/ec384-key-public.pem";
     private static final String PUBLIC_KEY_FILE_512 = "src/test/resources/ec512-key-public.pem";
 

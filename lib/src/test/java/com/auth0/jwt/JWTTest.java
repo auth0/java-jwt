@@ -28,11 +28,9 @@ public class JWTTest {
     private static final String PRIVATE_KEY_FILE_RSA = "src/test/resources/rsa-private.pem";
 
     private static final String PUBLIC_KEY_FILE_EC_256 = "src/test/resources/ec256-key-public.pem";
-    private static final String PUBLIC_KEY_FILE_EC_256K = "src/test/resources/ec256k-key-public.pem";
     private static final String PUBLIC_KEY_FILE_EC_384 = "src/test/resources/ec384-key-public.pem";
     private static final String PUBLIC_KEY_FILE_EC_512 = "src/test/resources/ec512-key-public.pem";
     private static final String PRIVATE_KEY_FILE_EC_256 = "src/test/resources/ec256-key-private.pem";
-    private static final String PRIVATE_KEY_FILE_EC_256K = "src/test/resources/ec256k-key-private.pem";
     private static final String PRIVATE_KEY_FILE_EC_384 = "src/test/resources/ec384-key-private.pem";
     private static final String PRIVATE_KEY_FILE_EC_512 = "src/test/resources/ec512-key-private.pem";
 

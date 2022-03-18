@@ -33,11 +33,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class ECDSABouncyCastleProviderTests {
-    
-    
-    private static final String PRIVATE_KEY_FILE_256K = "src/test/resources/ec256k-key-private.pem";
-    private static final String PUBLIC_KEY_FILE_256K = "src/test/resources/ec256k-key-public.pem";
-    private static final String INVALID_PUBLIC_KEY_FILE_256K = "src/test/resources/ec256k-key-public-invalid.pem";
 
     private static final String PRIVATE_KEY_FILE_256 = "src/test/resources/ec256-key-private.pem";
     private static final String PUBLIC_KEY_FILE_256 = "src/test/resources/ec256-key-public.pem";

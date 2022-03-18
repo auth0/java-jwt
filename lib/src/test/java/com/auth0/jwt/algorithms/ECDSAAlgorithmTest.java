@@ -39,11 +39,6 @@ public class ECDSAAlgorithmTest {
     private static final String PUBLIC_KEY_FILE_256 = "src/test/resources/ec256-key-public.pem";
     private static final String INVALID_PUBLIC_KEY_FILE_256 = "src/test/resources/ec256-key-public-invalid.pem";
     
-    private static final String PRIVATE_KEY_FILE_256K = "src/test/resources/ec256k-key-private.pem";
-    private static final String PUBLIC_KEY_FILE_256K = "src/test/resources/ec256k-key-public.pem";
-    private static final String INVALID_PUBLIC_KEY_FILE_256K = "src/test/resources/ec256k-key-public-invalid.pem";
-    private static final String ES256K_JWT = "eyJraWQiOiJteS1rZXktaWQiLCJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.e30.2ggPsc4xwQhYcgJueo3uQ14MpaVJ3AbEE8UE-wA9fc8SMibeW54gjZbikL-JBHqhEwc22Cp8DNOtadXsM81RGQ";
-    
     private static final String PRIVATE_KEY_FILE_384 = "src/test/resources/ec384-key-private.pem";
     private static final String PUBLIC_KEY_FILE_384 = "src/test/resources/ec384-key-public.pem";
     private static final String INVALID_PUBLIC_KEY_FILE_384 = "src/test/resources/ec384-key-public-invalid.pem";
