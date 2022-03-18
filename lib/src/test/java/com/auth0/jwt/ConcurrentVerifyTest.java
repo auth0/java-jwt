@@ -146,17 +146,6 @@ public class ConcurrentVerifyTest {
     }
     
     @Test
-    public void shouldPassECDSA256KVerificationWithJOSESignature() throws Exception {
-        String token = "eyJraWQiOiJteS1rZXktaWQiLCJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJpc3MiOiJhdXRoMCJ9.W-AbsnuQ4vqmPftAyQuF09hn3oGn3tN7VGergxyMbK74yEzDV-mLyC3o3fxXrZxcW5h01DM6BckNag7ZcimPjw";
-        ECPublicKey publicKey = (ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256K, "EC");
-        ECPrivateKey privateKey = (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_256K, "EC");
-        Algorithm algorithm = Algorithm.ECDSA256K(publicKey, privateKey);
-        JWTVerifier verifier = JWTVerifier.init(algorithm).withIssuer("auth0").build();
-        
-        concurrentVerify(verifier, token);
-    }
-    
-    @Test
     public void shouldPassECDSA384VerificationWithJOSESignature() throws Exception {
         String token = "eyJhbGciOiJFUzM4NCJ9.eyJpc3MiOiJhdXRoMCJ9.50UU5VKNdF1wfykY8jQBKpvuHZoe6IZBJm5NvoB8bR-hnRg6ti-CHbmvoRtlLfnHfwITa_8cJMy6TenMC2g63GQHytc8rYoXqbwtS4R0Ko_AXbLFUmfxnGnMC6v4MS_z";
         ECKey key = (ECKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_384, "EC");
