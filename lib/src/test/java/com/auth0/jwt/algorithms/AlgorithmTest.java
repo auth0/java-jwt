@@ -451,29 +451,6 @@ public class AlgorithmTest {
     }
 
     @Test
-    public void shouldCreateECDSA256KAlgorithmWithBothKeys() {
-        ECPublicKey publicKey = mock(ECPublicKey.class);
-        ECPrivateKey privateKey = mock(ECPrivateKey.class);
-        Algorithm algorithm = Algorithm.ECDSA256K(publicKey, privateKey);
-
-        assertThat(algorithm, is(notNullValue()));
-        assertThat(algorithm, is(instanceOf(ECDSAAlgorithm.class)));
-        assertThat(algorithm.getDescription(), is("SHA256withECDSA"));
-        assertThat(algorithm.getName(), is("ES256K"));
-    }
-
-    @Test
-    public void shouldCreateECDSA256KAlgorithmWithProvider() {
-        ECDSAKeyProvider provider = mock(ECDSAKeyProvider.class);
-        Algorithm algorithm = Algorithm.ECDSA256K(provider);
-
-        assertThat(algorithm, is(notNullValue()));
-        assertThat(algorithm, is(instanceOf(ECDSAAlgorithm.class)));
-        assertThat(algorithm.getDescription(), is("SHA256withECDSA"));
-        assertThat(algorithm.getName(), is("ES256K"));
-    }
-
-    @Test
     public void shouldCreateECDSA384AlgorithmWithPublicKey() {
         ECKey key = mock(ECKey.class, withSettings().extraInterfaces(ECPublicKey.class));
         Algorithm algorithm = Algorithm.ECDSA384(key);
