@@ -137,10 +137,9 @@ You'll first need to create a `JWTCreator` instance by calling `JWT.create()`. U
 * Example using `RS256`
 
     ```java
-    RSAPublicKey publicKey = //Get the key instance
-    RSAPrivateKey privateKey = //Get the key instance
+    RSAPrivateKey privateKey = //Get the private key instance
     try {
-        Algorithm algorithm = Algorithm.RSA256(publicKey, privateKey);
+        Algorithm algorithm = Algorithm.RSA256(null, privateKey); // only the private key is used for signing
         String token = JWT.create()
             .withIssuer("auth0")
             .sign(algorithm);
@@ -176,9 +175,8 @@ You'll first need to create a `JWTVerifier` instance by calling `JWT.require()` 
     ```java
     String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXUyJ9.eyJpc3MiOiJhdXRoMCJ9.AbIJTDMFc7yUa5MhvcP03nJPyCPzZtQcGEp-zWfOkEE";
     RSAPublicKey publicKey = //Get the key instance
-    RSAPrivateKey privateKey = //Get the key instance
     try {
-        Algorithm algorithm = Algorithm.RSA256(publicKey, privateKey);
+        Algorithm algorithm = Algorithm.RSA256(publicKey, null); // only the public key is used during verification
         JWTVerifier verifier = JWT.require(algorithm)
             .withIssuer("auth0")
             .build(); //Reusable verifier instance
