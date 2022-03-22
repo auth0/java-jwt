@@ -4,6 +4,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.AlgorithmMismatchException;
 import com.auth0.jwt.exceptions.InvalidClaimException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
+import com.auth0.jwt.impl.PublicClaims;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.Verification;
 import org.junit.Rule;
@@ -16,8 +17,6 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -263,63 +262,29 @@ public class JWTVerifierTest {
                 .withAudience((String) null)
                 .build();
 
-        assertThat(verifier.expectedClaims, is(notNullValue()));
-        assertThat(verifier.expectedClaims, not(hasKey(JWTVerifier.AUDIENCE_EXACT)));
+        assertThat(verifier.expectedChecks, is(notNullValue()));
+        assertThat(verifier.expectedChecks, not(hasKey(PublicClaims.AUDIENCE)));
 
         verifier = JWTVerifier.init(algorithm)
                 .withAudience((String[]) null)
                 .build();
 
-        assertThat(verifier.expectedClaims, is(notNullValue()));
-        assertThat(verifier.expectedClaims, not(hasKey(JWTVerifier.AUDIENCE_EXACT)));
+        assertThat(verifier.expectedChecks, is(notNullValue()));
+        assertThat(verifier.expectedChecks, not(hasKey(PublicClaims.AUDIENCE)));
 
         verifier = JWTVerifier.init(algorithm)
                 .withAudience()
                 .build();
 
-        assertThat(verifier.expectedClaims, is(notNullValue()));
-        assertThat(verifier.expectedClaims, not(hasKey(JWTVerifier.AUDIENCE_EXACT)));
+        assertThat(verifier.expectedChecks, is(notNullValue()));
+        assertThat(verifier.expectedChecks, not(hasKey(PublicClaims.AUDIENCE)));
 
         String emptyAud = "   ";
         verifier = JWTVerifier.init(algorithm)
                 .withAudience(emptyAud)
                 .build();
 
-        assertThat(verifier.expectedClaims, is(notNullValue()));
-        assertThat(verifier.expectedClaims, hasEntry(JWTVerifier.AUDIENCE_EXACT, Collections.singletonList(emptyAud)));
-    }
-
-    @Test
-    public void shouldRemoveAudienceWhenPassingNullReferenceWithAnyOfAudience() {
-        Algorithm algorithm = mock(Algorithm.class);
-        JWTVerifier verifier = JWTVerifier.init(algorithm)
-                .withAnyOfAudience((String) null)
-                .build();
-
-        assertThat(verifier.expectedClaims, is(notNullValue()));
-        assertThat(verifier.expectedClaims, not(hasKey(JWTVerifier.AUDIENCE_CONTAINS)));
-
-        verifier = JWTVerifier.init(algorithm)
-                .withAnyOfAudience((String[]) null)
-                .build();
-
-        assertThat(verifier.expectedClaims, is(notNullValue()));
-        assertThat(verifier.expectedClaims, not(hasKey(JWTVerifier.AUDIENCE_CONTAINS)));
-
-        verifier = JWTVerifier.init(algorithm)
-                .withAnyOfAudience()
-                .build();
-
-        assertThat(verifier.expectedClaims, is(notNullValue()));
-        assertThat(verifier.expectedClaims, not(hasKey(JWTVerifier.AUDIENCE_CONTAINS)));
-
-        String emptyAud = "   ";
-        verifier = JWTVerifier.init(algorithm)
-                .withAnyOfAudience(emptyAud)
-                .build();
-
-        assertThat(verifier.expectedClaims, is(notNullValue()));
-        assertThat(verifier.expectedClaims, hasEntry(JWTVerifier.AUDIENCE_CONTAINS, Collections.singletonList(emptyAud)));
+        assertThat(verifier.expectedChecks, is(notNullValue()));
     }
 
     @Test
@@ -330,16 +295,16 @@ public class JWTVerifierTest {
                 .withAudience((String) null)
                 .build();
 
-        assertThat(verifier.expectedClaims, is(notNullValue()));
-        assertThat(verifier.expectedClaims, not(hasKey("aud")));
+        assertThat(verifier.expectedChecks, is(notNullValue()));
+        assertThat(verifier.expectedChecks, not(hasKey("aud")));
 
         verifier = JWTVerifier.init(algorithm)
                 .withAudience("John")
                 .withAudience((String[]) null)
                 .build();
 
-        assertThat(verifier.expectedClaims, is(notNullValue()));
-        assertThat(verifier.expectedClaims, not(hasKey("aud")));
+        assertThat(verifier.expectedChecks, is(notNullValue()));
+        assertThat(verifier.expectedChecks, not(hasKey("aud")));
     }
 
     @Test
@@ -350,16 +315,16 @@ public class JWTVerifierTest {
                 .withAnyOfAudience((String) null)
                 .build();
 
-        assertThat(verifier.expectedClaims, is(notNullValue()));
-        assertThat(verifier.expectedClaims, not(hasKey("aud")));
+        assertThat(verifier.expectedChecks, is(notNullValue()));
+        assertThat(verifier.expectedChecks, not(hasKey("aud")));
 
         verifier = JWTVerifier.init(algorithm)
                 .withAnyOfAudience("John")
                 .withAnyOfAudience((String[]) null)
                 .build();
 
-        assertThat(verifier.expectedClaims, is(notNullValue()));
-        assertThat(verifier.expectedClaims, not(hasKey("aud")));
+        assertThat(verifier.expectedChecks, is(notNullValue()));
+        assertThat(verifier.expectedChecks, not(hasKey("aud")));
     }
 
     @Test
@@ -453,10 +418,10 @@ public class JWTVerifierTest {
         exception.expect(InvalidClaimException.class);
         exception.expectMessage("The Claim 'name' value doesn't match the required one.");
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjpbInNvbWV0aGluZyJdfQ.3ENLez6tU_fG0SVFrGmISltZPiXLSHaz_dyn-XFTEGQ";
-        Map<String, Object> map = new HashMap<>();
-        map.put("name", new Object());
-        JWTVerifier verifier = new JWTVerifier(Algorithm.HMAC256("secret"), map, Clock.systemUTC());
-        verifier.verify(token);
+        JWTVerifier.init(Algorithm.HMAC256("secret"))
+                .withClaim("name", "")
+                .build()
+                .verify(token);
     }
 
     @Test
@@ -533,8 +498,8 @@ public class JWTVerifierTest {
                 .withClaim("name", (Date) null)
                 .build();
 
-        assertThat(verifier.expectedClaims, is(notNullValue()));
-        assertThat(verifier.expectedClaims, not(hasKey("iss")));
+        assertThat(verifier.expectedChecks, is(notNullValue()));
+        assertThat(verifier.expectedChecks, not(hasKey("iss")));
     }
 
     @Test
@@ -593,76 +558,76 @@ public class JWTVerifierTest {
     }
 
     // Generic Delta
-    @SuppressWarnings("RedundantCast")
     @Test
     public void shouldAddDefaultLeewayToDateClaims() {
         Algorithm algorithm = mock(Algorithm.class);
-        JWTVerifier verifier = JWTVerifier.init(algorithm)
+        JWTVerifier.BaseVerification verification = (JWTVerifier.BaseVerification) JWTVerifier.init(algorithm);
+        JWTVerifier verifier = verification
                 .build();
 
-        assertThat(verifier.expectedClaims, is(notNullValue()));
-        assertThat(verifier.expectedClaims, hasEntry("iat", (Object) 0L));
-        assertThat(verifier.expectedClaims, hasEntry("exp", (Object) 0L));
-        assertThat(verifier.expectedClaims, hasEntry("nbf", (Object) 0L));
+        assertThat(verifier.expectedChecks, is(notNullValue()));
+        assertThat(verification.getLeewayFor(PublicClaims.ISSUED_AT), is(0L));
+        assertThat(verification.getLeewayFor(PublicClaims.EXPIRES_AT), is(0L));
+        assertThat(verification.getLeewayFor(PublicClaims.NOT_BEFORE), is(0L));
     }
 
-    @SuppressWarnings("RedundantCast")
     @Test
     public void shouldAddCustomLeewayToDateClaims() {
         Algorithm algorithm = mock(Algorithm.class);
-        JWTVerifier verifier = JWTVerifier.init(algorithm)
+        JWTVerifier.BaseVerification verification = (JWTVerifier.BaseVerification) JWTVerifier.init(algorithm);
+        JWTVerifier verifier = verification
                 .acceptLeeway(1234L)
                 .build();
 
-        assertThat(verifier.expectedClaims, is(notNullValue()));
-        assertThat(verifier.expectedClaims, hasEntry("iat", (Object) 1234L));
-        assertThat(verifier.expectedClaims, hasEntry("exp", (Object) 1234L));
-        assertThat(verifier.expectedClaims, hasEntry("nbf", (Object) 1234L));
+        assertThat(verifier.expectedChecks, is(notNullValue()));
+        assertThat(verification.getLeewayFor(PublicClaims.ISSUED_AT), is(1234L));
+        assertThat(verification.getLeewayFor(PublicClaims.EXPIRES_AT), is(1234L));
+        assertThat(verification.getLeewayFor(PublicClaims.NOT_BEFORE), is(1234L));
     }
 
-    @SuppressWarnings("RedundantCast")
     @Test
     public void shouldOverrideDefaultIssuedAtLeeway() {
         Algorithm algorithm = mock(Algorithm.class);
-        JWTVerifier verifier = JWTVerifier.init(algorithm)
+        JWTVerifier.BaseVerification verification = (JWTVerifier.BaseVerification) JWTVerifier.init(algorithm);
+        JWTVerifier verifier = verification
                 .acceptLeeway(1234L)
                 .acceptIssuedAt(9999L)
                 .build();
 
-        assertThat(verifier.expectedClaims, is(notNullValue()));
-        assertThat(verifier.expectedClaims, hasEntry("iat", (Object) 9999L));
-        assertThat(verifier.expectedClaims, hasEntry("exp", (Object) 1234L));
-        assertThat(verifier.expectedClaims, hasEntry("nbf", (Object) 1234L));
+        assertThat(verifier.expectedChecks, is(notNullValue()));
+        assertThat(verification.getLeewayFor(PublicClaims.ISSUED_AT), is(9999L));
+        assertThat(verification.getLeewayFor(PublicClaims.EXPIRES_AT), is(1234L));
+        assertThat(verification.getLeewayFor(PublicClaims.NOT_BEFORE), is(1234L));
     }
 
-    @SuppressWarnings("RedundantCast")
     @Test
     public void shouldOverrideDefaultExpiresAtLeeway() {
         Algorithm algorithm = mock(Algorithm.class);
-        JWTVerifier verifier = JWTVerifier.init(algorithm)
+        JWTVerifier.BaseVerification verification = (JWTVerifier.BaseVerification) JWTVerifier.init(algorithm);
+        JWTVerifier verifier = verification
                 .acceptLeeway(1234L)
                 .acceptExpiresAt(9999L)
                 .build();
 
-        assertThat(verifier.expectedClaims, is(notNullValue()));
-        assertThat(verifier.expectedClaims, hasEntry("iat", (Object) 1234L));
-        assertThat(verifier.expectedClaims, hasEntry("exp", (Object) 9999L));
-        assertThat(verifier.expectedClaims, hasEntry("nbf", (Object) 1234L));
+        assertThat(verifier.expectedChecks, is(notNullValue()));
+        assertThat(verification.getLeewayFor(PublicClaims.ISSUED_AT), is(1234L));
+        assertThat(verification.getLeewayFor(PublicClaims.EXPIRES_AT), is(9999L));
+        assertThat(verification.getLeewayFor(PublicClaims.NOT_BEFORE), is(1234L));
     }
 
-    @SuppressWarnings("RedundantCast")
     @Test
     public void shouldOverrideDefaultNotBeforeLeeway() {
         Algorithm algorithm = mock(Algorithm.class);
-        JWTVerifier verifier = JWTVerifier.init(algorithm)
+        JWTVerifier.BaseVerification verification = (JWTVerifier.BaseVerification) JWTVerifier.init(algorithm);
+        JWTVerifier verifier = verification
                 .acceptLeeway(1234L)
                 .acceptNotBefore(9999L)
                 .build();
 
-        assertThat(verifier.expectedClaims, is(notNullValue()));
-        assertThat(verifier.expectedClaims, hasEntry("iat", (Object) 1234L));
-        assertThat(verifier.expectedClaims, hasEntry("exp", (Object) 1234L));
-        assertThat(verifier.expectedClaims, hasEntry("nbf", (Object) 9999L));
+        assertThat(verifier.expectedChecks, is(notNullValue()));
+        assertThat(verification.getLeewayFor(PublicClaims.ISSUED_AT), is(1234L));
+        assertThat(verification.getLeewayFor(PublicClaims.EXPIRES_AT), is(1234L));
+        assertThat(verification.getLeewayFor(PublicClaims.NOT_BEFORE), is(9999L));
     }
 
     @Test
@@ -860,16 +825,16 @@ public class JWTVerifierTest {
                 .withIssuer((String) null)
                 .build();
 
-        assertThat(verifier.expectedClaims, is(notNullValue()));
-        assertThat(verifier.expectedClaims, not(hasKey("iss")));
+        assertThat(verifier.expectedChecks, is(notNullValue()));
+        assertThat(verifier.expectedChecks, not(hasKey("iss")));
 
         verifier = JWTVerifier.init(algorithm)
                 .withIssuer("iss")
                 .withIssuer((String[]) null)
                 .build();
 
-        assertThat(verifier.expectedClaims, is(notNullValue()));
-        assertThat(verifier.expectedClaims, not(hasKey("iss")));
+        assertThat(verifier.expectedChecks, is(notNullValue()));
+        assertThat(verifier.expectedChecks, not(hasKey("iss")));
     }
 
     @Test
@@ -879,30 +844,29 @@ public class JWTVerifierTest {
                 .withIssuer((String) null)
                 .build();
 
-        assertThat(verifier.expectedClaims, is(notNullValue()));
-        assertThat(verifier.expectedClaims, not(hasKey("iss")));
+        assertThat(verifier.expectedChecks, is(notNullValue()));
+        assertThat(verifier.expectedChecks, not(hasKey("iss")));
 
         verifier = JWTVerifier.init(algorithm)
                 .withIssuer((String[]) null)
                 .build();
 
-        assertThat(verifier.expectedClaims, is(notNullValue()));
-        assertThat(verifier.expectedClaims, not(hasKey("iss")));
+        assertThat(verifier.expectedChecks, is(notNullValue()));
+        assertThat(verifier.expectedChecks, not(hasKey("iss")));
 
         verifier = JWTVerifier.init(algorithm)
                 .withIssuer()
                 .build();
 
-        assertThat(verifier.expectedClaims, is(notNullValue()));
-        assertThat(verifier.expectedClaims, not(hasKey("iss")));
+        assertThat(verifier.expectedChecks, is(notNullValue()));
+        assertThat(verifier.expectedChecks, not(hasKey("iss")));
 
         String emptyIss = "  ";
         verifier = JWTVerifier.init(algorithm)
                 .withIssuer(emptyIss)
                 .build();
 
-        assertThat(verifier.expectedClaims, is(notNullValue()));
-        assertThat(verifier.expectedClaims, hasEntry("iss", Collections.singletonList(emptyIss)));
+        assertThat(verifier.expectedChecks, is(notNullValue()));
     }
 
     @Test
