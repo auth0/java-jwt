@@ -113,53 +113,6 @@ class CryptoHelper {
     }
 
     /**
-     * Verify signature.
-     * For valid verification, ensure the content is in the format {HEADER}.{PAYLOAD}
-     *
-     * @param algorithm      algorithm name.
-     * @param secretBytes    algorithm secret.
-     * @param contentBytes   the content to which the signature applies.
-     * @param signatureBytes JWT signature.
-     * @return true if signature is valid.
-     * @throws NoSuchAlgorithmException if the algorithm is not supported.
-     * @throws InvalidKeyException      if the given key is inappropriate for initializing the specified algorithm.
-     */
-    boolean verifySignatureFor(
-            String algorithm,
-            byte[] secretBytes,
-            byte[] contentBytes,
-            byte[] signatureBytes
-    ) throws NoSuchAlgorithmException, InvalidKeyException {
-        return MessageDigest.isEqual(createSignatureFor(algorithm, secretBytes, contentBytes), signatureBytes);
-    }
-
-    /**
-     * Verify signature using a public key.
-     * For valid verification, ensure the content is in the format {HEADER}.{PAYLOAD}
-     *
-     * @param algorithm      algorithm name.
-     * @param publicKey      algorithm public key.
-     * @param contentBytes   the content to which the signature applies.
-     * @param signatureBytes JWT signature.
-     * @return the signature bytes.
-     * @throws NoSuchAlgorithmException if the algorithm is not supported.
-     * @throws InvalidKeyException      if the given key is inappropriate for initializing the specified algorithm.
-     * @throws SignatureException       if this signature object is not initialized properly
-     *                                  or if this signature algorithm is unable to process the input data provided.
-     */
-    boolean verifySignatureFor(
-            String algorithm,
-            PublicKey publicKey,
-            byte[] contentBytes,
-            byte[] signatureBytes
-    ) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
-        final Signature s = Signature.getInstance(algorithm);
-        s.initVerify(publicKey);
-        s.update(contentBytes);
-        return s.verify(signatureBytes);
-    }
-
-    /**
      * Create signature for JWT header and payload using a private key.
      *
      * @param algorithm    algorithm name.
