@@ -24,7 +24,8 @@ class RSAAlgorithm extends Algorithm {
     private final CryptoHelper crypto;
 
     //Visible for testing
-    RSAAlgorithm(CryptoHelper crypto, String id, String algorithm, RSAKeyProvider keyProvider) throws IllegalArgumentException {
+    RSAAlgorithm(CryptoHelper crypto, String id, String algorithm, RSAKeyProvider keyProvider)
+            throws IllegalArgumentException {
         super(id, algorithm);
         if (keyProvider == null) {
             throw new IllegalArgumentException("The Key Provider cannot be null.");
@@ -45,11 +46,13 @@ class RSAAlgorithm extends Algorithm {
             if (publicKey == null) {
                 throw new IllegalStateException("The given Public Key is null.");
             }
-            boolean valid = crypto.verifySignatureFor(getDescription(), publicKey, jwt.getHeader(), jwt.getPayload(), signatureBytes);
+            boolean valid = crypto.verifySignatureFor(
+                    getDescription(), publicKey, jwt.getHeader(), jwt.getPayload(), signatureBytes);
             if (!valid) {
                 throw new SignatureVerificationException(this);
             }
-        } catch (NoSuchAlgorithmException | SignatureException | InvalidKeyException | IllegalArgumentException | IllegalStateException e) {
+        } catch (NoSuchAlgorithmException | SignatureException | InvalidKeyException
+                | IllegalArgumentException | IllegalStateException e) {
             throw new SignatureVerificationException(this, e);
         }
     }
@@ -66,7 +69,7 @@ class RSAAlgorithm extends Algorithm {
             throw new SignatureGenerationException(this, e);
         }
     }
-    
+
     @Override
     public byte[] sign(byte[] contentBytes) throws SignatureGenerationException {
         try {

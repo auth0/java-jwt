@@ -3,7 +3,6 @@ package com.auth0.jwt.algorithms;
 import com.auth0.jwt.exceptions.SignatureGenerationException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
-
 import java.util.Base64;
 
 class NoneAlgorithm extends Algorithm {

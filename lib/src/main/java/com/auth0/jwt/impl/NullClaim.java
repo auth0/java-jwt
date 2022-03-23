@@ -53,12 +53,12 @@ public class NullClaim implements Claim {
     }
 
     @Override
-    public <T> T[] asArray(Class<T> tClazz) throws JWTDecodeException {
+    public <T> T[] asArray(Class<T> clazz) throws JWTDecodeException {
         return null;
     }
 
     @Override
-    public <T> List<T> asList(Class<T> tClazz) throws JWTDecodeException {
+    public <T> List<T> asList(Class<T> clazz) throws JWTDecodeException {
         return null;
     }
 
@@ -68,7 +68,7 @@ public class NullClaim implements Claim {
     }
 
     @Override
-    public <T> T as(Class<T> tClazz) throws JWTDecodeException {
+    public <T> T as(Class<T> clazz) throws JWTDecodeException {
         return null;
     }
 

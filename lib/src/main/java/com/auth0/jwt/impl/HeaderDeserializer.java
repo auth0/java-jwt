@@ -13,10 +13,10 @@ import java.util.Map;
 
 /**
  * Jackson deserializer implementation for converting from JWT Header parts.
- *
- * @see JWTParser
  * <p>
  * This class is thread-safe.
+ *
+ * @see JWTParser
  */
 class HeaderDeserializer extends StdDeserializer<BasicHeader> {
 

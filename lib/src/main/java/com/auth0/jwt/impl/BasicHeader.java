@@ -24,8 +24,15 @@ class BasicHeader implements Header, Serializable {
     private final String keyId;
     private final Map<String, JsonNode> tree;
     private final ObjectReader objectReader;
-    
-    BasicHeader(String algorithm, String type, String contentType, String keyId, Map<String, JsonNode> tree, ObjectReader objectReader) {
+
+    BasicHeader(
+            String algorithm,
+            String type,
+            String contentType,
+            String keyId,
+            Map<String, JsonNode> tree,
+            ObjectReader objectReader
+    ) {
         this.algorithm = algorithm;
         this.type = type;
         this.contentType = contentType;

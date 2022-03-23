@@ -15,7 +15,8 @@ import java.util.*;
 import java.util.Map.Entry;
 
 /**
- * The JWTCreator class holds the sign method to generate a complete JWT (with Signature) from a given Header and Payload content.
+ * The JWTCreator class holds the sign method to generate a complete JWT (with Signature)
+ * from a given Header and Payload content.
  * <p>
  * This class is thread-safe.
  */
@@ -38,7 +39,8 @@ public final class JWTCreator {
         mapper.configure(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY, true);
     }
 
-    private JWTCreator(Algorithm algorithm, Map<String, Object> headerClaims, Map<String, Object> payloadClaims) throws JWTCreationException {
+    private JWTCreator(Algorithm algorithm, Map<String, Object> headerClaims, Map<String, Object> payloadClaims)
+            throws JWTCreationException {
         this.algorithm = algorithm;
         try {
             headerJson = mapper.writeValueAsString(new HeaderClaimsHolder(headerClaims));
@@ -96,7 +98,8 @@ public final class JWTCreator {
 
         /**
          * Add a specific Key Id ("kid") claim to the Header.
-         * If the {@link Algorithm} used to sign this token was instantiated with a KeyProvider, the 'kid' value will be taken from that provider and this one will be ignored.
+         * If the {@link Algorithm} used to sign this token was instantiated with a KeyProvider,
+         * the 'kid' value will be taken from that provider and this one will be ignored.
          *
          * @param keyId the Key Id value.
          * @return this same Builder instance.
@@ -323,6 +326,55 @@ public final class JWTCreator {
         }
 
         /**
+         * Add a custom Map Claim with the given items.
+         * <p>
+         * Accepted nested types are {@linkplain Map} and {@linkplain List} with basic types
+         * {@linkplain Boolean}, {@linkplain Integer}, {@linkplain Long}, {@linkplain Double},
+         * {@linkplain String} and {@linkplain Date}. {@linkplain Map}s cannot contain null keys or values.
+         * {@linkplain List}s can contain null elements.
+         *
+         * @param name the Claim's name.
+         * @param map  the Claim's key-values.
+         * @return this same Builder instance.
+         * @throws IllegalArgumentException if the name is null, or if the map contents does not validate.
+         */
+        public Builder withClaim(String name, Map<String, ?> map) throws IllegalArgumentException {
+            assertNonNull(name);
+            // validate map contents
+            if (map != null && !validateClaim(map)) {
+                throw new IllegalArgumentException("Expected map containing Map, List, Boolean, Integer, "
+                        + "Long, Double, String and Date");
+            }
+            addClaim(name, map);
+            return this;
+        }
+
+        /**
+         * Add a custom List Claim with the given items.
+         * <p>
+         * Accepted nested types are {@linkplain Map} and {@linkplain List} with basic types
+         * {@linkplain Boolean}, {@linkplain Integer}, {@linkplain Long}, {@linkplain Double},
+         * {@linkplain String} and {@linkplain Date}. {@linkplain Map}s cannot contain null keys or values.
+         * {@linkplain List}s can contain null elements.
+         *
+         * @param name the Claim's name.
+         * @param list the Claim's list of values.
+         * @return this same Builder instance.
+         * @throws IllegalArgumentException if the name is null, or if the list contents does not validate.
+         */
+
+        public Builder withClaim(String name, List<?> list) throws IllegalArgumentException {
+            assertNonNull(name);
+            // validate list contents
+            if (list != null && !validateClaim(list)) {
+                throw new IllegalArgumentException("Expected list containing Map, List, Boolean, Integer, "
+                        + "Long, Double, String and Date");
+            }
+            addClaim(name, list);
+            return this;
+        }
+
+        /**
          * Add a custom Array Claim with the given items.
          *
          * @param name  the Claim's name.
@@ -365,53 +417,6 @@ public final class JWTCreator {
         }
 
         /**
-         * Add a custom Map Claim with the given items.
-         * <p>
-         * Accepted nested types are {@linkplain Map} and {@linkplain List} with basic types
-         * {@linkplain Boolean}, {@linkplain Integer}, {@linkplain Long}, {@linkplain Double},
-         * {@linkplain String} and {@linkplain Date}. {@linkplain Map}s cannot contain null keys or values.
-         * {@linkplain List}s can contain null elements.
-         *
-         * @param name the Claim's name.
-         * @param map  the Claim's key-values.
-         * @return this same Builder instance.
-         * @throws IllegalArgumentException if the name is null, or if the map contents does not validate.
-         */
-        public Builder withClaim(String name, Map<String, ?> map) throws IllegalArgumentException {
-            assertNonNull(name);
-            // validate map contents
-            if (map != null && !validateClaim(map)) {
-                throw new IllegalArgumentException("Expected map containing Map, List, Boolean, Integer, Long, Double, String and Date");
-            }
-            addClaim(name, map);
-            return this;
-        }
-
-        /**
-         * Add a custom List Claim with the given items.
-         * <p>
-         * Accepted nested types are {@linkplain Map} and {@linkplain List} with basic types
-         * {@linkplain Boolean}, {@linkplain Integer}, {@linkplain Long}, {@linkplain Double},
-         * {@linkplain String} and {@linkplain Date}. {@linkplain Map}s cannot contain null keys or values.
-         * {@linkplain List}s can contain null elements.
-         *
-         * @param name the Claim's name.
-         * @param list the Claim's list of values.
-         * @return this same Builder instance.
-         * @throws IllegalArgumentException if the name is null, or if the list contents does not validate.
-         */
-
-        public Builder withClaim(String name, List<?> list) throws IllegalArgumentException {
-            assertNonNull(name);
-            // validate list contents
-            if (list != null && !validateClaim(list)) {
-                throw new IllegalArgumentException("Expected list containing Map, List, Boolean, Integer, Long, Double, String and Date");
-            }
-            addClaim(name, list);
-            return this;
-        }
-
-        /**
          * Add specific Claims to set as the Payload. If the provided map is null then
          * nothing is changed.
          * <p>
@@ -426,8 +431,9 @@ public final class JWTCreator {
          * </p>
          *
          * @param payloadClaims the values to use as Claims in the token's payload.
-         * @throws IllegalArgumentException if any of the claim keys or null, or if the values are not of a supported type.
          * @return this same Builder instance.
+         * @throws IllegalArgumentException if any of the claim keys or null,
+         *                                  or if the values are not of a supported type.
          */
         public Builder withPayload(Map<String, ?> payloadClaims) throws IllegalArgumentException {
             if (payloadClaims == null) {
@@ -435,7 +441,8 @@ public final class JWTCreator {
             }
 
             if (!validatePayload(payloadClaims)) {
-                throw new IllegalArgumentException("Claim values must only be of types Map, List, Boolean, Integer, Long, Double, String and Date");
+                throw new IllegalArgumentException("Claim values must only be of types Map, List, Boolean, Integer, "
+                        + "Long, Double, String and Date");
             }
 
             // add claims only after validating all claims so as not to corrupt the claims map of this builder
@@ -504,16 +511,18 @@ public final class JWTCreator {
             if (c.isArray()) {
                 return c == Integer[].class || c == Long[].class || c == String[].class;
             }
-            return c == String.class || c == Integer.class || c == Long.class || c == Double.class || c == Date.class || c == Instant.class || c == Boolean.class;
+            return c == String.class || c == Integer.class || c == Long.class || c == Double.class
+                    || c == Date.class || c == Instant.class || c == Boolean.class;
         }
 
         /**
-         * Creates a new JWT and signs is with the given algorithm
+         * Creates a new JWT and signs is with the given algorithm.
          *
          * @param algorithm used to sign the JWT
          * @return a new JWT token
          * @throws IllegalArgumentException if the provided algorithm is null.
-         * @throws JWTCreationException     if the claims could not be converted to a valid JSON or there was a problem with the signing key.
+         * @throws JWTCreationException     if the claims could not be converted to a valid JSON
+         *                                  or there was a problem with the signing key.
          */
         public String sign(Algorithm algorithm) throws IllegalArgumentException, JWTCreationException {
             if (algorithm == null) {
@@ -546,10 +555,13 @@ public final class JWTCreator {
     }
 
     private String sign() throws SignatureGenerationException {
-        String header = Base64.getUrlEncoder().withoutPadding().encodeToString(headerJson.getBytes(StandardCharsets.UTF_8));
-        String payload = Base64.getUrlEncoder().withoutPadding().encodeToString(payloadJson.getBytes(StandardCharsets.UTF_8));
+        String header = Base64.getUrlEncoder().withoutPadding()
+                .encodeToString(headerJson.getBytes(StandardCharsets.UTF_8));
+        String payload = Base64.getUrlEncoder().withoutPadding()
+                .encodeToString(payloadJson.getBytes(StandardCharsets.UTF_8));
 
-        byte[] signatureBytes = algorithm.sign(header.getBytes(StandardCharsets.UTF_8), payload.getBytes(StandardCharsets.UTF_8));
+        byte[] signatureBytes = algorithm.sign(header.getBytes(StandardCharsets.UTF_8),
+                payload.getBytes(StandardCharsets.UTF_8));
         String signature = Base64.getUrlEncoder().withoutPadding().encodeToString((signatureBytes));
 
         return String.format("%s.%s.%s", header, payload, signature);

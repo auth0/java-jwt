@@ -10,10 +10,10 @@ import java.util.Map;
 
 /**
  * Jackson serializer implementation for converting into JWT Payload parts.
- *
- * @see com.auth0.jwt.JWTCreator
  * <p>
  * This class is thread-safe.
+ *
+ * @see com.auth0.jwt.JWTCreator
  */
 public class PayloadSerializer extends ClaimsSerializer<PayloadClaimsHolder> {
     public PayloadSerializer() {
@@ -47,7 +47,7 @@ public class PayloadSerializer extends ClaimsSerializer<PayloadClaimsHolder> {
                 List<?> audList = (List<?>) e.getValue();
                 for (Object aud : audList) {
                     if (aud instanceof String) {
-                        audArray.add((String)aud);
+                        audArray.add((String) aud);
                     }
                 }
             }
