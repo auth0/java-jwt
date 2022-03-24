@@ -166,7 +166,8 @@ public class PayloadImplTest {
         PayloadImpl payload = new PayloadImpl(null, null, null, null, null, null, null, null, objectReader);
         assertThat(payload, is(notNullValue()));
         assertThat(payload.getClaim("missing"), is(notNullValue()));
-        assertThat(payload.getClaim("missing"), is(instanceOf(NullClaim.class)));
+        assertThat(payload.getClaim("missing").isMissing(), is(true));
+        assertThat(payload.getClaim("missing").isNull(), is(false));
     }
 
     @Test

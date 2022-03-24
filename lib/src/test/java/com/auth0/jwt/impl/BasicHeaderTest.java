@@ -135,6 +135,7 @@ public class BasicHeaderTest {
 
         assertThat(header, is(notNullValue()));
         assertThat(header.getHeaderClaim("missing"), is(notNullValue()));
-        assertThat(header.getHeaderClaim("missing"), is(instanceOf(NullClaim.class)));
+        assertThat(header.getHeaderClaim("missing").isMissing(), is(true));
+        assertThat(header.getHeaderClaim("missing").isNull(), is(false));
     }
 }

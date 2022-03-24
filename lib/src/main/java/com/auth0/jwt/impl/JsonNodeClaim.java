@@ -31,32 +31,32 @@ class JsonNodeClaim implements Claim {
 
     @Override
     public Boolean asBoolean() {
-        return !data.isBoolean() ? null : data.asBoolean();
+        return isMissing() || isNull() || !data.isBoolean() ? null : data.asBoolean();
     }
 
     @Override
     public Integer asInt() {
-        return !data.isNumber() ? null : data.asInt();
+        return isMissing() || isNull() || !data.isNumber() ? null : data.asInt();
     }
 
     @Override
     public Long asLong() {
-        return !data.isNumber() ? null : data.asLong();
+        return isMissing() || isNull() || !data.isNumber() ? null : data.asLong();
     }
 
     @Override
     public Double asDouble() {
-        return !data.isNumber() ? null : data.asDouble();
+        return isMissing() || isNull() || !data.isNumber() ? null : data.asDouble();
     }
 
     @Override
     public String asString() {
-        return !data.isTextual() ? null : data.asText();
+        return isMissing() || isNull() || !data.isTextual() ? null : data.asText();
     }
 
     @Override
     public Date asDate() {
-        if (!data.canConvertToLong()) {
+        if (isMissing() || isNull() || !data.canConvertToLong()) {
             return null;
         }
         long seconds = data.asLong();
@@ -65,7 +65,7 @@ class JsonNodeClaim implements Claim {
 
     @Override
     public Instant asInstant() {
-        if (!data.canConvertToLong()) {
+        if (isMissing() || isNull() || !data.canConvertToLong()) {
             return null;
         }
         long seconds = data.asLong();
@@ -75,7 +75,7 @@ class JsonNodeClaim implements Claim {
     @Override
     @SuppressWarnings("unchecked")
     public <T> T[] asArray(Class<T> tClazz) throws JWTDecodeException {
-        if (!data.isArray()) {
+        if (isMissing() || isNull() || !data.isArray()) {
             return null;
         }
 
@@ -92,7 +92,7 @@ class JsonNodeClaim implements Claim {
 
     @Override
     public <T> List<T> asList(Class<T> tClazz) throws JWTDecodeException {
-        if (!data.isArray()) {
+        if (isMissing() || isNull() || !data.isArray()) {
             return null;
         }
 
@@ -109,7 +109,7 @@ class JsonNodeClaim implements Claim {
 
     @Override
     public Map<String, Object> asMap() throws JWTDecodeException {
-        if (!data.isObject()) {
+        if (isMissing() || isNull() || !data.isObject()) {
             return null;
         }
 
@@ -126,6 +126,9 @@ class JsonNodeClaim implements Claim {
     @Override
     public <T> T as(Class<T> tClazz) throws JWTDecodeException {
         try {
+            if(isMissing() || isNull()) {
+                return null;
+            }
             return objectReader.treeAsTokens(data).readValueAs(tClazz);
         } catch (IOException e) {
             throw new JWTDecodeException("Couldn't map the Claim value to " + tClazz.getSimpleName(), e);
@@ -134,11 +137,21 @@ class JsonNodeClaim implements Claim {
 
     @Override
     public boolean isNull() {
-        return false;
+        return !isMissing() && data.isNull();
+    }
+
+    @Override
+    public boolean isMissing() {
+        return data == null || data.isMissingNode();
     }
 
     @Override
     public String toString() {
+        if(isMissing()) {
+            return "Missing claim";
+        } else if (isNull()) {
+            return "Null claim";
+        }
         return data.toString();
     }
 
@@ -161,10 +174,8 @@ class JsonNodeClaim implements Claim {
      * @return a valid Claim instance. If the node is null or missing, a NullClaim will be returned.
      */
     static Claim claimFromNode(JsonNode node, ObjectReader objectReader) {
-        if (node == null || node.isNull() || node.isMissingNode()) {
-            return new NullClaim();
-        }
         return new JsonNodeClaim(node, objectReader);
     }
 
 }
+//todo test all as* methods in JsonNodeClaim to ensure isMissing isNull calls are made

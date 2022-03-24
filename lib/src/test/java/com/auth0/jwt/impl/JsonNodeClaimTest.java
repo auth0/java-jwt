@@ -331,8 +331,8 @@ public class JsonNodeClaimTest {
         Claim claim = claimFromNode(value);
 
         assertThat(claim, is(notNullValue()));
-        assertThat(claim, is(instanceOf(NullClaim.class)));
-        assertThat(claim.isNull(), is(true));
+        assertThat(claim.isMissing(), is(true));
+        assertThat(claim.isNull(), is(false));
     }
 
     @Test
@@ -341,8 +341,8 @@ public class JsonNodeClaimTest {
         Claim claim = claimFromNode(value);
 
         assertThat(claim, is(notNullValue()));
-        assertThat(claim, is(instanceOf(NullClaim.class)));
         assertThat(claim.isNull(), is(true));
+        assertThat(claim.isMissing(), is(false));
     }
 
     @Test
@@ -351,8 +351,8 @@ public class JsonNodeClaimTest {
         Claim claim = claimFromNode(value);
 
         assertThat(claim, is(notNullValue()));
-        assertThat(claim, is(instanceOf(NullClaim.class)));
         assertThat(claim.isNull(), is(true));
+        assertThat(claim.isMissing(), is(false));
     }
 
     @Test
@@ -363,6 +363,7 @@ public class JsonNodeClaimTest {
         assertThat(claim, is(notNullValue()));
         assertThat(claim, is(instanceOf(JsonNodeClaim.class)));
         assertThat(claim.isNull(), is(false));
+        assertThat(claim.isMissing(), is(false));
     }
 
     @Test
@@ -373,6 +374,7 @@ public class JsonNodeClaimTest {
         assertThat(claim, is(notNullValue()));
         assertThat(claim, is(instanceOf(JsonNodeClaim.class)));
         assertThat(claim.isNull(), is(false));
+        assertThat(claim.isMissing(), is(false));
     }
 
     @Test
@@ -383,6 +385,7 @@ public class JsonNodeClaimTest {
         assertThat(claim, is(notNullValue()));
         assertThat(claim, is(instanceOf(JsonNodeClaim.class)));
         assertThat(claim.isNull(), is(false));
+        assertThat(claim.isMissing(), is(false));
     }
 
     @Test
@@ -393,6 +396,7 @@ public class JsonNodeClaimTest {
         assertThat(claim, is(notNullValue()));
         assertThat(claim, is(instanceOf(JsonNodeClaim.class)));
         assertThat(claim.isNull(), is(false));
+        assertThat(claim.isMissing(), is(false));
     }
 
     @Test
@@ -403,6 +407,7 @@ public class JsonNodeClaimTest {
         assertThat(claim, is(notNullValue()));
         assertThat(claim, is(instanceOf(JsonNodeClaim.class)));
         assertThat(claim.isNull(), is(false));
+        assertThat(claim.isMissing(), is(false));
     }
 
     @Test
@@ -413,6 +418,7 @@ public class JsonNodeClaimTest {
         assertThat(claim, is(notNullValue()));
         assertThat(claim, is(instanceOf(JsonNodeClaim.class)));
         assertThat(claim.isNull(), is(false));
+        assertThat(claim.isMissing(), is(false));
     }
 
     @Test
@@ -423,6 +429,7 @@ public class JsonNodeClaimTest {
         assertThat(claim, is(notNullValue()));
         assertThat(claim, is(instanceOf(JsonNodeClaim.class)));
         assertThat(claim.isNull(), is(false));
+        assertThat(claim.isMissing(), is(false));
     }
 
     @Test
@@ -433,6 +440,18 @@ public class JsonNodeClaimTest {
         assertThat(claim, is(notNullValue()));
         assertThat(claim, is(instanceOf(JsonNodeClaim.class)));
         assertThat(claim.isNull(), is(false));
+        assertThat(claim.isMissing(), is(false));
+    }
+
+    @Test
+    public void shouldReturnNullIsTrue() {
+        JsonNode value = mapper.valueToTree(null);
+        Claim claim = claimFromNode(value);
+
+        assertThat(claim, is(notNullValue()));
+        assertThat(claim, is(instanceOf(JsonNodeClaim.class)));
+        assertThat(claim.isNull(), is(true));
+        assertThat(claim.isMissing(), is(false));
     }
 
     @Test

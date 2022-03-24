@@ -1,7 +1,6 @@
 package com.auth0.jwt;
 
 import com.auth0.jwt.exceptions.JWTDecodeException;
-import com.auth0.jwt.impl.NullClaim;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import org.hamcrest.collection.IsCollectionWithSize;
@@ -215,7 +214,8 @@ public class JWTDecoderTest {
         DecodedJWT jwt = JWT.decode("eyJhbGciOiJIUzI1NiJ9.e30.K17vlwhE8FCMShdl1_65jEYqsQqBOVMPUU9IgG-QlTM");
         assertThat(jwt, is(notNullValue()));
         assertThat(jwt.getClaim("notExisting"), is(notNullValue()));
-        assertThat(jwt.getClaim("notExisting"), is(instanceOf(NullClaim.class)));
+        assertThat(jwt.getClaim("notExisting").isMissing(), is(true));
+        assertThat(jwt.getClaim("notExisting").isNull(), is(false));
     }
 
     @Test
