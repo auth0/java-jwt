@@ -294,13 +294,28 @@ public class JWTDecoderTest {
 
     @Test
     public void shouldGetCustomMapClaim() {
-        String token = "eyJhbGciOiJIUzI1NiJ9.eyJuYW1lIjp7InN0cmluZyI6InZhbHVlIiwibnVtYmVyIjoxLCJib29sZWFuIjp0cnVlfX0.-8aIaXd2-rp1lLuDEQmCeisCBX9X_zbqdPn2llGxNoc";
+        String token = "eyJhbGciOiJIUzI1NiJ9.eyJuYW1lIjp7InN0cmluZyI6InZhbHVlIiwibnVtYmVyIjoxLCJib29sZWFuIjp0cnVlLCJlbXB0eSI6bnVsbH19.6xkCuYZnu4RA0xZSxlYSYAqzy9JDWsDtIWqSCUZlPt8";
         DecodedJWT jwt = JWT.decode(token);
         assertThat(jwt, is(notNullValue()));
         Map<String, Object> map = jwt.getClaim("name").asMap();
         assertThat(map, hasEntry("string", "value"));
         assertThat(map, hasEntry("number", 1));
         assertThat(map, hasEntry("boolean", true));
+        assertThat(map, hasEntry("empty", null));
+    }
+
+    @Test
+    public void shouldGetCustomNullClaim() {
+        String token = "eyJhbGciOiJIUzI1NiJ9.eyJuYW1lIjpudWxsfQ.X4ALHe7uYqEcXWFBnwBUNRKwmwrtDEGZ2aynRYYUx8c";
+        DecodedJWT jwt = JWT.decode(token);
+        assertThat(jwt.getClaim("name").isNull(), is(true));
+    }
+
+    @Test
+    public void shouldGetListClaim() {
+        String token = "eyJhbGciOiJIUzI1NiJ9.eyJuYW1lIjpbbnVsbCwiaGVsbG8iXX0.SpcuQRBGdTV0ofHdxBSnhWEUsQi89noZUXin2Thwb70";
+        DecodedJWT jwt = JWT.decode(token);
+        assertThat(jwt.getClaim("name").asList(String.class), contains(null, "hello"));
     }
 
     @Test
