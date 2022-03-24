@@ -74,7 +74,6 @@ public final class JWTCreator {
         /**
          * Add specific Claims to set as the Header.
          * If provided map is null then nothing is changed
-         * If provided map contains a claim with null value then that claim will be removed from the header
          *
          * @param headerClaims the values to use as Claims in the token's Header.
          * @return this same Builder instance.
@@ -401,7 +400,6 @@ public final class JWTCreator {
          * @return this same Builder instance.
          * @throws IllegalArgumentException if the name is null, or if the list contents does not validate.
          */
-
         public Builder withClaim(String name, List<?> list) throws IllegalArgumentException {
             assertNonNull(name);
             // validate list contents
@@ -412,14 +410,19 @@ public final class JWTCreator {
             return this;
         }
 
+        public Builder withNullClaim(String name) throws IllegalArgumentException {
+            assertNonNull(name);
+            addClaim(name, null);
+            return this;
+        }
+
         /**
          * Add specific Claims to set as the Payload. If the provided map is null then
          * nothing is changed.
          * <p>
          * Accepted types are {@linkplain Map} and {@linkplain List} with basic types
          * {@linkplain Boolean}, {@linkplain Integer}, {@linkplain Long}, {@linkplain Double},
-         * {@linkplain String} and {@linkplain Date}. {@linkplain Map}s cannot contain null keys or values.
-         * {@linkplain List}s can contain null elements.
+         * {@linkplain String} and {@linkplain Date}. {@linkplain Map}s and {@linkplain List}s can contain null elements.
          * </p>
          *
          * <p>
@@ -436,7 +439,7 @@ public final class JWTCreator {
             }
 
             if (!validatePayload(payloadClaims)) {
-                throw new IllegalArgumentException("Claim values must only be of types Map, List, Boolean, Integer, Long, Double, String and Date");
+                throw new IllegalArgumentException("Claim values must only be of types Map, List, Boolean, Integer, Long, Double, String, Date and Null");
             }
 
             // add claims only after validating all claims so as not to corrupt the claims map of this builder
@@ -457,7 +460,7 @@ public final class JWTCreator {
                     return false;
                 } else if (value instanceof Map && !validateClaim((Map<?, ?>) value)) {
                     return false;
-                } else if (value != null && !isSupportedType(value)) {
+                } else if (!isSupportedType(value)) {
                     return false;
                 }
             }
@@ -468,7 +471,7 @@ public final class JWTCreator {
             // do not accept null values in maps
             for (Entry<?, ?> entry : map.entrySet()) {
                 Object value = entry.getValue();
-                if (value == null || !isSupportedType(value)) {
+                if (!isSupportedType(value)) {
                     return false;
                 }
 
@@ -482,7 +485,7 @@ public final class JWTCreator {
         private static boolean validateClaim(List<?> list) {
             // accept null values in list
             for (Object object : list) {
-                if (object != null && !isSupportedType(object)) {
+                if (!isSupportedType(object)) {
                     return false;
                 }
             }
@@ -500,12 +503,17 @@ public final class JWTCreator {
         }
 
         private static boolean isBasicType(Object value) {
-            Class<?> c = value.getClass();
+            if(value == null){
+                return true;
+            } else {
+                Class<?> c = value.getClass();
 
-            if (c.isArray()) {
-                return c == Integer[].class || c == Long[].class || c == String[].class;
+                if (c.isArray()) {
+                    return c == Integer[].class || c == Long[].class || c == String[].class;
+                }
+                return c == String.class || c == Integer.class || c == Long.class || c == Double.class
+                        || c == Date.class || c == Instant.class || c == Boolean.class;
             }
-            return c == String.class || c == Integer.class || c == Long.class || c == Double.class || c == Date.class || c == Instant.class || c == Boolean.class;
         }
 
         /**
@@ -538,10 +546,6 @@ public final class JWTCreator {
         }
 
         private void addClaim(String name, Object value) {
-            if (value == null) {
-                payloadClaims.remove(name);
-                return;
-            }
             payloadClaims.put(name, value);
         }
     }
