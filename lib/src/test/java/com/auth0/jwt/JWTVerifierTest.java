@@ -5,6 +5,7 @@ import com.auth0.jwt.exceptions.AlgorithmMismatchException;
 import com.auth0.jwt.exceptions.InvalidClaimException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.impl.PublicClaims;
+import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.Verification;
 import org.junit.Rule;
@@ -17,9 +18,11 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.util.Collections;
 import java.util.Date;
+import java.util.function.BiPredicate;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.mockito.ArgumentMatchers.isNotNull;
 import static org.mockito.Mockito.mock;
 
 public class JWTVerifierTest {
@@ -1028,6 +1031,7 @@ public class JWTVerifierTest {
 
         JWTVerifier verifier = JWTVerifier.init(Algorithm.HMAC256("secret"))
                 .withClaim("claimName", (claim, decodedJWT) -> "claimValue".equals(claim.asString()))
+                .withClaim(PublicClaims.ISSUED_AT, ((claim, decodedJWT) -> false))
                 .build();
 
         DecodedJWT decodedJWT = verifier.verify(jwt);
@@ -1049,8 +1053,15 @@ public class JWTVerifierTest {
                 .verify(jwt);
     }
 
-    // TODO tests for:
-    //  null predicate claim handling (removed from expectedClaims)
-    //  behavior when using predicate with public claims
+    @Test
+    public void shouldRemovePredicateCheckForNull() {
+        JWTVerifier verifier = JWTVerifier.init(Algorithm.HMAC256("secret"))
+                .withClaim("claimName", (claim, decodedJWT) -> "nope".equals(claim.asString()))
+                .withClaim("claimName", (BiPredicate<Claim, DecodedJWT>) null)
+                .build();
+
+        assertThat(verifier.expectedChecks, is(notNullValue()));
+        assertThat(verifier.expectedChecks, not(hasKey("claimName")));
+    }
 
 }
