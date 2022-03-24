@@ -149,6 +149,13 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
         }
 
         @Override
+        public Verification withNullClaim(String name) throws IllegalArgumentException {
+            assertNonNull(name);
+            withClaim(name, ((claim, decodedJWT) -> claim.isNull()));
+            return this;
+        }
+
+        @Override
         public Verification withClaim(String name, Boolean value) throws IllegalArgumentException {
             assertNonNull(name);
             checkIfNeedToRemove(name, value, ((claim, decodedJWT) -> value.equals(claim.asBoolean())));

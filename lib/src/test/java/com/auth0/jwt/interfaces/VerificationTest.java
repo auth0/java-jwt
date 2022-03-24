@@ -105,6 +105,11 @@ public class VerificationTest {
         }
 
         @Override
+        public Verification withNullClaim(String name) throws IllegalArgumentException {
+            return null;
+        }
+
+        @Override
         public Verification withClaim(String name, Boolean value) throws IllegalArgumentException {
             return null;
         }
