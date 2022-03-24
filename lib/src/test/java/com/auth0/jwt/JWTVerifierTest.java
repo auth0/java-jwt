@@ -419,7 +419,7 @@ public class JWTVerifierTest {
         exception.expectMessage("The Claim 'name' value doesn't match the required one.");
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjpbInNvbWV0aGluZyJdfQ.3ENLez6tU_fG0SVFrGmISltZPiXLSHaz_dyn-XFTEGQ";
         JWTVerifier.init(Algorithm.HMAC256("secret"))
-                .withClaim("name", "")
+                .withClaim("name", "check")
                 .build()
                 .verify(token);
     }

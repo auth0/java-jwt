@@ -27,9 +27,9 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
     final Map<String, BiPredicate<Claim, DecodedJWT>> expectedChecks;
     private final JWTParser parser;
 
-    JWTVerifier(Algorithm algorithm, Map<String, BiPredicate<Claim, DecodedJWT>> expectedClaims) {
+    JWTVerifier(Algorithm algorithm, Map<String, BiPredicate<Claim, DecodedJWT>> expectedChecks) {
         this.algorithm = algorithm;
-        this.expectedChecks = Collections.unmodifiableMap(expectedClaims);
+        this.expectedChecks = Collections.unmodifiableMap(expectedChecks);
         this.parser = new JWTParser();
     }
 
@@ -58,7 +58,7 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
             }
 
             this.algorithm = algorithm;
-            this.expectedChecks = new HashMap<>();
+            this.expectedChecks = new LinkedHashMap<>();
             this.customLeeways = new HashMap<>();
             this.defaultLeeway = 0;
         }
