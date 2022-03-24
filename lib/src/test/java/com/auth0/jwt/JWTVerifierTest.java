@@ -1064,4 +1064,47 @@ public class JWTVerifierTest {
         assertThat(verifier.expectedChecks, not(hasKey("claimName")));
     }
 
+    @Test
+    public void shouldSuccessfullyVerifyClaimWithNull() {
+        String jwt = JWTCreator.init()
+                .withNullClaim("claimName")
+                .sign(Algorithm.HMAC256("secret"));
+
+        JWTVerifier verifier = JWTVerifier.init(Algorithm.HMAC256("secret"))
+                .withNullClaim("claimName")
+                .build();
+
+        DecodedJWT decodedJWT = verifier.verify(jwt);
+        assertThat(decodedJWT, is(notNullValue()));
+    }
+
+    @Test
+    public void shouldThrowWhenNullClaimHasValue() {
+        exception.expect(InvalidClaimException.class);
+        exception.expectMessage("The Claim 'claimName' value doesn't match the required one.");
+
+        String jwt = JWTCreator.init()
+                .withClaim("claimName", "value")
+                .sign(Algorithm.HMAC256("secret"));
+
+        JWTVerifier.init(Algorithm.HMAC256("secret"))
+                .withNullClaim("claimName")
+                .build()
+                .verify(jwt);
+    }
+
+    @Test
+    public void shouldThrowWhenNullClaimIsMissing() {
+        exception.expect(InvalidClaimException.class);
+        exception.expectMessage("The Claim 'anotherClaimName' value doesn't match the required one.");
+
+        String jwt = JWTCreator.init()
+                .withClaim("claimName", "value")
+                .sign(Algorithm.HMAC256("secret"));
+
+        JWTVerifier.init(Algorithm.HMAC256("secret"))
+                .withNullClaim("anotherClaimName")
+                .build()
+                .verify(jwt);
+    }
 }

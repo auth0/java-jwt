@@ -622,7 +622,7 @@ public class JWTCreatorTest {
 
         assertThat(jwt, is(notNullValue()));
         String[] parts = jwt.split("\\.");
-        
+
         String body = new String(Base64.getUrlDecoder().decode(parts[1]), StandardCharsets.UTF_8);
         ObjectMapper mapper = new ObjectMapper();
         List<Object> list = (List<Object>) mapper.readValue(body, Map.class).get("data");
@@ -928,5 +928,76 @@ public class JWTCreatorTest {
         assertThat(payloadJson, JsonMatcher.hasEntry("intClaim", 41));
         assertThat(payloadJson, JsonMatcher.hasEntry("listClaim", listClaim));
         assertThat(payloadJson, JsonMatcher.hasEntry("objClaim", mapClaim));
+    }
+
+    @Test
+    public void withPayloadShouldSupportNullValuesEverywhere() {
+         /*
+        JWT:
+            {
+              "listClaim": [
+                "answer to ultimate question of life",
+                42,
+                null
+              ],
+              "claim": null,
+              "listNestedClaim": [
+                1,
+                2,
+                {
+                  "nestedObjKey": null
+                }
+              ],
+              "objClaim": {
+                "nestedObjKey": null,
+                "objObjKey": {
+                  "nestedObjKey": null,
+                  "objListKey": [
+                    null,
+                    "nestedList2"
+                  ]
+                },
+                "objListKey": [
+                  null,
+                  "nestedList2"
+                ]
+              }
+            }
+         */
+
+        List<?> listClaim = Arrays.asList("answer to ultimate question of life", 42, null);
+        List<?> listNestedClaim = Arrays.asList(1, 2, Collections.singletonMap("nestedObjKey", null));
+        List<?> objListKey = Arrays.asList(null, "nestedList2");
+        HashMap<String, Object> objClaim = new HashMap<>();
+        objClaim.put("nestedObjKey", null);
+        objClaim.put("objListKey", objListKey);
+        objClaim.put("objObjKey", new HashMap<>(objClaim));
+
+
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("claim", null);
+        payload.put("listClaim", listClaim);
+        payload.put("listNestedClaim", listNestedClaim);
+        payload.put("objClaim", objClaim);
+
+        String jwt = JWTCreator.init()
+                .withPayload(payload)
+                .withHeader(payload)
+                .sign(Algorithm.HMAC256("secret"));
+
+        assertThat(jwt, is(notNullValue()));
+        String[] parts = jwt.split("\\.");
+        String payloadJson = new String(Base64.getUrlDecoder().decode(parts[1]), StandardCharsets.UTF_8);
+        String headerJson = new String(Base64.getUrlDecoder().decode(parts[0]), StandardCharsets.UTF_8);
+
+        assertThat(payloadJson, JsonMatcher.hasEntry("claim", null));
+        assertThat(payloadJson, JsonMatcher.hasEntry("listClaim", listClaim));
+        assertThat(payloadJson, JsonMatcher.hasEntry("listNestedClaim", listNestedClaim));
+        assertThat(payloadJson, JsonMatcher.hasEntry("objClaim", objClaim));
+
+        assertThat(headerJson, JsonMatcher.hasEntry("claim", null));
+        assertThat(headerJson, JsonMatcher.hasEntry("listClaim", listClaim));
+        assertThat(headerJson, JsonMatcher.hasEntry("listNestedClaim", listNestedClaim));
+        assertThat(headerJson, JsonMatcher.hasEntry("objClaim", objClaim));
     }
 }
