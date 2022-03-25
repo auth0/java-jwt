@@ -60,24 +60,14 @@ class PublicClaimsIssuer implements ExpectedClaimType {
     }
 }
 
-class PublicClaimsJwtId implements ExpectedClaimType {
-    private void assertValidStringClaim(String claimName, String value, String expectedValue) {
-        if (!expectedValue.equals(value)) {
-            throw new InvalidClaimException(String.format("The Claim '%s' value doesn't match the required one.", claimName));
-        }
-    }
+class PublicClaimsJwtId extends PublicClaimsWithText {
     @Override
     public void assertExpectedClaimType(DecodedJWT jwt, Map.Entry<String, Object> entry, Clock clock) {
         assertValidStringClaim(entry.getKey(), jwt.getId(), (String) entry.getValue());
     }
 }
 
-class PublicClaimsSubject implements ExpectedClaimType {
-    private void assertValidStringClaim(String claimName, String value, String expectedValue) {
-        if (!expectedValue.equals(value)) {
-            throw new InvalidClaimException(String.format("The Claim '%s' value doesn't match the required one.", claimName));
-        }
-    }
+class PublicClaimsSubject extends PublicClaimsWithText {
 
     @Override
     public void assertExpectedClaimType(DecodedJWT jwt, Map.Entry<String, Object> entry, Clock clock) {
