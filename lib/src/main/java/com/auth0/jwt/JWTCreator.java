@@ -372,6 +372,13 @@ public final class JWTCreator {
             return this;
         }
 
+        /**
+         * Add a custom claim with null value.
+         *
+         * @param name the Claim's name.
+         * @return this same Builder instance.
+         * @throws IllegalArgumentException if the name is null
+         */
         public Builder withNullClaim(String name) throws IllegalArgumentException {
             assertNonNull(name);
             addClaim(name, null);
@@ -426,7 +433,8 @@ public final class JWTCreator {
          * <p>
          * Accepted types are {@linkplain Map} and {@linkplain List} with basic types
          * {@linkplain Boolean}, {@linkplain Integer}, {@linkplain Long}, {@linkplain Double},
-         * {@linkplain String} and {@linkplain Date}. {@linkplain Map}s and {@linkplain List}s can contain null elements.
+         * {@linkplain String} and {@linkplain Date}.
+         * {@linkplain Map}s and {@linkplain List}s can contain null elements.
          * </p>
          *
          * <p>
@@ -445,7 +453,7 @@ public final class JWTCreator {
 
             if (!validatePayload(payloadClaims)) {
                 throw new IllegalArgumentException("Claim values must only be of types Map, List, Boolean, Integer, "
-                        + "Long, Double, String and Date");
+                        + "Long, Double, String, Date and Null");
             }
 
             // add claims only after validating all claims so as not to corrupt the claims map of this builder
@@ -509,7 +517,7 @@ public final class JWTCreator {
         }
 
         private static boolean isBasicType(Object value) {
-            if(value == null){
+            if (value == null) {
                 return true;
             } else {
                 Class<?> c = value.getClass();

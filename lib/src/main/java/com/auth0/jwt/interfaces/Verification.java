@@ -134,6 +134,7 @@ public interface Verification {
 
     /**
      * Require a specific Claim value to be null.
+     *
      * @param name the Claim's name.
      * @return this same Verification instance.
      * @throws IllegalArgumentException if the name is null.

@@ -298,8 +298,8 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
                     }
                 }
             } else {
-                claimArr = claim.isNull() || claim.isMissing() ?
-                        Collections.emptyList() : Arrays.asList(claim.as(Object[].class));
+                claimArr = claim.isNull() || claim.isMissing()
+                        ? Collections.emptyList() : Arrays.asList(claim.as(Object[].class));
             }
             List<Object> valueArr = Arrays.asList(expectedClaimValue);
             return claimArr.containsAll(valueArr);

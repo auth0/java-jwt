@@ -126,7 +126,7 @@ class JsonNodeClaim implements Claim {
     @Override
     public <T> T as(Class<T> clazz) throws JWTDecodeException {
         try {
-            if(isMissing() || isNull()) {
+            if (isMissing() || isNull()) {
                 return null;
             }
             return objectReader.treeAsTokens(data).readValueAs(clazz);
@@ -147,7 +147,7 @@ class JsonNodeClaim implements Claim {
 
     @Override
     public String toString() {
-        if(isMissing()) {
+        if (isMissing()) {
             return "Missing claim";
         } else if (isNull()) {
             return "Null claim";
