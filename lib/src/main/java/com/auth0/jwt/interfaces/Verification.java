@@ -4,6 +4,7 @@ import com.auth0.jwt.JWTVerifier;
 
 import java.time.Instant;
 import java.util.Date;
+import java.util.function.BiPredicate;
 
 /**
  * Holds the Claims and claim-based configurations required for a JWT to be considered valid.
@@ -204,6 +205,17 @@ public interface Verification {
     default Verification withClaim(String name, Instant value) throws IllegalArgumentException {
         return withClaim(name, value != null ? Date.from(value) : null);
     }
+
+    /**
+     * Executes the predicate provided during the verification
+     * and passes the verification if the predicate returns true.
+     *
+     * @param name the Claim's name
+     * @param predicate the predicate check to be done.
+     * @return this same Verification instance.
+     * @throws IllegalArgumentException if the name is null.
+     */
+    Verification withClaim(String name, BiPredicate<Claim, DecodedJWT> predicate) throws IllegalArgumentException;
 
     /**
      * Require a specific Array Claim to contain at least the given items.
