@@ -211,6 +211,14 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
         }
 
         @Override
+        public Verification withClaim(String name, BiPredicate<Claim, DecodedJWT> predicate)
+                throws IllegalArgumentException {
+            assertNonNull(name);
+            checkIfNeedToRemove(name, predicate, predicate);
+            return this;
+        }
+
+        @Override
         public Verification withArrayClaim(String name, String... items) throws IllegalArgumentException {
             assertNonNull(name);
             checkIfNeedToRemove(name, items, ((claim, decodedJWT) -> assertValidCollectionClaim(claim, items)));
@@ -228,13 +236,6 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
         public Verification withArrayClaim(String name, Long... items) throws IllegalArgumentException {
             assertNonNull(name);
             checkIfNeedToRemove(name, items, ((claim, decodedJWT) -> assertValidCollectionClaim(claim, items)));
-            return this;
-        }
-
-        @Override
-        public Verification withClaim(String name, BiPredicate<Claim, DecodedJWT> predicate) throws IllegalArgumentException {
-            assertNonNull(name);
-            checkIfNeedToRemove(name, predicate, predicate);
             return this;
         }
 
@@ -257,7 +258,7 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
         }
 
         /**
-         * Fetches the Leeway set for claim or returns the {@link BaseVerification#defaultLeeway}
+         * Fetches the Leeway set for claim or returns the {@link BaseVerification#defaultLeeway}.
          *
          * @param name Claim for which leeway is fetched
          * @return Leeway value set for the claim
@@ -328,8 +329,8 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
         }
 
         private boolean assertValidAudienceClaim(List<String> audience, List<String> values, boolean shouldContainAll) {
-            if (audience == null || (shouldContainAll && !audience.containsAll(values)) ||
-                    (!shouldContainAll && Collections.disjoint(audience, values))) {
+            if (audience == null || (shouldContainAll && !audience.containsAll(values))
+                    || (!shouldContainAll && Collections.disjoint(audience, values))) {
                 throw new InvalidClaimException("The Claim 'aud' value doesn't contain the required audience.");
             }
             return true;

@@ -215,6 +215,17 @@ public interface Verification {
     }
 
     /**
+     * Executes the predicate provided during the verification
+     * and passes the verification if the predicate returns true.
+     *
+     * @param name the Claim's name
+     * @param predicate the predicate check to be done.
+     * @return this same Verification instance.
+     * @throws IllegalArgumentException if the name is null.
+     */
+    Verification withClaim(String name, BiPredicate<Claim, DecodedJWT> predicate) throws IllegalArgumentException;
+
+    /**
      * Require a specific Array Claim to contain at least the given items.
      *
      * @param name  the Claim's name.
@@ -244,8 +255,6 @@ public interface Verification {
      */
 
     Verification withArrayClaim(String name, Long ... items) throws IllegalArgumentException;
-
-    Verification withClaim(String name, BiPredicate<Claim, DecodedJWT> predicate) throws IllegalArgumentException;
 
     /**
      * Skip the Issued At ("iat") date verification. By default, the verification is performed.
