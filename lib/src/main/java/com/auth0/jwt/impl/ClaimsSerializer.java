@@ -32,12 +32,12 @@ public class ClaimsSerializer<T extends ClaimsHolder> extends StdSerializer<T> {
 
     /**
      * Writes the given entry to the JSON representation. Custom claim serialization handling can override this method
-     * to provide use-case specific serialization. Implementors who override this method must write the field name and the
-     * field value.
+     * to provide use-case specific serialization. Implementors who override this method must write
+     * the field name and the field value.
      *
      * @param entry The entry that corresponds to the JSON field to write
      * @param gen The {@code JsonGenerator} to use
-     * @throws IOException
+     * @throws IOException if there is either an underlying I/O problem or encoding issue at format layer
      */
     protected void writeClaim(Map.Entry<String, Object> entry, JsonGenerator gen) throws IOException {
         gen.writeFieldName(entry.getKey());

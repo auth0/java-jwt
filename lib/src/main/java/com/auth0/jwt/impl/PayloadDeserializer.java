@@ -16,10 +16,10 @@ import java.util.*;
 
 /**
  * Jackson deserializer implementation for converting from JWT Payload parts.
- *
- * @see JWTParser
  * <p>
  * This class is thread-safe.
+ *
+ * @see JWTParser
  */
 class PayloadDeserializer extends StdDeserializer<Payload> {
 
@@ -80,7 +80,8 @@ class PayloadDeserializer extends StdDeserializer<Payload> {
             return null;
         }
         if (!node.canConvertToLong()) {
-            throw new JWTDecodeException(String.format("The claim '%s' contained a non-numeric date value.", claimName));
+            throw new JWTDecodeException(
+                    String.format("The claim '%s' contained a non-numeric date value.", claimName));
         }
         return Instant.ofEpochSecond(node.asLong());
     }

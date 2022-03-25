@@ -13,10 +13,10 @@ import static com.auth0.jwt.impl.JsonNodeClaim.extractClaim;
 
 /**
  * Decoder of string JSON Web Tokens into their POJO representations.
- *
- * @see Payload
  * <p>
  * This class is thread-safe.
+ *
+ * @see Payload
  */
 class PayloadImpl implements Payload, Serializable {
 
@@ -32,7 +32,17 @@ class PayloadImpl implements Payload, Serializable {
     private final Map<String, JsonNode> tree;
     private final ObjectReader objectReader;
 
-    PayloadImpl(String issuer, String subject, List<String> audience, Instant expiresAt, Instant notBefore, Instant issuedAt, String jwtId, Map<String, JsonNode> tree, ObjectReader objectReader) {
+    PayloadImpl(
+            String issuer,
+            String subject,
+            List<String> audience,
+            Instant expiresAt,
+            Instant notBefore,
+            Instant issuedAt,
+            String jwtId,
+            Map<String, JsonNode> tree,
+            ObjectReader objectReader
+    ) {
         this.issuer = issuer;
         this.subject = subject;
         this.audience = audience != null ? Collections.unmodifiableList(audience) : null;

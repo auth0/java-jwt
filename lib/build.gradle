@@ -2,6 +2,12 @@ plugins {
     id 'java'
     id 'jacoco'
     id 'com.auth0.gradle.oss-library.java'
+    id 'checkstyle'
+}
+
+checkstyle {
+    toolVersion '10.0'
+    checkstyleTest.enabled = false //We are disabling lint checks for tests
 }
 
 logger.lifecycle("Using version ${version} for ${group}.${name}")

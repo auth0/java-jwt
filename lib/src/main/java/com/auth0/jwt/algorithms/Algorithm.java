@@ -139,28 +139,6 @@ public abstract class Algorithm {
     }
 
     /**
-     * Creates a new Algorithm instance using HmacSHA384. Tokens specify this as "HS384".
-     *
-     * @param secret the secret to use in the verify or signing instance.
-     * @return a valid HMAC384 Algorithm.
-     * @throws IllegalArgumentException if the provided Secret is null.
-     */
-    public static Algorithm HMAC384(String secret) throws IllegalArgumentException {
-        return new HMACAlgorithm("HS384", "HmacSHA384", secret);
-    }
-
-    /**
-     * Creates a new Algorithm instance using HmacSHA512. Tokens specify this as "HS512".
-     *
-     * @param secret the secret to use in the verify or signing instance.
-     * @return a valid HMAC512 Algorithm.
-     * @throws IllegalArgumentException if the provided Secret is null.
-     */
-    public static Algorithm HMAC512(String secret) throws IllegalArgumentException {
-        return new HMACAlgorithm("HS512", "HmacSHA512", secret);
-    }
-
-    /**
      * Creates a new Algorithm instance using HmacSHA256. Tokens specify this as "HS256".
      *
      * @param secret the secret bytes to use in the verify or signing instance.
@@ -169,6 +147,17 @@ public abstract class Algorithm {
      */
     public static Algorithm HMAC256(byte[] secret) throws IllegalArgumentException {
         return new HMACAlgorithm("HS256", "HmacSHA256", secret);
+    }
+
+    /**
+     * Creates a new Algorithm instance using HmacSHA384. Tokens specify this as "HS384".
+     *
+     * @param secret the secret to use in the verify or signing instance.
+     * @return a valid HMAC384 Algorithm.
+     * @throws IllegalArgumentException if the provided Secret is null.
+     */
+    public static Algorithm HMAC384(String secret) throws IllegalArgumentException {
+        return new HMACAlgorithm("HS384", "HmacSHA384", secret);
     }
 
     /**
@@ -185,6 +174,17 @@ public abstract class Algorithm {
     /**
      * Creates a new Algorithm instance using HmacSHA512. Tokens specify this as "HS512".
      *
+     * @param secret the secret to use in the verify or signing instance.
+     * @return a valid HMAC512 Algorithm.
+     * @throws IllegalArgumentException if the provided Secret is null.
+     */
+    public static Algorithm HMAC512(String secret) throws IllegalArgumentException {
+        return new HMACAlgorithm("HS512", "HmacSHA512", secret);
+    }
+
+    /**
+     * Creates a new Algorithm instance using HmacSHA512. Tokens specify this as "HS512".
+     *
      * @param secret the secret bytes to use in the verify or signing instance.
      * @return a valid HMAC512 Algorithm.
      * @throws IllegalArgumentException if the provided Secret is null.
@@ -192,8 +192,7 @@ public abstract class Algorithm {
     public static Algorithm HMAC512(byte[] secret) throws IllegalArgumentException {
         return new HMACAlgorithm("HS512", "HmacSHA512", secret);
     }
-    
-    
+
 
     /**
      * Creates a new Algorithm instance using SHA256withECDSA. Tokens specify this as "ES256".
@@ -314,7 +313,8 @@ public abstract class Algorithm {
     }
 
     /**
-     * Getter for the Id of the Private Key used to sign the tokens. This is usually specified as the `kid` claim in the Header.
+     * Getter for the Id of the Private Key used to sign the tokens.
+     * This is usually specified as the `kid` claim in the Header.
      *
      * @return the Key Id that identifies the Signing Key or null if it's not specified.
      */
@@ -332,7 +332,8 @@ public abstract class Algorithm {
     }
 
     /**
-     * Getter for the description of this Algorithm, required when instantiating a Mac or Signature object. i.e. "HmacSHA256"
+     * Getter for the description of this Algorithm,
+     * required when instantiating a Mac or Signature object. i.e. "HmacSHA256"
      *
      * @return the algorithm description.
      */
@@ -349,15 +350,19 @@ public abstract class Algorithm {
      * Verify the given token using this Algorithm instance.
      *
      * @param jwt the already decoded JWT that it's going to be verified.
-     * @throws SignatureVerificationException if the Token's Signature is invalid, meaning that it doesn't match the signatureBytes, or if the Key is invalid.
+     * @throws SignatureVerificationException if the Token's Signature is invalid,
+     *                                        meaning that it doesn't match the signatureBytes,
+     *                                        or if the Key is invalid.
      */
     public abstract void verify(DecodedJWT jwt) throws SignatureVerificationException;
 
     /**
      * Sign the given content using this Algorithm instance.
      *
-     * @param headerBytes  an array of bytes representing the base64 encoded header content to be verified against the signature.
-     * @param payloadBytes an array of bytes representing the base64 encoded payload content to be verified against the signature.
+     * @param headerBytes  an array of bytes representing the base64 encoded header content
+     *                     to be verified against the signature.
+     * @param payloadBytes an array of bytes representing the base64 encoded payload content
+     *                     to be verified against the signature.
      * @return the signature in a base64 encoded array of bytes
      * @throws SignatureGenerationException if the Key is invalid.
      */
@@ -376,7 +381,8 @@ public abstract class Algorithm {
      * Sign the given content using this Algorithm instance.
      * To get the correct JWT Signature, ensure the content is in the format {HEADER}.{PAYLOAD}
      *
-     * @param contentBytes an array of bytes representing the base64 encoded content to be verified against the signature.
+     * @param contentBytes an array of bytes representing the base64 encoded content
+     *                     to be verified against the signature.
      * @return the signature in a base64 encoded array of bytes
      * @throws SignatureGenerationException if the Key is invalid.
      */
