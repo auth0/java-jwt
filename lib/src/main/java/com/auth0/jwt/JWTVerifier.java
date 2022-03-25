@@ -318,37 +318,9 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
     }
 
     private void verifyClaimValues(DecodedJWT jwt, Map.Entry<String, Object> expectedClaim) {
-        switch (expectedClaim.getKey()) {
-            // We use custom keys for audience in the expected claims to differentiate between validating that the audience
-            // contains all expected values, or validating that the audience contains at least one of the expected values.
-            case AUDIENCE_EXACT:
-                assertValidAudienceClaim(jwt.getAudience(), (List<String>) expectedClaim.getValue(), true);
-                break;
-            case AUDIENCE_CONTAINS:
-                assertValidAudienceClaim(jwt.getAudience(), (List<String>) expectedClaim.getValue(), false);
-                break;
-            case PublicClaims.EXPIRES_AT:
-                assertValidDateClaim(jwt.getExpiresAt(), (Long) expectedClaim.getValue(), true);
-                break;
-            case PublicClaims.ISSUED_AT:
-                assertValidDateClaim(jwt.getIssuedAt(), (Long) expectedClaim.getValue(), false);
-                break;
-            case PublicClaims.NOT_BEFORE:
-                assertValidDateClaim(jwt.getNotBefore(), (Long) expectedClaim.getValue(), false);
-                break;
-            case PublicClaims.ISSUER:
-                assertValidIssuerClaim(jwt.getIssuer(), (List<String>) expectedClaim.getValue());
-                break;
-            case PublicClaims.JWT_ID:
-                assertValidStringClaim(expectedClaim.getKey(), jwt.getId(), (String) expectedClaim.getValue());
-                break;
-            case PublicClaims.SUBJECT:
-                assertValidStringClaim(expectedClaim.getKey(), jwt.getSubject(), (String) expectedClaim.getValue());
-                break;
-            default:
-                assertValidClaim(jwt.getClaim(expectedClaim.getKey()), expectedClaim.getKey(), expectedClaim.getValue());
-                break;
-        }
+        ClaimFactory claimFactory = new ClaimFactory();
+        ExpectedClaimType expectedClaimType = claimFactory.createExpectedClaim(expectedClaim.getKey());
+        expectedClaimType.assertExpectedClaimType(jwt, expectedClaim, clock);
     }
 
     private void assertClaimPresent(Claim claim, String claimName) {
