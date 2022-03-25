@@ -327,17 +327,6 @@ public class JWTCreatorTest {
     }
 
     @Test
-    public void shouldRemoveClaimWhenPassingNull() {
-        String signed = JWTCreator.init()
-                .withIssuer("iss")
-                .withIssuer(null)
-                .sign(Algorithm.HMAC256("secret"));
-
-        assertThat(signed, is(notNullValue()));
-        assertThat(TokenUtils.splitToken(signed)[1], is("e30"));
-    }
-
-    @Test
     public void shouldSetCorrectAlgorithmInTheHeader() {
         String signed = JWTCreator.init()
                 .sign(Algorithm.HMAC256("secret"));
@@ -615,7 +604,7 @@ public class JWTCreatorTest {
 
         assertThat(jwt, is(notNullValue()));
         String[] parts = jwt.split("\\.");
-        
+
         String body = new String(Base64.getUrlDecoder().decode(parts[1]), StandardCharsets.UTF_8);
         ObjectMapper mapper = new ObjectMapper();
         List<Object> list = (List<Object>) mapper.readValue(body, Map.class).get("data");
@@ -642,52 +631,6 @@ public class JWTCreatorTest {
     public void shouldAcceptCustomClaimForNullListItem() {
         Map<String, Object> data = new HashMap<>();
         data.put("test1", Arrays.asList("a", null, "c"));
-
-        JWTCreator.init()
-                .withClaim("pojo", data)
-                .sign(Algorithm.HMAC256("secret"));
-    }
-
-    @Test
-    @SuppressWarnings("unchecked")
-    public void shouldAcceptCustomClaimWithNullMapAndRemoveClaim() throws Exception {
-        String jwt = JWTCreator.init()
-                .withClaim("map", "stubValue")
-                .withClaim("map", (Map<String, ?>) null)
-                .sign(Algorithm.HMAC256("secret"));
-
-        assertThat(jwt, is(notNullValue()));
-        String[] parts = jwt.split("\\.");
-
-        String body = new String(Base64.getUrlDecoder().decode(parts[1]), StandardCharsets.UTF_8);
-        ObjectMapper mapper = new ObjectMapper();
-        Map<String, Object> map = (Map<String, Object>) mapper.readValue(body, Map.class);
-        assertThat(map, anEmptyMap());
-    }
-
-    @Test
-    @SuppressWarnings("unchecked")
-    public void shouldAcceptCustomClaimWithNullListAndRemoveClaim() throws Exception {
-        String jwt = JWTCreator.init()
-                .withClaim("list", "stubValue")
-                .withClaim("list", (List<String>) null)
-                .sign(Algorithm.HMAC256("secret"));
-
-        assertThat(jwt, is(notNullValue()));
-        String[] parts = jwt.split("\\.");
-
-        String body = new String(Base64.getUrlDecoder().decode(parts[1]), StandardCharsets.UTF_8);
-        ObjectMapper mapper = new ObjectMapper();
-        Map<String, Object> map = (Map<String, Object>) mapper.readValue(body, Map.class);
-        assertThat(map, anEmptyMap());
-    }
-
-    @Test
-    public void shouldRefuseCustomClaimForNullMapValue() {
-        Map<String, Object> data = new HashMap<>();
-        data.put("subKey", null);
-
-        exception.expect(IllegalArgumentException.class);
 
         JWTCreator.init()
                 .withClaim("pojo", data)
@@ -815,25 +758,9 @@ public class JWTCreatorTest {
     }
 
     @Test
-    public void shouldRemovePayloadIfTheValueIsNull() throws Exception {
-        String jwt = JWTCreator.init()
-                .withClaim("key", "stubValue")
-                .withPayload(Collections.singletonMap("key", (Map<String, ?>) null))
-                .sign(Algorithm.HMAC256("secret"));
-
-        assertThat(jwt, is(notNullValue()));
-        String[] parts = jwt.split("\\.");
-
-        String body = new String(Base64.getUrlDecoder().decode(parts[1]), StandardCharsets.UTF_8);
-        ObjectMapper mapper = new ObjectMapper();
-        Map<String, Object> map = (Map<String, Object>) mapper.readValue(body, Map.class);
-        assertThat(map, anEmptyMap());
-    }
-
-    @Test
     public void withPayloadShouldNotAllowCustomType() {
         exception.expect(IllegalArgumentException.class);
-        exception.expectMessage("Claim values must only be of types Map, List, Boolean, Integer, Long, Double, String and Date");
+        exception.expectMessage("Claim values must only be of types Map, List, Boolean, Integer, Long, Double, String, Date and Null");
 
         Map<String, Object> payload = new HashMap<>();
         payload.put("entry", "value");
@@ -860,7 +787,7 @@ public class JWTCreatorTest {
     @Test
     public void withPayloadShouldNotAllowListWithCustomType() {
         exception.expect(IllegalArgumentException.class);
-        exception.expectMessage("Claim values must only be of types Map, List, Boolean, Integer, Long, Double, String and Date");
+        exception.expectMessage("Claim values must only be of types Map, List, Boolean, Integer, Long, Double, String, Date and Null");
 
         Map<String, Object> payload = new HashMap<>();
         payload.put("list", Arrays.asList("item1", new UserPojo("name", 42)));
@@ -872,7 +799,7 @@ public class JWTCreatorTest {
     @Test
     public void withPayloadShouldNotAllowMapWithCustomType() {
         exception.expect(IllegalArgumentException.class);
-        exception.expectMessage("Claim values must only be of types Map, List, Boolean, Integer, Long, Double, String and Date");
+        exception.expectMessage("Claim values must only be of types Map, List, Boolean, Integer, Long, Double, String, Date and Null");
 
         Map<String, Object> payload = new HashMap<>();
         payload.put("entry", "value");
@@ -921,5 +848,76 @@ public class JWTCreatorTest {
         assertThat(payloadJson, JsonMatcher.hasEntry("intClaim", 41));
         assertThat(payloadJson, JsonMatcher.hasEntry("listClaim", listClaim));
         assertThat(payloadJson, JsonMatcher.hasEntry("objClaim", mapClaim));
+    }
+
+    @Test
+    public void withPayloadShouldSupportNullValuesEverywhere() {
+         /*
+        JWT:
+            {
+              "listClaim": [
+                "answer to ultimate question of life",
+                42,
+                null
+              ],
+              "claim": null,
+              "listNestedClaim": [
+                1,
+                2,
+                {
+                  "nestedObjKey": null
+                }
+              ],
+              "objClaim": {
+                "nestedObjKey": null,
+                "objObjKey": {
+                  "nestedObjKey": null,
+                  "objListKey": [
+                    null,
+                    "nestedList2"
+                  ]
+                },
+                "objListKey": [
+                  null,
+                  "nestedList2"
+                ]
+              }
+            }
+         */
+
+        List<?> listClaim = Arrays.asList("answer to ultimate question of life", 42, null);
+        List<?> listNestedClaim = Arrays.asList(1, 2, Collections.singletonMap("nestedObjKey", null));
+        List<?> objListKey = Arrays.asList(null, "nestedList2");
+        HashMap<String, Object> objClaim = new HashMap<>();
+        objClaim.put("nestedObjKey", null);
+        objClaim.put("objListKey", objListKey);
+        objClaim.put("objObjKey", new HashMap<>(objClaim));
+
+
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("claim", null);
+        payload.put("listClaim", listClaim);
+        payload.put("listNestedClaim", listNestedClaim);
+        payload.put("objClaim", objClaim);
+
+        String jwt = JWTCreator.init()
+                .withPayload(payload)
+                .withHeader(payload)
+                .sign(Algorithm.HMAC256("secret"));
+
+        assertThat(jwt, is(notNullValue()));
+        String[] parts = jwt.split("\\.");
+        String payloadJson = new String(Base64.getUrlDecoder().decode(parts[1]), StandardCharsets.UTF_8);
+        String headerJson = new String(Base64.getUrlDecoder().decode(parts[0]), StandardCharsets.UTF_8);
+
+        assertThat(payloadJson, JsonMatcher.hasEntry("claim", null));
+        assertThat(payloadJson, JsonMatcher.hasEntry("listClaim", listClaim));
+        assertThat(payloadJson, JsonMatcher.hasEntry("listNestedClaim", listNestedClaim));
+        assertThat(payloadJson, JsonMatcher.hasEntry("objClaim", objClaim));
+
+        assertThat(headerJson, JsonMatcher.hasEntry("claim", null));
+        assertThat(headerJson, JsonMatcher.hasEntry("listClaim", listClaim));
+        assertThat(headerJson, JsonMatcher.hasEntry("listNestedClaim", listNestedClaim));
+        assertThat(headerJson, JsonMatcher.hasEntry("objClaim", objClaim));
     }
 }

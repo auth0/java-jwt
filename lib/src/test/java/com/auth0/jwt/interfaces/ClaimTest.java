@@ -41,6 +41,11 @@ public class ClaimTest {
         }
 
         @Override
+        public boolean isMissing() {
+            return false;
+        }
+
+        @Override
         public Boolean asBoolean() {
             return null;
         }

@@ -14,10 +14,19 @@ public interface Claim {
 
     /**
      * Whether this Claim has a null value or not.
+     * If the claim is not present, it will return false hence checking {@link Claim#isMissing} is advised as well
      *
      * @return whether this Claim has a null value or not.
      */
     boolean isNull();
+
+    /**
+     * Can be used to verify whether the Claim is found or not.
+     * This will be true even if the Claim has null value associated to it.
+     *
+     * @return whether this Claim is present or not
+     */
+    boolean isMissing();
 
     /**
      * Get this Claim as a Boolean.
@@ -110,6 +119,7 @@ public interface Claim {
 
     /**
      * Get this Claim as a custom type T.
+     * This method will return null if {@link Claim#isMissing()} or {@link Claim#isNull()} is true
      *
      * @param <T> type
      * @param clazz the type class

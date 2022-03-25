@@ -133,6 +133,15 @@ public interface Verification {
     Verification withClaimPresence(String name) throws IllegalArgumentException;
 
     /**
+     * Require a specific Claim value to be null.
+     *
+     * @param name the Claim's name.
+     * @return this same Verification instance.
+     * @throws IllegalArgumentException if the name is null.
+     */
+    Verification withNullClaim(String name) throws IllegalArgumentException;
+
+    /**
      * Require a specific Claim value.
      *
      * @param name  the Claim's name.

@@ -3,7 +3,6 @@ package com.auth0.jwt;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.*;
 import com.auth0.jwt.impl.JWTParser;
-import com.auth0.jwt.impl.NullClaim;
 import com.auth0.jwt.impl.PublicClaims;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
@@ -146,11 +145,18 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
         public Verification withClaimPresence(String name) throws IllegalArgumentException {
             assertNonNull(name);
             withClaim(name, ((claim, decodedJWT) -> {
-                if (claim instanceof NullClaim) {
+                if (claim.isMissing()) {
                     throw new InvalidClaimException(String.format("The Claim '%s' is not present in the JWT.", name));
                 }
                 return true;
             }));
+            return this;
+        }
+
+        @Override
+        public Verification withNullClaim(String name) throws IllegalArgumentException {
+            assertNonNull(name);
+            withClaim(name, ((claim, decodedJWT) -> claim.isNull()));
             return this;
         }
 
@@ -292,7 +298,8 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
                     }
                 }
             } else {
-                claimArr = claim.isNull() ? Collections.emptyList() : Arrays.asList(claim.as(Object[].class));
+                claimArr = claim.isNull() || claim.isMissing()
+                        ? Collections.emptyList() : Arrays.asList(claim.as(Object[].class));
             }
             List<Object> valueArr = Arrays.asList(expectedClaimValue);
             return claimArr.containsAll(valueArr);
