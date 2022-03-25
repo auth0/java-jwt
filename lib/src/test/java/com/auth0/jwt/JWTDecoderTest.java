@@ -14,6 +14,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Base64;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -360,6 +361,35 @@ public class JWTDecoderTest {
         assertThat(originalJwt.getType(), is(equalTo(deserializedJwt.getType())));
         assertThat(originalJwt.getClaims().get("extraClaim").asString(),
                 is(equalTo(deserializedJwt.getClaims().get("extraClaim").asString())));
+    }
+
+    @Test
+    public void shouldDecodeHeaderClaims() {
+        String jwt = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImRhdGUiOjE2NDczNTgzMjUsInN0cmluZyI6InN0cmluZyIsImJvb2wiOnRydWUsImRvdWJsZSI6MTIzLjEyMywibGlzdCI6WzE2NDczNTgzMjVdLCJtYXAiOnsiZGF0ZSI6MTY0NzM1ODMyNSwiaW5zdGFudCI6MTY0NzM1ODMyNX0sImludCI6NDIsImxvbmciOjQyMDAwMDAwMDAsImluc3RhbnQiOjE2NDczNTgzMjV9.eyJpYXQiOjE2NDczNjA4ODF9.S2nZDM03ZDvLMeJLWOIqWZ9kmYHZUueyQiIZCCjYNL8";
+
+        Instant expectedInstant = Instant.ofEpochSecond(1647358325);
+        Date expectedDate = Date.from(expectedInstant);
+
+        DecodedJWT decoded = JWT.decode(jwt);
+        assertThat(decoded, is(notNullValue()));
+        assertThat(decoded.getHeaderClaim("date").asDate(), is(expectedDate));
+        assertThat(decoded.getHeaderClaim("instant").asInstant(), is(expectedInstant));
+        assertThat(decoded.getHeaderClaim("string").asString(), is("string"));
+        assertThat(decoded.getHeaderClaim("bool").asBoolean(), is(true));
+        assertThat(decoded.getHeaderClaim("double").asDouble(), is(123.123));
+        assertThat(decoded.getHeaderClaim("int").asInt(), is(42));
+        assertThat(decoded.getHeaderClaim("long").asLong(), is(4200000000L));
+
+        Map<String, Object> headerMap = decoded.getHeaderClaim("map").asMap();
+        assertThat(headerMap, is(notNullValue()));
+        assertThat(headerMap.size(), is(2));
+        assertThat(headerMap, hasEntry("date", 1647358325));
+        assertThat(headerMap, hasEntry("instant", 1647358325));
+
+        List<Object> headerList = decoded.getHeaderClaim("list").asList(Object.class);
+        assertThat(headerList, is(notNullValue()));
+        assertThat(headerList.size(), is(1));
+        assertThat(headerList, contains(1647358325));
     }
 
     //Helper Methods

@@ -74,24 +74,24 @@ class JsonNodeClaim implements Claim {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> T[] asArray(Class<T> tClazz) throws JWTDecodeException {
+    public <T> T[] asArray(Class<T> clazz) throws JWTDecodeException {
         if (isMissing() || isNull() || !data.isArray()) {
             return null;
         }
 
-        T[] arr = (T[]) Array.newInstance(tClazz, data.size());
+        T[] arr = (T[]) Array.newInstance(clazz, data.size());
         for (int i = 0; i < data.size(); i++) {
             try {
-                arr[i] = objectReader.treeToValue(data.get(i), tClazz);
+                arr[i] = objectReader.treeToValue(data.get(i), clazz);
             } catch (JsonProcessingException e) {
-                throw new JWTDecodeException("Couldn't map the Claim's array contents to " + tClazz.getSimpleName(), e);
+                throw new JWTDecodeException("Couldn't map the Claim's array contents to " + clazz.getSimpleName(), e);
             }
         }
         return arr;
     }
 
     @Override
-    public <T> List<T> asList(Class<T> tClazz) throws JWTDecodeException {
+    public <T> List<T> asList(Class<T> clazz) throws JWTDecodeException {
         if (isMissing() || isNull() || !data.isArray()) {
             return null;
         }
@@ -99,9 +99,9 @@ class JsonNodeClaim implements Claim {
         List<T> list = new ArrayList<>();
         for (int i = 0; i < data.size(); i++) {
             try {
-                list.add(objectReader.treeToValue(data.get(i), tClazz));
+                list.add(objectReader.treeToValue(data.get(i), clazz));
             } catch (JsonProcessingException e) {
-                throw new JWTDecodeException("Couldn't map the Claim's array contents to " + tClazz.getSimpleName(), e);
+                throw new JWTDecodeException("Couldn't map the Claim's array contents to " + clazz.getSimpleName(), e);
             }
         }
         return list;
@@ -124,14 +124,14 @@ class JsonNodeClaim implements Claim {
     }
 
     @Override
-    public <T> T as(Class<T> tClazz) throws JWTDecodeException {
+    public <T> T as(Class<T> clazz) throws JWTDecodeException {
         try {
             if(isMissing() || isNull()) {
                 return null;
             }
-            return objectReader.treeAsTokens(data).readValueAs(tClazz);
+            return objectReader.treeAsTokens(data).readValueAs(clazz);
         } catch (IOException e) {
-            throw new JWTDecodeException("Couldn't map the Claim value to " + tClazz.getSimpleName(), e);
+            throw new JWTDecodeException("Couldn't map the Claim value to " + clazz.getSimpleName(), e);
         }
     }
 

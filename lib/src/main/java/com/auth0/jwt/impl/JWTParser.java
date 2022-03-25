@@ -9,9 +9,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-
 import java.io.IOException;
 
+/**
+ * This class helps in decoding the Header and Payload of the JWT using
+ * {@link HeaderSerializer} and {@link PayloadSerializer}.
+ */
 public class JWTParser implements JWTPartsParser {
     private final ObjectReader payloadReader;
     private final ObjectReader headerReader;

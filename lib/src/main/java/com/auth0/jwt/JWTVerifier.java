@@ -16,11 +16,13 @@ import java.util.*;
 import java.util.function.BiPredicate;
 
 /**
- * The JWTVerifier class holds the verify method to assert that a given Token has not only a proper JWT format, but also its signature matches.
+ * The JWTVerifier class holds the verify method to assert that a given Token has not only a proper JWT format,
+ * but also its signature matches.
  * <p>
  * This class is thread-safe.
+ *
+ * @see com.auth0.jwt.interfaces.JWTVerifier
  */
-@SuppressWarnings("WeakerAccess")
 public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
     private final Algorithm algorithm;
     final Map<String, BiPredicate<Claim, DecodedJWT>> expectedChecks;
@@ -43,6 +45,9 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
         return new BaseVerification(algorithm);
     }
 
+    /**
+     * {@link Verification} implementation that accepts all the expected Claim values for verification.
+     */
     public static class BaseVerification implements Verification {
         private final Algorithm algorithm;
         private final Map<String, BiPredicate<Claim, DecodedJWT>> expectedChecks;
@@ -198,7 +203,8 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
         @Override
         public Verification withClaim(String name, Instant value) throws IllegalArgumentException {
             assertNonNull(name);
-            // Since date-time claims are serialized as epoch seconds, we need to compare them with only seconds-granularity
+            // Since date-time claims are serialized as epoch seconds,
+            // we need to compare them with only seconds-granularity
             checkIfNeedToRemove(name, value,
                     ((claim, decodedJWT) -> value.truncatedTo(ChronoUnit.SECONDS).equals(claim.asInstant())));
             return this;
@@ -370,7 +376,8 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
      *
      * @param token to verify.
      * @return a verified and decoded JWT.
-     * @throws AlgorithmMismatchException     if the algorithm stated in the token's header is not equal to the one defined in the {@link JWTVerifier}.
+     * @throws AlgorithmMismatchException     if the algorithm stated in the token's header is not equal to
+     *                                        the one defined in the {@link JWTVerifier}.
      * @throws SignatureVerificationException if the signature is invalid.
      * @throws TokenExpiredException          if the token has expired.
      * @throws InvalidClaimException          if a claim contained a different value than the expected one.
@@ -386,7 +393,8 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
      *
      * @param jwt to verify.
      * @return a verified and decoded JWT.
-     * @throws AlgorithmMismatchException     if the algorithm stated in the token's header is not equal to the one defined in the {@link JWTVerifier}.
+     * @throws AlgorithmMismatchException     if the algorithm stated in the token's header is not equal to
+     *                                        the one defined in the {@link JWTVerifier}.
      * @throws SignatureVerificationException if the signature is invalid.
      * @throws TokenExpiredException          if the token has expired.
      * @throws InvalidClaimException          if a claim contained a different value than the expected one.
@@ -401,11 +409,13 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
 
     private void verifyAlgorithm(DecodedJWT jwt, Algorithm expectedAlgorithm) throws AlgorithmMismatchException {
         if (!expectedAlgorithm.getName().equals(jwt.getAlgorithm())) {
-            throw new AlgorithmMismatchException("The provided Algorithm doesn't match the one defined in the JWT's Header.");
+            throw new AlgorithmMismatchException(
+                    "The provided Algorithm doesn't match the one defined in the JWT's Header.");
         }
     }
 
-    private void verifyClaims(DecodedJWT jwt, Map<String, BiPredicate<Claim, DecodedJWT>> claims) throws TokenExpiredException, InvalidClaimException {
+    private void verifyClaims(DecodedJWT jwt, Map<String, BiPredicate<Claim, DecodedJWT>> claims)
+            throws TokenExpiredException, InvalidClaimException {
         for (Map.Entry<String, BiPredicate<Claim, DecodedJWT>> entry : claims.entrySet()) {
             boolean isValid;
             String claimName = entry.getKey();
@@ -415,7 +425,8 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
             isValid = expectedCheck.test(claim, jwt);
 
             if (!isValid) {
-                throw new InvalidClaimException(String.format("The Claim '%s' value doesn't match the required one.", claimName));
+                throw new InvalidClaimException(
+                        String.format("The Claim '%s' value doesn't match the required one.", claimName));
             }
         }
     }

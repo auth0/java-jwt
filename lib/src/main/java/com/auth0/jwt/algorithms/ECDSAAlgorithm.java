@@ -24,7 +24,8 @@ class ECDSAAlgorithm extends Algorithm {
     private final int ecNumberSize;
 
     //Visible for testing
-    ECDSAAlgorithm(CryptoHelper crypto, String id, String algorithm, int ecNumberSize, ECDSAKeyProvider keyProvider) throws IllegalArgumentException {
+    ECDSAAlgorithm(CryptoHelper crypto, String id, String algorithm, int ecNumberSize, ECDSAKeyProvider keyProvider)
+            throws IllegalArgumentException {
         super(id, algorithm);
         if (keyProvider == null) {
             throw new IllegalArgumentException("The Key Provider cannot be null.");
@@ -34,7 +35,8 @@ class ECDSAAlgorithm extends Algorithm {
         this.ecNumberSize = ecNumberSize;
     }
 
-    ECDSAAlgorithm(String id, String algorithm, int ecNumberSize, ECDSAKeyProvider keyProvider) throws IllegalArgumentException {
+    ECDSAAlgorithm(String id, String algorithm, int ecNumberSize, ECDSAKeyProvider keyProvider)
+            throws IllegalArgumentException {
         this(new CryptoHelper(), id, algorithm, ecNumberSize, keyProvider);
     }
 
@@ -46,12 +48,14 @@ class ECDSAAlgorithm extends Algorithm {
             if (publicKey == null) {
                 throw new IllegalStateException("The given Public Key is null.");
             }
-            boolean valid = crypto.verifySignatureFor(getDescription(), publicKey, jwt.getHeader(), jwt.getPayload(), JOSEToDER(signatureBytes));
+            boolean valid = crypto.verifySignatureFor(getDescription(), publicKey, jwt.getHeader(),
+                    jwt.getPayload(), JOSEToDER(signatureBytes));
 
             if (!valid) {
                 throw new SignatureVerificationException(this);
             }
-        } catch (NoSuchAlgorithmException | SignatureException | InvalidKeyException | IllegalStateException | IllegalArgumentException e) {
+        } catch (NoSuchAlgorithmException | SignatureException | InvalidKeyException
+                | IllegalStateException | IllegalArgumentException e) {
             throw new SignatureVerificationException(this, e);
         }
     }
@@ -116,25 +120,27 @@ class ECDSAAlgorithm extends Algorithm {
         offset++;
 
         //Obtain R number length (Includes padding) and skip it
-        int rLength = derSignature[offset++];
-        if (rLength > ecNumberSize + 1) {
+        int rlength = derSignature[offset++];
+        if (rlength > ecNumberSize + 1) {
             throw new SignatureException("Invalid DER signature format.");
         }
-        int rPadding = ecNumberSize - rLength;
+        int rpadding = ecNumberSize - rlength;
         //Retrieve R number
-        System.arraycopy(derSignature, offset + Math.max(-rPadding, 0), joseSignature, Math.max(rPadding, 0), rLength + Math.min(rPadding, 0));
+        System.arraycopy(derSignature, offset + Math.max(-rpadding, 0),
+                joseSignature, Math.max(rpadding, 0), rlength + Math.min(rpadding, 0));
 
         //Skip R number and 0x02
-        offset += rLength + 1;
+        offset += rlength + 1;
 
         //Obtain S number length. (Includes padding)
-        int sLength = derSignature[offset++];
-        if (sLength > ecNumberSize + 1) {
+        int slength = derSignature[offset++];
+        if (slength > ecNumberSize + 1) {
             throw new SignatureException("Invalid DER signature format.");
         }
-        int sPadding = ecNumberSize - sLength;
+        int spadding = ecNumberSize - slength;
         //Retrieve R number
-        System.arraycopy(derSignature, offset + Math.max(-sPadding, 0), joseSignature, ecNumberSize + Math.max(sPadding, 0), sLength + Math.min(sPadding, 0));
+        System.arraycopy(derSignature, offset + Math.max(-spadding, 0), joseSignature,
+                ecNumberSize + Math.max(spadding, 0), slength + Math.min(spadding, 0));
 
         return joseSignature;
     }
@@ -146,12 +152,12 @@ class ECDSAAlgorithm extends Algorithm {
         }
 
         // Retrieve R and S number's length and padding.
-        int rPadding = countPadding(joseSignature, 0, ecNumberSize);
-        int sPadding = countPadding(joseSignature, ecNumberSize, joseSignature.length);
-        int rLength = ecNumberSize - rPadding;
-        int sLength = ecNumberSize - sPadding;
+        int rpadding = countPadding(joseSignature, 0, ecNumberSize);
+        int spadding = countPadding(joseSignature, ecNumberSize, joseSignature.length);
+        int rlength = ecNumberSize - rpadding;
+        int slength = ecNumberSize - spadding;
 
-        int length = 2 + rLength + 2 + sLength;
+        int length = 2 + rlength + 2 + slength;
         if (length > 255) {
             throw new SignatureException("Invalid JOSE signature format.");
         }
@@ -174,31 +180,32 @@ class ECDSAAlgorithm extends Algorithm {
 
         // Header with "min R" number length
         derSignature[offset++] = (byte) 0x02;
-        derSignature[offset++] = (byte) rLength;
+        derSignature[offset++] = (byte) rlength;
 
         // R number
-        if (rPadding < 0) {
+        if (rpadding < 0) {
             //Sign
             derSignature[offset++] = (byte) 0x00;
             System.arraycopy(joseSignature, 0, derSignature, offset, ecNumberSize);
             offset += ecNumberSize;
         } else {
-            int copyLength = Math.min(ecNumberSize, rLength);
-            System.arraycopy(joseSignature, rPadding, derSignature, offset, copyLength);
+            int copyLength = Math.min(ecNumberSize, rlength);
+            System.arraycopy(joseSignature, rpadding, derSignature, offset, copyLength);
             offset += copyLength;
         }
 
         // Header with "min S" number length
         derSignature[offset++] = (byte) 0x02;
-        derSignature[offset++] = (byte) sLength;
+        derSignature[offset++] = (byte) slength;
 
         // S number
-        if (sPadding < 0) {
+        if (spadding < 0) {
             //Sign
             derSignature[offset++] = (byte) 0x00;
             System.arraycopy(joseSignature, ecNumberSize, derSignature, offset, ecNumberSize);
         } else {
-            System.arraycopy(joseSignature, ecNumberSize + sPadding, derSignature, offset, Math.min(ecNumberSize, sLength));
+            System.arraycopy(joseSignature, ecNumberSize + spadding, derSignature, offset,
+                    Math.min(ecNumberSize, slength));
         }
 
         return derSignature;
