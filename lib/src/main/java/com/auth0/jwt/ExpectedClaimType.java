@@ -41,7 +41,7 @@ class AudienceContains implements ExpectedClaimType {
 }
 
 class PublicClaimsExpiresAt implements ExpectedClaimType {
-    private void assertValidDateClaim(Date date, long leeway, boolean shouldBeFuture) {
+    private void assertValidDateClaim(Date date, long leeway, boolean shouldBeFuture, Clock clock) {
         Date today = new Date(clock.getToday().getTime());
         today.setTime(today.getTime() / 1000 * 1000); // truncate millis
         if (shouldBeFuture) {
@@ -72,7 +72,7 @@ class PublicClaimsExpiresAt implements ExpectedClaimType {
 }
 
 class PublicClaimsIssuedAt implements ExpectedClaimType {
-    private void assertValidDateClaim(Date date, long leeway, boolean shouldBeFuture) {
+    private void assertValidDateClaim(Date date, long leeway, boolean shouldBeFuture, Clock clock) {
         Date today = new Date(clock.getToday().getTime());
         today.setTime(today.getTime() / 1000 * 1000); // truncate millis
         if (shouldBeFuture) {
@@ -102,7 +102,7 @@ class PublicClaimsIssuedAt implements ExpectedClaimType {
 }
 
 class PublicClaimsNotBefore implements ExpectedClaimType {
-    private void assertValidDateClaim(Date date, long leeway, boolean shouldBeFuture) {
+    private void assertValidDateClaim(Date date, long leeway, boolean shouldBeFuture, Clock clock) {
         Date today = new Date(clock.getToday().getTime());
         today.setTime(today.getTime() / 1000 * 1000); // truncate millis
         if (shouldBeFuture) {
