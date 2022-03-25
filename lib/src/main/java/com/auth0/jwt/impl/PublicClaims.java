@@ -1,6 +1,8 @@
 package com.auth0.jwt.impl;
 
-
+/**
+ * Contains the claim name for all Public claims.
+ */
 public interface PublicClaims {
 
     //Header

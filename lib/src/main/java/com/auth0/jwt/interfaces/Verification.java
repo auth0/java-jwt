@@ -61,7 +61,7 @@ public interface Verification {
      * will have to provide their own implementation.
      *
      * The default implementation throws an {@linkplain UnsupportedOperationException}.
-     * 
+     *
      * @param audience the required Audience value for which the "aud" claim must contain at least one value.
      * @return this same Verification instance.
      */
@@ -70,8 +70,8 @@ public interface Verification {
     }
     
     /**
-     * Define the default window in seconds in which the Not Before, Issued At and Expires At Claims will still be valid.
-     * Setting a specific leeway value on a given Claim will override this value for that Claim.
+     * Define the default window in seconds in which the Not Before, Issued At and Expires At Claims
+     * will still be valid. Setting a specific leeway value on a given Claim will override this value for that Claim.
      *
      * @param leeway the window in seconds in which the Not Before, Issued At and Expires At Claims will still be valid.
      * @return this same Verification instance.
@@ -81,7 +81,8 @@ public interface Verification {
 
     /**
      * Set a specific leeway window in seconds in which the Expires At ("exp") Claim will still be valid.
-     * Expiration Date is always verified when the value is present. This method overrides the value set with acceptLeeway
+     * Expiration Date is always verified when the value is present.
+     * This method overrides the value set with acceptLeeway
      *
      * @param leeway the window in seconds in which the Expires At Claim will still be valid.
      * @return this same Verification instance.
@@ -91,7 +92,8 @@ public interface Verification {
 
     /**
      * Set a specific leeway window in seconds in which the Not Before ("nbf") Claim will still be valid.
-     * Not Before Date is always verified when the value is present. This method overrides the value set with acceptLeeway
+     * Not Before Date is always verified when the value is present.
+     * This method overrides the value set with acceptLeeway
      *
      * @param leeway the window in seconds in which the Not Before Claim will still be valid.
      * @return this same Verification instance.
@@ -102,8 +104,10 @@ public interface Verification {
     /**
      * Set a specific leeway window in seconds in which the Issued At ("iat") Claim will still be valid.
      * This method overrides the value set with {@link #acceptLeeway(long)}.
-     * By default, the Issued At claim is always verified when the value is present, unless disabled with {@link #ignoreIssuedAt()}.
-     * If Issued At verification has been disabled, no verification of the Issued At claim will be performed, and this method has no effect.
+     * By default, the Issued At claim is always verified when the value is present,
+     * unless disabled with {@link #ignoreIssuedAt()}.
+     * If Issued At verification has been disabled, no verification of the Issued At claim will be performed,
+     * and this method has no effect.
      *
      * @param leeway the window in seconds in which the Issued At Claim will still be valid.
      * @return this same Verification instance.
@@ -121,6 +125,7 @@ public interface Verification {
 
     /**
      * Require a claim to be present, with any value.
+     *
      * @param name the Claim's name.
      * @return this same Verification instance
      * @throws IllegalArgumentException if the name is null.
@@ -178,8 +183,8 @@ public interface Verification {
     Verification withClaim(String name, String value) throws IllegalArgumentException;
 
     /**
-     * Require a specific Claim value. Note that date-time claims are serialized as seconds since the epoch; when verifying
-     * date-time claim value, any time units more granular than seconds will not be considered.
+     * Require a specific Claim value. Note that date-time claims are serialized as seconds since the epoch;
+     * when verifying date-time claim value, any time units more granular than seconds will not be considered.
      *
      * @param name  the Claim's name.
      * @param value the Claim's value.
@@ -189,8 +194,8 @@ public interface Verification {
     Verification withClaim(String name, Date value) throws IllegalArgumentException;
 
     /**
-     * Require a specific Claim value. Note that date-time claims are serialized as seconds since the epoch; when verifying
-     * a date-time claim value, any time units more granular than seconds will not be considered.
+     * Require a specific Claim value. Note that date-time claims are serialized as seconds since the epoch;
+     * when verifying a date-time claim value, any time units more granular than seconds will not be considered.
      *
      * @param name  the Claim's name.
      * @param value the Claim's value.

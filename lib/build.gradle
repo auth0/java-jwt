@@ -2,6 +2,12 @@ plugins {
     id 'java'
     id 'jacoco'
     id 'com.auth0.gradle.oss-library.java'
+    id 'checkstyle'
+}
+
+checkstyle {
+    toolVersion '10.0'
+    checkstyleTest.enabled = false //We are disabling lint checks for tests
 }
 
 logger.lifecycle("Using version ${version} for ${group}.${name}")
@@ -47,7 +53,7 @@ javadoc {
 }
 
 dependencies {
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.6'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.2'
 
     testImplementation 'org.bouncycastle:bcprov-jdk15on:1.70'
     testImplementation 'junit:junit:4.13.2'
@@ -114,19 +120,6 @@ def testJava17 = tasks.register('testJava17', Test) {
         languageVersion = JavaLanguageVersion.of(17)
     })
     shouldRunAfter(tasks.named('test'))
-
-    //Following Tests are excluded in Java 17 since secp256k1 curve is disabled Java 15+
-    filter {
-        excludeTestsMatching "*.jwt.ConcurrentVerifyTest.shouldPassECDSA256KVerificationWithJOSESignature"
-        excludeTestsMatching "*.jwt.JWTCreatorTest.shouldAddKeyIdIfAvailableFromECDSAKAlgorithms"
-        excludeTestsMatching "*.jwt.JWTCreatorTest.shouldNotOverwriteKeyIdIfAddedFromECDSAKAlgorithms"
-        excludeTestsMatching "*.jwt.JWTTest.shouldCreateAnEmptyECDSA256KSignedToken"
-        excludeTestsMatching "*.jwt.algorithms.ECDSAAlgorithmTest.shouldPassECDSA256KVerificationWithJOSESignature"
-        excludeTestsMatching "*.jwt.algorithms.ECDSAAlgorithmTest.shouldPassECDSA256KVerificationWithJOSESignatureWithBothKeys"
-        excludeTestsMatching "*.jwt.algorithms.ECDSAAlgorithmTest.shouldPassECDSA256KVerificationWithProvidedPublicKey"
-        excludeTestsMatching "*.jwt.ECDSABouncyCastleProviderTests.shouldPassECDSA256KVerificationWithJOSESignatureWithBothKeys"
-        excludeTestsMatching "*.jwt.ECDSABouncyCastleProviderTests.shouldPassECDSA256KVerificationWithProvidedPublicKey"
-    }
 }
 
 tasks.named('check') {

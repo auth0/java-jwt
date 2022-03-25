@@ -21,7 +21,8 @@ class HMACAlgorithm extends Algorithm {
     private final byte[] secret;
 
     //Visible for testing
-    HMACAlgorithm(CryptoHelper crypto, String id, String algorithm, byte[] secretBytes) throws IllegalArgumentException {
+    HMACAlgorithm(CryptoHelper crypto, String id, String algorithm, byte[] secretBytes)
+            throws IllegalArgumentException {
         super(id, algorithm);
         if (secretBytes == null) {
             throw new IllegalArgumentException("The Secret cannot be null");
@@ -50,7 +51,8 @@ class HMACAlgorithm extends Algorithm {
     public void verify(DecodedJWT jwt) throws SignatureVerificationException {
         try {
             byte[] signatureBytes = Base64.getUrlDecoder().decode(jwt.getSignature());
-            boolean valid = crypto.verifySignatureFor(getDescription(), secret, jwt.getHeader(), jwt.getPayload(), signatureBytes);
+            boolean valid = crypto.verifySignatureFor(
+                    getDescription(), secret, jwt.getHeader(), jwt.getPayload(), signatureBytes);
             if (!valid) {
                 throw new SignatureVerificationException(this);
             }

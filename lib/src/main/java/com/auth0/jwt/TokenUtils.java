@@ -18,7 +18,8 @@ abstract class TokenUtils {
             parts = new String[]{parts[0], parts[1], ""};
         }
         if (parts.length != 3) {
-            throw new JWTDecodeException(String.format("The token was expected to have 3 parts, but got %s.", parts.length));
+            throw new JWTDecodeException(
+                    String.format("The token was expected to have 3 parts, but got %s.", parts.length));
         }
         return parts;
     }
