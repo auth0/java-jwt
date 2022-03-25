@@ -1,6 +1,7 @@
 package com.auth0.jwt;
 
 import com.auth0.jwt.exceptions.InvalidClaimException;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.Clock;
 import com.auth0.jwt.interfaces.DecodedJWT;
@@ -12,6 +13,12 @@ public interface ExpectedClaimType {
 }
 
 class AudienceExact implements ExpectedClaimType {
+    private void assertValidAudienceClaim(List<String> audience, List<String> values, boolean shouldContainAll) {
+        if (audience == null || (shouldContainAll && !audience.containsAll(values)) ||
+                (!shouldContainAll && Collections.disjoint(audience, values))) {
+            throw new InvalidClaimException("The Claim 'aud' value doesn't contain the required audience.");
+        }
+    }
 
     @Override
     public void assertExpectedClaimType(DecodedJWT jwt, Map.Entry<String, Object> entry, Clock clock) {
@@ -20,6 +27,13 @@ class AudienceExact implements ExpectedClaimType {
 }
 
 class AudienceContains implements ExpectedClaimType {
+    private void assertValidAudienceClaim(List<String> audience, List<String> values, boolean shouldContainAll) {
+        if (audience == null || (shouldContainAll && !audience.containsAll(values)) ||
+                (!shouldContainAll && Collections.disjoint(audience, values))) {
+            throw new InvalidClaimException("The Claim 'aud' value doesn't contain the required audience.");
+        }
+    }
+
     @Override
     public void assertExpectedClaimType(DecodedJWT jwt, Map.Entry<String, Object> entry, Clock clock) {
         assertValidAudienceClaim(jwt.getAudience(), (List<String>) entry.getValue(), false);
@@ -27,6 +41,29 @@ class AudienceContains implements ExpectedClaimType {
 }
 
 class PublicClaimsExpiresAt implements ExpectedClaimType {
+    private void assertValidDateClaim(Date date, long leeway, boolean shouldBeFuture) {
+        Date today = new Date(clock.getToday().getTime());
+        today.setTime(today.getTime() / 1000 * 1000); // truncate millis
+        if (shouldBeFuture) {
+            assertDateIsFuture(date, leeway, today);
+        } else {
+            assertDateIsPast(date, leeway, today);
+        }
+    }
+
+    private void assertDateIsFuture(Date date, long leeway, Date today) {
+        today.setTime(today.getTime() - leeway * 1000);
+        if (date != null && today.after(date)) {
+            throw new TokenExpiredException(String.format("The Token has expired on %s.", date));
+        }
+    }
+
+    private void assertDateIsPast(Date date, long leeway, Date today) {
+        today.setTime(today.getTime() + leeway * 1000);
+        if (date != null && today.before(date)) {
+            throw new InvalidClaimException(String.format("The Token can't be used before %s.", date));
+        }
+    }
 
     @Override
     public void assertExpectedClaimType(DecodedJWT jwt, Map.Entry<String, Object> entry, Clock clock) {
@@ -35,6 +72,29 @@ class PublicClaimsExpiresAt implements ExpectedClaimType {
 }
 
 class PublicClaimsIssuedAt implements ExpectedClaimType {
+    private void assertValidDateClaim(Date date, long leeway, boolean shouldBeFuture) {
+        Date today = new Date(clock.getToday().getTime());
+        today.setTime(today.getTime() / 1000 * 1000); // truncate millis
+        if (shouldBeFuture) {
+            assertDateIsFuture(date, leeway, today);
+        } else {
+            assertDateIsPast(date, leeway, today);
+        }
+    }
+
+    private void assertDateIsFuture(Date date, long leeway, Date today) {
+        today.setTime(today.getTime() - leeway * 1000);
+        if (date != null && today.after(date)) {
+            throw new TokenExpiredException(String.format("The Token has expired on %s.", date));
+        }
+    }
+
+    private void assertDateIsPast(Date date, long leeway, Date today) {
+        today.setTime(today.getTime() + leeway * 1000);
+        if (date != null && today.before(date)) {
+            throw new InvalidClaimException(String.format("The Token can't be used before %s.", date));
+        }
+    }
     @Override
     public void assertExpectedClaimType(DecodedJWT jwt, Map.Entry<String, Object> entry, Clock clock) {
         assertValidDateClaim(jwt.getIssuedAt(), (Long) entry.getValue(), false, clock);
@@ -42,6 +102,29 @@ class PublicClaimsIssuedAt implements ExpectedClaimType {
 }
 
 class PublicClaimsNotBefore implements ExpectedClaimType {
+    private void assertValidDateClaim(Date date, long leeway, boolean shouldBeFuture) {
+        Date today = new Date(clock.getToday().getTime());
+        today.setTime(today.getTime() / 1000 * 1000); // truncate millis
+        if (shouldBeFuture) {
+            assertDateIsFuture(date, leeway, today);
+        } else {
+            assertDateIsPast(date, leeway, today);
+        }
+    }
+
+    private void assertDateIsFuture(Date date, long leeway, Date today) {
+        today.setTime(today.getTime() - leeway * 1000);
+        if (date != null && today.after(date)) {
+            throw new TokenExpiredException(String.format("The Token has expired on %s.", date));
+        }
+    }
+
+    private void assertDateIsPast(Date date, long leeway, Date today) {
+        today.setTime(today.getTime() + leeway * 1000);
+        if (date != null && today.before(date)) {
+            throw new InvalidClaimException(String.format("The Token can't be used before %s.", date));
+        }
+    }
     @Override
     public void assertExpectedClaimType(DecodedJWT jwt, Map.Entry<String, Object> entry, Clock clock) {
         assertValidDateClaim(jwt.getNotBefore(), (Long) entry.getValue(), false, clock);
@@ -62,7 +145,11 @@ class PublicClaimsIssuer implements ExpectedClaimType {
 }
 
 class PublicClaimsJwtId implements ExpectedClaimType {
-
+    private void assertValidStringClaim(String claimName, String value, String expectedValue) {
+        if (!expectedValue.equals(value)) {
+            throw new InvalidClaimException(String.format("The Claim '%s' value doesn't match the required one.", claimName));
+        }
+    }
     @Override
     public void assertExpectedClaimType(DecodedJWT jwt, Map.Entry<String, Object> entry, Clock clock) {
         assertValidStringClaim(entry.getKey(), jwt.getId(), (String) entry.getValue());
@@ -70,6 +157,11 @@ class PublicClaimsJwtId implements ExpectedClaimType {
 }
 
 class PublicClaimsSubject implements ExpectedClaimType {
+    private void assertValidStringClaim(String claimName, String value, String expectedValue) {
+        if (!expectedValue.equals(value)) {
+            throw new InvalidClaimException(String.format("The Claim '%s' value doesn't match the required one.", claimName));
+        }
+    }
 
     @Override
     public void assertExpectedClaimType(DecodedJWT jwt, Map.Entry<String, Object> entry, Clock clock) {

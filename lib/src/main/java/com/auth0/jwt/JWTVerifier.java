@@ -404,42 +404,6 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
         return isValid;
     }
 
-    private void assertValidStringClaim(String claimName, String value, String expectedValue) {
-        if (!expectedValue.equals(value)) {
-            throw new InvalidClaimException(String.format("The Claim '%s' value doesn't match the required one.", claimName));
-        }
-    }
-
-    private void assertValidDateClaim(Date date, long leeway, boolean shouldBeFuture) {
-        Date today = new Date(clock.getToday().getTime());
-        today.setTime(today.getTime() / 1000 * 1000); // truncate millis
-        if (shouldBeFuture) {
-            assertDateIsFuture(date, leeway, today);
-        } else {
-            assertDateIsPast(date, leeway, today);
-        }
-    }
-
-    private void assertDateIsFuture(Date date, long leeway, Date today) {
-        today.setTime(today.getTime() - leeway * 1000);
-        if (date != null && today.after(date)) {
-            throw new TokenExpiredException(String.format("The Token has expired on %s.", date));
-        }
-    }
-
-    private void assertDateIsPast(Date date, long leeway, Date today) {
-        today.setTime(today.getTime() + leeway * 1000);
-        if (date != null && today.before(date)) {
-            throw new InvalidClaimException(String.format("The Token can't be used before %s.", date));
-        }
-    }
-
-    private void assertValidAudienceClaim(List<String> audience, List<String> values, boolean shouldContainAll) {
-        if (audience == null || (shouldContainAll && !audience.containsAll(values)) ||
-                (!shouldContainAll && Collections.disjoint(audience, values))) {
-            throw new InvalidClaimException("The Claim 'aud' value doesn't contain the required audience.");
-        }
-    }
 
     private void assertValidIssuerClaim(String issuer, List<String> value) {
         if (issuer == null || !value.contains(issuer)) {
