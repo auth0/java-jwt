@@ -9,14 +9,14 @@ import com.auth0.jwt.interfaces.Verification;
 @SuppressWarnings("WeakerAccess")
 public class JWT {
 
-    private final JWTParser parser;
+    private final JWTParser jwtParser;
 
     /**
      * Constructs a new instance of the JWT library. Use this if you need to decode many JWT
      * tokens on the fly and do not wish to instantiate a new parser for each invocation.
      */
     public JWT() {
-        parser = new JWTParser();
+        jwtParser = new JWTParser();
     }
 
     /**
@@ -29,7 +29,7 @@ public class JWT {
      * @throws JWTDecodeException if any part of the token contained an invalid jwt or JSON format of each of the jwt parts.
      */
     public DecodedJWT decodeJwt(String token) throws JWTDecodeException {
-        return new JWTDecoder(parser, token);
+        return new JWTDecoder(jwtParser, token);
     }
 
     /**
