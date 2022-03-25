@@ -178,4 +178,3 @@ class JsonNodeClaim implements Claim {
     }
 
 }
-//todo test all as* methods in JsonNodeClaim to ensure isMissing isNull calls are made
