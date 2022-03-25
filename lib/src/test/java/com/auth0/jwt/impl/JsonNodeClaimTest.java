@@ -460,4 +460,22 @@ public class JsonNodeClaimTest {
         Claim claim = claimFromNode(value);
         assertThat(claim.toString(), is(value.toString()));
     }
+
+    @Test
+    public void shouldConvertToString() {
+        JsonNode value = mapper.valueToTree(new UserPojo("john", 123));
+        JsonNode nullValue = mapper.valueToTree(null);
+        JsonNode missingValue = MissingNode.getInstance();
+
+        Claim claim = claimFromNode(value);
+        Claim nullClaim = claimFromNode(nullValue);
+        Claim missingClaim = claimFromNode(missingValue);
+
+        assertThat(claim.toString(), is("{\"name\":\"john\",\"id\":123}"));
+        assertThat(nullClaim.isNull(), is(true));
+        assertThat(nullClaim.toString(), is("Null claim"));
+        assertThat(missingClaim.isMissing(), is(true));
+        assertThat(missingClaim.toString(), is("Missing claim"));
+
+    }
 }
