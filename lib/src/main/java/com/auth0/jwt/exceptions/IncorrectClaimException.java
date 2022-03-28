@@ -12,7 +12,7 @@ public class IncorrectClaimException extends InvalidClaimException {
 
     /**
      * Used internally to construct the IncorrectClaimException which is thrown when there is verification
-     * failure for a Claim that exists
+     * failure for a Claim that exists.
      *
      * @param message The error message
      * @param claimName The Claim name for which verification failed
