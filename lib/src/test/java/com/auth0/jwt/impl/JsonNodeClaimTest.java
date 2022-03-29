@@ -28,6 +28,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.hamcrest.core.IsNull.nullValue;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.*;
 
 public class JsonNodeClaimTest {
@@ -311,6 +312,48 @@ public class JsonNodeClaimTest {
 
         exception.expect(JWTDecodeException.class);
         claim.as(String.class);
+    }
+
+    @Test
+    public void shouldReturnNullForMissingAndNullClaims() {
+        JsonNode missingValue = MissingNode.getInstance();
+        Claim missingClaim = claimFromNode(missingValue);
+        assertThat(missingClaim.isMissing(), is(true));
+        assertThat(missingClaim.isNull(), is(false));
+        assertNull(missingClaim.as(String.class));
+        assertNull(missingClaim.asString());
+        assertNull(missingClaim.asBoolean());
+        assertNull(missingClaim.asDate());
+        assertNull(missingClaim.asDouble());
+        assertNull(missingClaim.asLong());
+        assertNull(missingClaim.asInt());
+        assertNull(missingClaim.asInstant());
+        assertNull(missingClaim.asMap());
+        assertNull(missingClaim.asList(String.class));
+        assertNull(missingClaim.asArray(String.class));
+
+        JsonNode nullValue = mapper.valueToTree(null);
+        Claim nullClaim = claimFromNode(nullValue);
+        assertThat(nullClaim.isMissing(), is(false));
+        assertThat(nullClaim.isNull(), is(true));
+        assertNull(nullClaim.as(String.class));
+        assertNull(nullClaim.asString());
+        assertNull(nullClaim.asBoolean());
+        assertNull(nullClaim.asDate());
+        assertNull(nullClaim.asDouble());
+        assertNull(nullClaim.asLong());
+        assertNull(nullClaim.asInt());
+        assertNull(nullClaim.asInstant());
+        assertNull(nullClaim.asMap());
+        assertNull(nullClaim.asList(String.class));
+        assertNull(nullClaim.asArray(String.class));
+    }
+
+    @Test
+    public void shouldReturnNullForInvalidArrayValue() {
+        JsonNode value = mapper.valueToTree(new UserPojo("john", 123));
+        Claim claim = claimFromNode(value);
+        assertNull(claim.asArray(String.class));
     }
 
     @SuppressWarnings({"unchecked", "RedundantCast"})
