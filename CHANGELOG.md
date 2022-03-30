@@ -1,5 +1,11 @@
 # Change Log
 
+## [3.19.1](https://github.com/auth0/java-jwt/tree/3.19.1) (2022-03-30)
+[Full Changelog](https://github.com/auth0/java-jwt/compare/3.19.0...3.19.1)
+
+**Security**
+- Security: Bump `jackson-databind` to 2.13.2.2 [\#566](https://github.com/auth0/java-jwt/pull/566) ([evansims](https://github.com/evansims))
+
 ## [3.19.0](https://github.com/auth0/java-jwt/tree/3.19.0) (2022-03-14)
 [Full Changelog](https://github.com/auth0/java-jwt/compare/3.18.3...3.19.0)
 
