@@ -3,6 +3,7 @@ package com.auth0.jwt.algorithms;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.exceptions.SignatureGenerationException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
+import com.auth0.jwt.interfaces.PrivateKeyDetail;
 import com.auth0.jwt.interfaces.RSAKeyProvider;
 import org.junit.Rule;
 import org.junit.Test;
@@ -10,6 +11,7 @@ import org.junit.rules.ExpectedException;
 
 import java.io.ByteArrayOutputStream;
 import java.security.*;
+import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.RSAKey;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
@@ -298,7 +300,17 @@ public class RSAAlgorithmTest {
         RSAKeyProvider provider = mock(RSAKeyProvider.class);
         PrivateKey privateKey = readPrivateKeyFromFile(PRIVATE_KEY_FILE, "RSA");
         PublicKey publicKey = readPublicKeyFromFile(PUBLIC_KEY_FILE, "RSA");
-        when(provider.getPrivateKey()).thenReturn((RSAPrivateKey) privateKey);
+        when(provider.getPrivateKeyDetails()).thenReturn(new PrivateKeyDetail<RSAPrivateKey>() {
+            @Override
+            public RSAPrivateKey getPrivateKey() {
+                return (RSAPrivateKey) privateKey;
+            }
+
+            @Override
+            public String getPrivateKeyId() {
+                return "my-key-id";
+            }
+        });
         when(provider.getPublicKeyById(null)).thenReturn((RSAPublicKey) publicKey);
         Algorithm algorithm = Algorithm.RSA256(provider);
         
@@ -362,7 +374,17 @@ public class RSAAlgorithmTest {
         RSAKeyProvider provider = mock(RSAKeyProvider.class);
         PrivateKey privateKey = readPrivateKeyFromFile(PRIVATE_KEY_FILE, "RSA");
         PublicKey publicKey = readPublicKeyFromFile(PUBLIC_KEY_FILE, "RSA");
-        when(provider.getPrivateKey()).thenReturn((RSAPrivateKey) privateKey);
+        when(provider.getPrivateKeyDetails()).thenReturn(new PrivateKeyDetail<RSAPrivateKey>() {
+            @Override
+            public RSAPrivateKey getPrivateKey() {
+                return (RSAPrivateKey) privateKey;
+            }
+
+            @Override
+            public String getPrivateKeyId() {
+                return "my-key-id";
+            }
+        });
         when(provider.getPublicKeyById(null)).thenReturn((RSAPublicKey) publicKey);
         Algorithm algorithm = Algorithm.RSA384(provider);
         
@@ -426,7 +448,17 @@ public class RSAAlgorithmTest {
         RSAKeyProvider provider = mock(RSAKeyProvider.class);
         PrivateKey privateKey = readPrivateKeyFromFile(PRIVATE_KEY_FILE, "RSA");
         PublicKey publicKey = readPublicKeyFromFile(PUBLIC_KEY_FILE, "RSA");
-        when(provider.getPrivateKey()).thenReturn((RSAPrivateKey) privateKey);
+        when(provider.getPrivateKeyDetails()).thenReturn(new PrivateKeyDetail<RSAPrivateKey>() {
+            @Override
+            public RSAPrivateKey getPrivateKey() {
+                return (RSAPrivateKey) privateKey;
+            }
+
+            @Override
+            public String getPrivateKeyId() {
+                return "my-key-id";
+            }
+        });
         when(provider.getPublicKeyById(null)).thenReturn((RSAPublicKey) publicKey);
         Algorithm algorithm = Algorithm.RSA512(provider);
         
@@ -467,7 +499,7 @@ public class RSAAlgorithmTest {
         exception.expectCause(isA(NoSuchAlgorithmException.class));
 
         CryptoHelper crypto = mock(CryptoHelper.class);
-        when(crypto.createSignatureFor(anyString(), any(PrivateKey.class), any(byte[].class), any(byte[].class)))
+        when(crypto.createSignatureFor(anyString(), any(PrivateKey.class), any(byte[].class)))
                 .thenThrow(NoSuchAlgorithmException.class);
 
         RSAPublicKey publicKey = mock(RSAPublicKey.class);
@@ -484,7 +516,7 @@ public class RSAAlgorithmTest {
         exception.expectCause(isA(InvalidKeyException.class));
 
         CryptoHelper crypto = mock(CryptoHelper.class);
-        when(crypto.createSignatureFor(anyString(), any(PrivateKey.class), any(byte[].class), any(byte[].class)))
+        when(crypto.createSignatureFor(anyString(), any(PrivateKey.class), any(byte[].class)))
                 .thenThrow(InvalidKeyException.class);
 
         RSAPublicKey publicKey = mock(RSAPublicKey.class);
@@ -501,7 +533,7 @@ public class RSAAlgorithmTest {
         exception.expectCause(isA(SignatureException.class));
 
         CryptoHelper crypto = mock(CryptoHelper.class);
-        when(crypto.createSignatureFor(anyString(), any(PrivateKey.class), any(byte[].class), any(byte[].class)))
+        when(crypto.createSignatureFor(anyString(), any(PrivateKey.class), any(byte[].class)))
                 .thenThrow(SignatureException.class);
 
         RSAPublicKey publicKey = mock(RSAPublicKey.class);
@@ -518,16 +550,26 @@ public class RSAAlgorithmTest {
         RSAKeyProvider provider = RSAAlgorithm.providerForKeys(publicKey, privateKey);
         Algorithm algorithm = new RSAAlgorithm("some-alg", "some-algorithm", provider);
 
-        assertThat(algorithm.getSigningKeyId(), is(nullValue()));
+        assertThat(algorithm.getPrivateKeyDetails().getPrivateKeyId(), is(nullValue()));
     }
 
     @Test
     public void shouldReturnSigningKeyIdFromProvider() {
         RSAKeyProvider provider = mock(RSAKeyProvider.class);
-        when(provider.getPrivateKeyId()).thenReturn("keyId");
+        when(provider.getPrivateKeyDetails()).thenReturn(new PrivateKeyDetail<RSAPrivateKey>() {
+            @Override
+            public RSAPrivateKey getPrivateKey() {
+                return null;
+            }
+
+            @Override
+            public String getPrivateKeyId() {
+                return "keyId";
+            }
+        });
         Algorithm algorithm = new RSAAlgorithm("some-alg", "some-algorithm", provider);
 
-        assertThat(algorithm.getSigningKeyId(), is("keyId"));
+        assertThat(algorithm.getPrivateKeyDetails().getPrivateKeyId(), is("keyId"));
     }
 
     @Test

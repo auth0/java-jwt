@@ -41,8 +41,8 @@ public class NoneAlgorithmTest {
     }
 
     @Test
-    public void shouldReturnNullSigningKeyId() {
-        assertThat(Algorithm.none().getSigningKeyId(), is(nullValue()));
+    public void shouldReturnNullPrivateKeyDetails() {
+        assertThat(Algorithm.none().getPrivateKeyDetails(), is(nullValue()));
     }
 
     @Test

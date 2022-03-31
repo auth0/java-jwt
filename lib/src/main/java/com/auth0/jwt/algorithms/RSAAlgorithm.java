@@ -3,11 +3,13 @@ package com.auth0.jwt.algorithms;
 import com.auth0.jwt.exceptions.SignatureGenerationException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.auth0.jwt.interfaces.PrivateKeyDetail;
 import com.auth0.jwt.interfaces.RSAKeyProvider;
 
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
 import java.security.SignatureException;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
@@ -58,22 +60,8 @@ class RSAAlgorithm extends Algorithm {
     }
 
     @Override
-    public byte[] sign(byte[] headerBytes, byte[] payloadBytes) throws SignatureGenerationException {
+    public byte[] sign(byte[] contentBytes, PrivateKey privateKey) throws SignatureGenerationException {
         try {
-            RSAPrivateKey privateKey = keyProvider.getPrivateKey();
-            if (privateKey == null) {
-                throw new IllegalStateException("The given Private Key is null.");
-            }
-            return crypto.createSignatureFor(getDescription(), privateKey, headerBytes, payloadBytes);
-        } catch (NoSuchAlgorithmException | SignatureException | InvalidKeyException | IllegalStateException e) {
-            throw new SignatureGenerationException(this, e);
-        }
-    }
-
-    @Override
-    public byte[] sign(byte[] contentBytes) throws SignatureGenerationException {
-        try {
-            RSAPrivateKey privateKey = keyProvider.getPrivateKey();
             if (privateKey == null) {
                 throw new IllegalStateException("The given Private Key is null.");
             }
@@ -84,8 +72,8 @@ class RSAAlgorithm extends Algorithm {
     }
 
     @Override
-    public String getSigningKeyId() {
-        return keyProvider.getPrivateKeyId();
+    public PrivateKeyDetail<RSAPrivateKey> getPrivateKeyDetails() {
+        return keyProvider.getPrivateKeyDetails();
     }
 
     //Visible for testing

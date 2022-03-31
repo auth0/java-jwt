@@ -4,9 +4,11 @@ import com.auth0.jwt.exceptions.SignatureGenerationException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.ECDSAKeyProvider;
+import com.auth0.jwt.interfaces.PrivateKeyDetail;
 
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
 import java.security.SignatureException;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
@@ -61,23 +63,8 @@ class ECDSAAlgorithm extends Algorithm {
     }
 
     @Override
-    public byte[] sign(byte[] headerBytes, byte[] payloadBytes) throws SignatureGenerationException {
+    public byte[] sign(byte[] contentBytes, PrivateKey privateKey) throws SignatureGenerationException {
         try {
-            ECPrivateKey privateKey = keyProvider.getPrivateKey();
-            if (privateKey == null) {
-                throw new IllegalStateException("The given Private Key is null.");
-            }
-            byte[] signature = crypto.createSignatureFor(getDescription(), privateKey, headerBytes, payloadBytes);
-            return DERToJOSE(signature);
-        } catch (NoSuchAlgorithmException | SignatureException | InvalidKeyException | IllegalStateException e) {
-            throw new SignatureGenerationException(this, e);
-        }
-    }
-
-    @Override
-    public byte[] sign(byte[] contentBytes) throws SignatureGenerationException {
-        try {
-            ECPrivateKey privateKey = keyProvider.getPrivateKey();
             if (privateKey == null) {
                 throw new IllegalStateException("The given Private Key is null.");
             }
@@ -89,8 +76,8 @@ class ECDSAAlgorithm extends Algorithm {
     }
 
     @Override
-    public String getSigningKeyId() {
-        return keyProvider.getPrivateKeyId();
+    public PrivateKeyDetail<ECPrivateKey> getPrivateKeyDetails() {
+        return keyProvider.getPrivateKeyDetails();
     }
 
     //Visible for testing

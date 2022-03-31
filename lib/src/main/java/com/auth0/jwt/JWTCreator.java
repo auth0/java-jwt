@@ -4,12 +4,14 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.SignatureGenerationException;
 import com.auth0.jwt.impl.*;
+import com.auth0.jwt.interfaces.PrivateKeyDetail;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
 import java.nio.charset.StandardCharsets;
+import java.security.PrivateKey;
 import java.time.Instant;
 import java.util.*;
 import java.util.Map.Entry;
@@ -547,11 +549,13 @@ public final class JWTCreator {
             if (!headerClaims.containsKey(PublicClaims.TYPE)) {
                 headerClaims.put(PublicClaims.TYPE, "JWT");
             }
-            String signingKeyId = algorithm.getSigningKeyId();
-            if (signingKeyId != null) {
-                withKeyId(signingKeyId);
+            PrivateKeyDetail<?> privateKeyDetail = algorithm.getPrivateKeyDetails();
+            String keyId = privateKeyDetail == null ? null : privateKeyDetail.getPrivateKeyId();
+            PrivateKey key = privateKeyDetail == null ? null : privateKeyDetail.getPrivateKey();
+            if (keyId != null) {
+                withKeyId(privateKeyDetail.getPrivateKeyId());
             }
-            return new JWTCreator(algorithm, headerClaims, payloadClaims).sign();
+            return new JWTCreator(algorithm, headerClaims, payloadClaims).sign(key);
         }
 
         private void assertNonNull(String name) {
@@ -565,14 +569,14 @@ public final class JWTCreator {
         }
     }
 
-    private String sign() throws SignatureGenerationException {
+    private String sign(PrivateKey privateKey) throws SignatureGenerationException {
         String header = Base64.getUrlEncoder().withoutPadding()
                 .encodeToString(headerJson.getBytes(StandardCharsets.UTF_8));
         String payload = Base64.getUrlEncoder().withoutPadding()
                 .encodeToString(payloadJson.getBytes(StandardCharsets.UTF_8));
 
         byte[] signatureBytes = algorithm.sign(header.getBytes(StandardCharsets.UTF_8),
-                payload.getBytes(StandardCharsets.UTF_8));
+                payload.getBytes(StandardCharsets.UTF_8), privateKey);
         String signature = Base64.getUrlEncoder().withoutPadding().encodeToString((signatureBytes));
 
         return String.format("%s.%s.%s", header, payload, signature);

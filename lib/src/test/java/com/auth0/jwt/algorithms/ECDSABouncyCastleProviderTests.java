@@ -4,6 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.exceptions.SignatureGenerationException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.interfaces.ECDSAKeyProvider;
+import com.auth0.jwt.interfaces.PrivateKeyDetail;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -552,7 +553,17 @@ public class ECDSABouncyCastleProviderTests {
         ECDSAKeyProvider provider = mock(ECDSAKeyProvider.class);
         PrivateKey privateKey = readPrivateKeyFromFile(PRIVATE_KEY_FILE_256, "EC");
         PublicKey publicKey = readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC");
-        when(provider.getPrivateKey()).thenReturn((ECPrivateKey) privateKey);
+        when(provider.getPrivateKeyDetails()).thenReturn(new PrivateKeyDetail<ECPrivateKey>() {
+            @Override
+            public ECPrivateKey getPrivateKey() {
+                return (ECPrivateKey) privateKey;
+            }
+
+            @Override
+            public String getPrivateKeyId() {
+                return null;
+            }
+        });
         when(provider.getPublicKeyById(null)).thenReturn((ECPublicKey) publicKey);
         Algorithm algorithm = Algorithm.ECDSA256(provider);
         
@@ -570,7 +581,17 @@ public class ECDSABouncyCastleProviderTests {
         exception.expectCause(hasMessage(is("The given Private Key is null.")));
 
         ECDSAKeyProvider provider = mock(ECDSAKeyProvider.class);
-        when(provider.getPrivateKey()).thenReturn(null);
+        when(provider.getPrivateKeyDetails()).thenReturn(new PrivateKeyDetail<ECPrivateKey>() {
+            @Override
+            public ECPrivateKey getPrivateKey() {
+                return null;
+            }
+
+            @Override
+            public String getPrivateKeyId() {
+                return null;
+            }
+        });
         Algorithm algorithm = Algorithm.ECDSA256(provider);
         algorithm.sign(new byte[0], new byte[0]);
     }
@@ -610,7 +631,17 @@ public class ECDSABouncyCastleProviderTests {
         ECDSAKeyProvider provider = mock(ECDSAKeyProvider.class);
         PrivateKey privateKey = readPrivateKeyFromFile(PRIVATE_KEY_FILE_384, "EC");
         PublicKey publicKey = readPublicKeyFromFile(PUBLIC_KEY_FILE_384, "EC");
-        when(provider.getPrivateKey()).thenReturn((ECPrivateKey) privateKey);
+        when(provider.getPrivateKeyDetails()).thenReturn(new PrivateKeyDetail<ECPrivateKey>() {
+            @Override
+            public ECPrivateKey getPrivateKey() {
+                return (ECPrivateKey) privateKey;
+            }
+
+            @Override
+            public String getPrivateKeyId() {
+                return null;
+            }
+        });
         when(provider.getPublicKeyById(null)).thenReturn((ECPublicKey) publicKey);
         Algorithm algorithm = Algorithm.ECDSA384(provider);
         
@@ -628,7 +659,17 @@ public class ECDSABouncyCastleProviderTests {
         exception.expectCause(hasMessage(is("The given Private Key is null.")));
 
         ECDSAKeyProvider provider = mock(ECDSAKeyProvider.class);
-        when(provider.getPrivateKey()).thenReturn(null);
+        when(provider.getPrivateKeyDetails()).thenReturn(new PrivateKeyDetail<ECPrivateKey>() {
+            @Override
+            public ECPrivateKey getPrivateKey() {
+                return null;
+            }
+
+            @Override
+            public String getPrivateKeyId() {
+                return null;
+            }
+        });
         Algorithm algorithm = Algorithm.ECDSA384(provider);
         algorithm.sign(new byte[0], new byte[0]);
     }
@@ -670,7 +711,17 @@ public class ECDSABouncyCastleProviderTests {
         ECDSAKeyProvider provider = mock(ECDSAKeyProvider.class);
         PrivateKey privateKey = readPrivateKeyFromFile(PRIVATE_KEY_FILE_512, "EC");
         PublicKey publicKey = readPublicKeyFromFile(PUBLIC_KEY_FILE_512, "EC");
-        when(provider.getPrivateKey()).thenReturn((ECPrivateKey) privateKey);
+        when(provider.getPrivateKeyDetails()).thenReturn(new PrivateKeyDetail<ECPrivateKey>() {
+            @Override
+            public ECPrivateKey getPrivateKey() {
+                return (ECPrivateKey) privateKey;
+            }
+
+            @Override
+            public String getPrivateKeyId() {
+                return null;
+            }
+        });
         when(provider.getPublicKeyById(null)).thenReturn((ECPublicKey) publicKey);
         Algorithm algorithm = Algorithm.ECDSA512(provider);
         String jwt = asJWT(algorithm, ES512Header, auth0IssPayload);
@@ -687,7 +738,17 @@ public class ECDSABouncyCastleProviderTests {
         exception.expectCause(hasMessage(is("The given Private Key is null.")));
 
         ECDSAKeyProvider provider = mock(ECDSAKeyProvider.class);
-        when(provider.getPrivateKey()).thenReturn(null);
+        when(provider.getPrivateKeyDetails()).thenReturn(new PrivateKeyDetail<ECPrivateKey>() {
+            @Override
+            public ECPrivateKey getPrivateKey() {
+                return null;
+            }
+
+            @Override
+            public String getPrivateKeyId() {
+                return null;
+            }
+        });
         Algorithm algorithm = Algorithm.ECDSA512(provider);
         algorithm.sign(new byte[0], new byte[0]);
     }
@@ -710,7 +771,7 @@ public class ECDSABouncyCastleProviderTests {
         exception.expectCause(isA(NoSuchAlgorithmException.class));
 
         CryptoHelper crypto = mock(CryptoHelper.class);
-        when(crypto.createSignatureFor(anyString(), any(PrivateKey.class), any(byte[].class), any(byte[].class)))
+        when(crypto.createSignatureFor(anyString(), any(PrivateKey.class), any(byte[].class)))
                 .thenThrow(NoSuchAlgorithmException.class);
 
         ECPublicKey publicKey = mock(ECPublicKey.class);
@@ -727,7 +788,7 @@ public class ECDSABouncyCastleProviderTests {
         exception.expectCause(isA(InvalidKeyException.class));
 
         CryptoHelper crypto = mock(CryptoHelper.class);
-        when(crypto.createSignatureFor(anyString(), any(PrivateKey.class), any(byte[].class), any(byte[].class)))
+        when(crypto.createSignatureFor(anyString(), any(PrivateKey.class), any(byte[].class)))
                 .thenThrow(InvalidKeyException.class);
 
         ECPublicKey publicKey = mock(ECPublicKey.class);
@@ -744,7 +805,7 @@ public class ECDSABouncyCastleProviderTests {
         exception.expectCause(isA(SignatureException.class));
 
         CryptoHelper crypto = mock(CryptoHelper.class);
-        when(crypto.createSignatureFor(anyString(), any(PrivateKey.class), any(byte[].class), any(byte[].class)))
+        when(crypto.createSignatureFor(anyString(), any(PrivateKey.class), any(byte[].class)))
                 .thenThrow(SignatureException.class);
 
         ECPublicKey publicKey = mock(ECPublicKey.class);
@@ -761,16 +822,26 @@ public class ECDSABouncyCastleProviderTests {
         ECDSAKeyProvider provider = ECDSAAlgorithm.providerForKeys(publicKey, privateKey);
         Algorithm algorithm = new ECDSAAlgorithm("some-alg", "some-algorithm", 32, provider);
 
-        assertThat(algorithm.getSigningKeyId(), is(nullValue()));
+        assertThat(algorithm.getPrivateKeyDetails().getPrivateKeyId(), is(nullValue()));
     }
 
     @Test
     public void shouldReturnSigningKeyIdFromProvider() {
         ECDSAKeyProvider provider = mock(ECDSAKeyProvider.class);
-        when(provider.getPrivateKeyId()).thenReturn("keyId");
+        when(provider.getPrivateKeyDetails()).thenReturn(new PrivateKeyDetail<ECPrivateKey>() {
+            @Override
+            public ECPrivateKey getPrivateKey() {
+                return null;
+            }
+
+            @Override
+            public String getPrivateKeyId() {
+                return "keyId";
+            }
+        });
         Algorithm algorithm = new ECDSAAlgorithm("some-alg", "some-algorithm", 32, provider);
 
-        assertThat(algorithm.getSigningKeyId(), is("keyId"));
+        assertThat(algorithm.getPrivateKeyDetails().getPrivateKeyId(), is("keyId"));
     }
 
     @Test

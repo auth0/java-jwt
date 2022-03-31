@@ -4,8 +4,10 @@ import com.auth0.jwt.exceptions.SignatureGenerationException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.ECDSAKeyProvider;
+import com.auth0.jwt.interfaces.PrivateKeyDetail;
 import com.auth0.jwt.interfaces.RSAKeyProvider;
 
+import java.security.PrivateKey;
 import java.security.interfaces.*;
 
 /**
@@ -318,7 +320,7 @@ public abstract class Algorithm {
      *
      * @return the Key Id that identifies the Signing Key or null if it's not specified.
      */
-    public String getSigningKeyId() {
+    public PrivateKeyDetail<?> getPrivateKeyDetails() {
         return null;
     }
 
@@ -367,6 +369,24 @@ public abstract class Algorithm {
      * @throws SignatureGenerationException if the Key is invalid.
      */
     public byte[] sign(byte[] headerBytes, byte[] payloadBytes) throws SignatureGenerationException {
+        PrivateKey privateKey = getPrivateKeyDetails() == null ? null : getPrivateKeyDetails().getPrivateKey();
+        return sign(headerBytes, payloadBytes, privateKey);
+    }
+
+    /**
+     * Sign the given content using this Algorithm instance.
+     *
+     * @param headerBytes  an array of bytes representing the base64 encoded header content
+     *                     to be verified against the signature.
+     * @param payloadBytes an array of bytes representing the base64 encoded payload content
+     *                     to be verified against the signature.
+     * @param privateKey   A private key with which the content has to be signed
+     *
+     * @return the signature in a base64 encoded array of bytes
+     * @throws SignatureGenerationException if the Key is invalid.
+     */
+    public byte[] sign(byte[] headerBytes, byte[] payloadBytes, PrivateKey privateKey)
+            throws SignatureGenerationException {
         // default implementation; keep around until sign(byte[]) method is removed
         byte[] contentBytes = new byte[headerBytes.length + 1 + payloadBytes.length];
 
@@ -374,7 +394,7 @@ public abstract class Algorithm {
         contentBytes[headerBytes.length] = (byte) '.';
         System.arraycopy(payloadBytes, 0, contentBytes, headerBytes.length + 1, payloadBytes.length);
 
-        return sign(contentBytes);
+        return sign(contentBytes, privateKey);
     }
 
     /**
@@ -386,7 +406,22 @@ public abstract class Algorithm {
      * @return the signature in a base64 encoded array of bytes
      * @throws SignatureGenerationException if the Key is invalid.
      */
+    public byte[] sign(byte[] contentBytes) throws SignatureGenerationException {
+        PrivateKey privateKey = getPrivateKeyDetails() == null ? null : getPrivateKeyDetails().getPrivateKey();
+        return sign(contentBytes, privateKey);
+    }
 
-    public abstract byte[] sign(byte[] contentBytes) throws SignatureGenerationException;
+    /**
+     * Sign the given content using this Algorithm instance.
+     * To get the correct JWT Signature, ensure the content is in the format {HEADER}.{PAYLOAD}
+     *
+     * @param contentBytes an array of bytes representing the base64 encoded content
+     *                     to be verified against the signature.
+     * @param privateKey   A private key with which the content has to be signed
+     *
+     * @return the signature in a base64 encoded array of bytes
+     * @throws SignatureGenerationException if the Key is invalid.
+     */
+    public abstract byte[] sign(byte[] contentBytes, PrivateKey privateKey) throws SignatureGenerationException;
 
 }

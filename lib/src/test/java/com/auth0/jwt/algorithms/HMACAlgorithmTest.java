@@ -252,7 +252,7 @@ public class HMACAlgorithmTest {
         exception.expectCause(isA(NoSuchAlgorithmException.class));
 
         CryptoHelper crypto = mock(CryptoHelper.class);
-        when(crypto.createSignatureFor(anyString(), any(byte[].class), any(byte[].class), any(byte[].class)))
+        when(crypto.createSignatureFor(anyString(), any(byte[].class), any(byte[].class)))
                 .thenThrow(NoSuchAlgorithmException.class);
 
         Algorithm algorithm = new HMACAlgorithm(crypto, "some-alg", "some-algorithm", "secret".getBytes(StandardCharsets.UTF_8));
@@ -266,7 +266,7 @@ public class HMACAlgorithmTest {
         exception.expectCause(isA(InvalidKeyException.class));
 
         CryptoHelper crypto = mock(CryptoHelper.class);
-        when(crypto.createSignatureFor(anyString(), any(byte[].class), any(byte[].class), any(byte[].class)))
+        when(crypto.createSignatureFor(anyString(), any(byte[].class), any(byte[].class)))
                 .thenThrow(InvalidKeyException.class);
 
         Algorithm algorithm = new HMACAlgorithm(crypto, "some-alg", "some-algorithm", "secret".getBytes(StandardCharsets.UTF_8));
@@ -274,8 +274,8 @@ public class HMACAlgorithmTest {
     }
 
     @Test
-    public void shouldReturnNullSigningKeyId() {
-        assertThat(Algorithm.HMAC256("secret").getSigningKeyId(), is(nullValue()));
+    public void shouldReturnNullPrivateKeyDetails() {
+        assertThat(Algorithm.HMAC256("secret").getPrivateKeyDetails(), is(nullValue()));
     }
 
     @Test

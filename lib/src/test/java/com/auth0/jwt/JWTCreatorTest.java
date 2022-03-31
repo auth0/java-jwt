@@ -3,6 +3,7 @@ package com.auth0.jwt;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.impl.PublicClaims;
 import com.auth0.jwt.interfaces.ECDSAKeyProvider;
+import com.auth0.jwt.interfaces.PrivateKeyDetail;
 import com.auth0.jwt.interfaces.RSAKeyProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Rule;
@@ -155,8 +156,17 @@ public class JWTCreatorTest {
     public void shouldAddKeyIdIfAvailableFromRSAAlgorithms() throws Exception {
         RSAPrivateKey privateKey = (RSAPrivateKey) PemUtils.readPrivateKeyFromFile(PRIVATE_KEY_FILE_RSA, "RSA");
         RSAKeyProvider provider = mock(RSAKeyProvider.class);
-        when(provider.getPrivateKeyId()).thenReturn("my-key-id");
-        when(provider.getPrivateKey()).thenReturn(privateKey);
+        when(provider.getPrivateKeyDetails()).thenReturn(new PrivateKeyDetail<RSAPrivateKey>() {
+            @Override
+            public RSAPrivateKey getPrivateKey() {
+                return privateKey;
+            }
+
+            @Override
+            public String getPrivateKeyId() {
+                return "my-key-id";
+            }
+        });
 
         String signed = JWTCreator.init()
                 .sign(Algorithm.RSA256(provider));
@@ -171,8 +181,17 @@ public class JWTCreatorTest {
     public void shouldNotOverwriteKeyIdIfAddedFromRSAAlgorithms() throws Exception {
         RSAPrivateKey privateKey = (RSAPrivateKey) PemUtils.readPrivateKeyFromFile(PRIVATE_KEY_FILE_RSA, "RSA");
         RSAKeyProvider provider = mock(RSAKeyProvider.class);
-        when(provider.getPrivateKeyId()).thenReturn("my-key-id");
-        when(provider.getPrivateKey()).thenReturn(privateKey);
+        when(provider.getPrivateKeyDetails()).thenReturn(new PrivateKeyDetail<RSAPrivateKey>() {
+            @Override
+            public RSAPrivateKey getPrivateKey() {
+                return privateKey;
+            }
+
+            @Override
+            public String getPrivateKeyId() {
+                return "my-key-id";
+            }
+        });
 
         String signed = JWTCreator.init()
                 .withKeyId("real-key-id")
@@ -188,8 +207,17 @@ public class JWTCreatorTest {
     public void shouldAddKeyIdIfAvailableFromECDSAAlgorithms() throws Exception {
         ECPrivateKey privateKey = (ECPrivateKey) PemUtils.readPrivateKeyFromFile(PRIVATE_KEY_FILE_EC_256, "EC");
         ECDSAKeyProvider provider = mock(ECDSAKeyProvider.class);
-        when(provider.getPrivateKeyId()).thenReturn("my-key-id");
-        when(provider.getPrivateKey()).thenReturn(privateKey);
+        when(provider.getPrivateKeyDetails()).thenReturn(new PrivateKeyDetail<ECPrivateKey>() {
+            @Override
+            public ECPrivateKey getPrivateKey() {
+                return privateKey;
+            }
+
+            @Override
+            public String getPrivateKeyId() {
+                return "my-key-id";
+            }
+        });
 
         String signed = JWTCreator.init()
                 .sign(Algorithm.ECDSA256(provider));
@@ -204,8 +232,17 @@ public class JWTCreatorTest {
     public void shouldNotOverwriteKeyIdIfAddedFromECDSAAlgorithms() throws Exception {
         ECPrivateKey privateKey = (ECPrivateKey) PemUtils.readPrivateKeyFromFile(PRIVATE_KEY_FILE_EC_256, "EC");
         ECDSAKeyProvider provider = mock(ECDSAKeyProvider.class);
-        when(provider.getPrivateKeyId()).thenReturn("my-key-id");
-        when(provider.getPrivateKey()).thenReturn(privateKey);
+        when(provider.getPrivateKeyDetails()).thenReturn(new PrivateKeyDetail<ECPrivateKey>() {
+            @Override
+            public ECPrivateKey getPrivateKey() {
+                return privateKey;
+            }
+
+            @Override
+            public String getPrivateKeyId() {
+                return "my-key-id";
+            }
+        });
 
         String signed = JWTCreator.init()
                 .withKeyId("real-key-id")

@@ -3,6 +3,8 @@ package com.auth0.jwt.algorithms;
 import com.auth0.jwt.exceptions.SignatureGenerationException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
+
+import java.security.PrivateKey;
 import java.util.Base64;
 
 class NoneAlgorithm extends Algorithm {
@@ -31,6 +33,11 @@ class NoneAlgorithm extends Algorithm {
 
     @Override
     public byte[] sign(byte[] contentBytes) throws SignatureGenerationException {
+        return new byte[0];
+    }
+
+    @Override
+    public byte[] sign(byte[] contentBytes, PrivateKey privateKey) throws SignatureGenerationException {
         return new byte[0];
     }
 }

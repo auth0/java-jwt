@@ -24,6 +24,7 @@ interface KeyProvider<U extends PublicKey, R extends PrivateKey> {
      * Getter for the Private Key instance. Used to sign the content on the JWT signing stage.
      *
      * @return the Private Key instance
+     * @deprecated Use {@link KeyProvider#getPrivateKeyDetails()} instead
      */
     R getPrivateKey();
 
@@ -32,6 +33,27 @@ interface KeyProvider<U extends PublicKey, R extends PrivateKey> {
      * This represents the `kid` claim and will be placed in the Header.
      *
      * @return the Key Id that identifies the Private Key or null if it's not specified.
+     * @deprecated Use {@link KeyProvider#getPrivateKeyDetails()} instead
      */
     String getPrivateKeyId();
+
+    /**
+     * Getter for the Private Key instance along with its Id.
+     * Used to sign the content on the JWT signing stage.
+     *
+     * @return the Private Key Details instance
+     */
+    default PrivateKeyDetail<R> getPrivateKeyDetails() {
+        return new PrivateKeyDetail<R>() {
+            @Override
+            public R getPrivateKey() {
+                return KeyProvider.this.getPrivateKey();
+            }
+
+            @Override
+            public String getPrivateKeyId() {
+                return KeyProvider.this.getPrivateKeyId();
+            }
+        };
+    }
 }

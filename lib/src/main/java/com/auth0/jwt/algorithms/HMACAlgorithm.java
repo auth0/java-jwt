@@ -7,6 +7,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
 import java.util.Arrays;
 import java.util.Base64;
 
@@ -62,16 +63,7 @@ class HMACAlgorithm extends Algorithm {
     }
 
     @Override
-    public byte[] sign(byte[] headerBytes, byte[] payloadBytes) throws SignatureGenerationException {
-        try {
-            return crypto.createSignatureFor(getDescription(), secret, headerBytes, payloadBytes);
-        } catch (NoSuchAlgorithmException | InvalidKeyException e) {
-            throw new SignatureGenerationException(this, e);
-        }
-    }
-
-    @Override
-    public byte[] sign(byte[] contentBytes) throws SignatureGenerationException {
+    public byte[] sign(byte[] contentBytes, PrivateKey privateKey) throws SignatureGenerationException {
         try {
             return crypto.createSignatureFor(getDescription(), secret, contentBytes);
         } catch (NoSuchAlgorithmException | InvalidKeyException e) {
