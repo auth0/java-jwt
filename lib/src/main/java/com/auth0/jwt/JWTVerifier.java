@@ -6,6 +6,7 @@ import com.auth0.jwt.impl.JWTParser;
 import com.auth0.jwt.impl.PublicClaims;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.auth0.jwt.interfaces.ExpectedCheckHolder;
 import com.auth0.jwt.interfaces.Verification;
 
 import java.time.Clock;
@@ -25,12 +26,12 @@ import java.util.function.BiPredicate;
  */
 public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
     private final Algorithm algorithm;
-    final Map<String, BiPredicate<Claim, DecodedJWT>> expectedChecks;
+    final List<ExpectedCheckHolder> expectedChecks;
     private final JWTParser parser;
 
-    JWTVerifier(Algorithm algorithm, Map<String, BiPredicate<Claim, DecodedJWT>> expectedChecks) {
+    JWTVerifier(Algorithm algorithm, List<ExpectedCheckHolder> expectedChecks) {
         this.algorithm = algorithm;
-        this.expectedChecks = Collections.unmodifiableMap(expectedChecks);
+        this.expectedChecks = Collections.unmodifiableList(expectedChecks);
         this.parser = new JWTParser();
     }
 
@@ -50,7 +51,7 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
      */
     public static class BaseVerification implements Verification {
         private final Algorithm algorithm;
-        private final Map<String, BiPredicate<Claim, DecodedJWT>> expectedChecks;
+        private final List<ExpectedCheckHolder> expectedChecks;
         private long defaultLeeway;
         private final Map<String, Long> customLeeways;
         private boolean ignoreIssuedAt;
@@ -62,7 +63,7 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
             }
 
             this.algorithm = algorithm;
-            this.expectedChecks = new LinkedHashMap<>();
+            this.expectedChecks = new ArrayList<>();
             this.customLeeways = new HashMap<>();
             this.defaultLeeway = 0;
         }
@@ -70,7 +71,10 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
         @Override
         public Verification withIssuer(String... issuer) {
             List<String> value = isNullOrEmpty(issuer) ? null : Arrays.asList(issuer);
-            checkIfNeedToRemove(PublicClaims.ISSUER, value, ((claim, decodedJWT) -> {
+            addCheck(PublicClaims.ISSUER, ((claim, decodedJWT) -> {
+                if (verifyNull(claim, value)) {
+                    return true;
+                }
                 if (value == null || !value.contains(claim.asString())) {
                     throw new IncorrectClaimException(
                             "The Claim 'iss' value doesn't match the required issuer.", PublicClaims.ISSUER, claim);
@@ -82,23 +86,24 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
 
         @Override
         public Verification withSubject(String subject) {
-            checkIfNeedToRemove(PublicClaims.SUBJECT, subject, (claim, decodedJWT) -> subject.equals(claim.asString()));
+            addCheck(PublicClaims.SUBJECT, (claim, decodedJWT) ->
+                    verifyNull(claim, subject) || subject.equals(claim.asString()));
             return this;
         }
 
         @Override
         public Verification withAudience(String... audience) {
             List<String> value = isNullOrEmpty(audience) ? null : Arrays.asList(audience);
-            checkIfNeedToRemove(PublicClaims.AUDIENCE, value, ((claim, decodedJWT) ->
-                    assertValidAudienceClaim(claim, decodedJWT.getAudience(), value, true)));
+            addCheck(PublicClaims.AUDIENCE, ((claim, decodedJWT) -> verifyNull(claim, value)
+                    || assertValidAudienceClaim(claim, decodedJWT.getAudience(), value, true)));
             return this;
         }
 
         @Override
         public Verification withAnyOfAudience(String... audience) {
             List<String> value = isNullOrEmpty(audience) ? null : Arrays.asList(audience);
-            checkIfNeedToRemove(PublicClaims.AUDIENCE, value, ((claim, decodedJWT) ->
-                    assertValidAudienceClaim(claim, decodedJWT.getAudience(), value, false)));
+            addCheck(PublicClaims.AUDIENCE, ((claim, decodedJWT) -> verifyNull(claim, value)
+                    || assertValidAudienceClaim(claim, decodedJWT.getAudience(), value, false)));
             return this;
         }
 
@@ -138,7 +143,8 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
 
         @Override
         public Verification withJWTId(String jwtId) {
-            checkIfNeedToRemove(PublicClaims.JWT_ID, jwtId, ((claim, decodedJWT) -> jwtId.equals(claim.asString())));
+            addCheck(PublicClaims.JWT_ID, ((claim, decodedJWT) ->
+                    verifyNull(claim, jwtId) || jwtId.equals(claim.asString())));
             return this;
         }
 
@@ -159,35 +165,40 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
         @Override
         public Verification withClaim(String name, Boolean value) throws IllegalArgumentException {
             assertNonNull(name);
-            checkIfNeedToRemove(name, value, ((claim, decodedJWT) -> value.equals(claim.asBoolean())));
+            addCheck(name, ((claim, decodedJWT) -> verifyNull(claim, value)
+                    || value.equals(claim.asBoolean())));
             return this;
         }
 
         @Override
         public Verification withClaim(String name, Integer value) throws IllegalArgumentException {
             assertNonNull(name);
-            checkIfNeedToRemove(name, value, ((claim, decodedJWT) -> value.equals(claim.asInt())));
+            addCheck(name, ((claim, decodedJWT) -> verifyNull(claim, value)
+                    || value.equals(claim.asInt())));
             return this;
         }
 
         @Override
         public Verification withClaim(String name, Long value) throws IllegalArgumentException {
             assertNonNull(name);
-            checkIfNeedToRemove(name, value, ((claim, decodedJWT) -> value.equals(claim.asLong())));
+            addCheck(name, ((claim, decodedJWT) -> verifyNull(claim, value)
+                    || value.equals(claim.asLong())));
             return this;
         }
 
         @Override
         public Verification withClaim(String name, Double value) throws IllegalArgumentException {
             assertNonNull(name);
-            checkIfNeedToRemove(name, value, ((claim, decodedJWT) -> value.equals(claim.asDouble())));
+            addCheck(name, ((claim, decodedJWT) -> verifyNull(claim, value)
+                    || value.equals(claim.asDouble())));
             return this;
         }
 
         @Override
         public Verification withClaim(String name, String value) throws IllegalArgumentException {
             assertNonNull(name);
-            checkIfNeedToRemove(name, value, ((claim, decodedJWT) -> value.equals(claim.asString())));
+            addCheck(name, ((claim, decodedJWT) -> verifyNull(claim, value)
+                    || value.equals(claim.asString())));
             return this;
         }
 
@@ -201,8 +212,9 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
             assertNonNull(name);
             // Since date-time claims are serialized as epoch seconds,
             // we need to compare them with only seconds-granularity
-            checkIfNeedToRemove(name, value,
-                    ((claim, decodedJWT) -> value.truncatedTo(ChronoUnit.SECONDS).equals(claim.asInstant())));
+            addCheck(name,
+                    ((claim, decodedJWT) -> verifyNull(claim, value)
+                            || value.truncatedTo(ChronoUnit.SECONDS).equals(claim.asInstant())));
             return this;
         }
 
@@ -210,28 +222,32 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
         public Verification withClaim(String name, BiPredicate<Claim, DecodedJWT> predicate)
                 throws IllegalArgumentException {
             assertNonNull(name);
-            checkIfNeedToRemove(name, predicate, predicate);
+            addCheck(name, ((claim, decodedJWT) -> verifyNull(claim, predicate)
+                    || predicate.test(claim, decodedJWT)));
             return this;
         }
 
         @Override
         public Verification withArrayClaim(String name, String... items) throws IllegalArgumentException {
             assertNonNull(name);
-            checkIfNeedToRemove(name, items, ((claim, decodedJWT) -> assertValidCollectionClaim(claim, items)));
+            addCheck(name, ((claim, decodedJWT) -> verifyNull(claim, items)
+                    || assertValidCollectionClaim(claim, items)));
             return this;
         }
 
         @Override
         public Verification withArrayClaim(String name, Integer... items) throws IllegalArgumentException {
             assertNonNull(name);
-            checkIfNeedToRemove(name, items, ((claim, decodedJWT) -> assertValidCollectionClaim(claim, items)));
+            addCheck(name, ((claim, decodedJWT) -> verifyNull(claim, items)
+                    || assertValidCollectionClaim(claim, items)));
             return this;
         }
 
         @Override
         public Verification withArrayClaim(String name, Long... items) throws IllegalArgumentException {
             assertNonNull(name);
-            checkIfNeedToRemove(name, items, ((claim, decodedJWT) -> assertValidCollectionClaim(claim, items)));
+            addCheck(name, ((claim, decodedJWT) -> verifyNull(claim, items)
+                    || assertValidCollectionClaim(claim, items)));
             return this;
         }
 
@@ -268,13 +284,13 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
             long notBeforeLeeway = getLeewayFor(PublicClaims.NOT_BEFORE);
             long issuedAtLeeway = getLeewayFor(PublicClaims.ISSUED_AT);
 
-            expectedChecks.put(PublicClaims.EXPIRES_AT, (claim, decodedJWT) ->
-                    assertValidInstantClaim(PublicClaims.EXPIRES_AT, claim, expiresAtLeeway, true));
-            expectedChecks.put(PublicClaims.NOT_BEFORE, (claim, decodedJWT) ->
-                    assertValidInstantClaim(PublicClaims.NOT_BEFORE, claim, notBeforeLeeway, false));
+            expectedChecks.add(constructExpectedCheck(PublicClaims.EXPIRES_AT, (claim, decodedJWT) ->
+                    assertValidInstantClaim(PublicClaims.EXPIRES_AT, claim, expiresAtLeeway, true)));
+            expectedChecks.add(constructExpectedCheck(PublicClaims.NOT_BEFORE, (claim, decodedJWT) ->
+                    assertValidInstantClaim(PublicClaims.NOT_BEFORE, claim, notBeforeLeeway, false)));
             if (!ignoreIssuedAt) {
-                expectedChecks.put(PublicClaims.ISSUED_AT, (claim, decodedJWT) ->
-                        assertValidInstantClaim(PublicClaims.ISSUED_AT, claim, issuedAtLeeway, false));
+                expectedChecks.add(constructExpectedCheck(PublicClaims.ISSUED_AT, (claim, decodedJWT) ->
+                        assertValidInstantClaim(PublicClaims.ISSUED_AT, claim, issuedAtLeeway, false)));
             }
         }
 
@@ -294,8 +310,7 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
                     }
                 }
             } else {
-                claimArr = claim.isNull() || claim.isMissing()
-                        ? Collections.emptyList() : Arrays.asList(claim.as(Object[].class));
+                claimArr = Arrays.asList(claim.as(Object[].class));
             }
             List<Object> valueArr = Arrays.asList(expectedClaimValue);
             return claimArr.containsAll(valueArr);
@@ -361,13 +376,27 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
             }
         }
 
-        private void checkIfNeedToRemove(String name, Object value, BiPredicate<Claim, DecodedJWT> predicate) {
-            if (value == null) {
-                expectedChecks.remove(name);
-                return;
-            }
-            expectedChecks.put(name, (claim, decodedJWT) -> assertClaimPresence(name, claim)
-                    && predicate.test(claim, decodedJWT));
+        private void addCheck(String name, BiPredicate<Claim, DecodedJWT> predicate) {
+            expectedChecks.add(constructExpectedCheck(name, (claim, decodedJWT) -> assertClaimPresence(name, claim)
+                    && predicate.test(claim, decodedJWT)));
+        }
+
+        private ExpectedCheckHolder constructExpectedCheck(String claimName, BiPredicate<Claim, DecodedJWT> check) {
+            return new ExpectedCheckHolder() {
+                @Override
+                public String getClaimName() {
+                    return claimName;
+                }
+
+                @Override
+                public boolean verify(Claim claim, DecodedJWT decodedJWT) {
+                    return check.test(claim, decodedJWT);
+                }
+            };
+        }
+
+        private boolean verifyNull(Claim claim, Object value) {
+            return value == null && claim.isNull();
         }
 
         private boolean isNullOrEmpty(String[] args) {
@@ -431,15 +460,14 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
         }
     }
 
-    private void verifyClaims(DecodedJWT jwt, Map<String, BiPredicate<Claim, DecodedJWT>> claims)
+    private void verifyClaims(DecodedJWT jwt, List<ExpectedCheckHolder> expectedChecks)
             throws TokenExpiredException, InvalidClaimException {
-        for (Map.Entry<String, BiPredicate<Claim, DecodedJWT>> entry : claims.entrySet()) {
+        for (ExpectedCheckHolder expectedCheck : expectedChecks) {
             boolean isValid;
-            String claimName = entry.getKey();
-            BiPredicate<Claim, DecodedJWT> expectedCheck = entry.getValue();
+            String claimName = expectedCheck.getClaimName();
             Claim claim = jwt.getClaim(claimName);
 
-            isValid = expectedCheck.test(claim, jwt);
+            isValid = expectedCheck.verify(claim, jwt);
 
             if (!isValid) {
                 throw new IncorrectClaimException(
