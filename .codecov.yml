@@ -7,12 +7,9 @@ coverage:
       default:
         if_no_uploads: success
         if_ci_failed: error
-    changes: true
+    changes: false
     project:
       default:
         target: auto
         if_no_uploads: error
 comment: false
-codecov:
-  allow_coverage_offsets: True
-  allow_pseudo_compare: True
