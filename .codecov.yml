@@ -7,7 +7,7 @@ coverage:
       default:
         if_no_uploads: success
         if_ci_failed: error
-    changes: false
+    changes: true
     project:
       default:
         target: auto
