@@ -13,3 +13,5 @@ coverage:
         target: auto
         if_no_uploads: error
 comment: false
+codecov:
+  allow_coverage_offsets: True
