@@ -15,3 +15,4 @@ coverage:
 comment: false
 codecov:
   allow_coverage_offsets: True
+  allow_pseudo_compare: True
