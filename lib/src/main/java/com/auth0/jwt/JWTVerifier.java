@@ -94,16 +94,32 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
         @Override
         public Verification withAudience(String... audience) {
             List<String> value = isNullOrEmpty(audience) ? null : Arrays.asList(audience);
-            addCheck(PublicClaims.AUDIENCE, ((claim, decodedJWT) -> verifyNull(claim, value)
-                    || assertValidAudienceClaim(claim, decodedJWT.getAudience(), value, true)));
+            addCheck(PublicClaims.AUDIENCE, ((claim, decodedJWT) -> {
+                if (verifyNull(claim, value)) {
+                    return true;
+                }
+                if (!assertValidAudienceClaim(decodedJWT.getAudience(), value, true)) {
+                    throw new IncorrectClaimException("The Claim 'aud' value doesn't contain the required audience.",
+                            PublicClaims.AUDIENCE, claim);
+                }
+                return true;
+            }));
             return this;
         }
 
         @Override
         public Verification withAnyOfAudience(String... audience) {
             List<String> value = isNullOrEmpty(audience) ? null : Arrays.asList(audience);
-            addCheck(PublicClaims.AUDIENCE, ((claim, decodedJWT) -> verifyNull(claim, value)
-                    || assertValidAudienceClaim(claim, decodedJWT.getAudience(), value, false)));
+            addCheck(PublicClaims.AUDIENCE, ((claim, decodedJWT) -> {
+                if (verifyNull(claim, value)) {
+                    return true;
+                }
+                if (!assertValidAudienceClaim(decodedJWT.getAudience(), value, false)) {
+                    throw new IncorrectClaimException("The Claim 'aud' value doesn't contain the required audience.",
+                            PublicClaims.AUDIENCE, claim);
+                }
+                return true;
+            }));
             return this;
         }
 
@@ -151,7 +167,8 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
         @Override
         public Verification withClaimPresence(String name) throws IllegalArgumentException {
             assertNonNull(name);
-            withClaim(name, ((claim, decodedJWT) -> assertClaimPresence(name, claim)));
+            //since addCheck already checks presence, we just return true
+            withClaim(name, ((claim, decodedJWT) -> true));
             return this;
         }
 
@@ -344,24 +361,12 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
         }
 
         private boolean assertValidAudienceClaim(
-                Claim claim,
                 List<String> audience,
                 List<String> values,
                 boolean shouldContainAll
         ) {
-            if (audience == null || (shouldContainAll && !audience.containsAll(values))
-                    || (!shouldContainAll && Collections.disjoint(audience, values))) {
-                throw new IncorrectClaimException(
-                        "The Claim 'aud' value doesn't contain the required audience.", PublicClaims.AUDIENCE, claim);
-            }
-            return true;
-        }
-
-        private boolean assertClaimPresence(String name, Claim claim) {
-            if (claim.isMissing()) {
-                throw new MissingClaimException(name);
-            }
-            return true;
+            return !(audience == null || (shouldContainAll && !audience.containsAll(values))
+                    || (!shouldContainAll && Collections.disjoint(audience, values)));
         }
 
         private void assertPositive(long leeway) {
@@ -377,8 +382,12 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
         }
 
         private void addCheck(String name, BiPredicate<Claim, DecodedJWT> predicate) {
-            expectedChecks.add(constructExpectedCheck(name, (claim, decodedJWT) -> assertClaimPresence(name, claim)
-                    && predicate.test(claim, decodedJWT)));
+            expectedChecks.add(constructExpectedCheck(name, (claim, decodedJWT) -> {
+                if (claim.isMissing()) {
+                    throw new MissingClaimException(name);
+                }
+                return predicate.test(claim, decodedJWT);
+            }));
         }
 
         private ExpectedCheckHolder constructExpectedCheck(String claimName, BiPredicate<Claim, DecodedJWT> check) {
