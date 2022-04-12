@@ -6,7 +6,7 @@ import com.auth0.jwt.impl.JWTParser;
 import com.auth0.jwt.impl.PublicClaims;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.auth0.jwt.interfaces.ExpectedCheckHolder;
+import com.auth0.jwt.impl.ExpectedCheckHolder;
 import com.auth0.jwt.interfaces.Verification;
 
 import java.time.Clock;
