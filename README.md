@@ -179,7 +179,6 @@ Algorithm algorithmRS = Algorithm.RSA256(publicKey, privateKey);
 When using a Hash-based Message Authenticaton Code, e.g. HS256 or HS512, in order to comply with the strict requirements of the JSON Web Algorithms (JWA) specification (RFC7518), you **must** use a secret key which has the same (or larger) bit length as the size of the output hash. This is to avoid weakening the security strength of the authentication code (see NIST recomendations NIST SP 800-117). For example, when using HMAC256, the secret key length must be a minimum of 256 bits.
 
 #### Using a KeyProvider:
-//todo need to be updated
 By using a `KeyProvider` you can change in runtime the key used either to verify the token signature or to sign a new token for RSA or ECDSA algorithms. This is achieved by implementing either `RSAKeyProvider` or `ECDSAKeyProvider` methods:
 
 - `getPublicKeyById(String kid)`: Its called during token signature verification and it should return the key used to verify the token. If key rotation is being used, e.g. [JWK](https://tools.ietf.org/html/rfc7517) it can fetch the correct rotation key using the id. (Or just return the same key all the time).
@@ -388,6 +387,7 @@ When creating a Token with the `JWT.create()` you can specify a custom Claim by 
 String token = JWT.create()
         .withClaim("name", 123)
         .withArrayClaim("array", new Integer[]{1, 2, 3})
+        .withNullClaim("claim_name")
         .sign(algorithm);
 ```
 
@@ -407,6 +407,9 @@ You can also verify custom Claims on the `JWT.require()` by calling `withClaim()
 JWTVerifier verifier = JWT.require(algorithm)
     .withClaim("name", 123)
     .withArrayClaim("array", 1, 2, 3)
+    .withNullClaim("null_value") //checks if the claim name provided has null value
+    .withClaimPresence("claim_presence") //checks if the claim name provided is in the payload
+    .withClaim("predicate", (claim, decodedJWT) -> "custom_check".equals(claim.asString())) //can be used to run custom verification
     .build();
 DecodedJWT jwt = verifier.verify("my.jwt.token");
 ```
@@ -423,7 +426,10 @@ The Claim class is a wrapper for the Claim values. It allows you to get the Clai
 * **asDouble()**: Returns the Double value or null if it can't be converted.
 * **asLong()**: Returns the Long value or null if it can't be converted.
 * **asString()**: Returns the String value or null if it can't be converted.
-* **asDate()**: Returns the Date value or null if it can't be converted. This must be a NumericDate (Unix Epoch/Timestamp). Note that the [JWT Standard](https://tools.ietf.org/html/rfc7519#section-2) specified that all the *NumericDate* values must be in seconds.
+* **asInstant()**: Returns the Instant value or null if it can't be converted.
+* **asDate()**: Returns the Date value or null if it can't be converted.
+
+> For `asInstant()` and `asDate()` the value must be a NumericDate (Unix Epoch/Timestamp). Note that the [JWT Standard](https://tools.ietf.org/html/rfc7519#section-2) specified that all the *NumericDate* values must be in seconds.
 
 #### Custom Classes and Collections
 To obtain a Claim as a Collection you'll need to provide the **Class Type** of the contents to convert from.
