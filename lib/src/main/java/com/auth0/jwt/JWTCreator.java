@@ -104,7 +104,7 @@ public final class JWTCreator {
          * @return this same Builder instance.
          */
         public Builder withKeyId(String keyId) {
-            this.headerClaims.put(PublicClaims.KEY_ID, keyId);
+            this.headerClaims.put(HeaderParams.KEY_ID, keyId);
             return this;
         }
 
@@ -115,7 +115,7 @@ public final class JWTCreator {
          * @return this same Builder instance.
          */
         public Builder withIssuer(String issuer) {
-            addClaim(PublicClaims.ISSUER, issuer);
+            addClaim(StandardClaims.ISSUER, issuer);
             return this;
         }
 
@@ -126,7 +126,7 @@ public final class JWTCreator {
          * @return this same Builder instance.
          */
         public Builder withSubject(String subject) {
-            addClaim(PublicClaims.SUBJECT, subject);
+            addClaim(StandardClaims.SUBJECT, subject);
             return this;
         }
 
@@ -137,7 +137,7 @@ public final class JWTCreator {
          * @return this same Builder instance.
          */
         public Builder withAudience(String... audience) {
-            addClaim(PublicClaims.AUDIENCE, audience);
+            addClaim(StandardClaims.AUDIENCE, audience);
             return this;
         }
 
@@ -149,7 +149,7 @@ public final class JWTCreator {
          * @return this same Builder instance.
          */
         public Builder withExpiresAt(Date expiresAt) {
-            addClaim(PublicClaims.EXPIRES_AT, expiresAt);
+            addClaim(StandardClaims.EXPIRES_AT, expiresAt);
             return this;
         }
 
@@ -161,7 +161,7 @@ public final class JWTCreator {
          * @return this same Builder instance.
          */
         public Builder withExpiresAt(Instant expiresAt) {
-            addClaim(PublicClaims.EXPIRES_AT, expiresAt);
+            addClaim(StandardClaims.EXPIRES_AT, expiresAt);
             return this;
         }
 
@@ -173,7 +173,7 @@ public final class JWTCreator {
          * @return this same Builder instance.
          */
         public Builder withNotBefore(Date notBefore) {
-            addClaim(PublicClaims.NOT_BEFORE, notBefore);
+            addClaim(StandardClaims.NOT_BEFORE, notBefore);
             return this;
         }
 
@@ -185,7 +185,7 @@ public final class JWTCreator {
          * @return this same Builder instance.
          */
         public Builder withNotBefore(Instant notBefore) {
-            addClaim(PublicClaims.NOT_BEFORE, notBefore);
+            addClaim(StandardClaims.NOT_BEFORE, notBefore);
             return this;
         }
 
@@ -197,7 +197,7 @@ public final class JWTCreator {
          * @return this same Builder instance.
          */
         public Builder withIssuedAt(Date issuedAt) {
-            addClaim(PublicClaims.ISSUED_AT, issuedAt);
+            addClaim(StandardClaims.ISSUED_AT, issuedAt);
             return this;
         }
 
@@ -209,7 +209,7 @@ public final class JWTCreator {
          * @return this same Builder instance.
          */
         public Builder withIssuedAt(Instant issuedAt) {
-            addClaim(PublicClaims.ISSUED_AT, issuedAt);
+            addClaim(StandardClaims.ISSUED_AT, issuedAt);
             return this;
         }
 
@@ -220,7 +220,7 @@ public final class JWTCreator {
          * @return this same Builder instance.
          */
         public Builder withJWTId(String jwtId) {
-            addClaim(PublicClaims.JWT_ID, jwtId);
+            addClaim(StandardClaims.JWT_ID, jwtId);
             return this;
         }
 
@@ -543,9 +543,9 @@ public final class JWTCreator {
             if (algorithm == null) {
                 throw new IllegalArgumentException("The Algorithm cannot be null.");
             }
-            headerClaims.put(PublicClaims.ALGORITHM, algorithm.getName());
-            if (!headerClaims.containsKey(PublicClaims.TYPE)) {
-                headerClaims.put(PublicClaims.TYPE, "JWT");
+            headerClaims.put(HeaderParams.ALGORITHM, algorithm.getName());
+            if (!headerClaims.containsKey(HeaderParams.TYPE)) {
+                headerClaims.put(HeaderParams.TYPE, "JWT");
             }
             String signingKeyId = algorithm.getSigningKeyId();
             if (signingKeyId != null) {

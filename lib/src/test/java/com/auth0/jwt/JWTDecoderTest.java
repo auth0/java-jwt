@@ -121,7 +121,7 @@ public class JWTDecoderTest {
         assertThat(jwt.getSignature(), is("XmNK3GpH3Ys_7wsYBfq4C3M6goz71I7dTgUkuIa5lyQ"));
     }
 
-    // Public PublicClaims
+    // Standard Claims
 
     @Test
     public void shouldGetIssuer() {
@@ -208,7 +208,7 @@ public class JWTDecoderTest {
         assertThat(jwt.getAlgorithm(), is("HS256"));
     }
 
-    //Private PublicClaims
+    // Private Claims
 
     @Test
     public void shouldGetMissingClaimIfClaimDoesNotExist() {

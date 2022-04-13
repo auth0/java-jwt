@@ -1,5 +1,6 @@
 package com.auth0.jwt.impl;
 
+import com.auth0.jwt.StandardClaims;
 import com.fasterxml.jackson.core.JsonGenerator;
 
 import java.io.IOException;
@@ -22,7 +23,7 @@ public class PayloadSerializer extends ClaimsSerializer<PayloadClaimsHolder> {
 
     @Override
     protected void writeClaim(Map.Entry<String, Object> entry, JsonGenerator gen) throws IOException {
-        if (PublicClaims.AUDIENCE.equals(entry.getKey())) {
+        if (StandardClaims.AUDIENCE.equals(entry.getKey())) {
             writeAudience(gen, entry);
         } else {
             super.writeClaim(entry, gen);

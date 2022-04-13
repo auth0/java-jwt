@@ -3,7 +3,6 @@ package com.auth0.jwt;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.*;
 import com.auth0.jwt.impl.JWTParser;
-import com.auth0.jwt.impl.PublicClaims;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.impl.ExpectedCheckHolder;
@@ -71,13 +70,13 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
         @Override
         public Verification withIssuer(String... issuer) {
             List<String> value = isNullOrEmpty(issuer) ? null : Arrays.asList(issuer);
-            addCheck(PublicClaims.ISSUER, ((claim, decodedJWT) -> {
+            addCheck(StandardClaims.ISSUER, ((claim, decodedJWT) -> {
                 if (verifyNull(claim, value)) {
                     return true;
                 }
                 if (value == null || !value.contains(claim.asString())) {
                     throw new IncorrectClaimException(
-                            "The Claim 'iss' value doesn't match the required issuer.", PublicClaims.ISSUER, claim);
+                            "The Claim 'iss' value doesn't match the required issuer.", StandardClaims.ISSUER, claim);
                 }
                 return true;
             }));
@@ -86,7 +85,7 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
 
         @Override
         public Verification withSubject(String subject) {
-            addCheck(PublicClaims.SUBJECT, (claim, decodedJWT) ->
+            addCheck(StandardClaims.SUBJECT, (claim, decodedJWT) ->
                     verifyNull(claim, subject) || subject.equals(claim.asString()));
             return this;
         }
@@ -94,13 +93,13 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
         @Override
         public Verification withAudience(String... audience) {
             List<String> value = isNullOrEmpty(audience) ? null : Arrays.asList(audience);
-            addCheck(PublicClaims.AUDIENCE, ((claim, decodedJWT) -> {
+            addCheck(StandardClaims.AUDIENCE, ((claim, decodedJWT) -> {
                 if (verifyNull(claim, value)) {
                     return true;
                 }
                 if (!assertValidAudienceClaim(decodedJWT.getAudience(), value, true)) {
                     throw new IncorrectClaimException("The Claim 'aud' value doesn't contain the required audience.",
-                            PublicClaims.AUDIENCE, claim);
+                            StandardClaims.AUDIENCE, claim);
                 }
                 return true;
             }));
@@ -110,13 +109,13 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
         @Override
         public Verification withAnyOfAudience(String... audience) {
             List<String> value = isNullOrEmpty(audience) ? null : Arrays.asList(audience);
-            addCheck(PublicClaims.AUDIENCE, ((claim, decodedJWT) -> {
+            addCheck(StandardClaims.AUDIENCE, ((claim, decodedJWT) -> {
                 if (verifyNull(claim, value)) {
                     return true;
                 }
                 if (!assertValidAudienceClaim(decodedJWT.getAudience(), value, false)) {
                     throw new IncorrectClaimException("The Claim 'aud' value doesn't contain the required audience.",
-                            PublicClaims.AUDIENCE, claim);
+                            StandardClaims.AUDIENCE, claim);
                 }
                 return true;
             }));
@@ -133,21 +132,21 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
         @Override
         public Verification acceptExpiresAt(long leeway) throws IllegalArgumentException {
             assertPositive(leeway);
-            customLeeways.put(PublicClaims.EXPIRES_AT, leeway);
+            customLeeways.put(StandardClaims.EXPIRES_AT, leeway);
             return this;
         }
 
         @Override
         public Verification acceptNotBefore(long leeway) throws IllegalArgumentException {
             assertPositive(leeway);
-            customLeeways.put(PublicClaims.NOT_BEFORE, leeway);
+            customLeeways.put(StandardClaims.NOT_BEFORE, leeway);
             return this;
         }
 
         @Override
         public Verification acceptIssuedAt(long leeway) throws IllegalArgumentException {
             assertPositive(leeway);
-            customLeeways.put(PublicClaims.ISSUED_AT, leeway);
+            customLeeways.put(StandardClaims.ISSUED_AT, leeway);
             return this;
         }
 
@@ -159,7 +158,7 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
 
         @Override
         public Verification withJWTId(String jwtId) {
-            addCheck(PublicClaims.JWT_ID, ((claim, decodedJWT) ->
+            addCheck(StandardClaims.JWT_ID, ((claim, decodedJWT) ->
                     verifyNull(claim, jwtId) || jwtId.equals(claim.asString())));
             return this;
         }
@@ -297,17 +296,17 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
         }
 
         private void addMandatoryClaimChecks() {
-            long expiresAtLeeway = getLeewayFor(PublicClaims.EXPIRES_AT);
-            long notBeforeLeeway = getLeewayFor(PublicClaims.NOT_BEFORE);
-            long issuedAtLeeway = getLeewayFor(PublicClaims.ISSUED_AT);
+            long expiresAtLeeway = getLeewayFor(StandardClaims.EXPIRES_AT);
+            long notBeforeLeeway = getLeewayFor(StandardClaims.NOT_BEFORE);
+            long issuedAtLeeway = getLeewayFor(StandardClaims.ISSUED_AT);
 
-            expectedChecks.add(constructExpectedCheck(PublicClaims.EXPIRES_AT, (claim, decodedJWT) ->
-                    assertValidInstantClaim(PublicClaims.EXPIRES_AT, claim, expiresAtLeeway, true)));
-            expectedChecks.add(constructExpectedCheck(PublicClaims.NOT_BEFORE, (claim, decodedJWT) ->
-                    assertValidInstantClaim(PublicClaims.NOT_BEFORE, claim, notBeforeLeeway, false)));
+            expectedChecks.add(constructExpectedCheck(StandardClaims.EXPIRES_AT, (claim, decodedJWT) ->
+                    assertValidInstantClaim(StandardClaims.EXPIRES_AT, claim, expiresAtLeeway, true)));
+            expectedChecks.add(constructExpectedCheck(StandardClaims.NOT_BEFORE, (claim, decodedJWT) ->
+                    assertValidInstantClaim(StandardClaims.NOT_BEFORE, claim, notBeforeLeeway, false)));
             if (!ignoreIssuedAt) {
-                expectedChecks.add(constructExpectedCheck(PublicClaims.ISSUED_AT, (claim, decodedJWT) ->
-                        assertValidInstantClaim(PublicClaims.ISSUED_AT, claim, issuedAtLeeway, false)));
+                expectedChecks.add(constructExpectedCheck(StandardClaims.ISSUED_AT, (claim, decodedJWT) ->
+                        assertValidInstantClaim(StandardClaims.ISSUED_AT, claim, issuedAtLeeway, false)));
             }
         }
 

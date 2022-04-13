@@ -1,5 +1,6 @@
 package com.auth0.jwt.impl;
 
+import com.auth0.jwt.StandardClaims;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.interfaces.Payload;
 import com.fasterxml.jackson.core.JsonParser;
@@ -43,13 +44,13 @@ class PayloadDeserializer extends StdDeserializer<Payload> {
             throw new JWTDecodeException("Parsing the Payload's JSON resulted on a Null map");
         }
 
-        String issuer = getString(tree, PublicClaims.ISSUER);
-        String subject = getString(tree, PublicClaims.SUBJECT);
-        List<String> audience = getStringOrArray(tree, PublicClaims.AUDIENCE);
-        Instant expiresAt = getInstantFromSeconds(tree, PublicClaims.EXPIRES_AT);
-        Instant notBefore = getInstantFromSeconds(tree, PublicClaims.NOT_BEFORE);
-        Instant issuedAt = getInstantFromSeconds(tree, PublicClaims.ISSUED_AT);
-        String jwtId = getString(tree, PublicClaims.JWT_ID);
+        String issuer = getString(tree, StandardClaims.ISSUER);
+        String subject = getString(tree, StandardClaims.SUBJECT);
+        List<String> audience = getStringOrArray(tree, StandardClaims.AUDIENCE);
+        Instant expiresAt = getInstantFromSeconds(tree, StandardClaims.EXPIRES_AT);
+        Instant notBefore = getInstantFromSeconds(tree, StandardClaims.NOT_BEFORE);
+        Instant issuedAt = getInstantFromSeconds(tree, StandardClaims.ISSUED_AT);
+        String jwtId = getString(tree, StandardClaims.JWT_ID);
 
         return new PayloadImpl(issuer, subject, audience, expiresAt, notBefore, issuedAt, jwtId, tree, objectReader);
     }
