@@ -10,8 +10,6 @@ import org.junit.rules.ExpectedException;
 
 import java.nio.charset.StandardCharsets;
 import java.security.interfaces.ECKey;
-import java.security.interfaces.ECPrivateKey;
-import java.security.interfaces.ECPublicKey;
 import java.security.interfaces.RSAKey;
 import java.time.Clock;
 import java.time.Instant;
@@ -19,8 +17,8 @@ import java.time.ZoneId;
 import java.util.Base64;
 import java.util.Date;
 
-import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 
 public class JWTTest {
 
@@ -199,7 +197,7 @@ public class JWTTest {
     }
 
 
-    // Public Claims
+    // Standard Claims
 
     @Test
     public void shouldGetAlgorithm() {

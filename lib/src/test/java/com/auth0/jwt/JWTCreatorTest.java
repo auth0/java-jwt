@@ -1,7 +1,6 @@
 package com.auth0.jwt;
 
 import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.impl.PublicClaims;
 import com.auth0.jwt.interfaces.ECDSAKeyProvider;
 import com.auth0.jwt.interfaces.RSAKeyProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -92,7 +91,7 @@ public class JWTCreatorTest {
     @Test
     public void shouldOverwriteExistingHeaderIfHeaderMapContainsTheSameKey() {
         Map<String, Object> header = new HashMap<>();
-        header.put(PublicClaims.KEY_ID, "xyz");
+        header.put(HeaderParams.KEY_ID, "xyz");
 
         String signed = JWTCreator.init()
                 .withKeyId("abc")
@@ -102,13 +101,13 @@ public class JWTCreatorTest {
         assertThat(signed, is(notNullValue()));
         String[] parts = signed.split("\\.");
         String headerJson = new String(Base64.getUrlDecoder().decode(parts[0]), StandardCharsets.UTF_8);
-        assertThat(headerJson, JsonMatcher.hasEntry(PublicClaims.KEY_ID, "xyz"));
+        assertThat(headerJson, JsonMatcher.hasEntry(HeaderParams.KEY_ID, "xyz"));
     }
 
     @Test
     public void shouldOverwriteExistingHeadersWhenSettingSameHeaderKey() {
         Map<String, Object> header = new HashMap<>();
-        header.put(PublicClaims.KEY_ID, "xyz");
+        header.put(HeaderParams.KEY_ID, "xyz");
 
         String signed = JWTCreator.init()
                 .withHeader(header)
@@ -118,13 +117,13 @@ public class JWTCreatorTest {
         assertThat(signed, is(notNullValue()));
         String[] parts = signed.split("\\.");
         String headerJson = new String(Base64.getUrlDecoder().decode(parts[0]), StandardCharsets.UTF_8);
-        assertThat(headerJson, JsonMatcher.hasEntry(PublicClaims.KEY_ID, "abc"));
+        assertThat(headerJson, JsonMatcher.hasEntry(HeaderParams.KEY_ID, "abc"));
     }
 
     @Test
     public void shouldRemoveHeaderIfTheValueIsNull() {
         Map<String, Object> header = new HashMap<>();
-        header.put(PublicClaims.KEY_ID, null);
+        header.put(HeaderParams.KEY_ID, null);
         header.put("test2", "isSet");
 
         String signed = JWTCreator.init()
@@ -135,7 +134,7 @@ public class JWTCreatorTest {
         assertThat(signed, is(notNullValue()));
         String[] parts = signed.split("\\.");
         String headerJson = new String(Base64.getUrlDecoder().decode(parts[0]), StandardCharsets.UTF_8);
-        assertThat(headerJson, JsonMatcher.isNotPresent(PublicClaims.KEY_ID));
+        assertThat(headerJson, JsonMatcher.isNotPresent(HeaderParams.KEY_ID));
         assertThat(headerJson, JsonMatcher.hasEntry("test2", "isSet"));
     }
 
@@ -728,7 +727,7 @@ public class JWTCreatorTest {
     @Test
     public void withPayloadShouldOverwriteExistingClaimIfPayloadMapContainsTheSameKey() {
         Map<String, Object> payload = new HashMap<>();
-        payload.put(PublicClaims.KEY_ID, "xyz");
+        payload.put(HeaderParams.KEY_ID, "xyz");
 
         String jwt = JWTCreator.init()
                 .withKeyId("abc")
@@ -738,13 +737,13 @@ public class JWTCreatorTest {
         assertThat(jwt, is(notNullValue()));
         String[] parts = jwt.split("\\.");
         String payloadJson = new String(Base64.getUrlDecoder().decode(parts[1]), StandardCharsets.UTF_8);
-        assertThat(payloadJson, JsonMatcher.hasEntry(PublicClaims.KEY_ID, "xyz"));
+        assertThat(payloadJson, JsonMatcher.hasEntry(HeaderParams.KEY_ID, "xyz"));
     }
 
     @Test
     public void shouldOverwriteExistingPayloadWhenSettingSamePayloadKey() {
         Map<String, Object> payload = new HashMap<>();
-        payload.put(PublicClaims.ISSUER, "xyz");
+        payload.put(RegisteredClaims.ISSUER, "xyz");
 
         String jwt = JWTCreator.init()
                 .withPayload(payload)
@@ -754,7 +753,7 @@ public class JWTCreatorTest {
         assertThat(jwt, is(notNullValue()));
         String[] parts = jwt.split("\\.");
         String payloadJson = new String(Base64.getUrlDecoder().decode(parts[1]), StandardCharsets.UTF_8);
-        assertThat(payloadJson, JsonMatcher.hasEntry(PublicClaims.ISSUER, "abc"));
+        assertThat(payloadJson, JsonMatcher.hasEntry(RegisteredClaims.ISSUER, "abc"));
     }
 
     @Test
