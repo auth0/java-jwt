@@ -4,9 +4,9 @@ package com.auth0.jwt;
  * Contains constants representing the name of the Registered Claim Names as defined in Section 4.1.1 of
  * <a href="https://datatracker.ietf.org/doc/html/rfc7519#section-4.1">RFC 7529</a>
  */
-public final class StandardClaims {
+public final class RegisteredClaims {
 
-    private StandardClaims() {
+    private RegisteredClaims() {
     }
 
     /**

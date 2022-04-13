@@ -743,7 +743,7 @@ public class JWTCreatorTest {
     @Test
     public void shouldOverwriteExistingPayloadWhenSettingSamePayloadKey() {
         Map<String, Object> payload = new HashMap<>();
-        payload.put(StandardClaims.ISSUER, "xyz");
+        payload.put(RegisteredClaims.ISSUER, "xyz");
 
         String jwt = JWTCreator.init()
                 .withPayload(payload)
@@ -753,7 +753,7 @@ public class JWTCreatorTest {
         assertThat(jwt, is(notNullValue()));
         String[] parts = jwt.split("\\.");
         String payloadJson = new String(Base64.getUrlDecoder().decode(parts[1]), StandardCharsets.UTF_8);
-        assertThat(payloadJson, JsonMatcher.hasEntry(StandardClaims.ISSUER, "abc"));
+        assertThat(payloadJson, JsonMatcher.hasEntry(RegisteredClaims.ISSUER, "abc"));
     }
 
     @Test

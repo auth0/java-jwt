@@ -90,7 +90,7 @@ public class JWTVerifierTest {
                     .verify(token);
         });
         assertThat(e.getMessage(), is("The Claim 'iss' value doesn't match the required issuer."));
-        assertThat(e.getClaimName(), is(StandardClaims.ISSUER));
+        assertThat(e.getClaimName(), is(RegisteredClaims.ISSUER));
         assertThat(e.getClaimValue().asString(), is("auth0"));
     }
 
@@ -104,7 +104,7 @@ public class JWTVerifierTest {
                     .verify(token);
         });
         assertThat(e.getMessage(), is("The Claim 'iss' value doesn't match the required issuer."));
-        assertThat(e.getClaimName(), is(StandardClaims.ISSUER));
+        assertThat(e.getClaimName(), is(RegisteredClaims.ISSUER));
         assertThat(e.getClaimValue().isNull(), is(true));
     }
 
@@ -144,7 +144,7 @@ public class JWTVerifierTest {
                     .verify(token);
         });
         assertThat(e.getMessage(), is("The Claim 'sub' value doesn't match the required one."));
-        assertThat(e.getClaimName(), is(StandardClaims.SUBJECT));
+        assertThat(e.getClaimName(), is(RegisteredClaims.SUBJECT));
         assertThat(e.getClaimValue().asString(), is("1234567890"));
     }
 
@@ -248,7 +248,7 @@ public class JWTVerifierTest {
                     .verify(tokenArr);
         });
         assertThat(e.getMessage(), is("The Claim 'aud' value doesn't contain the required audience."));
-        assertThat(e.getClaimName(), is(StandardClaims.AUDIENCE));
+        assertThat(e.getClaimName(), is(RegisteredClaims.AUDIENCE));
         assertThat(e.getClaimValue().asArray(String.class), is(new String[] {"Mark","David","John"}));
     }
 
@@ -263,7 +263,7 @@ public class JWTVerifierTest {
                     .verify(token);
         });
         assertThat(e.getMessage(), is("The Claim 'aud' value doesn't contain the required audience."));
-        assertThat(e.getClaimName(), is(StandardClaims.AUDIENCE));
+        assertThat(e.getClaimName(), is(RegisteredClaims.AUDIENCE));
         assertThat(e.getClaimValue().asArray(String.class), is(new String[] {"Mark","David","John"}));
     }
 
@@ -278,7 +278,7 @@ public class JWTVerifierTest {
                     .verify(token);
         });
         assertThat(e.getMessage(), is("The Claim 'aud' value doesn't contain the required audience."));
-        assertThat(e.getClaimName(), is(StandardClaims.AUDIENCE));
+        assertThat(e.getClaimName(), is(RegisteredClaims.AUDIENCE));
         assertThat(e.getClaimValue().isNull(), is(true));
     }
 
@@ -306,7 +306,7 @@ public class JWTVerifierTest {
                     .verify(token);
         });
         assertThat(e.getMessage(), is("The Claim 'aud' value doesn't contain the required audience."));
-        assertThat(e.getClaimName(), is(StandardClaims.AUDIENCE));
+        assertThat(e.getClaimName(), is(RegisteredClaims.AUDIENCE));
         assertThat(e.getClaimValue().asArray(String.class), is(new String[] {null}));
     }
 
@@ -583,9 +583,9 @@ public class JWTVerifierTest {
                 .build();
 
         assertThat(verifier.expectedChecks, is(notNullValue()));
-        assertThat(verification.getLeewayFor(StandardClaims.ISSUED_AT), is(0L));
-        assertThat(verification.getLeewayFor(StandardClaims.EXPIRES_AT), is(0L));
-        assertThat(verification.getLeewayFor(StandardClaims.NOT_BEFORE), is(0L));
+        assertThat(verification.getLeewayFor(RegisteredClaims.ISSUED_AT), is(0L));
+        assertThat(verification.getLeewayFor(RegisteredClaims.EXPIRES_AT), is(0L));
+        assertThat(verification.getLeewayFor(RegisteredClaims.NOT_BEFORE), is(0L));
     }
 
     @Test
@@ -597,9 +597,9 @@ public class JWTVerifierTest {
                 .build();
 
         assertThat(verifier.expectedChecks, is(notNullValue()));
-        assertThat(verification.getLeewayFor(StandardClaims.ISSUED_AT), is(1234L));
-        assertThat(verification.getLeewayFor(StandardClaims.EXPIRES_AT), is(1234L));
-        assertThat(verification.getLeewayFor(StandardClaims.NOT_BEFORE), is(1234L));
+        assertThat(verification.getLeewayFor(RegisteredClaims.ISSUED_AT), is(1234L));
+        assertThat(verification.getLeewayFor(RegisteredClaims.EXPIRES_AT), is(1234L));
+        assertThat(verification.getLeewayFor(RegisteredClaims.NOT_BEFORE), is(1234L));
     }
 
     @Test
@@ -612,9 +612,9 @@ public class JWTVerifierTest {
                 .build();
 
         assertThat(verifier.expectedChecks, is(notNullValue()));
-        assertThat(verification.getLeewayFor(StandardClaims.ISSUED_AT), is(9999L));
-        assertThat(verification.getLeewayFor(StandardClaims.EXPIRES_AT), is(1234L));
-        assertThat(verification.getLeewayFor(StandardClaims.NOT_BEFORE), is(1234L));
+        assertThat(verification.getLeewayFor(RegisteredClaims.ISSUED_AT), is(9999L));
+        assertThat(verification.getLeewayFor(RegisteredClaims.EXPIRES_AT), is(1234L));
+        assertThat(verification.getLeewayFor(RegisteredClaims.NOT_BEFORE), is(1234L));
     }
 
     @Test
@@ -627,9 +627,9 @@ public class JWTVerifierTest {
                 .build();
 
         assertThat(verifier.expectedChecks, is(notNullValue()));
-        assertThat(verification.getLeewayFor(StandardClaims.ISSUED_AT), is(1234L));
-        assertThat(verification.getLeewayFor(StandardClaims.EXPIRES_AT), is(9999L));
-        assertThat(verification.getLeewayFor(StandardClaims.NOT_BEFORE), is(1234L));
+        assertThat(verification.getLeewayFor(RegisteredClaims.ISSUED_AT), is(1234L));
+        assertThat(verification.getLeewayFor(RegisteredClaims.EXPIRES_AT), is(9999L));
+        assertThat(verification.getLeewayFor(RegisteredClaims.NOT_BEFORE), is(1234L));
     }
 
     @Test
@@ -642,9 +642,9 @@ public class JWTVerifierTest {
                 .build();
 
         assertThat(verifier.expectedChecks, is(notNullValue()));
-        assertThat(verification.getLeewayFor(StandardClaims.ISSUED_AT), is(1234L));
-        assertThat(verification.getLeewayFor(StandardClaims.EXPIRES_AT), is(1234L));
-        assertThat(verification.getLeewayFor(StandardClaims.NOT_BEFORE), is(9999L));
+        assertThat(verification.getLeewayFor(RegisteredClaims.ISSUED_AT), is(1234L));
+        assertThat(verification.getLeewayFor(RegisteredClaims.EXPIRES_AT), is(1234L));
+        assertThat(verification.getLeewayFor(RegisteredClaims.NOT_BEFORE), is(9999L));
     }
 
     @Test
@@ -725,7 +725,7 @@ public class JWTVerifierTest {
                     .verify(token);
         });
         assertThat(e.getMessage(), is("The Token can't be used before 1970-01-18T02:26:32Z."));
-        assertThat(e.getClaimName(), is(StandardClaims.NOT_BEFORE));
+        assertThat(e.getClaimName(), is(RegisteredClaims.NOT_BEFORE));
         assertThat(e.getClaimValue().asLong(), is(1477592L));
     }
 
@@ -760,7 +760,7 @@ public class JWTVerifierTest {
             assertThat(jwt, is(notNullValue()));
         });
         assertThat(e.getMessage(), is("The Token can't be used before 1970-01-18T02:26:32Z."));
-        assertThat(e.getClaimName(), is(StandardClaims.ISSUED_AT));
+        assertThat(e.getClaimName(), is(RegisteredClaims.ISSUED_AT));
         assertThat(e.getClaimValue().asLong(), is(1477592L));
     }
 
@@ -785,7 +785,7 @@ public class JWTVerifierTest {
                     .verify(token);
         });
         assertThat(e.getMessage(), is("The Token can't be used before 1970-01-18T02:26:32Z."));
-        assertThat(e.getClaimName(), is(StandardClaims.ISSUED_AT));
+        assertThat(e.getClaimName(), is(RegisteredClaims.ISSUED_AT));
         assertThat(e.getClaimValue().asLong(), is(1477592L));
     }
 

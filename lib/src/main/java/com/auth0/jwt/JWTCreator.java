@@ -115,7 +115,7 @@ public final class JWTCreator {
          * @return this same Builder instance.
          */
         public Builder withIssuer(String issuer) {
-            addClaim(StandardClaims.ISSUER, issuer);
+            addClaim(RegisteredClaims.ISSUER, issuer);
             return this;
         }
 
@@ -126,7 +126,7 @@ public final class JWTCreator {
          * @return this same Builder instance.
          */
         public Builder withSubject(String subject) {
-            addClaim(StandardClaims.SUBJECT, subject);
+            addClaim(RegisteredClaims.SUBJECT, subject);
             return this;
         }
 
@@ -137,7 +137,7 @@ public final class JWTCreator {
          * @return this same Builder instance.
          */
         public Builder withAudience(String... audience) {
-            addClaim(StandardClaims.AUDIENCE, audience);
+            addClaim(RegisteredClaims.AUDIENCE, audience);
             return this;
         }
 
@@ -149,7 +149,7 @@ public final class JWTCreator {
          * @return this same Builder instance.
          */
         public Builder withExpiresAt(Date expiresAt) {
-            addClaim(StandardClaims.EXPIRES_AT, expiresAt);
+            addClaim(RegisteredClaims.EXPIRES_AT, expiresAt);
             return this;
         }
 
@@ -161,7 +161,7 @@ public final class JWTCreator {
          * @return this same Builder instance.
          */
         public Builder withExpiresAt(Instant expiresAt) {
-            addClaim(StandardClaims.EXPIRES_AT, expiresAt);
+            addClaim(RegisteredClaims.EXPIRES_AT, expiresAt);
             return this;
         }
 
@@ -173,7 +173,7 @@ public final class JWTCreator {
          * @return this same Builder instance.
          */
         public Builder withNotBefore(Date notBefore) {
-            addClaim(StandardClaims.NOT_BEFORE, notBefore);
+            addClaim(RegisteredClaims.NOT_BEFORE, notBefore);
             return this;
         }
 
@@ -185,7 +185,7 @@ public final class JWTCreator {
          * @return this same Builder instance.
          */
         public Builder withNotBefore(Instant notBefore) {
-            addClaim(StandardClaims.NOT_BEFORE, notBefore);
+            addClaim(RegisteredClaims.NOT_BEFORE, notBefore);
             return this;
         }
 
@@ -197,7 +197,7 @@ public final class JWTCreator {
          * @return this same Builder instance.
          */
         public Builder withIssuedAt(Date issuedAt) {
-            addClaim(StandardClaims.ISSUED_AT, issuedAt);
+            addClaim(RegisteredClaims.ISSUED_AT, issuedAt);
             return this;
         }
 
@@ -209,7 +209,7 @@ public final class JWTCreator {
          * @return this same Builder instance.
          */
         public Builder withIssuedAt(Instant issuedAt) {
-            addClaim(StandardClaims.ISSUED_AT, issuedAt);
+            addClaim(RegisteredClaims.ISSUED_AT, issuedAt);
             return this;
         }
 
@@ -220,7 +220,7 @@ public final class JWTCreator {
          * @return this same Builder instance.
          */
         public Builder withJWTId(String jwtId) {
-            addClaim(StandardClaims.JWT_ID, jwtId);
+            addClaim(RegisteredClaims.JWT_ID, jwtId);
             return this;
         }
 
