@@ -64,7 +64,7 @@ jobs:
       - run:
           name: Run vulnerabilities tests (Semgrep)
           command: |
-            semgrep-agent --baseline-ref v4-dev --publish-token $SEMGREP_TOKEN
+            semgrep-agent --baseline-ref master --publish-token $SEMGREP_TOKEN
 
 workflows:
   build-and-test:
