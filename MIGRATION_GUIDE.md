@@ -50,11 +50,11 @@ This class extends `InvalidClaimException` and represents that when validating a
 
 This class extends `InvalidClaimException` and represents that when validating a JWT, an expected claim is missing from the JWT.
 
-### `HeaderParams` added
+#### `HeaderParams` added
 
 This class contains constants representing common header parameter names.
 
-### `StandardClaims` added
+#### `StandardClaims` added
 
 This class contains constants representing the standard claim names.
 
