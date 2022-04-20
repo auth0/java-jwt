@@ -75,6 +75,11 @@ public class VerificationTest {
         }
 
         @Override
+        public Verification withAnyOfAudience(String... audience) {
+            return null;
+        }
+
+        @Override
         public Verification acceptLeeway(long leeway) throws IllegalArgumentException {
             return null;
         }

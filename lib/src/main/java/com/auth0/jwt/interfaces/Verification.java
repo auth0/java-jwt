@@ -7,12 +7,13 @@ import java.util.Date;
 import java.util.function.BiPredicate;
 
 /**
- * Holds the Claims and claim-based configurations required for a JWT to be considered valid.
+ * Constructs and holds the checks required for a JWT to be considered valid.
  */
 public interface Verification {
 
     /**
-     * Require a specific Issuer ("iss") claim.
+     * Verifies whether the JWT contains an Issuer ("iss") claim that equals to the value provided.
+     * This check is case-sensitive.
      *
      * @param issuer the required Issuer value.
      * @return this same Verification instance.
@@ -22,7 +23,8 @@ public interface Verification {
     }
 
     /**
-     * Require a specific Issuer ("iss") claim.
+     * Verifies whether the JWT contains an Issuer ("iss") claim that contains all the values provided.
+     * This check is case-sensitive. An empty array is considered as a {@code null}.
      *
      * @param issuer the required Issuer value. If multiple values are given, the claim must at least match one of them
      * @return this same Verification instance.
@@ -30,7 +32,8 @@ public interface Verification {
     Verification withIssuer(String... issuer);
 
     /**
-     * Require a specific Subject ("sub") claim.
+     * Verifies whether the JWT contains a Subject ("sub") claim that equals to the value provided.
+     * This check is case-sensitive.
      *
      * @param subject the required Subject value
      * @return this same Verification instance.
@@ -38,11 +41,8 @@ public interface Verification {
     Verification withSubject(String subject);
 
     /**
-     * Require a specific Audience ("aud") claim. If multiple audiences are specified, they must all be present
-     * in the "aud" claim.
-     *
-     * If this is used in conjunction with {@link #withAnyOfAudience(String...)}, whichever one is configured last will
-     * determine the audience validation behavior.
+     * Verifies whether the JWT contains an Audience ("aud") claim that contains all the values provided.
+     * This check is case-sensitive. An empty array is considered as a {@code null}.
      *
      * @param audience the required Audience value
      * @return this same Verification instance.
@@ -50,24 +50,13 @@ public interface Verification {
     Verification withAudience(String... audience);
 
     /**
-     * Require that the Audience ("aud") claim contain at least one of the specified audiences.
-     *
-     * If this is used in conjunction with {@link #withAudience(String...)}, whichever one is configured last will
-     * determine the audience validation behavior.
-     *
-     * Note: This method was added after the interface was released.
-     * It is defined as a default method for compatibility reasons.
-     * From version 4.0 on, the method will be abstract and all implementations of this interface
-     * will have to provide their own implementation.
-     *
-     * The default implementation throws an {@linkplain UnsupportedOperationException}.
+     * Verifies whether the JWT contains an Audience ("aud") claim contain at least one of the specified audiences.
+     * This check is case-sensitive. An empty array is considered as a {@code null}.
      *
      * @param audience the required Audience value for which the "aud" claim must contain at least one value.
      * @return this same Verification instance.
      */
-    default Verification withAnyOfAudience(String... audience) {
-        throw new UnsupportedOperationException("withAnyOfAudience");
-    }
+    Verification withAnyOfAudience(String... audience);
     
     /**
      * Define the default window in seconds in which the Not Before, Issued At and Expires At Claims
@@ -116,149 +105,152 @@ public interface Verification {
     Verification acceptIssuedAt(long leeway) throws IllegalArgumentException;
 
     /**
-     * Require a specific JWT Id ("jti") claim.
+     * Verifies whether the JWT contains a JWT ID ("jti") claim that equals to the value provided.
+     * This check is case-sensitive.
      *
-     * @param jwtId the required Id value
+     * @param jwtId the required ID value
      * @return this same Verification instance.
      */
     Verification withJWTId(String jwtId);
 
     /**
-     * Require a claim to be present, with any value.
+     * Verifies whether the claim is present in the JWT, with any value including {@code null}.
      *
      * @param name the Claim's name.
      * @return this same Verification instance
-     * @throws IllegalArgumentException if the name is null.
+     * @throws IllegalArgumentException if the name is {@code null}.
      */
     Verification withClaimPresence(String name) throws IllegalArgumentException;
 
     /**
-     * Require a specific Claim value to be null.
+     * Verifies whether the claim is present with a {@code null} value.
      *
      * @param name the Claim's name.
      * @return this same Verification instance.
-     * @throws IllegalArgumentException if the name is null.
+     * @throws IllegalArgumentException if the name is {@code null}.
      */
     Verification withNullClaim(String name) throws IllegalArgumentException;
 
     /**
-     * Require a specific Claim value.
+     * Verifies whether the claim is equal to the given Boolean value.
      *
      * @param name  the Claim's name.
      * @param value the Claim's value.
      * @return this same Verification instance.
-     * @throws IllegalArgumentException if the name is null.
+     * @throws IllegalArgumentException if the name is {@code null}.
      */
     Verification withClaim(String name, Boolean value) throws IllegalArgumentException;
 
     /**
-     * Require a specific Claim value.
+     * Verifies whether the claim is equal to the given Integer value.
      *
      * @param name  the Claim's name.
      * @param value the Claim's value.
      * @return this same Verification instance.
-     * @throws IllegalArgumentException if the name is null.
+     * @throws IllegalArgumentException if the name is {@code null}.
      */
     Verification withClaim(String name, Integer value) throws IllegalArgumentException;
 
     /**
-     * Require a specific Claim value.
+     * Verifies whether the claim is equal to the given Long value.
      *
      * @param name  the Claim's name.
      * @param value the Claim's value.
      * @return this same Verification instance.
-     * @throws IllegalArgumentException if the name is null.
+     * @throws IllegalArgumentException if the name is {@code null}.
      */
     Verification withClaim(String name, Long value) throws IllegalArgumentException;
 
     /**
-     * Require a specific Claim value.
+     * Verifies whether the claim is equal to the given Integer value.
      *
      * @param name  the Claim's name.
      * @param value the Claim's value.
      * @return this same Verification instance.
-     * @throws IllegalArgumentException if the name is null.
+     * @throws IllegalArgumentException if the name is {@code null}.
      */
     Verification withClaim(String name, Double value) throws IllegalArgumentException;
 
     /**
-     * Require a specific Claim value.
+     * Verifies whether the claim is equal to the given String value.
+     * This check is case-sensitive.
      *
      * @param name  the Claim's name.
      * @param value the Claim's value.
      * @return this same Verification instance.
-     * @throws IllegalArgumentException if the name is null.
+     * @throws IllegalArgumentException if the name is {@code null}.
      */
     Verification withClaim(String name, String value) throws IllegalArgumentException;
 
     /**
-     * Require a specific Claim value. Note that date-time claims are serialized as seconds since the epoch;
+     * Verifies whether the claim is equal to the given Date value.
+     * Note that date-time claims are serialized as seconds since the epoch;
      * when verifying date-time claim value, any time units more granular than seconds will not be considered.
      *
      * @param name  the Claim's name.
      * @param value the Claim's value.
      * @return this same Verification instance.
-     * @throws IllegalArgumentException if the name is null.
+     * @throws IllegalArgumentException if the name is {@code null}.
      */
     Verification withClaim(String name, Date value) throws IllegalArgumentException;
 
     /**
-     * Require a specific Claim value. Note that date-time claims are serialized as seconds since the epoch;
+     * Verifies whether the claim is equal to the given Instant value.
+     * Note that date-time claims are serialized as seconds since the epoch;
      * when verifying a date-time claim value, any time units more granular than seconds will not be considered.
      *
      * @param name  the Claim's name.
      * @param value the Claim's value.
      * @return this same Verification instance.
-     * @throws IllegalArgumentException if the name is null.
+     * @throws IllegalArgumentException if the name is {@code null}.
      */
     default Verification withClaim(String name, Instant value) throws IllegalArgumentException {
         return withClaim(name, value != null ? Date.from(value) : null);
     }
 
     /**
-     * Executes the predicate provided during the verification
-     * and passes the verification if the predicate returns true.
+     * Executes the predicate provided and the validates the JWT if the predicate returns true.
      *
      * @param name the Claim's name
      * @param predicate the predicate check to be done.
      * @return this same Verification instance.
-     * @throws IllegalArgumentException if the name is null.
+     * @throws IllegalArgumentException if the name is {@code null}.
      */
     Verification withClaim(String name, BiPredicate<Claim, DecodedJWT> predicate) throws IllegalArgumentException;
 
     /**
-     * Require a specific Array Claim to contain at least the given items.
+     * Verifies whether the claim contain at least the given String items.
      *
      * @param name  the Claim's name.
      * @param items the items the Claim must contain.
      * @return this same Verification instance.
-     * @throws IllegalArgumentException if the name is null.
+     * @throws IllegalArgumentException if the name is {@code null}.
      */
     Verification withArrayClaim(String name, String... items) throws IllegalArgumentException;
 
     /**
-     * Require a specific Array Claim to contain at least the given items.
+     * Verifies whether the claim contain at least the given Integer items.
      *
      * @param name  the Claim's name.
      * @param items the items the Claim must contain.
      * @return this same Verification instance.
-     * @throws IllegalArgumentException if the name is null.
+     * @throws IllegalArgumentException if the name is {@code null}.
      */
     Verification withArrayClaim(String name, Integer... items) throws IllegalArgumentException;
 
     /**
-     * Require a specific Array Claim to contain at least the given items.
+     * Verifies whether the claim contain at least the given Long items.
      *
      * @param name  the Claim's name.
      * @param items the items the Claim must contain.
      * @return this same Verification instance.
-     * @throws IllegalArgumentException if the name is null.
+     * @throws IllegalArgumentException if the name is {@code null}.
      */
 
     Verification withArrayClaim(String name, Long ... items) throws IllegalArgumentException;
 
     /**
-     * Skip the Issued At ("iat") date verification. By default, the verification is performed.
+     * Skip the Issued At ("iat") claim verification. By default, the verification is performed.
      *
      * @return this same Verification instance.
      */
@@ -267,7 +259,7 @@ public interface Verification {
     /**
      * Creates a new and reusable instance of the JWTVerifier with the configuration already provided.
      *
-     * @return a new JWTVerifier instance.
+     * @return a new {@link com.auth0.jwt.interfaces.JWTVerifier} instance.
      */
     JWTVerifier build();
 }

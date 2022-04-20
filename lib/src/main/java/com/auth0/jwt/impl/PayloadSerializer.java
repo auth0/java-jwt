@@ -34,8 +34,6 @@ public class PayloadSerializer extends ClaimsSerializer<PayloadClaimsHolder> {
      * Audience may be a list of strings or a single string. This is needed to properly handle the aud claim when
      * added with the {@linkplain com.auth0.jwt.JWTCreator.Builder#withPayload(Map)} method.
      */
-
-    //
     private void writeAudience(JsonGenerator gen, Map.Entry<String, Object> e) throws IOException {
         if (e.getValue() instanceof String) {
             gen.writeFieldName(e.getKey());

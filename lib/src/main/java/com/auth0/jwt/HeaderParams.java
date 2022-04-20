@@ -13,12 +13,12 @@ public final class HeaderParams {
     public static String ALGORITHM = "alg";
 
     /**
-     * The content type of a JWT.
+     * The content type of the JWT.
      */
     public static String CONTENT_TYPE = "cty";
 
     /**
-     * The media type of a JWT.
+     * The media type of the JWT.
      */
     public static String TYPE = "typ";
 
