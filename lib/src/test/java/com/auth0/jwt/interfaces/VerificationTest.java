@@ -39,13 +39,6 @@ public class VerificationTest {
     }
 
     @Test
-    public void withAnyOfAudienceDeafultImplShouldThrow() {
-        assertThrows("withAnyOfAudience", UnsupportedOperationException.class, () -> {
-            new VerificationImplForTest().withAnyOfAudience("");
-        });
-    }
-
-    @Test
     public void withIssuerStringDefaultImplShouldDelegate() {
         Verification verification = new VerificationImplForTest()
                 .withIssuer("string");
@@ -71,6 +64,11 @@ public class VerificationTest {
 
         @Override
         public Verification withAudience(String... audience) {
+            return null;
+        }
+
+        @Override
+        public Verification withAnyOfAudience(String... audience) {
             return null;
         }
 

@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * The Payload class represents the 2nd part of the JWT, where the Payload value is hold.
+ * The Payload class represents the 2nd part of the JWT, where the Payload value is held.
  */
 public interface Payload {
 
@@ -87,8 +87,8 @@ public interface Payload {
     String getId();
 
     /**
-     * Get a Claim given it's name. If the Claim wasn't specified in the Payload, a 'null claim'
-     * will be returned. All of the methods of that claim will return {@code null}.
+     * Get a Claim given its name. If the Claim wasn't specified in the Payload, a 'null claim'
+     * will be returned. All the methods of that claim will return {@code null}.
      *
      * @param name the name of the Claim to retrieve.
      * @return a non-null Claim.

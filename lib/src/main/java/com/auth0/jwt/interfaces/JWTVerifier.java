@@ -4,7 +4,7 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 
 
 /**
- * Used to verify the JWT for it's signature and claims.
+ * Used to verify the JWT for its signature and claims.
  */
 public interface JWTVerifier {
 
@@ -18,7 +18,7 @@ public interface JWTVerifier {
     DecodedJWT verify(String token) throws JWTVerificationException;
 
     /**
-     * Performs the verification against the given decoded JWT.
+     * Performs the verification against the given {@link DecodedJWT}.
      *
      * @param jwt to verify.
      * @return a verified and decoded JWT.

@@ -26,7 +26,7 @@ public class JWT {
      * Decode a given Json Web Token.
      * <p>
      * Note that this method <b>doesn't verify the token's signature!</b>
-     * Use it only if you trust the token or you already verified it.
+     * Use it only if you trust the token or if you have already verified it.
      *
      * @param token with jwt format as string.
      * @return a decoded JWT.
@@ -41,7 +41,7 @@ public class JWT {
      * Decode a given Json Web Token.
      * <p>
      * Note that this method <b>doesn't verify the token's signature!</b>
-     * Use it only if you trust the token or you already verified it.
+     * Use it only if you trust the token or if you have already verified it.
      *
      * @param token with jwt format as string.
      * @return a decoded JWT.
@@ -53,10 +53,10 @@ public class JWT {
     }
 
     /**
-     * Returns a {@link JWTVerifier} builder with the algorithm to be used to validate token signature.
+     * Returns a {@link Verification} builder with the algorithm to be used to validate token signature.
      *
      * @param algorithm that will be used to verify the token's signature.
-     * @return {@link JWTVerifier} builder
+     * @return {@link Verification} builder
      * @throws IllegalArgumentException if the provided algorithm is null.
      */
     public static Verification require(Algorithm algorithm) {

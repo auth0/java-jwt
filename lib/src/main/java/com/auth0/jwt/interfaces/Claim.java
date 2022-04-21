@@ -22,7 +22,7 @@ public interface Claim {
 
     /**
      * Can be used to verify whether the Claim is found or not.
-     * This will be true even if the Claim has null value associated to it.
+     * This will be true even if the Claim has {@code null} value associated to it.
      *
      * @return whether this Claim is present or not
      */
@@ -30,7 +30,7 @@ public interface Claim {
 
     /**
      * Get this Claim as a Boolean.
-     * If the value isn't of type Boolean or it can't be converted to a Boolean, null will be returned.
+     * If the value isn't of type Boolean or it can't be converted to a Boolean, {@code null} will be returned.
      *
      * @return the value as a Boolean or null.
      */
@@ -38,7 +38,7 @@ public interface Claim {
 
     /**
      * Get this Claim as an Integer.
-     * If the value isn't of type Integer or it can't be converted to an Integer, null will be returned.
+     * If the value isn't of type Integer or it can't be converted to an Integer, {@code null} will be returned.
      *
      * @return the value as an Integer or null.
      */
@@ -46,7 +46,7 @@ public interface Claim {
 
     /**
      * Get this Claim as an Long.
-     * If the value isn't of type Long or it can't be converted to an Long, null will be returned.
+     * If the value isn't of type Long or it can't be converted to a Long, {@code null} will be returned.
      *
      * @return the value as an Long or null.
      */
@@ -54,7 +54,7 @@ public interface Claim {
 
     /**
      * Get this Claim as a Double.
-     * If the value isn't of type Double or it can't be converted to a Double, null will be returned.
+     * If the value isn't of type Double or it can't be converted to a Double, {@code null} will be returned.
      *
      * @return the value as a Double or null.
      */
@@ -62,7 +62,7 @@ public interface Claim {
 
     /**
      * Get this Claim as a String.
-     * If the value isn't of type String or it can't be converted to a String, null will be returned.
+     * If the value isn't of type String or it can't be converted to a String, {@code null} will be returned.
      *
      * @return the value as a String or null.
      */
@@ -70,7 +70,7 @@ public interface Claim {
 
     /**
      * Get this Claim as a Date.
-     * If the value can't be converted to a Date, null will be returned.
+     * If the value can't be converted to a Date, {@code null} will be returned.
      *
      * @return the value as a Date or null.
      */
@@ -78,7 +78,7 @@ public interface Claim {
 
     /**
      * Get this Claim as an Instant.
-     * If the value can't be converted to an Instant, null will be returned.
+     * If the value can't be converted to an Instant, {@code null} will be returned.
      *
      * @return the value as a Date or null.
      */
@@ -89,7 +89,7 @@ public interface Claim {
 
     /**
      * Get this Claim as an Array of type T.
-     * If the value isn't an Array, null will be returned.
+     * If the value isn't an Array, {@code null} will be returned.
      *
      * @param <T> type
      * @param clazz the type class
@@ -100,7 +100,7 @@ public interface Claim {
 
     /**
      * Get this Claim as a List of type T.
-     * If the value isn't an Array, null will be returned.
+     * If the value isn't an Array, {@code null} will be returned.
      *
      * @param <T> type
      * @param clazz the type class

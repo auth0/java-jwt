@@ -35,10 +35,10 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
     }
 
     /**
-     * Initialize a JWTVerifier instance using the given Algorithm.
+     * Initialize a {@link Verification} instance using the given Algorithm.
      *
      * @param algorithm the Algorithm to use on the JWT verification.
-     * @return a JWTVerifier.Verification instance to configure.
+     * @return a {@link Verification} instance to configure.
      * @throws IllegalArgumentException if the provided algorithm is null.
      */
     static Verification init(Algorithm algorithm) throws IllegalArgumentException {

@@ -5,6 +5,7 @@ import java.security.PublicKey;
 
 /**
  * Generic Public/Private Key provider.
+ * While implementing, ensure the Private Key and Private Key ID doesn't change in between signing a token.
  *
  * @param <U> the class that represents the Public Key
  * @param <R> the class that represents the Private Key
