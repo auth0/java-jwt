@@ -19,8 +19,6 @@ import java.util.Map.Entry;
  * from a given Header and Payload content.
  * <p>
  * This class is thread-safe.
- *
- * TODO Poovam - Should we claim thread safety since KeyProvider implementation can cause signing differ
  */
 @SuppressWarnings("WeakerAccess")
 public final class JWTCreator {
