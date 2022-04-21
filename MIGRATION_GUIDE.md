@@ -18,7 +18,8 @@ This guide captures the changes you should be aware of when planning and upgradi
 - Support for the ES256K algorithm has been removed, as it is disabled in Java 15+. The `Algorithm#ECDSA256K(ECDSAKeyProvider keyProvider)` and `Algorithm#ECDSA256K(ECPublicKey publicKey, ECPrivateKey privateKey)` methods have been removed.
 - `com.auth0.jwt.interfaces.Clock` has been removed. Instead, an implementation of `java.time.Clock` can be passed to the `BaseVerification` for testing purposes.
 - `com.auth0.jwt.impl.NullClaim` has been removed. `Claim#isNull` can be used to determine if a claim's value is `null`.
-- `com.auth0.jwt.impl.PublicClaims` was removed, and replaced by `com.auth0.jwt.StandardClaims` and `com.auth0.jwt.HeaderParams`.
+- `com.auth0.jwt.impl.PublicClaims` was removed, and replaced by `com.auth0.jwt.RegisteredClaims` and `com.auth0.jwt.HeaderParams`.
+- `com.auth0.jwt.interfaces.Verification#withAnyOfAudience` no longer provides a default implementation.
 
 ### Behavioral potentially breaking changes
 
@@ -54,9 +55,9 @@ This class extends `InvalidClaimException` and represents that when validating a
 
 This class contains constants representing common header parameter names.
 
-#### `StandardClaims` added
+#### `RegisteredClaims` added
 
-This class contains constants representing the standard claim names.
+This class contains constants representing the registered claim names.
 
 #### `JWTCreator` new methods
 
