@@ -759,7 +759,7 @@ public class JWTCreatorTest {
     @Test
     public void withPayloadShouldNotAllowCustomType() {
         exception.expect(IllegalArgumentException.class);
-        exception.expectMessage("Claim values must only be of types Map, List, Boolean, Integer, Long, Double, String, Date and Null");
+        exception.expectMessage("Claim values must only be of types Map, List, Boolean, Integer, Long, Double, String, Date, Instant, and Null");
 
         Map<String, Object> payload = new HashMap<>();
         payload.put("entry", "value");
@@ -786,7 +786,7 @@ public class JWTCreatorTest {
     @Test
     public void withPayloadShouldNotAllowListWithCustomType() {
         exception.expect(IllegalArgumentException.class);
-        exception.expectMessage("Claim values must only be of types Map, List, Boolean, Integer, Long, Double, String, Date and Null");
+        exception.expectMessage("Claim values must only be of types Map, List, Boolean, Integer, Long, Double, String, Date, Instant, and Null");
 
         Map<String, Object> payload = new HashMap<>();
         payload.put("list", Arrays.asList("item1", new UserPojo("name", 42)));
@@ -798,7 +798,7 @@ public class JWTCreatorTest {
     @Test
     public void withPayloadShouldNotAllowMapWithCustomType() {
         exception.expect(IllegalArgumentException.class);
-        exception.expectMessage("Claim values must only be of types Map, List, Boolean, Integer, Long, Double, String, Date and Null");
+        exception.expectMessage("Claim values must only be of types Map, List, Boolean, Integer, Long, Double, String, Date, Instant, and Null");
 
         Map<String, Object> payload = new HashMap<>();
         payload.put("entry", "value");
