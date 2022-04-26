@@ -453,7 +453,7 @@ public final class JWTCreator {
 
             if (!validatePayload(payloadClaims)) {
                 throw new IllegalArgumentException("Claim values must only be of types Map, List, Boolean, Integer, "
-                        + "Long, Double, String, Date and Null");
+                        + "Long, Double, String, Date, Instant, and Null");
             }
 
             // add claims only after validating all claims so as not to corrupt the claims map of this builder

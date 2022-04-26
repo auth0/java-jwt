@@ -11,5 +11,6 @@ coverage:
     project:
       default:
         target: auto
+        threshold: 1%
         if_no_uploads: error
 comment: false

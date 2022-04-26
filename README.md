@@ -11,15 +11,15 @@ A Java implementation of [JSON Web Token (JWT) - RFC 7519](https://tools.ietf.or
 
 If you're looking for an **Android** version of the JWT Decoder take a look at our [JWTDecode.Android](https://github.com/auth0/JWTDecode.Android) library.
 
-> This library requires Java 8 or higher. The last version that supported Java 7 was 3.11.0.
+> You are viewing the documentation for the v4 beta release. For the latest stable release, please see the [version 3.x documentation](https://github.com/auth0/java-jwt).
 
 ## Table of Contents
+- [**Requirements**](#requirements)
 - [**Installation**](#installation)
 - [**Available Algorithms**](#available-algorithms)
 - [**Quickstart**](#quickstart)
   + [**Create and Sign a Token**](#create-and-sign-a-token)
   + [**Verify a Token**](#verify-a-token)
-  + [**Decode a Token**](#decode-a-token)
 - [**Usage**](#usage)
   + [**Pick the algorithm**](#pick-the-algorithm)
   + [**Time Validation**](#time-validation)
@@ -27,6 +27,10 @@ If you're looking for an **Android** version of the JWT Decoder take a look at o
   + [**Payload Claims**](#payload-claims)
   + [**Claim Class**](#claim-class)
 - [**Javadoc**](https://javadoc.io/doc/com.auth0/java-jwt/latest/index.html)
+
+## Requirements
+
+This library is supported for Java 8, 11, and 17. For issues on non-LTS versions above 8, consideration will be given on a case-by-case basis.
 
 ## Installation
 
@@ -138,7 +142,12 @@ You'll first need to create a `JWTVerifier` instance by calling `JWT.require()` 
 
 If the token has an invalid signature or the Claim requirement is not met, a `JWTVerificationException` will raise.
 
+<details>
+<summary><em></em>Need to peek into a JWT without verifying it? (Click to expand)</summary>
+
 ### Decode a Token
+
+> __Warning:__ This will __not__ verify whether the signature is valid. You should __not__ use this for untrusted messages. You most likely want to use `JWTVerifier` as documented above instead.
 
 ```java
 String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXUyJ9.eyJpc3MiOiJhdXRoMCJ9.AbIJTDMFc7yUa5MhvcP03nJPyCPzZtQcGEp-zWfOkEE";
@@ -150,6 +159,8 @@ try {
 ```
 
 If the token has an invalid syntax or the header or payload are not JSONs, a `JWTDecodeException` will raise.
+
+</details>
 
 ## Usage
 
@@ -176,7 +187,7 @@ Algorithm algorithmRS = Algorithm.RSA256(publicKey, privateKey);
 
 ##### HMAC Key Length and Security
 
-When using a Hash-based Message Authenticaton Code, e.g. HS256 or HS512, in order to comply with the strict requirements of the JSON Web Algorithms (JWA) specification (RFC7518), you **must** use a secret key which has the same (or larger) bit length as the size of the output hash. This is to avoid weakening the security strength of the authentication code (see NIST recomendations NIST SP 800-117). For example, when using HMAC256, the secret key length must be a minimum of 256 bits.
+When using a Hash-based Message Authenticaton Code, e.g. HS256 or HS512, in order to comply with the strict requirements of the JSON Web Algorithms (JWA) specification (RFC7518), you **must** use a secret key which has the same (or larger) bit length as the size of the output hash. This is to avoid weakening the security strength of the authentication code (see NIST recommendations NIST SP 800-117). For example, when using HMAC256, the secret key length must be a minimum of 256 bits.
 
 #### Using a KeyProvider:
 By using a `KeyProvider` you can change in runtime the key used either to verify the token signature or to sign a new token for RSA or ECDSA algorithms. This is achieved by implementing either `RSAKeyProvider` or `ECDSAKeyProvider` methods:
@@ -243,13 +254,13 @@ JWTVerifier verifier = JWT.require(algorithm)
     .build();
 ```
 
-If you need to test this behaviour in your lib/app cast the `Verification` instance to a `BaseVerification` to gain visibility of the `verification.build()` method that accepts a custom `Clock`. e.g.:
+If you need to test this behavior in your lib/app cast the `Verification` instance to a `BaseVerification` to gain visibility of the `verification.build()` method that accepts a `java.time.Clock`. e.g.:
 
 ```java
 BaseVerification verification = (BaseVerification) JWT.require(algorithm)
     .acceptLeeway(1)
     .acceptExpiresAt(5);
-Clock clock = new CustomClock(); //Must implement Clock interface
+private final Clock mockNow = Clock.fixed(Instant.ofEpochSecond(1477592), ZoneId.of("UTC"));    
 JWTVerifier verifier = verification.build(clock);
 ```
 
@@ -342,6 +353,12 @@ Returns the Expiration Time value or null if it's not defined in the Payload.
 Date expiresAt = jwt.getExpiresAt();
 ```
 
+If you prefer to work with `java.time.Instant` instead of `java.util.Date`:
+
+```java
+Instant expiresAt = jwt.getExpiresAtAsInstant();
+```
+
 #### Not Before ("nbf")
 
 Returns the Not Before value or null if it's not defined in the Payload.
@@ -350,12 +367,24 @@ Returns the Not Before value or null if it's not defined in the Payload.
 Date notBefore = jwt.getNotBefore();
 ```
 
+If you prefer to work with `java.time.Instant` instead of `java.util.Date`:
+
+```java
+Instant notBefore = jwt.getNotBeforeAsInstant();
+```
+
 #### Issued At ("iat")
 
 Returns the Issued At value or null if it's not defined in the Payload.
 
 ```java
 Date issuedAt = jwt.getIssuedAt();
+```
+
+If you prefer to work with `java.time.Instant` instead of `java.util.Date`:
+
+```java
+Instant issuedAt = jwt.getIssuedAtAsInstant();
 ```
 
 #### JWT ID ("jti")
