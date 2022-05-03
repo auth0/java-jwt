@@ -191,8 +191,12 @@ class ECDSAAlgorithm extends Algorithm {
         BigInteger order = publicKey.getParams().getOrder();
 
         // R and S must be less than N
-        if (order.compareTo(r) < 1 || order.compareTo(s) < 1) {
-            throw new SignatureException("The difference between R or S value and order should be greater than one.");
+        if (order.compareTo(r) < 1) {
+            throw new SignatureException("The difference between R value and order should be greater than one.");
+        }
+
+        if (order.compareTo(s) < 1){
+            throw new SignatureException("The difference between S value and order should be greater than one.");
         }
     }
 

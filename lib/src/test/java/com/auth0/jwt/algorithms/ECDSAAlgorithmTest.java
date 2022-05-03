@@ -1429,7 +1429,7 @@ public class ECDSAAlgorithmTest {
     }
 
     @Test
-    public void signatureWithRSValueNotLessThanOrderShouldFail() throws Exception {
+    public void signatureWithRValueNotLessThanOrderShouldFail() throws Exception {
         exception.expect(SignatureException.class);
 
         ECPublicKey publicKey = (ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC");
@@ -1440,6 +1440,24 @@ public class ECDSAAlgorithmTest {
 
         String[] chunks = jwtWithInvalidSig.split("\\.");
         byte[] invalidSignature = Base64.getUrlDecoder().decode(chunks[2]);
+
+        ECDSAAlgorithm algorithm256 = (ECDSAAlgorithm) Algorithm.ECDSA256(publicKey, privateKey);
+        algorithm256.validateSignatureStructure(invalidSignature, publicKey);
+    }
+
+    @Test
+    public void signatureWithSValueNotLessThanOrderShouldFail() throws Exception {
+        exception.expect(SignatureException.class);
+
+        ECPublicKey publicKey = (ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC");
+        ECPrivateKey privateKey = (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_256, "EC");
+
+        String signedJwt = JWT.create().sign(Algorithm.ECDSA256(publicKey, privateKey));
+        String jwtWithInvalidSig = signedJwt.substring(0, signedJwt.lastIndexOf('.') + 1) + "_____wAAAAD__________7zm-q2nF56E87nKwvxjJVH_____AAAAAP__________vOb6racXnoTzucrC_GMlUQ";
+
+        String[] chunks = jwtWithInvalidSig.split("\\.");
+        byte[] invalidSignature = Base64.getUrlDecoder().decode(chunks[2]);
+        invalidSignature[0] = Byte.MAX_VALUE;
 
         ECDSAAlgorithm algorithm256 = (ECDSAAlgorithm) Algorithm.ECDSA256(publicKey, privateKey);
         algorithm256.validateSignatureStructure(invalidSignature, publicKey);
