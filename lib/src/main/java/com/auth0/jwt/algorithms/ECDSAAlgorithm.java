@@ -188,11 +188,6 @@ class ECDSAAlgorithm extends Algorithm {
             throw new SignatureException("Invalid JOSE signature format.");
         }
 
-        // check for 0 r or s here since we have the values
-        if (BigInteger.ZERO.equals(r) || BigInteger.ZERO.equals(s)) {
-            throw new SignatureException("R or S value cannot be zero.");
-        }
-
         BigInteger order = publicKey.getParams().getOrder();
 
         // R and S must be less than N
