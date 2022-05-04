@@ -130,7 +130,9 @@ public abstract class Algorithm {
     /**
      * Creates a new Algorithm instance using HmacSHA256. Tokens specify this as "HS256".
      *
-     * @param secret the secret to use in the verify or signing instance.
+     * @param secret the secret bytes to use in the verify or signing instance.
+     *               Ensure the length of the secret is at least 256 bit long
+     *               See <a href="https://github.com/auth0/java-jwt#hmac-key-length-and-security">HMAC Key Length and Security in README</a>
      * @return a valid HMAC256 Algorithm.
      * @throws IllegalArgumentException if the provided Secret is null.
      */
@@ -142,6 +144,8 @@ public abstract class Algorithm {
      * Creates a new Algorithm instance using HmacSHA256. Tokens specify this as "HS256".
      *
      * @param secret the secret bytes to use in the verify or signing instance.
+     *               Ensure the length of the secret is at least 256 bit long
+     *               See <a href="https://github.com/auth0/java-jwt#hmac-key-length-and-security">HMAC Key Length and Security in README</a>
      * @return a valid HMAC256 Algorithm.
      * @throws IllegalArgumentException if the provided Secret is null.
      */
@@ -152,7 +156,9 @@ public abstract class Algorithm {
     /**
      * Creates a new Algorithm instance using HmacSHA384. Tokens specify this as "HS384".
      *
-     * @param secret the secret to use in the verify or signing instance.
+     * @param secret the secret bytes to use in the verify or signing instance.
+     *               Ensure the length of the secret is at least 384 bit long
+     *               See <a href="https://github.com/auth0/java-jwt#hmac-key-length-and-security">HMAC Key Length and Security in README</a>
      * @return a valid HMAC384 Algorithm.
      * @throws IllegalArgumentException if the provided Secret is null.
      */
@@ -164,6 +170,8 @@ public abstract class Algorithm {
      * Creates a new Algorithm instance using HmacSHA384. Tokens specify this as "HS384".
      *
      * @param secret the secret bytes to use in the verify or signing instance.
+     *               Ensure the length of the secret is at least 384 bit long
+     *               See <a href="https://github.com/auth0/java-jwt#hmac-key-length-and-security">HMAC Key Length and Security in README</a>
      * @return a valid HMAC384 Algorithm.
      * @throws IllegalArgumentException if the provided Secret is null.
      */
@@ -174,7 +182,9 @@ public abstract class Algorithm {
     /**
      * Creates a new Algorithm instance using HmacSHA512. Tokens specify this as "HS512".
      *
-     * @param secret the secret to use in the verify or signing instance.
+     * @param secret the secret bytes to use in the verify or signing instance.
+     *               Ensure the length of the secret is at least 512 bit long
+     *               See <a href="https://github.com/auth0/java-jwt#hmac-key-length-and-security">HMAC Key Length and Security in README</a>
      * @return a valid HMAC512 Algorithm.
      * @throws IllegalArgumentException if the provided Secret is null.
      */
@@ -186,6 +196,8 @@ public abstract class Algorithm {
      * Creates a new Algorithm instance using HmacSHA512. Tokens specify this as "HS512".
      *
      * @param secret the secret bytes to use in the verify or signing instance.
+     *               Ensure the length of the secret is at least 512 bit long
+     *               See <a href="https://github.com/auth0/java-jwt#hmac-key-length-and-security">HMAC Key Length and Security in README</a>
      * @return a valid HMAC512 Algorithm.
      * @throws IllegalArgumentException if the provided Secret is null.
      */
