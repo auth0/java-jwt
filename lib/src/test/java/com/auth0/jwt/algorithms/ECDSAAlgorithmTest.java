@@ -1370,6 +1370,7 @@ public class ECDSAAlgorithmTest {
     @Test
     public void signatureWithAllZerosShouldFail() throws Exception {
         exception.expect(SignatureException.class);
+        exception.expectMessage("Invalid Signature: All Zeros.");
 
         ECPublicKey pubKey = (ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC");
 
@@ -1381,6 +1382,7 @@ public class ECDSAAlgorithmTest {
     @Test
     public void signatureWithRZeroShouldFail() throws Exception {
         exception.expect(SignatureException.class);
+        exception.expectMessage("Invalid Signature: All Zeros for R value.");
 
         ECPublicKey publicKey = (ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC");
         ECPrivateKey privateKey = (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_256, "EC");
@@ -1406,6 +1408,7 @@ public class ECDSAAlgorithmTest {
     @Test
     public void signatureWithSZeroShouldFail() throws Exception {
         exception.expect(SignatureException.class);
+        exception.expectMessage("Invalid Signature: All Zeros for S value.");
 
         ECPublicKey publicKey = (ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC");
         ECPrivateKey privateKey = (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_256, "EC");
@@ -1431,6 +1434,7 @@ public class ECDSAAlgorithmTest {
     @Test
     public void signatureWithRValueNotLessThanOrderShouldFail() throws Exception {
         exception.expect(SignatureException.class);
+        exception.expectMessage("The difference between R value and order should be greater than one.");
 
         ECPublicKey publicKey = (ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC");
         ECPrivateKey privateKey = (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_256, "EC");
@@ -1448,6 +1452,7 @@ public class ECDSAAlgorithmTest {
     @Test
     public void signatureWithSValueNotLessThanOrderShouldFail() throws Exception {
         exception.expect(SignatureException.class);
+        exception.expectMessage("The difference between S value and order should be greater than one.");
 
         ECPublicKey publicKey = (ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC");
         ECPrivateKey privateKey = (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_256, "EC");
