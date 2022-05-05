@@ -113,7 +113,7 @@ You'll first need to create a `JWTVerifier` instance by calling `JWT.require()` 
     ```java
     String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXUyJ9.eyJpc3MiOiJhdXRoMCJ9.AbIJTDMFc7yUa5MhvcP03nJPyCPzZtQcGEp-zWfOkEE";
     try {
-        Algorithm algorithm = Algorithm.HMAC256("secret");
+        Algorithm algorithm = Algorithm.HMAC256("secret"); //use more secure key
         JWTVerifier verifier = JWT.require(algorithm)
             .withIssuer("auth0")
             .build(); //Reusable verifier instance
@@ -175,7 +175,7 @@ When using RSA or ECDSA algorithms and you just need to **sign** JWTs you can av
 
 ```java
 //HMAC
-Algorithm algorithmHS = Algorithm.HMAC256("secret");
+Algorithm algorithmHS = Algorithm.HMAC256("secret"); //use more secure key
 
 //RSA
 RSAPublicKey publicKey = //Get the key instance
@@ -185,9 +185,9 @@ Algorithm algorithmRS = Algorithm.RSA256(publicKey, privateKey);
 
 > Note: How you obtain or read keys is not in the scope of this library. For an example of how you might implement this, see [this gist](https://gist.github.com/lbalmaceda/9a0c7890c2965826c04119dcfb1a5469).
 
-##### HMAC Key Length and Security
+##### :key: HMAC Key Length and Security
 
-When using a Hash-based Message Authenticaton Code, e.g. HS256 or HS512, in order to comply with the strict requirements of the JSON Web Algorithms (JWA) specification (RFC7518), you **must** use a secret key which has the same (or larger) bit length as the size of the output hash. This is to avoid weakening the security strength of the authentication code (see NIST recommendations NIST SP 800-117). For example, when using HMAC256, the secret key length must be a minimum of 256 bits.
+When using a Hash-based Message Authentication Code, e.g. HS256 or HS512, in order to comply with the strict requirements of the JSON Web Algorithms (JWA) specification (RFC7518), you **must** use a secret key which has the same (or larger) bit length as the size of the output hash. This is to avoid weakening the security strength of the authentication code (see NIST recommendations NIST SP 800-117). For example, when using HMAC256, the secret key length must be a minimum of 256 bits.
 
 #### Using a KeyProvider:
 By using a `KeyProvider` you can change in runtime the key used either to verify the token signature or to sign a new token for RSA or ECDSA algorithms. This is achieved by implementing either `RSAKeyProvider` or `ECDSAKeyProvider` methods:
