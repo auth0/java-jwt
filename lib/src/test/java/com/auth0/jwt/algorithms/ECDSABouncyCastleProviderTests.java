@@ -11,11 +11,14 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.security.interfaces.ECKey;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
+import java.security.spec.ECParameterSpec;
+import java.util.Arrays;
 import java.util.Base64;
 
 import static com.auth0.jwt.PemUtils.readPrivateKeyFromFile;
@@ -591,6 +594,10 @@ public class ECDSABouncyCastleProviderTests {
                 .thenThrow(NoSuchAlgorithmException.class);
 
         ECPublicKey publicKey = mock(ECPublicKey.class);
+        when(publicKey.getParams()).thenReturn(mock(ECParameterSpec.class));
+        byte[] a = new byte[64];
+        Arrays.fill(a, Byte.MAX_VALUE);
+        when(publicKey.getParams().getOrder()).thenReturn(new BigInteger(a));
         ECPrivateKey privateKey = mock(ECPrivateKey.class);
         ECDSAKeyProvider provider = ECDSAAlgorithm.providerForKeys(publicKey, privateKey);
         Algorithm algorithm = new ECDSAAlgorithm(crypto, "some-alg", "some-algorithm", 32, provider);
@@ -609,6 +616,10 @@ public class ECDSABouncyCastleProviderTests {
                 .thenThrow(InvalidKeyException.class);
 
         ECPublicKey publicKey = mock(ECPublicKey.class);
+        when(publicKey.getParams()).thenReturn(mock(ECParameterSpec.class));
+        byte[] a = new byte[64];
+        Arrays.fill(a, Byte.MAX_VALUE);
+        when(publicKey.getParams().getOrder()).thenReturn(new BigInteger(a));
         ECPrivateKey privateKey = mock(ECPrivateKey.class);
         ECDSAKeyProvider provider = ECDSAAlgorithm.providerForKeys(publicKey, privateKey);
         Algorithm algorithm = new ECDSAAlgorithm(crypto, "some-alg", "some-algorithm", 32, provider);
@@ -627,6 +638,10 @@ public class ECDSABouncyCastleProviderTests {
                 .thenThrow(SignatureException.class);
 
         ECPublicKey publicKey = mock(ECPublicKey.class);
+        when(publicKey.getParams()).thenReturn(mock(ECParameterSpec.class));
+        byte[] a = new byte[64];
+        Arrays.fill(a, Byte.MAX_VALUE);
+        when(publicKey.getParams().getOrder()).thenReturn(new BigInteger(a));
         ECPrivateKey privateKey = mock(ECPrivateKey.class);
         ECDSAKeyProvider provider = ECDSAAlgorithm.providerForKeys(publicKey, privateKey);
         Algorithm algorithm = new ECDSAAlgorithm(crypto, "some-alg", "some-algorithm", 32, provider);
@@ -935,12 +950,13 @@ public class ECDSABouncyCastleProviderTests {
 
     @Test
     public void shouldThrowOnJOSESignatureConversionIfDoesNotHaveExpectedLength() throws Exception {
-        ECDSAAlgorithm algorithm256 = (ECDSAAlgorithm) Algorithm.ECDSA256((ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC"), (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_256, "EC"));
+        ECPublicKey publicKey = (ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC");
+        ECDSAAlgorithm algorithm256 = (ECDSAAlgorithm) Algorithm.ECDSA256(publicKey, (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_256, "EC"));
         byte[] joseSignature = new byte[32 * 2 - 1];
         exception.expect(SignatureException.class);
         exception.expectMessage("Invalid JOSE signature format.");
 
-        algorithm256.JOSEToDER(joseSignature);
+        algorithm256.validateSignatureStructure(joseSignature, publicKey);
     }
 
     @Test

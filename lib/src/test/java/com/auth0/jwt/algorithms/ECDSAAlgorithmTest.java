@@ -4,6 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.exceptions.SignatureGenerationException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.interfaces.ECDSAKeyProvider;
+import com.auth0.jwt.interfaces.JWTVerifier;
 import org.hamcrest.Matchers;
 import org.hamcrest.collection.IsIn;
 import org.junit.Assert;
@@ -12,11 +13,13 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import java.io.ByteArrayOutputStream;
+import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.security.interfaces.ECKey;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
+import java.security.spec.ECParameterSpec;
 import java.util.Arrays;
 import java.util.Base64;
 
@@ -574,6 +577,10 @@ public class ECDSAAlgorithmTest {
                 .thenThrow(NoSuchAlgorithmException.class);
 
         ECPublicKey publicKey = mock(ECPublicKey.class);
+        when(publicKey.getParams()).thenReturn(mock(ECParameterSpec.class));
+        byte[] a = new byte[64];
+        Arrays.fill(a, Byte.MAX_VALUE);
+        when(publicKey.getParams().getOrder()).thenReturn(new BigInteger(a));
         ECPrivateKey privateKey = mock(ECPrivateKey.class);
         ECDSAKeyProvider provider = ECDSAAlgorithm.providerForKeys(publicKey, privateKey);
         Algorithm algorithm = new ECDSAAlgorithm(crypto, "some-alg", "some-algorithm", 32, provider);
@@ -592,6 +599,10 @@ public class ECDSAAlgorithmTest {
                 .thenThrow(InvalidKeyException.class);
 
         ECPublicKey publicKey = mock(ECPublicKey.class);
+        when(publicKey.getParams()).thenReturn(mock(ECParameterSpec.class));
+        byte[] a = new byte[64];
+        Arrays.fill(a, Byte.MAX_VALUE);
+        when(publicKey.getParams().getOrder()).thenReturn(new BigInteger(a));
         ECPrivateKey privateKey = mock(ECPrivateKey.class);
         ECDSAKeyProvider provider = ECDSAAlgorithm.providerForKeys(publicKey, privateKey);
         Algorithm algorithm = new ECDSAAlgorithm(crypto, "some-alg", "some-algorithm", 32, provider);
@@ -610,6 +621,10 @@ public class ECDSAAlgorithmTest {
                 .thenThrow(SignatureException.class);
 
         ECPublicKey publicKey = mock(ECPublicKey.class);
+        when(publicKey.getParams()).thenReturn(mock(ECParameterSpec.class));
+        byte[] a = new byte[64];
+        Arrays.fill(a, Byte.MAX_VALUE);
+        when(publicKey.getParams().getOrder()).thenReturn(new BigInteger(a));
         ECPrivateKey privateKey = mock(ECPrivateKey.class);
         ECDSAKeyProvider provider = ECDSAAlgorithm.providerForKeys(publicKey, privateKey);
         Algorithm algorithm = new ECDSAAlgorithm(crypto, "some-alg", "some-algorithm", 32, provider);
@@ -939,12 +954,13 @@ public class ECDSAAlgorithmTest {
 
     @Test
     public void shouldThrowOnJOSESignatureConversionIfDoesNotHaveExpectedLength() throws Exception {
-        ECDSAAlgorithm algorithm256 = (ECDSAAlgorithm) Algorithm.ECDSA256((ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC"), (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_256, "EC"));
+        ECPublicKey publicKey = (ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC");
+        ECDSAAlgorithm algorithm256 = (ECDSAAlgorithm) Algorithm.ECDSA256(publicKey, (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_256, "EC"));
         byte[] joseSignature = new byte[32 * 2 - 1];
         exception.expect(SignatureException.class);
         exception.expectMessage("Invalid JOSE signature format.");
 
-        algorithm256.JOSEToDER(joseSignature);
+        algorithm256.validateSignatureStructure(joseSignature, publicKey);
     }
 
     @Test
@@ -1309,4 +1325,146 @@ public class ECDSAAlgorithmTest {
         algorithm.sign(new byte[0]);
     }
 
+    @Test
+    public void invalidECDSA256SignatureShouldFailTokenVerification() throws Exception {
+        exception.expect(SignatureVerificationException.class);
+        exception.expectCause(isA(SignatureException.class));
+
+        String jwtWithInvalidSig = "eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0._____wAAAAD__________7zm-q2nF56E87nKwvxjJVH_____AAAAAP__________vOb6racXnoTzucrC_GMlUQ";
+
+        ECKey key256 = (ECKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC");
+        ECKey key384 = (ECKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_384, "EC");
+        ECKey key512 = (ECKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_512, "EC");
+        ECKey key256k = (ECKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256K, "EC");
+        JWTVerifier verifier256 = JWT.require(Algorithm.ECDSA256(key256)).build();
+        JWTVerifier verifier384 = JWT.require(Algorithm.ECDSA256(key384)).build();
+        JWTVerifier verifier512 = JWT.require(Algorithm.ECDSA256(key512)).build();
+        JWTVerifier verifier256k = JWT.require(Algorithm.ECDSA256(key256k)).build();
+        verifier256.verify(jwtWithInvalidSig);
+        verifier384.verify(jwtWithInvalidSig);
+        verifier512.verify(jwtWithInvalidSig);
+        verifier256k.verify(jwtWithInvalidSig);
+    }
+
+    @Test
+    public void emptyECDSA256SignatureShouldFailTokenVerification() throws Exception {
+        exception.expect(SignatureVerificationException.class);
+        exception.expectCause(isA(SignatureException.class));
+
+        String jwtWithInvalidSig = "eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0.AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+
+        ECKey key256 = (ECKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC");
+        ECKey key384 = (ECKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_384, "EC");
+        ECKey key512 = (ECKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_512, "EC");
+        ECKey key256k = (ECKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256K, "EC");
+        JWTVerifier verifier256 = JWT.require(Algorithm.ECDSA256(key256)).build();
+        JWTVerifier verifier384 = JWT.require(Algorithm.ECDSA256(key384)).build();
+        JWTVerifier verifier512 = JWT.require(Algorithm.ECDSA256(key512)).build();
+        JWTVerifier verifier256k = JWT.require(Algorithm.ECDSA256(key256k)).build();
+        verifier256.verify(jwtWithInvalidSig);
+        verifier384.verify(jwtWithInvalidSig);
+        verifier512.verify(jwtWithInvalidSig);
+        verifier256k.verify(jwtWithInvalidSig);
+    }
+
+    @Test
+    public void signatureWithAllZerosShouldFail() throws Exception {
+        exception.expect(SignatureException.class);
+        exception.expectMessage("Invalid signature format.");
+
+        ECPublicKey pubKey = (ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC");
+
+        ECDSAAlgorithm algorithm256 = (ECDSAAlgorithm) Algorithm.ECDSA256(pubKey, (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_256, "EC"));
+        byte[] signatureBytes = new byte[64];
+        algorithm256.validateSignatureStructure(signatureBytes, pubKey);
+    }
+
+    @Test
+    public void signatureWithRZeroShouldFail() throws Exception {
+        exception.expect(SignatureException.class);
+        exception.expectMessage("Invalid signature format.");
+
+        ECPublicKey publicKey = (ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC");
+        ECPrivateKey privateKey = (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_256, "EC");
+
+        String signedJwt = JWT.create().sign(Algorithm.ECDSA256(publicKey, privateKey));
+
+        String[] chunks = signedJwt.split("\\.");
+        byte[] signature = Base64.getUrlDecoder().decode(chunks[2]);
+
+        byte[] sigWithBlankR = new byte[signature.length];
+        for (int i = 0; i < signature.length; i++) {
+            if (i < signature.length / 2) {
+                sigWithBlankR[i] = 0;
+            } else {
+                sigWithBlankR[i] = signature[i];
+            }
+        }
+
+        ECDSAAlgorithm algorithm256 = (ECDSAAlgorithm) Algorithm.ECDSA256(publicKey, privateKey);
+        algorithm256.validateSignatureStructure(sigWithBlankR, publicKey);
+    }
+
+    @Test
+    public void signatureWithSZeroShouldFail() throws Exception {
+        exception.expect(SignatureException.class);
+        exception.expectMessage("Invalid signature format.");
+
+        ECPublicKey publicKey = (ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC");
+        ECPrivateKey privateKey = (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_256, "EC");
+
+        String signedJwt = JWT.create().sign(Algorithm.ECDSA256(publicKey, privateKey));
+
+        String[] chunks = signedJwt.split("\\.");
+        byte[] signature = Base64.getUrlDecoder().decode(chunks[2]);
+
+        byte[] sigWithBlankS = new byte[signature.length];
+        for (int i = 0; i < signature.length; i++) {
+            if (i < signature.length / 2) {
+                sigWithBlankS[i] = signature[i];
+            } else {
+                sigWithBlankS[i] = 0;
+            }
+        }
+
+        ECDSAAlgorithm algorithm256 = (ECDSAAlgorithm) Algorithm.ECDSA256(publicKey, privateKey);
+        algorithm256.validateSignatureStructure(sigWithBlankS, publicKey);
+    }
+
+    @Test
+    public void signatureWithRValueNotLessThanOrderShouldFail() throws Exception {
+        exception.expect(SignatureException.class);
+        exception.expectMessage("Invalid signature format.");
+
+        ECPublicKey publicKey = (ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC");
+        ECPrivateKey privateKey = (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_256, "EC");
+
+        String signedJwt = JWT.create().sign(Algorithm.ECDSA256(publicKey, privateKey));
+        String jwtWithInvalidSig = signedJwt.substring(0, signedJwt.lastIndexOf('.') + 1) + "_____wAAAAD__________7zm-q2nF56E87nKwvxjJVH_____AAAAAP__________vOb6racXnoTzucrC_GMlUQ";
+
+        String[] chunks = jwtWithInvalidSig.split("\\.");
+        byte[] invalidSignature = Base64.getUrlDecoder().decode(chunks[2]);
+
+        ECDSAAlgorithm algorithm256 = (ECDSAAlgorithm) Algorithm.ECDSA256(publicKey, privateKey);
+        algorithm256.validateSignatureStructure(invalidSignature, publicKey);
+    }
+
+    @Test
+    public void signatureWithSValueNotLessThanOrderShouldFail() throws Exception {
+        exception.expect(SignatureException.class);
+        exception.expectMessage("Invalid signature format.");
+
+        ECPublicKey publicKey = (ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC");
+        ECPrivateKey privateKey = (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_256, "EC");
+
+        String signedJwt = JWT.create().sign(Algorithm.ECDSA256(publicKey, privateKey));
+        String jwtWithInvalidSig = signedJwt.substring(0, signedJwt.lastIndexOf('.') + 1) + "_____wAAAAD__________7zm-q2nF56E87nKwvxjJVH_____AAAAAP__________vOb6racXnoTzucrC_GMlUQ";
+
+        String[] chunks = jwtWithInvalidSig.split("\\.");
+        byte[] invalidSignature = Base64.getUrlDecoder().decode(chunks[2]);
+        invalidSignature[0] = Byte.MAX_VALUE;
+
+        ECDSAAlgorithm algorithm256 = (ECDSAAlgorithm) Algorithm.ECDSA256(publicKey, privateKey);
+        algorithm256.validateSignatureStructure(invalidSignature, publicKey);
+    }
 }
