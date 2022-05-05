@@ -158,7 +158,7 @@ class ECDSAAlgorithm extends Algorithm {
         }
 
         if (isAllZeros(joseSignature)) {
-            throw new SignatureException("Invalid Signature: All Zeros.");
+            throw new SignatureException("Invalid signature format.");
         }
 
         // get R
@@ -166,7 +166,7 @@ class ECDSAAlgorithm extends Algorithm {
         System.arraycopy(joseSignature, 0, rBytes, 0, ecNumberSize);
         BigInteger r = new BigInteger(1, rBytes);
         if(isAllZeros(rBytes)) {
-            throw new SignatureException("Invalid Signature: All Zeros for R value.");
+            throw new SignatureException("Invalid signature format.");
         }
 
         // get S
@@ -174,7 +174,7 @@ class ECDSAAlgorithm extends Algorithm {
         System.arraycopy(joseSignature, ecNumberSize, sBytes, 0, ecNumberSize);
         BigInteger s = new BigInteger(1, sBytes);
         if(isAllZeros(sBytes)) {
-            throw new SignatureException("Invalid Signature: All Zeros for S value.");
+            throw new SignatureException("Invalid signature format.");
         }
 
         //moved this check from JOSEToDER method
@@ -192,11 +192,11 @@ class ECDSAAlgorithm extends Algorithm {
 
         // R and S must be less than N
         if (order.compareTo(r) < 1) {
-            throw new SignatureException("The difference between R value and order should be greater than one.");
+            throw new SignatureException("Invalid signature format.");
         }
 
         if (order.compareTo(s) < 1){
-            throw new SignatureException("The difference between S value and order should be greater than one.");
+            throw new SignatureException("Invalid signature format.");
         }
     }
 
