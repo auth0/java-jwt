@@ -7,7 +7,6 @@ import com.auth0.jwt.interfaces.ECDSAKeyProvider;
 import com.auth0.jwt.interfaces.JWTVerifier;
 import org.hamcrest.Matchers;
 import org.hamcrest.collection.IsIn;
-import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -30,24 +29,18 @@ import static com.auth0.jwt.algorithms.CryptoTestHelper.assertSignaturePresent;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.internal.matchers.ThrowableMessageMatcher.hasMessage;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@SuppressWarnings("deprecation")
 public class ECDSAAlgorithmTest {
 
     private static final String PRIVATE_KEY_FILE_256 = "src/test/resources/ec256-key-private.pem";
     private static final String PUBLIC_KEY_FILE_256 = "src/test/resources/ec256-key-public.pem";
     private static final String INVALID_PUBLIC_KEY_FILE_256 = "src/test/resources/ec256-key-public-invalid.pem";
-    
-    private static final String PRIVATE_KEY_FILE_256K = "src/test/resources/ec256k-key-private.pem";
-    private static final String PUBLIC_KEY_FILE_256K = "src/test/resources/ec256k-key-public.pem";
-    private static final String INVALID_PUBLIC_KEY_FILE_256K = "src/test/resources/ec256k-key-public-invalid.pem";
-    private static final String ES256K_JWT = "eyJraWQiOiJteS1rZXktaWQiLCJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.e30.2ggPsc4xwQhYcgJueo3uQ14MpaVJ3AbEE8UE-wA9fc8SMibeW54gjZbikL-JBHqhEwc22Cp8DNOtadXsM81RGQ";
     
     private static final String PRIVATE_KEY_FILE_384 = "src/test/resources/ec384-key-private.pem";
     private static final String PUBLIC_KEY_FILE_384 = "src/test/resources/ec384-key-public.pem";
@@ -118,7 +111,7 @@ public class ECDSAAlgorithmTest {
     }
 
     @Test
-    public void shouldFailECDSA256VerificationWhenProvidedPublicKeyIsNull() throws Exception {
+    public void shouldFailECDSA256VerificationWhenProvidedPublicKeyIsNull() {
         exception.expect(SignatureVerificationException.class);
         exception.expectMessage("The Token's Signature resulted invalid when verified using the Algorithm: SHA256withECDSA");
         exception.expectCause(isA(IllegalStateException.class));
@@ -191,112 +184,7 @@ public class ECDSAAlgorithmTest {
         Algorithm algorithm = Algorithm.ECDSA256((ECKey) readPublicKeyFromFile(INVALID_PUBLIC_KEY_FILE_256, "EC"));
         algorithm.verify(JWT.decode(jwt));
     }
-    
-    @Test
-    public void shouldPassECDSA256KVerificationWithJOSESignature() throws Exception {
-        ECPublicKey key = (ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256K, "EC");
-        Algorithm algorithm = Algorithm.ECDSA256K(key, null);
-        algorithm.verify(JWT.decode(ES256K_JWT));
-    }
-    
-    @Test
-    public void shouldThrowOnECDSA256KVerificationWithDERSignature() throws Exception {
-        exception.expect(SignatureVerificationException.class);
-        exception.expectMessage("The Token's Signature resulted invalid when verified using the Algorithm: SHA256withECDSA");
-        exception.expectCause(isA(SignatureException.class));
-        exception.expectCause(hasMessage(is("Invalid JOSE signature format.")));
-    
-        String jwt = "eyJraWQiOiJteS1rZXktaWQiLCJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.e30.MEUCIQDaCA-xzjHBCFhyAm56je5DXgylpUncBsQTxQT7AD19zwIgEjIm3lueII2W4pC_iQR6oRMHNtgqfAzTrWnV7DPNURk";
-        
-        ECPublicKey key = (ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256K, "EC");
-        Algorithm algorithm = Algorithm.ECDSA256K(key, null);
-        algorithm.verify(JWT.decode(jwt));
-    }
-    
-    @Test
-    public void shouldPassECDSA256KVerificationWithJOSESignatureWithBothKeys() throws Exception {
-        Algorithm algorithm = Algorithm.ECDSA256K((ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256K, "EC")
-                , (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_256K, "EC"));
-        algorithm.verify(JWT.decode(ES256K_JWT));
-    }
-    
-    @Test
-    public void shouldPassECDSA256KVerificationWithProvidedPublicKey() throws Exception {
-        ECDSAKeyProvider provider = mock(ECDSAKeyProvider.class);
-        PublicKey publicKey = readPublicKeyFromFile(PUBLIC_KEY_FILE_256K, "EC");
-        when(provider.getPublicKeyById("my-key-id")).thenReturn((ECPublicKey) publicKey);
-        Algorithm algorithm = Algorithm.ECDSA256K(provider);
-        algorithm.verify(JWT.decode(ES256K_JWT));
-    }
-    
-    @Test
-    public void shouldFailECDSA256KVerificationWhenProvidedPublicKeyIsNull() throws Exception {
-        exception.expect(SignatureVerificationException.class);
-        exception.expectMessage("The Token's Signature resulted invalid when verified using the Algorithm: SHA256withECDSA");
-        exception.expectCause(isA(IllegalStateException.class));
-        exception.expectCause(hasMessage(is("The given Public Key is null.")));
-        ECDSAKeyProvider provider = mock(ECDSAKeyProvider.class);
-        when(provider.getPublicKeyById("my-key-id")).thenReturn(null);
-        Algorithm algorithm = Algorithm.ECDSA256K(provider);
-        algorithm.verify(JWT.decode(ES256K_JWT));
-    }
-    
-    @Test
-    public void shouldFailECDSA256KVerificationWithInvalidPublicKey() throws Exception {
-        exception.expect(SignatureVerificationException.class);
-        exception.expectMessage("The Token's Signature resulted invalid when verified using the Algorithm: SHA256withECDSA");
-        Algorithm algorithm = Algorithm.ECDSA256K((ECPublicKey) readPublicKeyFromFile(INVALID_PUBLIC_KEY_FILE_256K, "EC"), null);
-        algorithm.verify(JWT.decode(ES256K_JWT));
-    }
-    
-    @Test
-    public void shouldFailECDSA256KVerificationWhenUsingPrivateKey() throws Exception {
-        exception.expect(SignatureVerificationException.class);
-        exception.expectMessage("The Token's Signature resulted invalid when verified using the Algorithm: SHA256withECDSA");
-        exception.expectCause(isA(IllegalStateException.class));
-        exception.expectCause(hasMessage(is("The given Public Key is null.")));
-        Algorithm algorithm = Algorithm.ECDSA256K(null, (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_256K, "EC"));
-        algorithm.verify(JWT.decode(ES256K_JWT));
-    }
-    
-    @Test
-    public void shouldFailECDSA256KVerificationOnInvalidJOSESignatureLength() throws Exception {
-        exception.expect(SignatureVerificationException.class);
-        exception.expectMessage("The Token's Signature resulted invalid when verified using the Algorithm: SHA256withECDSA");
-        exception.expectCause(isA(IllegalArgumentException.class));
-        exception.expectCause(hasMessage(is("Last unit does not have enough valid bits")));
-        
-        String jwt = ES256K_JWT.substring(0,ES256K_JWT.length()-1);
-        Algorithm algorithm = Algorithm.ECDSA256K((ECPublicKey) readPublicKeyFromFile(INVALID_PUBLIC_KEY_FILE_256K, "EC"), null);
-        algorithm.verify(JWT.decode(jwt));
-    }
-    
-    @Test
-    public void shouldFailECDSA256KVerificationOnInvalidJOSESignature() throws Exception {
-        exception.expect(SignatureVerificationException.class);
-        exception.expectMessage("The Token's Signature resulted invalid when verified using the Algorithm: SHA256withECDSA");
-        
-        byte[] bytes = new byte[64];
-        new SecureRandom().nextBytes(bytes);
-        String signature = Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
-        String jwt = "eyJhbGciOiJFUzI1NksifQo.eyJpc3MiOiJhdXRoMCJ9." + signature;
-        Algorithm algorithm = Algorithm.ECDSA256K((ECPublicKey) readPublicKeyFromFile(INVALID_PUBLIC_KEY_FILE_256K, "EC"), null);
-        algorithm.verify(JWT.decode(jwt));
-    }
-    
-    @Test
-    public void shouldFailECDSA256KVerificationOnInvalidDERSignature() throws Exception {
-        exception.expect(SignatureVerificationException.class);
-        exception.expectMessage("The Token's Signature resulted invalid when verified using the Algorithm: SHA256withECDSA");
-        
-        byte[] bytes = new byte[64];
-        bytes[0] = 0x30;
-        new SecureRandom().nextBytes(bytes);
-        String signature = Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
-        String jwt = "eyJhbGciOiJFUzI1NksifQo.eyJpc3MiOiJhdXRoMCJ9." + signature;
-        Algorithm algorithm = Algorithm.ECDSA256K((ECPublicKey) readPublicKeyFromFile(INVALID_PUBLIC_KEY_FILE_256K, "EC"), null);
-        algorithm.verify(JWT.decode(jwt));
-    }
+
     @Test
     public void shouldPassECDSA384VerificationWithJOSESignature() throws Exception {
         String jwt = "eyJhbGciOiJFUzM4NCJ9.eyJpc3MiOiJhdXRoMCJ9.50UU5VKNdF1wfykY8jQBKpvuHZoe6IZBJm5NvoB8bR-hnRg6ti-CHbmvoRtlLfnHfwITa_8cJMy6TenMC2g63GQHytc8rYoXqbwtS4R0Ko_AXbLFUmfxnGnMC6v4MS_z";
@@ -348,7 +236,7 @@ public class ECDSAAlgorithmTest {
     }
 
     @Test
-    public void shouldFailECDSA384VerificationWhenProvidedPublicKeyIsNull() throws Exception {
+    public void shouldFailECDSA384VerificationWhenProvidedPublicKeyIsNull() {
         exception.expect(SignatureVerificationException.class);
         exception.expectMessage("The Token's Signature resulted invalid when verified using the Algorithm: SHA384withECDSA");
         exception.expectCause(isA(IllegalStateException.class));
@@ -473,7 +361,7 @@ public class ECDSAAlgorithmTest {
     }
 
     @Test
-    public void shouldFailECDSA512VerificationWhenProvidedPublicKeyIsNull() throws Exception {
+    public void shouldFailECDSA512VerificationWhenProvidedPublicKeyIsNull() {
         exception.expect(SignatureVerificationException.class);
         exception.expectMessage("The Token's Signature resulted invalid when verified using the Algorithm: SHA512withECDSA");
         exception.expectCause(isA(IllegalStateException.class));
@@ -692,7 +580,7 @@ public class ECDSAAlgorithmTest {
     }
 
     @Test
-    public void shouldFailOnECDSA256SigningWhenProvidedPrivateKeyIsNull() throws Exception {
+    public void shouldFailOnECDSA256SigningWhenProvidedPrivateKeyIsNull() {
         exception.expect(SignatureGenerationException.class);
         exception.expectMessage("The Token's Signature couldn't be generated when signing using the Algorithm: SHA256withECDSA");
         exception.expectCause(isA(IllegalStateException.class));
@@ -750,7 +638,7 @@ public class ECDSAAlgorithmTest {
     }
 
     @Test
-    public void shouldFailOnECDSA384SigningWhenProvidedPrivateKeyIsNull() throws Exception {
+    public void shouldFailOnECDSA384SigningWhenProvidedPrivateKeyIsNull() {
         exception.expect(SignatureGenerationException.class);
         exception.expectMessage("The Token's Signature couldn't be generated when signing using the Algorithm: SHA384withECDSA");
         exception.expectCause(isA(IllegalStateException.class));
@@ -811,7 +699,7 @@ public class ECDSAAlgorithmTest {
     }
 
     @Test
-    public void shouldFailOnECDSA512SigningWhenProvidedPrivateKeyIsNull() throws Exception {
+    public void shouldFailOnECDSA512SigningWhenProvidedPrivateKeyIsNull() {
         exception.expect(SignatureGenerationException.class);
         exception.expectMessage("The Token's Signature couldn't be generated when signing using the Algorithm: SHA512withECDSA");
         exception.expectCause(isA(IllegalStateException.class));
@@ -886,7 +774,7 @@ public class ECDSAAlgorithmTest {
     }
 
     @Test
-    public void shouldReturnNullSigningKeyIdIfCreatedWithDefaultProvider() throws Exception {
+    public void shouldReturnNullSigningKeyIdIfCreatedWithDefaultProvider() {
         ECPublicKey publicKey = mock(ECPublicKey.class);
         ECPrivateKey privateKey = mock(ECPrivateKey.class);
         ECDSAKeyProvider provider = ECDSAAlgorithm.providerForKeys(publicKey, privateKey);
@@ -896,7 +784,7 @@ public class ECDSAAlgorithmTest {
     }
 
     @Test
-    public void shouldReturnSigningKeyIdFromProvider() throws Exception {
+    public void shouldReturnSigningKeyIdFromProvider() {
         ECDSAKeyProvider provider = mock(ECDSAKeyProvider.class);
         when(provider.getPrivateKeyId()).thenReturn("keyId");
         Algorithm algorithm = new ECDSAAlgorithm("some-alg", "some-algorithm", 32, provider);
@@ -1152,10 +1040,10 @@ public class ECDSAAlgorithmTest {
 
     //Test Helpers
     static void assertValidJOSESignature(byte[] joseSignature, int numberSize, boolean withRPadding, boolean withSPadding) {
-        Assert.assertThat(joseSignature, is(Matchers.notNullValue()));
-        Assert.assertThat(numberSize, is(IsIn.oneOf(32, 48, 66)));
+        assertThat(joseSignature, is(Matchers.notNullValue()));
+        assertThat(numberSize, is(IsIn.oneOf(32, 48, 66)));
 
-        Assert.assertThat(joseSignature.length, is(numberSize * 2));
+        assertThat(joseSignature.length, is(numberSize * 2));
 
         byte[] rCopy = Arrays.copyOfRange(joseSignature, 0, numberSize);
         byte[] sCopy = Arrays.copyOfRange(joseSignature, numberSize, numberSize * 2);
@@ -1170,12 +1058,12 @@ public class ECDSAAlgorithmTest {
         if (withSPadding) {
             sNumber[0] = (byte) 0;
         }
-        Assert.assertThat(Arrays.equals(rNumber, rCopy), is(true));
-        Assert.assertThat(Arrays.equals(sNumber, sCopy), is(true));
+        assertThat(Arrays.equals(rNumber, rCopy), is(true));
+        assertThat(Arrays.equals(sNumber, sCopy), is(true));
     }
 
     static byte[] createDERSignature(int numberSize, boolean withRPadding, boolean withSPadding) {
-        Assert.assertThat(numberSize, is(IsIn.oneOf(32, 48, 66)));
+        assertThat(numberSize, is(IsIn.oneOf(32, 48, 66)));
 
         int rLength = withRPadding ? numberSize - 1 : numberSize;
         int sLength = withSPadding ? numberSize - 1 : numberSize;
@@ -1218,7 +1106,7 @@ public class ECDSAAlgorithmTest {
     }
 
     static byte[] createJOSESignature(int numberSize, boolean withRPadding, boolean withSPadding) {
-        Assert.assertThat(numberSize, is(IsIn.oneOf(32, 48, 66)));
+        assertThat(numberSize, is(IsIn.oneOf(32, 48, 66)));
 
         byte[] rNumber = new byte[numberSize];
         byte[] sNumber = new byte[numberSize];
@@ -1237,8 +1125,8 @@ public class ECDSAAlgorithmTest {
     }
 
     static void assertValidDERSignature(byte[] derSignature, int numberSize, boolean withRPadding, boolean withSPadding) {
-        Assert.assertThat(derSignature, is(Matchers.notNullValue()));
-        Assert.assertThat(numberSize, is(IsIn.oneOf(32, 48, 66)));
+        assertThat(derSignature, is(Matchers.notNullValue()));
+        assertThat(numberSize, is(IsIn.oneOf(32, 48, 66)));
 
         int rLength = withRPadding ? numberSize - 1 : numberSize;
         int sLength = withSPadding ? numberSize - 1 : numberSize;
@@ -1246,24 +1134,24 @@ public class ECDSAAlgorithmTest {
         int offset = 0;
 
         //Start sequence
-        Assert.assertThat(derSignature[offset++], is((byte) 0x30));
+        assertThat(derSignature[offset++], is((byte) 0x30));
         if (totalLength > 0x7f) {
             //Add sign before sequence length
             totalLength++;
-            Assert.assertThat(derSignature[offset++], is((byte) 0x81));
+            assertThat(derSignature[offset++], is((byte) 0x81));
         }
         //Sequence length
-        Assert.assertThat(derSignature[offset++], is((byte) (totalLength - offset)));
+        assertThat(derSignature[offset++], is((byte) (totalLength - offset)));
 
         //R number
-        Assert.assertThat(derSignature[offset++], is((byte) 0x02));
-        Assert.assertThat(derSignature[offset++], is((byte) rLength));
+        assertThat(derSignature[offset++], is((byte) 0x02));
+        assertThat(derSignature[offset++], is((byte) rLength));
         byte[] rCopy = Arrays.copyOfRange(derSignature, offset, offset + rLength);
         offset += rLength;
 
         //S number
-        Assert.assertThat(derSignature[offset++], is((byte) 0x02));
-        Assert.assertThat(derSignature[offset++], is((byte) sLength));
+        assertThat(derSignature[offset++], is((byte) 0x02));
+        assertThat(derSignature[offset++], is((byte) sLength));
         byte[] sCopy = Arrays.copyOfRange(derSignature, offset, offset + sLength);
 
 
@@ -1271,9 +1159,9 @@ public class ECDSAAlgorithmTest {
         byte[] sNumber = new byte[sLength];
         Arrays.fill(rNumber, (byte) 0x11);
         Arrays.fill(sNumber, (byte) 0x22);
-        Assert.assertThat(Arrays.equals(rNumber, rCopy), is(true));
-        Assert.assertThat(Arrays.equals(sNumber, sCopy), is(true));
-        Assert.assertThat(derSignature.length, is(totalLength));
+        assertThat(Arrays.equals(rNumber, rCopy), is(true));
+        assertThat(Arrays.equals(sNumber, sCopy), is(true));
+        assertThat(derSignature.length, is(totalLength));
     }
 
     @Test
@@ -1313,7 +1201,7 @@ public class ECDSAAlgorithmTest {
      */
 
     @Test
-    public void shouldFailOnECDSA256SigningWithDeprecatedMethodWhenProvidedPrivateKeyIsNull() throws Exception {
+    public void shouldFailOnECDSA256SigningWithDeprecatedMethodWhenProvidedPrivateKeyIsNull() {
         exception.expect(SignatureGenerationException.class);
         exception.expectMessage("The Token's Signature couldn't be generated when signing using the Algorithm: SHA256withECDSA");
         exception.expectCause(isA(IllegalStateException.class));
@@ -1335,15 +1223,12 @@ public class ECDSAAlgorithmTest {
         ECKey key256 = (ECKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC");
         ECKey key384 = (ECKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_384, "EC");
         ECKey key512 = (ECKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_512, "EC");
-        ECKey key256k = (ECKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256K, "EC");
         JWTVerifier verifier256 = JWT.require(Algorithm.ECDSA256(key256)).build();
         JWTVerifier verifier384 = JWT.require(Algorithm.ECDSA256(key384)).build();
         JWTVerifier verifier512 = JWT.require(Algorithm.ECDSA256(key512)).build();
-        JWTVerifier verifier256k = JWT.require(Algorithm.ECDSA256(key256k)).build();
         verifier256.verify(jwtWithInvalidSig);
         verifier384.verify(jwtWithInvalidSig);
         verifier512.verify(jwtWithInvalidSig);
-        verifier256k.verify(jwtWithInvalidSig);
     }
 
     @Test
@@ -1356,15 +1241,12 @@ public class ECDSAAlgorithmTest {
         ECKey key256 = (ECKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC");
         ECKey key384 = (ECKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_384, "EC");
         ECKey key512 = (ECKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_512, "EC");
-        ECKey key256k = (ECKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256K, "EC");
         JWTVerifier verifier256 = JWT.require(Algorithm.ECDSA256(key256)).build();
         JWTVerifier verifier384 = JWT.require(Algorithm.ECDSA256(key384)).build();
         JWTVerifier verifier512 = JWT.require(Algorithm.ECDSA256(key512)).build();
-        JWTVerifier verifier256k = JWT.require(Algorithm.ECDSA256(key256k)).build();
         verifier256.verify(jwtWithInvalidSig);
         verifier384.verify(jwtWithInvalidSig);
         verifier512.verify(jwtWithInvalidSig);
-        verifier256k.verify(jwtWithInvalidSig);
     }
 
     @Test

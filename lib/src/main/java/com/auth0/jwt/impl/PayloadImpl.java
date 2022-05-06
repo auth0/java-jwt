@@ -6,16 +6,17 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectReader;
 
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.*;
 
 import static com.auth0.jwt.impl.JsonNodeClaim.extractClaim;
 
 /**
  * Decoder of string JSON Web Tokens into their POJO representations.
- *
- * @see Payload
  * <p>
  * This class is thread-safe.
+ *
+ * @see Payload
  */
 class PayloadImpl implements Payload, Serializable {
 
@@ -24,14 +25,24 @@ class PayloadImpl implements Payload, Serializable {
     private final String issuer;
     private final String subject;
     private final List<String> audience;
-    private final Date expiresAt;
-    private final Date notBefore;
-    private final Date issuedAt;
+    private final Instant expiresAt;
+    private final Instant notBefore;
+    private final Instant issuedAt;
     private final String jwtId;
     private final Map<String, JsonNode> tree;
     private final ObjectReader objectReader;
 
-    PayloadImpl(String issuer, String subject, List<String> audience, Date expiresAt, Date notBefore, Date issuedAt, String jwtId, Map<String, JsonNode> tree, ObjectReader objectReader) {
+    PayloadImpl(
+            String issuer,
+            String subject,
+            List<String> audience,
+            Instant expiresAt,
+            Instant notBefore,
+            Instant issuedAt,
+            String jwtId,
+            Map<String, JsonNode> tree,
+            ObjectReader objectReader
+    ) {
         this.issuer = issuer;
         this.subject = subject;
         this.audience = audience != null ? Collections.unmodifiableList(audience) : null;
@@ -64,17 +75,33 @@ class PayloadImpl implements Payload, Serializable {
 
     @Override
     public Date getExpiresAt() {
+        return (expiresAt != null) ? Date.from(expiresAt) : null;
+    }
+
+
+    @Override
+    public Instant getExpiresAtAsInstant() {
         return expiresAt;
     }
 
     @Override
-    public Date getNotBefore() {
-        return notBefore;
+    public Date getIssuedAt() {
+        return (issuedAt != null) ? Date.from(issuedAt) : null;
     }
 
     @Override
-    public Date getIssuedAt() {
+    public Instant getIssuedAtAsInstant() {
         return issuedAt;
+    }
+
+    @Override
+    public Date getNotBefore() {
+        return (notBefore != null) ? Date.from(notBefore) : null;
+    }
+
+    @Override
+    public Instant getNotBeforeAsInstant() {
+        return notBefore;
     }
 
     @Override

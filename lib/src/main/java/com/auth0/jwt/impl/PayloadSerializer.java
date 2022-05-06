@@ -1,49 +1,39 @@
 package com.auth0.jwt.impl;
 
+import com.auth0.jwt.RegisteredClaims;
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Jackson serializer implementation for converting into JWT Payload parts.
- *
- * @see com.auth0.jwt.JWTCreator
  * <p>
  * This class is thread-safe.
+ *
+ * @see com.auth0.jwt.JWTCreator
  */
-public class PayloadSerializer extends StdSerializer<ClaimsHolder> {
-
+public class PayloadSerializer extends ClaimsSerializer<PayloadClaimsHolder> {
     public PayloadSerializer() {
-        this(null);
-    }
-
-    private PayloadSerializer(Class<ClaimsHolder> t) {
-        super(t);
+        super(PayloadClaimsHolder.class);
     }
 
     @Override
-    public void serialize(ClaimsHolder holder, JsonGenerator gen, SerializerProvider provider) throws IOException {
-
-        gen.writeStartObject();
-        for (Map.Entry<String, Object> e : holder.getClaims().entrySet()) {
-            if (PublicClaims.AUDIENCE.equals(e.getKey())) {
-                writeAudience(gen, e);
-            } else {
-                gen.writeFieldName(e.getKey());
-                if (e.getValue() instanceof Date) { // true for EXPIRES_AT, ISSUED_AT, NOT_BEFORE
-                    gen.writeNumber(dateToSeconds((Date) e.getValue()));
-                } else {
-                    gen.writeObject(e.getValue());
-                }
-            }
+    protected void writeClaim(Map.Entry<String, Object> entry, JsonGenerator gen) throws IOException {
+        if (RegisteredClaims.AUDIENCE.equals(entry.getKey())) {
+            writeAudience(gen, entry);
+        } else {
+            super.writeClaim(entry, gen);
         }
-
-        gen.writeEndObject();
     }
 
+    /**
+     * Audience may be a list of strings or a single string. This is needed to properly handle the aud claim when
+     * added with the {@linkplain com.auth0.jwt.JWTCreator.Builder#withPayload(Map)} method.
+     */
     private void writeAudience(JsonGenerator gen, Map.Entry<String, Object> e) throws IOException {
         if (e.getValue() instanceof String) {
             gen.writeFieldName(e.getKey());
@@ -56,7 +46,7 @@ public class PayloadSerializer extends StdSerializer<ClaimsHolder> {
                 List<?> audList = (List<?>) e.getValue();
                 for (Object aud : audList) {
                     if (aud instanceof String) {
-                        audArray.add((String)aud);
+                        audArray.add((String) aud);
                     }
                 }
             }
@@ -72,9 +62,5 @@ public class PayloadSerializer extends StdSerializer<ClaimsHolder> {
                 gen.writeEndArray();
             }
         }
-    }
-
-    private long dateToSeconds(Date date) {
-        return date.getTime() / 1000;
     }
 }

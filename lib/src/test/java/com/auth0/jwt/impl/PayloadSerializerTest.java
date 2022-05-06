@@ -11,8 +11,8 @@ import org.junit.Test;
 import java.io.StringWriter;
 import java.util.*;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
 
 public class PayloadSerializerTest {
 
@@ -31,10 +31,9 @@ public class PayloadSerializerTest {
         serializerProvider = mapper.getSerializerProvider();
     }
 
-    @SuppressWarnings("Convert2Diamond")
     @Test
     public void shouldSerializeEmptyMap() throws Exception {
-        ClaimsHolder holder = new ClaimsHolder(new HashMap<String, Object>());
+        PayloadClaimsHolder holder = new PayloadClaimsHolder(new HashMap<>());
         serializer.serialize(holder, jsonGenerator, serializerProvider);
         jsonGenerator.flush();
 
@@ -43,7 +42,7 @@ public class PayloadSerializerTest {
 
     @Test
     public void shouldSerializeStringAudienceAsString() throws Exception {
-        ClaimsHolder holder = holderFor("aud", "auth0");
+        PayloadClaimsHolder holder = holderFor("aud", "auth0");
         serializer.serialize(holder, jsonGenerator, serializerProvider);
         jsonGenerator.flush();
 
@@ -52,7 +51,7 @@ public class PayloadSerializerTest {
 
     @Test
     public void shouldSerializeSingleItemAudienceAsArray() throws Exception {
-        ClaimsHolder holder = holderFor("aud", new String[]{"auth0"});
+        PayloadClaimsHolder holder = holderFor("aud", new String[]{"auth0"});
         serializer.serialize(holder, jsonGenerator, serializerProvider);
         jsonGenerator.flush();
 
@@ -61,7 +60,7 @@ public class PayloadSerializerTest {
 
     @Test
     public void shouldSerializeMultipleItemsAudienceAsArray() throws Exception {
-        ClaimsHolder holder = holderFor("aud", new String[]{"auth0", "auth10"});
+        PayloadClaimsHolder holder = holderFor("aud", new String[]{"auth0", "auth10"});
         serializer.serialize(holder, jsonGenerator, serializerProvider);
         jsonGenerator.flush();
 
@@ -70,7 +69,7 @@ public class PayloadSerializerTest {
 
     @Test
     public void shouldSkipSerializationOnEmptyAudience() throws Exception {
-        ClaimsHolder holder = holderFor("aud", new String[0]);
+        PayloadClaimsHolder holder = holderFor("aud", new String[0]);
         serializer.serialize(holder, jsonGenerator, serializerProvider);
         jsonGenerator.flush();
 
@@ -79,7 +78,7 @@ public class PayloadSerializerTest {
 
     @Test
     public void shouldSerializeSingleItemAudienceAsArrayWhenAList() throws Exception {
-        ClaimsHolder holder = holderFor("aud", Collections.singletonList("auth0"));
+        PayloadClaimsHolder holder = holderFor("aud", Collections.singletonList("auth0"));
         serializer.serialize(holder, jsonGenerator, serializerProvider);
         jsonGenerator.flush();
 
@@ -88,7 +87,7 @@ public class PayloadSerializerTest {
 
     @Test
     public void shouldSerializeMultipleItemsAudienceAsArrayWhenAList() throws Exception {
-        ClaimsHolder holder = holderFor("aud", Arrays.asList("auth0", "auth10"));
+        PayloadClaimsHolder holder = holderFor("aud", Arrays.asList("auth0", "auth10"));
         serializer.serialize(holder, jsonGenerator, serializerProvider);
         jsonGenerator.flush();
 
@@ -97,7 +96,7 @@ public class PayloadSerializerTest {
 
     @Test
     public void shouldSkipSerializationOnEmptyAudienceWhenList() throws Exception {
-        ClaimsHolder holder = holderFor("aud", new ArrayList());
+        PayloadClaimsHolder holder = holderFor("aud", new ArrayList<>());
         serializer.serialize(holder, jsonGenerator, serializerProvider);
         jsonGenerator.flush();
 
@@ -106,7 +105,7 @@ public class PayloadSerializerTest {
 
     @Test
     public void shouldSkipNonStringsOnAudienceWhenSingleItemList() throws Exception {
-        ClaimsHolder holder = holderFor("aud", Collections.singletonList(2));
+        PayloadClaimsHolder holder = holderFor("aud", Collections.singletonList(2));
         serializer.serialize(holder, jsonGenerator, serializerProvider);
         jsonGenerator.flush();
 
@@ -115,7 +114,7 @@ public class PayloadSerializerTest {
 
     @Test
     public void shouldSkipNonStringsOnAudienceWhenList() throws Exception {
-        ClaimsHolder holder = holderFor("aud", Arrays.asList("auth0", 2, "auth10"));
+        PayloadClaimsHolder holder = holderFor("aud", Arrays.asList("auth0", 2, "auth10"));
         serializer.serialize(holder, jsonGenerator, serializerProvider);
         jsonGenerator.flush();
 
@@ -124,7 +123,7 @@ public class PayloadSerializerTest {
 
     @Test
     public void shouldSkipNonStringsOnAudience() throws Exception {
-        ClaimsHolder holder = holderFor("aud", 4);
+        PayloadClaimsHolder holder = holderFor("aud", 4);
         serializer.serialize(holder, jsonGenerator, serializerProvider);
         jsonGenerator.flush();
 
@@ -133,7 +132,7 @@ public class PayloadSerializerTest {
 
     @Test
     public void shouldSerializeNotBeforeDateInSeconds() throws Exception {
-        ClaimsHolder holder = holderFor("nbf", new Date(1478874000));
+        PayloadClaimsHolder holder = holderFor("nbf", new Date(1478874000));
         serializer.serialize(holder, jsonGenerator, serializerProvider);
         jsonGenerator.flush();
 
@@ -142,7 +141,7 @@ public class PayloadSerializerTest {
 
     @Test
     public void shouldSerializeIssuedAtDateInSeconds() throws Exception {
-        ClaimsHolder holder = holderFor("iat", new Date(1478874000));
+        PayloadClaimsHolder holder = holderFor("iat", new Date(1478874000));
         serializer.serialize(holder, jsonGenerator, serializerProvider);
         jsonGenerator.flush();
 
@@ -151,7 +150,7 @@ public class PayloadSerializerTest {
 
     @Test
     public void shouldSerializeExpiresAtDateInSeconds() throws Exception {
-        ClaimsHolder holder = holderFor("exp", new Date(1478874000));
+        PayloadClaimsHolder holder = holderFor("exp", new Date(1478874000));
         serializer.serialize(holder, jsonGenerator, serializerProvider);
         jsonGenerator.flush();
 
@@ -160,7 +159,7 @@ public class PayloadSerializerTest {
 
     @Test
     public void shouldSerializeCustomDateInSeconds() throws Exception {
-        ClaimsHolder holder = holderFor("birthdate", new Date(1478874000));
+        PayloadClaimsHolder holder = holderFor("birthdate", new Date(1478874000));
         serializer.serialize(holder, jsonGenerator, serializerProvider);
         jsonGenerator.flush();
 
@@ -171,25 +170,42 @@ public class PayloadSerializerTest {
     public void shouldSerializeDatesUsingLong() throws Exception {
         long secs = Integer.MAX_VALUE + 10000L;
         Date date = new Date(secs * 1000L);
-        Map<String, Object> claims = new HashMap<String, Object>();
+        Map<String, Object> claims = new HashMap<>();
         claims.put("iat", date);
         claims.put("nbf", date);
         claims.put("exp", date);
         claims.put("ctm", date);
-        ClaimsHolder holder = new ClaimsHolder(claims);
+        claims.put("map", Collections.singletonMap("date", date));
+        claims.put("list", Collections.singletonList(date));
+
+        Map<String, Object> nestedInMap = new HashMap<>();
+        nestedInMap.put("list", Collections.singletonList(date));
+        claims.put("nestedInMap", nestedInMap);
+
+        List<Object> nestedInList = new ArrayList<>();
+        nestedInList.add(Collections.singletonMap("nested", date));
+        claims.put("nestedInList", nestedInList);
+
+        PayloadClaimsHolder holder = new PayloadClaimsHolder(claims);
         serializer.serialize(holder, jsonGenerator, serializerProvider);
         jsonGenerator.flush();
 
         String json = writer.toString();
+        System.out.println(json);
+
         assertThat(json, containsString("\"iat\":2147493647"));
         assertThat(json, containsString("\"nbf\":2147493647"));
         assertThat(json, containsString("\"exp\":2147493647"));
         assertThat(json, containsString("\"ctm\":2147493647"));
+        assertThat(json, containsString("\"map\":{\"date\":2147493647"));
+        assertThat(json, containsString("\"list\":[2147493647]"));
+        assertThat(json, containsString("\"nestedInMap\":{\"list\":[2147493647]}"));
+        assertThat(json, containsString("\"nestedInList\":[{\"nested\":2147493647}]"));
     }
 
     @Test
     public void shouldSerializeStrings() throws Exception {
-        ClaimsHolder holder = holderFor("name", "Auth0 Inc");
+        PayloadClaimsHolder holder = holderFor("name", "Auth0 Inc");
         serializer.serialize(holder, jsonGenerator, serializerProvider);
         jsonGenerator.flush();
 
@@ -198,7 +214,7 @@ public class PayloadSerializerTest {
 
     @Test
     public void shouldSerializeIntegers() throws Exception {
-        ClaimsHolder holder = holderFor("number", 12345);
+        PayloadClaimsHolder holder = holderFor("number", 12345);
         serializer.serialize(holder, jsonGenerator, serializerProvider);
         jsonGenerator.flush();
 
@@ -207,7 +223,7 @@ public class PayloadSerializerTest {
 
     @Test
     public void shouldSerializeDoubles() throws Exception {
-        ClaimsHolder holder = holderFor("fraction", 23.45);
+        PayloadClaimsHolder holder = holderFor("fraction", 23.45);
         serializer.serialize(holder, jsonGenerator, serializerProvider);
         jsonGenerator.flush();
 
@@ -216,7 +232,7 @@ public class PayloadSerializerTest {
 
     @Test
     public void shouldSerializeBooleans() throws Exception {
-        ClaimsHolder holder = holderFor("pro", true);
+        PayloadClaimsHolder holder = holderFor("pro", true);
         serializer.serialize(holder, jsonGenerator, serializerProvider);
         jsonGenerator.flush();
 
@@ -225,7 +241,7 @@ public class PayloadSerializerTest {
 
     @Test
     public void shouldSerializeNulls() throws Exception {
-        ClaimsHolder holder = holderFor("id", null);
+        PayloadClaimsHolder holder = holderFor("id", null);
         serializer.serialize(holder, jsonGenerator, serializerProvider);
         jsonGenerator.flush();
 
@@ -236,7 +252,7 @@ public class PayloadSerializerTest {
     public void shouldSerializeCustomArrayOfObject() throws Exception {
         UserPojo user1 = new UserPojo("Michael", 1);
         UserPojo user2 = new UserPojo("Lucas", 2);
-        ClaimsHolder holder = holderFor("users", new UserPojo[]{user1, user2});
+        PayloadClaimsHolder holder = holderFor("users", new UserPojo[]{user1, user2});
         serializer.serialize(holder, jsonGenerator, serializerProvider);
         jsonGenerator.flush();
 
@@ -247,7 +263,7 @@ public class PayloadSerializerTest {
     public void shouldSerializeCustomListOfObject() throws Exception {
         UserPojo user1 = new UserPojo("Michael", 1);
         UserPojo user2 = new UserPojo("Lucas", 2);
-        ClaimsHolder holder = holderFor("users", Arrays.asList(user1, user2));
+        PayloadClaimsHolder holder = holderFor("users", Arrays.asList(user1, user2));
         serializer.serialize(holder, jsonGenerator, serializerProvider);
         jsonGenerator.flush();
 
@@ -257,18 +273,17 @@ public class PayloadSerializerTest {
     @Test
     public void shouldSerializeCustomObject() throws Exception {
         UserPojo user = new UserPojo("Michael", 1);
-        ClaimsHolder holder = holderFor("users", user);
+        PayloadClaimsHolder holder = holderFor("users", user);
         serializer.serialize(holder, jsonGenerator, serializerProvider);
         jsonGenerator.flush();
 
         assertThat(writer.toString(), is(equalTo("{\"users\":{\"name\":\"Michael\",\"id\":1}}")));
     }
 
-    @SuppressWarnings("Convert2Diamond")
-    private ClaimsHolder holderFor(String key, Object value) {
-        Map<String, Object> map = new HashMap<String, Object>();
+    private PayloadClaimsHolder holderFor(String key, Object value) {
+        Map<String, Object> map = new HashMap<>();
         map.put(key, value);
-        return new ClaimsHolder(map);
+        return new PayloadClaimsHolder(map);
     }
 
 }

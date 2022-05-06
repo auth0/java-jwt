@@ -6,11 +6,11 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 
 import java.io.IOException;
 import java.lang.reflect.Array;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -31,32 +31,32 @@ class JsonNodeClaim implements Claim {
 
     @Override
     public Boolean asBoolean() {
-        return !data.isBoolean() ? null : data.asBoolean();
+        return isMissing() || isNull() || !data.isBoolean() ? null : data.asBoolean();
     }
 
     @Override
     public Integer asInt() {
-        return !data.isNumber() ? null : data.asInt();
+        return isMissing() || isNull() || !data.isNumber() ? null : data.asInt();
     }
 
     @Override
     public Long asLong() {
-        return !data.isNumber() ? null : data.asLong();
+        return isMissing() || isNull() || !data.isNumber() ? null : data.asLong();
     }
 
     @Override
     public Double asDouble() {
-        return !data.isNumber() ? null : data.asDouble();
+        return isMissing() || isNull() || !data.isNumber() ? null : data.asDouble();
     }
 
     @Override
     public String asString() {
-        return !data.isTextual() ? null : data.asText();
+        return isMissing() || isNull() || !data.isTextual() ? null : data.asText();
     }
 
     @Override
     public Date asDate() {
-        if (!data.canConvertToLong()) {
+        if (isMissing() || isNull() || !data.canConvertToLong()) {
             return null;
         }
         long seconds = data.asLong();
@@ -64,35 +64,44 @@ class JsonNodeClaim implements Claim {
     }
 
     @Override
+    public Instant asInstant() {
+        if (isMissing() || isNull() || !data.canConvertToLong()) {
+            return null;
+        }
+        long seconds = data.asLong();
+        return Instant.ofEpochSecond(seconds);
+    }
+
+    @Override
     @SuppressWarnings("unchecked")
-    public <T> T[] asArray(Class<T> tClazz) throws JWTDecodeException {
-        if (!data.isArray()) {
+    public <T> T[] asArray(Class<T> clazz) throws JWTDecodeException {
+        if (isMissing() || isNull() || !data.isArray()) {
             return null;
         }
 
-        T[] arr = (T[]) Array.newInstance(tClazz, data.size());
+        T[] arr = (T[]) Array.newInstance(clazz, data.size());
         for (int i = 0; i < data.size(); i++) {
             try {
-                arr[i] = objectReader.treeToValue(data.get(i), tClazz);
+                arr[i] = objectReader.treeToValue(data.get(i), clazz);
             } catch (JsonProcessingException e) {
-                throw new JWTDecodeException("Couldn't map the Claim's array contents to " + tClazz.getSimpleName(), e);
+                throw new JWTDecodeException("Couldn't map the Claim's array contents to " + clazz.getSimpleName(), e);
             }
         }
         return arr;
     }
 
     @Override
-    public <T> List<T> asList(Class<T> tClazz) throws JWTDecodeException {
-        if (!data.isArray()) {
+    public <T> List<T> asList(Class<T> clazz) throws JWTDecodeException {
+        if (isMissing() || isNull() || !data.isArray()) {
             return null;
         }
 
         List<T> list = new ArrayList<>();
         for (int i = 0; i < data.size(); i++) {
             try {
-                list.add(objectReader.treeToValue(data.get(i), tClazz));
+                list.add(objectReader.treeToValue(data.get(i), clazz));
             } catch (JsonProcessingException e) {
-                throw new JWTDecodeException("Couldn't map the Claim's array contents to " + tClazz.getSimpleName(), e);
+                throw new JWTDecodeException("Couldn't map the Claim's array contents to " + clazz.getSimpleName(), e);
             }
         }
         return list;
@@ -100,7 +109,7 @@ class JsonNodeClaim implements Claim {
 
     @Override
     public Map<String, Object> asMap() throws JWTDecodeException {
-        if (!data.isObject()) {
+        if (isMissing() || isNull() || !data.isObject()) {
             return null;
         }
 
@@ -115,21 +124,34 @@ class JsonNodeClaim implements Claim {
     }
 
     @Override
-    public <T> T as(Class<T> tClazz) throws JWTDecodeException {
+    public <T> T as(Class<T> clazz) throws JWTDecodeException {
         try {
-            return objectReader.treeAsTokens(data).readValueAs(tClazz);
+            if (isMissing() || isNull()) {
+                return null;
+            }
+            return objectReader.treeAsTokens(data).readValueAs(clazz);
         } catch (IOException e) {
-            throw new JWTDecodeException("Couldn't map the Claim value to " + tClazz.getSimpleName(), e);
+            throw new JWTDecodeException("Couldn't map the Claim value to " + clazz.getSimpleName(), e);
         }
     }
 
     @Override
     public boolean isNull() {
-        return false;
+        return !isMissing() && data.isNull();
+    }
+
+    @Override
+    public boolean isMissing() {
+        return data == null || data.isMissingNode();
     }
 
     @Override
     public String toString() {
+        if (isMissing()) {
+            return "Missing claim";
+        } else if (isNull()) {
+            return "Null claim";
+        }
         return data.toString();
     }
 
@@ -152,9 +174,6 @@ class JsonNodeClaim implements Claim {
      * @return a valid Claim instance. If the node is null or missing, a NullClaim will be returned.
      */
     static Claim claimFromNode(JsonNode node, ObjectReader objectReader) {
-        if (node == null || node.isNull() || node.isMissingNode()) {
-            return new NullClaim();
-        }
         return new JsonNodeClaim(node, objectReader);
     }
 

@@ -9,6 +9,7 @@ import com.auth0.jwt.interfaces.Payload;
 
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
@@ -41,7 +42,7 @@ final class JWTDecoder implements DecodedJWT, Serializable {
             payloadJson = new String(Base64.getUrlDecoder().decode(parts[1]), StandardCharsets.UTF_8);
         } catch (NullPointerException e) {
             throw new JWTDecodeException("The UTF-8 Charset isn't initialized.", e);
-        } catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             throw new JWTDecodeException("The input is not a valid base 64 encoded string.", e);
         }
         header = converter.parseHeader(headerJson);
@@ -94,13 +95,28 @@ final class JWTDecoder implements DecodedJWT, Serializable {
     }
 
     @Override
+    public Instant getExpiresAtAsInstant() {
+        return payload.getExpiresAtAsInstant();
+    }
+
+    @Override
     public Date getNotBefore() {
         return payload.getNotBefore();
     }
 
     @Override
+    public Instant getNotBeforeAsInstant() {
+        return  payload.getNotBeforeAsInstant();
+    }
+
+    @Override
     public Date getIssuedAt() {
         return payload.getIssuedAt();
+    }
+
+    @Override
+    public Instant getIssuedAtAsInstant() {
+        return payload.getIssuedAtAsInstant();
     }
 
     @Override

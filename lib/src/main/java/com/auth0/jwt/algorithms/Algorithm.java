@@ -48,9 +48,7 @@ public abstract class Algorithm {
      * @param key the key to use in the verify or signing instance.
      * @return a valid RSA256 Algorithm.
      * @throws IllegalArgumentException if the Key Provider is null.
-     * @deprecated use {@link #RSA256(RSAPublicKey, RSAPrivateKey)} or {@link #RSA256(RSAKeyProvider)}
      */
-    @Deprecated
     public static Algorithm RSA256(RSAKey key) throws IllegalArgumentException {
         RSAPublicKey publicKey = key instanceof RSAPublicKey ? (RSAPublicKey) key : null;
         RSAPrivateKey privateKey = key instanceof RSAPrivateKey ? (RSAPrivateKey) key : null;
@@ -86,9 +84,7 @@ public abstract class Algorithm {
      * @param key the key to use in the verify or signing instance.
      * @return a valid RSA384 Algorithm.
      * @throws IllegalArgumentException if the provided Key is null.
-     * @deprecated use {@link #RSA384(RSAPublicKey, RSAPrivateKey)} or {@link #RSA384(RSAKeyProvider)}
      */
-    @Deprecated
     public static Algorithm RSA384(RSAKey key) throws IllegalArgumentException {
         RSAPublicKey publicKey = key instanceof RSAPublicKey ? (RSAPublicKey) key : null;
         RSAPrivateKey privateKey = key instanceof RSAPrivateKey ? (RSAPrivateKey) key : null;
@@ -124,9 +120,7 @@ public abstract class Algorithm {
      * @param key the key to use in the verify or signing instance.
      * @return a valid RSA512 Algorithm.
      * @throws IllegalArgumentException if the provided Key is null.
-     * @deprecated use {@link #RSA512(RSAPublicKey, RSAPrivateKey)} or {@link #RSA512(RSAKeyProvider)}
      */
-    @Deprecated
     public static Algorithm RSA512(RSAKey key) throws IllegalArgumentException {
         RSAPublicKey publicKey = key instanceof RSAPublicKey ? (RSAPublicKey) key : null;
         RSAPrivateKey privateKey = key instanceof RSAPrivateKey ? (RSAPrivateKey) key : null;
@@ -136,7 +130,9 @@ public abstract class Algorithm {
     /**
      * Creates a new Algorithm instance using HmacSHA256. Tokens specify this as "HS256".
      *
-     * @param secret the secret to use in the verify or signing instance.
+     * @param secret the secret bytes to use in the verify or signing instance.
+     *               Ensure the length of the secret is at least 256 bit long
+     *               See <a href="https://github.com/auth0/java-jwt#hmac-key-length-and-security">HMAC Key Length and Security in README</a>
      * @return a valid HMAC256 Algorithm.
      * @throws IllegalArgumentException if the provided Secret is null.
      */
@@ -145,31 +141,11 @@ public abstract class Algorithm {
     }
 
     /**
-     * Creates a new Algorithm instance using HmacSHA384. Tokens specify this as "HS384".
-     *
-     * @param secret the secret to use in the verify or signing instance.
-     * @return a valid HMAC384 Algorithm.
-     * @throws IllegalArgumentException if the provided Secret is null.
-     */
-    public static Algorithm HMAC384(String secret) throws IllegalArgumentException {
-        return new HMACAlgorithm("HS384", "HmacSHA384", secret);
-    }
-
-    /**
-     * Creates a new Algorithm instance using HmacSHA512. Tokens specify this as "HS512".
-     *
-     * @param secret the secret to use in the verify or signing instance.
-     * @return a valid HMAC512 Algorithm.
-     * @throws IllegalArgumentException if the provided Secret is null.
-     */
-    public static Algorithm HMAC512(String secret) throws IllegalArgumentException {
-        return new HMACAlgorithm("HS512", "HmacSHA512", secret);
-    }
-
-    /**
      * Creates a new Algorithm instance using HmacSHA256. Tokens specify this as "HS256".
      *
      * @param secret the secret bytes to use in the verify or signing instance.
+     *               Ensure the length of the secret is at least 256 bit long
+     *               See <a href="https://github.com/auth0/java-jwt#hmac-key-length-and-security">HMAC Key Length and Security in README</a>
      * @return a valid HMAC256 Algorithm.
      * @throws IllegalArgumentException if the provided Secret is null.
      */
@@ -178,40 +154,24 @@ public abstract class Algorithm {
     }
 
     /**
-     * Creates a new Algorithm instance using SHA256withECDSA. Tokens specify this as "ES256K".
+     * Creates a new Algorithm instance using HmacSHA384. Tokens specify this as "HS384".
      *
-     * @param keyProvider the provider of the Public Key and Private Key for the verify and signing instance.
-     * @return a valid ECDSA256 Algorithm.
-     * @throws IllegalArgumentException if the Key Provider is null.
-     * @deprecated The SECP-256K1 Curve algorithm has been disabled beginning in Java 15.
-     * Use of this method in those unsupported Java versions will throw a {@link java.security.SignatureException}.
-     * This method will be removed in the next major version. See for additional information
+     * @param secret the secret bytes to use in the verify or signing instance.
+     *               Ensure the length of the secret is at least 384 bit long
+     *               See <a href="https://github.com/auth0/java-jwt#hmac-key-length-and-security">HMAC Key Length and Security in README</a>
+     * @return a valid HMAC384 Algorithm.
+     * @throws IllegalArgumentException if the provided Secret is null.
      */
-    @Deprecated
-    public static Algorithm ECDSA256K(ECDSAKeyProvider keyProvider) throws IllegalArgumentException {
-        return new ECDSAAlgorithm("ES256K", "SHA256withECDSA", 32, keyProvider);
-    }
-
-    /**
-     * Creates a new Algorithm instance using SHA256withECDSA. Tokens specify this as "ES256K".
-     *
-     * @param publicKey  the key to use in the verify instance.
-     * @param privateKey the key to use in the signing instance.
-     * @return a valid ECDSA256 Algorithm.
-     * @throws IllegalArgumentException if the provided Key is null.
-     * @deprecated The SECP-256K1 Curve algorithm has been disabled beginning in Java 15.
-     * Use of this method in those unsupported Java versions will throw a {@link java.security.SignatureException}.
-     * This method will be removed in the next major version. See for additional information
-     */
-    @Deprecated
-    public static Algorithm ECDSA256K(ECPublicKey publicKey, ECPrivateKey privateKey) throws IllegalArgumentException {
-        return ECDSA256K(ECDSAAlgorithm.providerForKeys(publicKey, privateKey));
+    public static Algorithm HMAC384(String secret) throws IllegalArgumentException {
+        return new HMACAlgorithm("HS384", "HmacSHA384", secret);
     }
 
     /**
      * Creates a new Algorithm instance using HmacSHA384. Tokens specify this as "HS384".
      *
      * @param secret the secret bytes to use in the verify or signing instance.
+     *               Ensure the length of the secret is at least 384 bit long
+     *               See <a href="https://github.com/auth0/java-jwt#hmac-key-length-and-security">HMAC Key Length and Security in README</a>
      * @return a valid HMAC384 Algorithm.
      * @throws IllegalArgumentException if the provided Secret is null.
      */
@@ -223,14 +183,28 @@ public abstract class Algorithm {
      * Creates a new Algorithm instance using HmacSHA512. Tokens specify this as "HS512".
      *
      * @param secret the secret bytes to use in the verify or signing instance.
+     *               Ensure the length of the secret is at least 512 bit long
+     *               See <a href="https://github.com/auth0/java-jwt#hmac-key-length-and-security">HMAC Key Length and Security in README</a>
+     * @return a valid HMAC512 Algorithm.
+     * @throws IllegalArgumentException if the provided Secret is null.
+     */
+    public static Algorithm HMAC512(String secret) throws IllegalArgumentException {
+        return new HMACAlgorithm("HS512", "HmacSHA512", secret);
+    }
+
+    /**
+     * Creates a new Algorithm instance using HmacSHA512. Tokens specify this as "HS512".
+     *
+     * @param secret the secret bytes to use in the verify or signing instance.
+     *               Ensure the length of the secret is at least 512 bit long
+     *               See <a href="https://github.com/auth0/java-jwt#hmac-key-length-and-security">HMAC Key Length and Security in README</a>
      * @return a valid HMAC512 Algorithm.
      * @throws IllegalArgumentException if the provided Secret is null.
      */
     public static Algorithm HMAC512(byte[] secret) throws IllegalArgumentException {
         return new HMACAlgorithm("HS512", "HmacSHA512", secret);
     }
-    
-    
+
 
     /**
      * Creates a new Algorithm instance using SHA256withECDSA. Tokens specify this as "ES256".
@@ -261,9 +235,7 @@ public abstract class Algorithm {
      * @param key the key to use in the verify or signing instance.
      * @return a valid ECDSA256 Algorithm.
      * @throws IllegalArgumentException if the provided Key is null.
-     * @deprecated use {@link #ECDSA256(ECPublicKey, ECPrivateKey)} or {@link #ECDSA256(ECDSAKeyProvider)}
      */
-    @Deprecated
     public static Algorithm ECDSA256(ECKey key) throws IllegalArgumentException {
         ECPublicKey publicKey = key instanceof ECPublicKey ? (ECPublicKey) key : null;
         ECPrivateKey privateKey = key instanceof ECPrivateKey ? (ECPrivateKey) key : null;
@@ -299,9 +271,7 @@ public abstract class Algorithm {
      * @param key the key to use in the verify or signing instance.
      * @return a valid ECDSA384 Algorithm.
      * @throws IllegalArgumentException if the provided Key is null.
-     * @deprecated use {@link #ECDSA384(ECPublicKey, ECPrivateKey)} or {@link #ECDSA384(ECDSAKeyProvider)}
      */
-    @Deprecated
     public static Algorithm ECDSA384(ECKey key) throws IllegalArgumentException {
         ECPublicKey publicKey = key instanceof ECPublicKey ? (ECPublicKey) key : null;
         ECPrivateKey privateKey = key instanceof ECPrivateKey ? (ECPrivateKey) key : null;
@@ -337,9 +307,7 @@ public abstract class Algorithm {
      * @param key the key to use in the verify or signing instance.
      * @return a valid ECDSA512 Algorithm.
      * @throws IllegalArgumentException if the provided Key is null.
-     * @deprecated use {@link #ECDSA512(ECPublicKey, ECPrivateKey)} or {@link #ECDSA512(ECDSAKeyProvider)}
      */
-    @Deprecated
     public static Algorithm ECDSA512(ECKey key) throws IllegalArgumentException {
         ECPublicKey publicKey = key instanceof ECPublicKey ? (ECPublicKey) key : null;
         ECPrivateKey privateKey = key instanceof ECPrivateKey ? (ECPrivateKey) key : null;
@@ -357,7 +325,8 @@ public abstract class Algorithm {
     }
 
     /**
-     * Getter for the Id of the Private Key used to sign the tokens. This is usually specified as the `kid` claim in the Header.
+     * Getter for the Id of the Private Key used to sign the tokens.
+     * This is usually specified as the `kid` claim in the Header.
      *
      * @return the Key Id that identifies the Signing Key or null if it's not specified.
      */
@@ -375,7 +344,8 @@ public abstract class Algorithm {
     }
 
     /**
-     * Getter for the description of this Algorithm, required when instantiating a Mac or Signature object. i.e. "HmacSHA256"
+     * Getter for the description of this Algorithm,
+     * required when instantiating a Mac or Signature object. i.e. "HmacSHA256"
      *
      * @return the algorithm description.
      */
@@ -392,15 +362,19 @@ public abstract class Algorithm {
      * Verify the given token using this Algorithm instance.
      *
      * @param jwt the already decoded JWT that it's going to be verified.
-     * @throws SignatureVerificationException if the Token's Signature is invalid, meaning that it doesn't match the signatureBytes, or if the Key is invalid.
+     * @throws SignatureVerificationException if the Token's Signature is invalid,
+     *                                        meaning that it doesn't match the signatureBytes,
+     *                                        or if the Key is invalid.
      */
     public abstract void verify(DecodedJWT jwt) throws SignatureVerificationException;
 
     /**
      * Sign the given content using this Algorithm instance.
      *
-     * @param headerBytes  an array of bytes representing the base64 encoded header content to be verified against the signature.
-     * @param payloadBytes an array of bytes representing the base64 encoded payload content to be verified against the signature.
+     * @param headerBytes  an array of bytes representing the base64 encoded header content
+     *                     to be verified against the signature.
+     * @param payloadBytes an array of bytes representing the base64 encoded payload content
+     *                     to be verified against the signature.
      * @return the signature in a base64 encoded array of bytes
      * @throws SignatureGenerationException if the Key is invalid.
      */
@@ -417,14 +391,14 @@ public abstract class Algorithm {
 
     /**
      * Sign the given content using this Algorithm instance.
+     * To get the correct JWT Signature, ensure the content is in the format {HEADER}.{PAYLOAD}
      *
-     * @param contentBytes an array of bytes representing the base64 encoded content to be verified against the signature.
+     * @param contentBytes an array of bytes representing the base64 encoded content
+     *                     to be verified against the signature.
      * @return the signature in a base64 encoded array of bytes
      * @throws SignatureGenerationException if the Key is invalid.
-     * @deprecated Please use the {@linkplain #sign(byte[], byte[])} method instead.
      */
 
-    @Deprecated
     public abstract byte[] sign(byte[] contentBytes) throws SignatureGenerationException;
 
 }

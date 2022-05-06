@@ -2,6 +2,12 @@ plugins {
     id 'java'
     id 'jacoco'
     id 'com.auth0.gradle.oss-library.java'
+    id 'checkstyle'
+}
+
+checkstyle {
+    toolVersion '10.0'
+    checkstyleTest.enabled = false //We are disabling lint checks for tests
 }
 
 logger.lifecycle("Using version ${version} for ${group}.${name}")
@@ -48,11 +54,16 @@ javadoc {
 
 dependencies {
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.2.2'
-    testImplementation 'org.bouncycastle:bcprov-jdk15on:1.60'
-    testImplementation 'junit:junit:4.12'
-    testImplementation 'net.jodah:concurrentunit:0.4.3'
-    testImplementation 'org.hamcrest:java-hamcrest:2.0.0.0'
-    testImplementation 'org.mockito:mockito-core:2.18.3'
+
+    testImplementation 'org.bouncycastle:bcprov-jdk15on:1.70'
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'net.jodah:concurrentunit:0.4.6'
+    testImplementation 'org.hamcrest:hamcrest:2.2'
+    testImplementation 'org.mockito:mockito-core:4.4.0'
+}
+
+jacoco {
+    toolVersion = "0.8.7"
 }
 
 jacocoTestReport {
@@ -85,6 +96,35 @@ task compileModuleInfoJava(type: JavaCompile) {
                 '--module-path', compileJava.classpath.asPath
         ]
     }
+}
+
+compileTestJava {
+    options.compilerArgs = ['--release', "8", "-Xlint:deprecation"]
+}
+
+def testJava8 = tasks.register('testJava8', Test) {
+    description = 'Runs unit tests on Java 8.'
+    group = 'verification'
+
+    javaLauncher.set(javaToolchains.launcherFor {
+        languageVersion = JavaLanguageVersion.of(8)
+    })
+    shouldRunAfter(tasks.named('test'))
+}
+
+def testJava17 = tasks.register('testJava17', Test) {
+    description = 'Runs unit tests on Java 17.'
+    group = 'verification'
+
+    javaLauncher.set(javaToolchains.launcherFor {
+        languageVersion = JavaLanguageVersion.of(17)
+    })
+    shouldRunAfter(tasks.named('test'))
+}
+
+tasks.named('check') {
+    dependsOn(testJava8)
+    dependsOn(testJava17)
 }
 
 jar {

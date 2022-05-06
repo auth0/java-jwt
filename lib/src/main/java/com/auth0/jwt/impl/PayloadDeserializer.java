@@ -1,5 +1,6 @@
 package com.auth0.jwt.impl;
 
+import com.auth0.jwt.RegisteredClaims;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.interfaces.Payload;
 import com.fasterxml.jackson.core.JsonParser;
@@ -11,14 +12,15 @@ import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.*;
 
 /**
  * Jackson deserializer implementation for converting from JWT Payload parts.
- *
- * @see JWTParser
  * <p>
  * This class is thread-safe.
+ *
+ * @see JWTParser
  */
 class PayloadDeserializer extends StdDeserializer<Payload> {
 
@@ -42,13 +44,13 @@ class PayloadDeserializer extends StdDeserializer<Payload> {
             throw new JWTDecodeException("Parsing the Payload's JSON resulted on a Null map");
         }
 
-        String issuer = getString(tree, PublicClaims.ISSUER);
-        String subject = getString(tree, PublicClaims.SUBJECT);
-        List<String> audience = getStringOrArray(tree, PublicClaims.AUDIENCE);
-        Date expiresAt = getDateFromSeconds(tree, PublicClaims.EXPIRES_AT);
-        Date notBefore = getDateFromSeconds(tree, PublicClaims.NOT_BEFORE);
-        Date issuedAt = getDateFromSeconds(tree, PublicClaims.ISSUED_AT);
-        String jwtId = getString(tree, PublicClaims.JWT_ID);
+        String issuer = getString(tree, RegisteredClaims.ISSUER);
+        String subject = getString(tree, RegisteredClaims.SUBJECT);
+        List<String> audience = getStringOrArray(tree, RegisteredClaims.AUDIENCE);
+        Instant expiresAt = getInstantFromSeconds(tree, RegisteredClaims.EXPIRES_AT);
+        Instant notBefore = getInstantFromSeconds(tree, RegisteredClaims.NOT_BEFORE);
+        Instant issuedAt = getInstantFromSeconds(tree, RegisteredClaims.ISSUED_AT);
+        String jwtId = getString(tree, RegisteredClaims.JWT_ID);
 
         return new PayloadImpl(issuer, subject, audience, expiresAt, notBefore, issuedAt, jwtId, tree, objectReader);
     }
@@ -73,16 +75,16 @@ class PayloadDeserializer extends StdDeserializer<Payload> {
         return list;
     }
 
-    Date getDateFromSeconds(Map<String, JsonNode> tree, String claimName) {
+    Instant getInstantFromSeconds(Map<String, JsonNode> tree, String claimName) {
         JsonNode node = tree.get(claimName);
         if (node == null || node.isNull()) {
             return null;
         }
         if (!node.canConvertToLong()) {
-            throw new JWTDecodeException(String.format("The claim '%s' contained a non-numeric date value.", claimName));
+            throw new JWTDecodeException(
+                    String.format("The claim '%s' contained a non-numeric date value.", claimName));
         }
-        final long ms = node.asLong() * 1000;
-        return new Date(ms);
+        return Instant.ofEpochSecond(node.asLong());
     }
 
     String getString(Map<String, JsonNode> tree, String claimName) {

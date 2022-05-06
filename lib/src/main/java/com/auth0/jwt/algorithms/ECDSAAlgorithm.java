@@ -25,7 +25,8 @@ class ECDSAAlgorithm extends Algorithm {
     private final int ecNumberSize;
 
     //Visible for testing
-    ECDSAAlgorithm(CryptoHelper crypto, String id, String algorithm, int ecNumberSize, ECDSAKeyProvider keyProvider) throws IllegalArgumentException {
+    ECDSAAlgorithm(CryptoHelper crypto, String id, String algorithm, int ecNumberSize, ECDSAKeyProvider keyProvider)
+            throws IllegalArgumentException {
         super(id, algorithm);
         if (keyProvider == null) {
             throw new IllegalArgumentException("The Key Provider cannot be null.");
@@ -35,7 +36,8 @@ class ECDSAAlgorithm extends Algorithm {
         this.ecNumberSize = ecNumberSize;
     }
 
-    ECDSAAlgorithm(String id, String algorithm, int ecNumberSize, ECDSAKeyProvider keyProvider) throws IllegalArgumentException {
+    ECDSAAlgorithm(String id, String algorithm, int ecNumberSize, ECDSAKeyProvider keyProvider)
+            throws IllegalArgumentException {
         this(new CryptoHelper(), id, algorithm, ecNumberSize, keyProvider);
     }
 
@@ -48,12 +50,14 @@ class ECDSAAlgorithm extends Algorithm {
                 throw new IllegalStateException("The given Public Key is null.");
             }
             validateSignatureStructure(signatureBytes, publicKey);
-            boolean valid = crypto.verifySignatureFor(getDescription(), publicKey, jwt.getHeader(), jwt.getPayload(), JOSEToDER(signatureBytes));
+            boolean valid = crypto.verifySignatureFor(
+                    getDescription(), publicKey, jwt.getHeader(), jwt.getPayload(), JOSEToDER(signatureBytes));
 
             if (!valid) {
                 throw new SignatureVerificationException(this);
             }
-        } catch (NoSuchAlgorithmException | SignatureException | InvalidKeyException | IllegalStateException | IllegalArgumentException e) {
+        } catch (NoSuchAlgorithmException | SignatureException | InvalidKeyException
+                | IllegalStateException | IllegalArgumentException e) {
             throw new SignatureVerificationException(this, e);
         }
     }
@@ -73,7 +77,6 @@ class ECDSAAlgorithm extends Algorithm {
     }
 
     @Override
-    @Deprecated
     public byte[] sign(byte[] contentBytes) throws SignatureGenerationException {
         try {
             ECPrivateKey privateKey = keyProvider.getPrivateKey();
@@ -119,25 +122,27 @@ class ECDSAAlgorithm extends Algorithm {
         offset++;
 
         //Obtain R number length (Includes padding) and skip it
-        int rLength = derSignature[offset++];
-        if (rLength > ecNumberSize + 1) {
+        int rlength = derSignature[offset++];
+        if (rlength > ecNumberSize + 1) {
             throw new SignatureException("Invalid DER signature format.");
         }
-        int rPadding = ecNumberSize - rLength;
+        int rpadding = ecNumberSize - rlength;
         //Retrieve R number
-        System.arraycopy(derSignature, offset + Math.max(-rPadding, 0), joseSignature, Math.max(rPadding, 0), rLength + Math.min(rPadding, 0));
+        System.arraycopy(derSignature, offset + Math.max(-rpadding, 0),
+                joseSignature, Math.max(rpadding, 0), rlength + Math.min(rpadding, 0));
 
         //Skip R number and 0x02
-        offset += rLength + 1;
+        offset += rlength + 1;
 
         //Obtain S number length. (Includes padding)
-        int sLength = derSignature[offset++];
-        if (sLength > ecNumberSize + 1) {
+        int slength = derSignature[offset++];
+        if (slength > ecNumberSize + 1) {
             throw new SignatureException("Invalid DER signature format.");
         }
-        int sPadding = ecNumberSize - sLength;
+        int spadding = ecNumberSize - slength;
         //Retrieve R number
-        System.arraycopy(derSignature, offset + Math.max(-sPadding, 0), joseSignature, ecNumberSize + Math.max(sPadding, 0), sLength + Math.min(sPadding, 0));
+        System.arraycopy(derSignature, offset + Math.max(-spadding, 0), joseSignature,
+                ecNumberSize + Math.max(spadding, 0), slength + Math.min(spadding, 0));
 
         return joseSignature;
     }
@@ -147,7 +152,7 @@ class ECDSAAlgorithm extends Algorithm {
      * This method ensures the signature's structure is as expected.
      *
      * @param joseSignature is the signature from the JWT
-     * @param publicKey public key used to verify the JWT
+     * @param publicKey     public key used to verify the JWT
      * @throws SignatureException if the signature's structure is not as per expectation
      */
     // Visible for testing
@@ -164,16 +169,14 @@ class ECDSAAlgorithm extends Algorithm {
         // get R
         byte[] rBytes = new byte[ecNumberSize];
         System.arraycopy(joseSignature, 0, rBytes, 0, ecNumberSize);
-        BigInteger r = new BigInteger(1, rBytes);
-        if(isAllZeros(rBytes)) {
+        if (isAllZeros(rBytes)) {
             throw new SignatureException("Invalid signature format.");
         }
 
         // get S
         byte[] sBytes = new byte[ecNumberSize];
         System.arraycopy(joseSignature, ecNumberSize, sBytes, 0, ecNumberSize);
-        BigInteger s = new BigInteger(1, sBytes);
-        if(isAllZeros(sBytes)) {
+        if (isAllZeros(sBytes)) {
             throw new SignatureException("Invalid signature format.");
         }
 
@@ -189,13 +192,15 @@ class ECDSAAlgorithm extends Algorithm {
         }
 
         BigInteger order = publicKey.getParams().getOrder();
+        BigInteger r = new BigInteger(1, rBytes);
+        BigInteger s = new BigInteger(1, sBytes);
 
         // R and S must be less than N
         if (order.compareTo(r) < 1) {
             throw new SignatureException("Invalid signature format.");
         }
 
-        if (order.compareTo(s) < 1){
+        if (order.compareTo(s) < 1) {
             throw new SignatureException("Invalid signature format.");
         }
     }
@@ -252,7 +257,8 @@ class ECDSAAlgorithm extends Algorithm {
             derSignature[offset++] = (byte) 0x00;
             System.arraycopy(joseSignature, ecNumberSize, derSignature, offset, ecNumberSize);
         } else {
-            System.arraycopy(joseSignature, ecNumberSize + sPadding, derSignature, offset, Math.min(ecNumberSize, sLength));
+            System.arraycopy(joseSignature, ecNumberSize + sPadding, derSignature, offset,
+                    Math.min(ecNumberSize, sLength));
         }
 
         return derSignature;

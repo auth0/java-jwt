@@ -27,12 +27,12 @@ public class JWTParserTest {
     private JWTParser parser;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         parser = new JWTParser();
     }
 
     @Test
-    public void shouldGetDefaultObjectMapper() throws Exception {
+    public void shouldGetDefaultObjectMapper() {
         ObjectMapper mapper = getDefaultObjectMapper();
         assertThat(mapper, is(notNullValue()));
         assertThat(mapper, is(instanceOf(ObjectMapper.class)));
@@ -40,7 +40,7 @@ public class JWTParserTest {
     }
 
     @Test
-    public void shouldAddDeserializers() throws Exception {
+    public void shouldAddDeserializers() {
         ObjectMapper mapper = mock(ObjectMapper.class);
         new JWTParser(mapper);
         verify(mapper).registerModule(any(Module.class));
@@ -58,7 +58,7 @@ public class JWTParserTest {
     }
 
     @Test
-    public void shouldThrowOnInvalidPayload() throws Exception {
+    public void shouldThrowOnInvalidPayload() {
         String jsonPayload = "{{";
         exception.expect(JWTDecodeException.class);
         exception.expectMessage(String.format("The string '%s' doesn't have a valid JSON format.", jsonPayload));
@@ -78,7 +78,7 @@ public class JWTParserTest {
     }
 
     @Test
-    public void shouldThrowOnInvalidHeader() throws Exception {
+    public void shouldThrowOnInvalidHeader() {
         String jsonHeader = "}}";
         exception.expect(JWTDecodeException.class);
         exception.expectMessage(String.format("The string '%s' doesn't have a valid JSON format.", jsonHeader));
@@ -87,28 +87,28 @@ public class JWTParserTest {
     }
 
     @Test
-    public void shouldThrowWhenConvertingHeaderIfNullJson() throws Exception {
+    public void shouldThrowWhenConvertingHeaderIfNullJson() {
         exception.expect(JWTDecodeException.class);
         exception.expectMessage("The string 'null' doesn't have a valid JSON format.");
         parser.parseHeader(null);
     }
 
     @Test
-    public void shouldThrowWhenConvertingHeaderFromInvalidJson() throws Exception {
+    public void shouldThrowWhenConvertingHeaderFromInvalidJson() {
         exception.expect(JWTDecodeException.class);
         exception.expectMessage("The string '}{' doesn't have a valid JSON format.");
         parser.parseHeader("}{");
     }
 
     @Test
-    public void shouldThrowWhenConvertingPayloadIfNullJson() throws Exception {
+    public void shouldThrowWhenConvertingPayloadIfNullJson() {
         exception.expect(JWTDecodeException.class);
         exception.expectMessage("The string 'null' doesn't have a valid JSON format.");
         parser.parsePayload(null);
     }
 
     @Test
-    public void shouldThrowWhenConvertingPayloadFromInvalidJson() throws Exception {
+    public void shouldThrowWhenConvertingPayloadFromInvalidJson() {
         exception.expect(JWTDecodeException.class);
         exception.expectMessage("The string '}{' doesn't have a valid JSON format.");
         parser.parsePayload("}{");

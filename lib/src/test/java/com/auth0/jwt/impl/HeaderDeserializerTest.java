@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -37,7 +37,7 @@ public class HeaderDeserializerTest {
     private ObjectReader objectReader = new ObjectMapper().reader();
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         deserializer = new HeaderDeserializer(objectReader);
     }
 
@@ -88,7 +88,7 @@ public class HeaderDeserializerTest {
     }
 
     @Test
-    public void shouldGetNullStringWhenParsingNullNode() throws Exception {
+    public void shouldGetNullStringWhenParsingNullNode() {
         Map<String, JsonNode> tree = new HashMap<>();
         NullNode node = NullNode.getInstance();
         tree.put("key", node);
@@ -98,7 +98,7 @@ public class HeaderDeserializerTest {
     }
 
     @Test
-    public void shouldGetNullStringWhenParsingNull() throws Exception {
+    public void shouldGetNullStringWhenParsingNull() {
         Map<String, JsonNode> tree = new HashMap<>();
         tree.put("key", null);
 
@@ -107,7 +107,7 @@ public class HeaderDeserializerTest {
     }
 
     @Test
-    public void shouldGetStringWhenParsingTextNode() throws Exception {
+    public void shouldGetStringWhenParsingTextNode() {
         Map<String, JsonNode> tree = new HashMap<>();
         TextNode node = new TextNode("something here");
         tree.put("key", node);

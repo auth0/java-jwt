@@ -1,5 +1,6 @@
 package com.auth0.jwt.impl;
 
+import com.auth0.jwt.HeaderParams;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -13,10 +14,10 @@ import java.util.Map;
 
 /**
  * Jackson deserializer implementation for converting from JWT Header parts.
- *
- * @see JWTParser
  * <p>
  * This class is thread-safe.
+ *
+ * @see JWTParser
  */
 class HeaderDeserializer extends StdDeserializer<BasicHeader> {
 
@@ -40,10 +41,10 @@ class HeaderDeserializer extends StdDeserializer<BasicHeader> {
             throw new JWTDecodeException("Parsing the Header's JSON resulted on a Null map");
         }
 
-        String algorithm = getString(tree, PublicClaims.ALGORITHM);
-        String type = getString(tree, PublicClaims.TYPE);
-        String contentType = getString(tree, PublicClaims.CONTENT_TYPE);
-        String keyId = getString(tree, PublicClaims.KEY_ID);
+        String algorithm = getString(tree, HeaderParams.ALGORITHM);
+        String type = getString(tree, HeaderParams.TYPE);
+        String contentType = getString(tree, HeaderParams.CONTENT_TYPE);
+        String keyId = getString(tree, HeaderParams.KEY_ID);
         return new BasicHeader(algorithm, type, contentType, keyId, tree, objectReader);
     }
 
