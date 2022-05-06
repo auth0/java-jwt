@@ -1,5 +1,54 @@
 # Change Log
 
+## [4.0.0-beta.0](https://github.com/auth0/java-jwt/tree/4.0.0-beta.0) (2022-05-06)
+[Full Changelog](https://github.com/auth0/java-jwt/compare/3.19.2...4.0.0-beta.0)
+
+💡 Check the [Migration Guide](https://github.com/auth0/java-jwt/blob/master/MIGRATION_GUIDE.md) to understand the changes required to migrate your application to v4.
+
+**Added**
+- JavaDoc updated [\#577](https://github.com/auth0/java-jwt/pull/577) ([poovamraj](https://github.com/poovamraj))
+- Add Migration Guide [\#576](https://github.com/auth0/java-jwt/pull/576) ([jimmyjames](https://github.com/jimmyjames))
+- Expose claim name and header constants [\#574](https://github.com/auth0/java-jwt/pull/574) ([jimmyjames](https://github.com/jimmyjames))
+- Added support for multiple checks on a single claim [\#573](https://github.com/auth0/java-jwt/pull/573) ([poovamraj](https://github.com/poovamraj))
+- Improved README structure [\#571](https://github.com/auth0/java-jwt/pull/571) ([poovamraj](https://github.com/poovamraj))
+- Improved Exception Handling [\#568](https://github.com/auth0/java-jwt/pull/568) ([poovamraj](https://github.com/poovamraj))
+- Predicate based Claim verification [\#562](https://github.com/auth0/java-jwt/pull/562) ([poovamraj](https://github.com/poovamraj))
+- Add lint checks [\#561](https://github.com/auth0/java-jwt/pull/561) ([poovamraj](https://github.com/poovamraj))
+- Support date/time custom claim validation [\#538](https://github.com/auth0/java-jwt/pull/538) ([jimmyjames](https://github.com/jimmyjames))
+- Add Instant support [\#537](https://github.com/auth0/java-jwt/pull/537) ([jimmyjames](https://github.com/jimmyjames))
+- Testing Java LTS versions [\#536](https://github.com/auth0/java-jwt/pull/536) ([poovamraj](https://github.com/poovamraj))
+
+**Changed**
+- Null claim handling [\#564](https://github.com/auth0/java-jwt/pull/564) ([poovamraj](https://github.com/poovamraj))
+- Undeprecate Single Key Constructor for Algorithms [\#551](https://github.com/auth0/java-jwt/pull/551) ([poovamraj](https://github.com/poovamraj))
+- Update documentation and undeprecate single content sign methods [\#550](https://github.com/auth0/java-jwt/pull/550) ([poovamraj](https://github.com/poovamraj))
+- Update test deps [\#539](https://github.com/auth0/java-jwt/pull/539) ([jimmyjames](https://github.com/jimmyjames))
+
+**Deprecated**
+- Deprecate secp256k1 curve for EC Algorithms [\#540](https://github.com/auth0/java-jwt/pull/540) ([poovamraj](https://github.com/poovamraj))
+
+**Removed**
+- Remove ES256K support [\#556](https://github.com/auth0/java-jwt/pull/556) ([poovamraj](https://github.com/poovamraj))
+- Remove impl package export in module-info [\#553](https://github.com/auth0/java-jwt/pull/553) ([poovamraj](https://github.com/poovamraj))
+- Remove internal Clock [\#533](https://github.com/auth0/java-jwt/pull/533) ([jimmyjames](https://github.com/jimmyjames))
+
+**Fixed**
+- Improve keyprovider reliability [\#570](https://github.com/auth0/java-jwt/pull/570) ([poovamraj](https://github.com/poovamraj))
+- Support date/time custom claim validation [\#538](https://github.com/auth0/java-jwt/pull/538) ([jimmyjames](https://github.com/jimmyjames))
+- Test only change - remove unnecessary throws clause from tests [\#535](https://github.com/auth0/java-jwt/pull/535) ([jimmyjames](https://github.com/jimmyjames))
+
+**Security**
+- Updated documentation regarding HMAC Key length [\#580](https://github.com/auth0/java-jwt/pull/580) ([poovamraj](https://github.com/poovamraj))
+
+**Breaking changes**
+- Added support for multiple checks on a single claim [\#573](https://github.com/auth0/java-jwt/pull/573) ([poovamraj](https://github.com/poovamraj))
+- Improve keyprovider reliability [\#570](https://github.com/auth0/java-jwt/pull/570) ([poovamraj](https://github.com/poovamraj))
+- Remove ES256K support [\#556](https://github.com/auth0/java-jwt/pull/556) ([poovamraj](https://github.com/poovamraj))
+- Remove impl package export in module-info [\#553](https://github.com/auth0/java-jwt/pull/553) ([poovamraj](https://github.com/poovamraj))
+- Fix header claims serialization [\#549](https://github.com/auth0/java-jwt/pull/549) ([jimmyjames](https://github.com/jimmyjames))
+- Serialize dates in collections as seconds since epoch [\#534](https://github.com/auth0/java-jwt/pull/534) ([jimmyjames](https://github.com/jimmyjames))
+- Replace com.auth0.jwt.interfaces.Clock with java.time.Clock [\#532](https://github.com/auth0/java-jwt/pull/532) ([jimmyjames](https://github.com/jimmyjames))
+
 ## [3.19.2](https://github.com/auth0/java-jwt/tree/3.19.2) (2022-05-05)
 [Full Changelog](https://github.com/auth0/java-jwt/compare/3.19.1...3.19.2)
 
