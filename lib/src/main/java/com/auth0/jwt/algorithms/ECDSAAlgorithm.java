@@ -50,7 +50,8 @@ class ECDSAAlgorithm extends Algorithm {
                 throw new IllegalStateException("The given Public Key is null.");
             }
             validateSignatureStructure(signatureBytes, publicKey);
-            boolean valid = crypto.verifySignatureFor(getDescription(), publicKey, jwt.getHeader(), jwt.getPayload(), JOSEToDER(signatureBytes));
+            boolean valid = crypto.verifySignatureFor(
+                    getDescription(), publicKey, jwt.getHeader(), jwt.getPayload(), JOSEToDER(signatureBytes));
 
             if (!valid) {
                 throw new SignatureVerificationException(this);
@@ -151,7 +152,7 @@ class ECDSAAlgorithm extends Algorithm {
      * This method ensures the signature's structure is as expected.
      *
      * @param joseSignature is the signature from the JWT
-     * @param publicKey public key used to verify the JWT
+     * @param publicKey     public key used to verify the JWT
      * @throws SignatureException if the signature's structure is not as per expectation
      */
     // Visible for testing
@@ -168,16 +169,14 @@ class ECDSAAlgorithm extends Algorithm {
         // get R
         byte[] rBytes = new byte[ecNumberSize];
         System.arraycopy(joseSignature, 0, rBytes, 0, ecNumberSize);
-        BigInteger r = new BigInteger(1, rBytes);
-        if(isAllZeros(rBytes)) {
+        if (isAllZeros(rBytes)) {
             throw new SignatureException("Invalid signature format.");
         }
 
         // get S
         byte[] sBytes = new byte[ecNumberSize];
         System.arraycopy(joseSignature, ecNumberSize, sBytes, 0, ecNumberSize);
-        BigInteger s = new BigInteger(1, sBytes);
-        if(isAllZeros(sBytes)) {
+        if (isAllZeros(sBytes)) {
             throw new SignatureException("Invalid signature format.");
         }
 
@@ -193,13 +192,15 @@ class ECDSAAlgorithm extends Algorithm {
         }
 
         BigInteger order = publicKey.getParams().getOrder();
+        BigInteger r = new BigInteger(1, rBytes);
+        BigInteger s = new BigInteger(1, sBytes);
 
         // R and S must be less than N
         if (order.compareTo(r) < 1) {
             throw new SignatureException("Invalid signature format.");
         }
 
-        if (order.compareTo(s) < 1){
+        if (order.compareTo(s) < 1) {
             throw new SignatureException("Invalid signature format.");
         }
     }
