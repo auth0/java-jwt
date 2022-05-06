@@ -9,6 +9,8 @@
 
 A Java implementation of [JSON Web Token (JWT) - RFC 7519](https://tools.ietf.org/html/rfc7519).
 
+> :warning:  **Important security note:** JVM has a critical vulnerability for ECDSA Algorithms - [CVE-2022-21449](https://nvd.nist.gov/vuln/detail/CVE-2022-21449). Please review the details of the vulnerability and update your environment.
+
 If you're looking for an **Android** version of the JWT Decoder take a look at our [JWTDecode.Android](https://github.com/auth0/JWTDecode.Android) library.
 
 > You are viewing the documentation for the v4 beta release. For the latest stable release, please see the [version 3.x documentation](https://github.com/auth0/java-jwt).
@@ -46,8 +48,14 @@ implementation 'com.auth0:java-jwt:3.19.0'
 <dependency>
     <groupId>com.auth0</groupId>
     <artifactId>java-jwt</artifactId>
-    <version>3.19.0</version>
+    <version>3.19.2</version>
 </dependency>
+```
+
+### Gradle
+
+```gradle
+implementation 'com.auth0:java-jwt:3.19.2'
 ```
 
 ## Available Algorithms
