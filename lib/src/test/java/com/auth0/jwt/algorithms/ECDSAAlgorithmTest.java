@@ -1223,15 +1223,12 @@ public class ECDSAAlgorithmTest {
         ECKey key256 = (ECKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC");
         ECKey key384 = (ECKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_384, "EC");
         ECKey key512 = (ECKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_512, "EC");
-        ECKey key256k = (ECKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256K, "EC");
         JWTVerifier verifier256 = JWT.require(Algorithm.ECDSA256(key256)).build();
         JWTVerifier verifier384 = JWT.require(Algorithm.ECDSA256(key384)).build();
         JWTVerifier verifier512 = JWT.require(Algorithm.ECDSA256(key512)).build();
-        JWTVerifier verifier256k = JWT.require(Algorithm.ECDSA256(key256k)).build();
         verifier256.verify(jwtWithInvalidSig);
         verifier384.verify(jwtWithInvalidSig);
         verifier512.verify(jwtWithInvalidSig);
-        verifier256k.verify(jwtWithInvalidSig);
     }
 
     @Test
@@ -1244,15 +1241,12 @@ public class ECDSAAlgorithmTest {
         ECKey key256 = (ECKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC");
         ECKey key384 = (ECKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_384, "EC");
         ECKey key512 = (ECKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_512, "EC");
-        ECKey key256k = (ECKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256K, "EC");
         JWTVerifier verifier256 = JWT.require(Algorithm.ECDSA256(key256)).build();
         JWTVerifier verifier384 = JWT.require(Algorithm.ECDSA256(key384)).build();
         JWTVerifier verifier512 = JWT.require(Algorithm.ECDSA256(key512)).build();
-        JWTVerifier verifier256k = JWT.require(Algorithm.ECDSA256(key256k)).build();
         verifier256.verify(jwtWithInvalidSig);
         verifier384.verify(jwtWithInvalidSig);
         verifier512.verify(jwtWithInvalidSig);
-        verifier256k.verify(jwtWithInvalidSig);
     }
 
     @Test
