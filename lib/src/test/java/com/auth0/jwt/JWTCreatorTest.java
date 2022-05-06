@@ -16,6 +16,9 @@ import java.util.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -918,5 +921,23 @@ public class JWTCreatorTest {
         assertThat(headerJson, JsonMatcher.hasEntry("listClaim", listClaim));
         assertThat(headerJson, JsonMatcher.hasEntry("listNestedClaim", listNestedClaim));
         assertThat(headerJson, JsonMatcher.hasEntry("objClaim", objClaim));
+    }
+
+    @Test
+    public void shouldCreatePayloadWithNullForMap() {
+        String jwt = JWTCreator.init()
+                .withClaim("name", (Map<String,?>) null)
+                .sign(Algorithm.HMAC256("secret"));
+        assertThat(jwt, is(notNullValue()));
+        assertTrue(JWT.decode(jwt).getClaim("name").isNull());
+    }
+
+    @Test
+    public void shouldCreatePayloadWithNullForList() {
+        String jwt = JWTCreator.init()
+                .withClaim("name", (List<?>) null)
+                .sign(Algorithm.HMAC256("secret"));
+        assertThat(jwt, is(notNullValue()));
+        assertTrue(JWT.decode(jwt).getClaim("name").isNull());
     }
 }
