@@ -5,6 +5,7 @@ import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.ECDSAKeyProvider;
 
+import java.math.BigInteger;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
@@ -48,8 +49,8 @@ class ECDSAAlgorithm extends Algorithm {
             if (publicKey == null) {
                 throw new IllegalStateException("The given Public Key is null.");
             }
-            boolean valid = crypto.verifySignatureFor(getDescription(), publicKey, jwt.getHeader(),
-                    jwt.getPayload(), JOSEToDER(signatureBytes));
+            validateSignatureStructure(signatureBytes, publicKey);
+            boolean valid = crypto.verifySignatureFor(getDescription(), publicKey, jwt.getHeader(), jwt.getPayload(), JOSEToDER(signatureBytes));
 
             if (!valid) {
                 throw new SignatureVerificationException(this);
@@ -145,22 +146,73 @@ class ECDSAAlgorithm extends Algorithm {
         return joseSignature;
     }
 
-    //Visible for testing
-    byte[] JOSEToDER(byte[] joseSignature) throws SignatureException {
+    /**
+     * Added check for extra protection against CVE-2022-21449.
+     * This method ensures the signature's structure is as expected.
+     *
+     * @param joseSignature is the signature from the JWT
+     * @param publicKey public key used to verify the JWT
+     * @throws SignatureException if the signature's structure is not as per expectation
+     */
+    // Visible for testing
+    void validateSignatureStructure(byte[] joseSignature, ECPublicKey publicKey) throws SignatureException {
+        // check signature length, moved this check from JOSEToDER method
         if (joseSignature.length != ecNumberSize * 2) {
             throw new SignatureException("Invalid JOSE signature format.");
         }
 
-        // Retrieve R and S number's length and padding.
-        int rpadding = countPadding(joseSignature, 0, ecNumberSize);
-        int spadding = countPadding(joseSignature, ecNumberSize, joseSignature.length);
-        int rlength = ecNumberSize - rpadding;
-        int slength = ecNumberSize - spadding;
+        if (isAllZeros(joseSignature)) {
+            throw new SignatureException("Invalid signature format.");
+        }
 
-        int length = 2 + rlength + 2 + slength;
+        // get R
+        byte[] rBytes = new byte[ecNumberSize];
+        System.arraycopy(joseSignature, 0, rBytes, 0, ecNumberSize);
+        BigInteger r = new BigInteger(1, rBytes);
+        if(isAllZeros(rBytes)) {
+            throw new SignatureException("Invalid signature format.");
+        }
+
+        // get S
+        byte[] sBytes = new byte[ecNumberSize];
+        System.arraycopy(joseSignature, ecNumberSize, sBytes, 0, ecNumberSize);
+        BigInteger s = new BigInteger(1, sBytes);
+        if(isAllZeros(sBytes)) {
+            throw new SignatureException("Invalid signature format.");
+        }
+
+        //moved this check from JOSEToDER method
+        int rPadding = countPadding(joseSignature, 0, ecNumberSize);
+        int sPadding = countPadding(joseSignature, ecNumberSize, joseSignature.length);
+        int rLength = ecNumberSize - rPadding;
+        int sLength = ecNumberSize - sPadding;
+
+        int length = 2 + rLength + 2 + sLength;
         if (length > 255) {
             throw new SignatureException("Invalid JOSE signature format.");
         }
+
+        BigInteger order = publicKey.getParams().getOrder();
+
+        // R and S must be less than N
+        if (order.compareTo(r) < 1) {
+            throw new SignatureException("Invalid signature format.");
+        }
+
+        if (order.compareTo(s) < 1){
+            throw new SignatureException("Invalid signature format.");
+        }
+    }
+
+    //Visible for testing
+    byte[] JOSEToDER(byte[] joseSignature) throws SignatureException {
+        // Retrieve R and S number's length and padding.
+        int rPadding = countPadding(joseSignature, 0, ecNumberSize);
+        int sPadding = countPadding(joseSignature, ecNumberSize, joseSignature.length);
+        int rLength = ecNumberSize - rPadding;
+        int sLength = ecNumberSize - sPadding;
+
+        int length = 2 + rLength + 2 + sLength;
 
         final byte[] derSignature;
         int offset;
@@ -180,35 +232,44 @@ class ECDSAAlgorithm extends Algorithm {
 
         // Header with "min R" number length
         derSignature[offset++] = (byte) 0x02;
-        derSignature[offset++] = (byte) rlength;
+        derSignature[offset++] = (byte) rLength;
 
         // R number
-        if (rpadding < 0) {
+        if (rPadding < 0) {
             //Sign
             derSignature[offset++] = (byte) 0x00;
             System.arraycopy(joseSignature, 0, derSignature, offset, ecNumberSize);
             offset += ecNumberSize;
         } else {
-            int copyLength = Math.min(ecNumberSize, rlength);
-            System.arraycopy(joseSignature, rpadding, derSignature, offset, copyLength);
+            int copyLength = Math.min(ecNumberSize, rLength);
+            System.arraycopy(joseSignature, rPadding, derSignature, offset, copyLength);
             offset += copyLength;
         }
 
         // Header with "min S" number length
         derSignature[offset++] = (byte) 0x02;
-        derSignature[offset++] = (byte) slength;
+        derSignature[offset++] = (byte) sLength;
 
         // S number
-        if (spadding < 0) {
+        if (sPadding < 0) {
             //Sign
             derSignature[offset++] = (byte) 0x00;
             System.arraycopy(joseSignature, ecNumberSize, derSignature, offset, ecNumberSize);
         } else {
-            System.arraycopy(joseSignature, ecNumberSize + spadding, derSignature, offset,
-                    Math.min(ecNumberSize, slength));
+            System.arraycopy(joseSignature, ecNumberSize + sPadding, derSignature, offset,
+                    Math.min(ecNumberSize, sLength));
         }
 
         return derSignature;
+    }
+
+    private boolean isAllZeros(byte[] bytes) {
+        for (byte b : bytes) {
+            if (b != 0) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private int countPadding(byte[] bytes, int fromIndex, int toIndex) {
