@@ -12,6 +12,10 @@ abstract class TokenUtils {
      * @throws JWTDecodeException if the Token doesn't have 3 parts.
      */
     static String[] splitToken(String token) throws JWTDecodeException {
+        if ( token == null ) {
+           throw new JWTDecodeException("The token is null");
+        }
+        
         String[] parts = token.split("\\.");
         if (parts.length == 2 && token.endsWith(".")) {
             //Tokens with alg='none' have empty String as Signature.
