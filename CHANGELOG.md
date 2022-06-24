@@ -18,7 +18,7 @@ See the changelog entries for additional details.
 ## [4.0.0-beta.0](https://github.com/auth0/java-jwt/tree/4.0.0-beta.0) (2022-05-06)
 [Full Changelog](https://github.com/auth0/java-jwt/compare/3.19.2...4.0.0-beta.0)
 
-- Check the [Migration Guide](https://github.com/auth0/java-jwt/blob/master/MIGRATION_GUIDE.md) to understand the changes required to migrate your application to v4.
+💡 Check the [Migration Guide](https://github.com/auth0/java-jwt/blob/master/MIGRATION_GUIDE.md) to understand the changes required to migrate your application to v4.
 
 **Added**
 - JavaDoc updated [\#577](https://github.com/auth0/java-jwt/pull/577) ([poovamraj](https://github.com/poovamraj))
