@@ -1,5 +1,20 @@
 # Change Log
 
+## [4.0.0](https://github.com/auth0/java-jwt/tree/4.0.0) (2022-06-24)
+[Full Changelog](https://github.com/auth0/java-jwt/compare/3.19.2...4.0.0)
+
+**This is a major release and contains breaking changes!**
+
+- Check the [Migration Guide](https://github.com/auth0/java-jwt/blob/master/MIGRATION_GUIDE.md) to understand the changes required to migrate your application to v4.
+
+### Main features
+- Predicates based claim verification
+- Support for Instant API and Lambda functions
+- Improved Exceptions API
+- Consistent null handling
+
+See the changelog entries for additional details.
+
 ## [4.0.0-beta.0](https://github.com/auth0/java-jwt/tree/4.0.0-beta.0) (2022-05-06)
 [Full Changelog](https://github.com/auth0/java-jwt/compare/3.19.2...4.0.0-beta.0)
 
