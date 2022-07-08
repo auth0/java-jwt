@@ -1,4 +1,6 @@
 version: 2.1
+orbs:
+  codecov: codecov/codecov@3
 
 commands:
   checkout-and-build:
@@ -8,9 +10,9 @@ commands:
       # Download and cache dependencies
       - restore_cache:
           keys:
-          - v1-dependencies-{{ checksum "build.gradle" }}
-          # fallback to using the latest cache if no exact match is found
-          - v1-dependencies-
+            - v1-dependencies-{{ checksum "build.gradle" }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-dependencies-
       - run: ./gradlew clean build
       - save_cache:
           paths:
@@ -19,10 +21,7 @@ commands:
   run-tests:
     steps:
       - run: ./gradlew check jacocoTestReport --continue --console=plain
-      - run:
-          name: Upload Coverage
-          when: on_success
-          command: bash <(curl -s https://codecov.io/bash) -Z -C $CIRCLE_SHA1
+      - codecov/upload
 #  TODO re-enable once 4.0.0 is released
 #  run-api-diff:
 #    steps:
@@ -43,36 +42,21 @@ jobs:
       GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx2048m -XX:+HeapDumpOnOutOfMemoryError"'
       _JAVA_OPTIONS: "-Xms512m -Xmx1024m"
       TERM: dumb
-#  api-diff:
-#    docker:
-#      - image: openjdk:11.0-jdk
-#    steps:
-#      - checkout-and-build
-#      - run-api-diff
-#    environment:
-#      GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx2048m -XX:+HeapDumpOnOutOfMemoryError"'
-#      _JAVA_OPTIONS: "-Xms512m -Xmx1024m"
-#      TERM: dumb
-  semgrep:
-    docker:
-      - image: returntocorp/semgrep-agent:v1
-    environment:
-      SEMGREP_REPO_NAME: "auth0/java-jwt"
-      SEMGREP_REPO_URL: "https://github.com/auth0/java-jwt"
-    steps:
-      - checkout
-      - run:
-          name: Run vulnerabilities tests (Semgrep)
-          command: |
-            semgrep-agent --baseline-ref master --publish-token $SEMGREP_TOKEN
+  #  api-diff:
+  #    docker:
+  #      - image: openjdk:11.0-jdk
+  #    steps:
+  #      - checkout-and-build
+  #      - run-api-diff
+  #    environment:
+  #      GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx2048m -XX:+HeapDumpOnOutOfMemoryError"'
+  #      _JAVA_OPTIONS: "-Xms512m -Xmx1024m"
+  #      TERM: dumb
 
 workflows:
   build-and-test:
     jobs:
       - build
-      - semgrep:
-          context:
-            - semgrep-env
 #  api-diff:
 #    jobs:
 #      - api-diff
