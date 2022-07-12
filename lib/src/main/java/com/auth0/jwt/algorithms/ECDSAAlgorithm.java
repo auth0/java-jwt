@@ -63,13 +63,18 @@ class ECDSAAlgorithm extends Algorithm {
     }
 
     @Override
-    public byte[] sign(byte[] headerBytes, byte[] payloadBytes) throws SignatureGenerationException {
+    public byte[] sign(byte[] contentBytes) throws SignatureGenerationException {
+        return this.sign(contentBytes, (String) null);
+    }
+
+    @Override
+    public byte[] sign(byte[] headerBytes, byte[] payloadBytes, String providerName) throws SignatureGenerationException {
         try {
             ECPrivateKey privateKey = keyProvider.getPrivateKey();
             if (privateKey == null) {
                 throw new IllegalStateException("The given Private Key is null.");
             }
-            byte[] signature = crypto.createSignatureFor(getDescription(), privateKey, headerBytes, payloadBytes);
+            byte[] signature = crypto.createSignatureFor(getDescription(), privateKey, headerBytes, payloadBytes, providerName);
             return DERToJOSE(signature);
         } catch (NoSuchAlgorithmException | SignatureException | InvalidKeyException | IllegalStateException e) {
             throw new SignatureGenerationException(this, e);
@@ -77,13 +82,13 @@ class ECDSAAlgorithm extends Algorithm {
     }
 
     @Override
-    public byte[] sign(byte[] contentBytes) throws SignatureGenerationException {
+    public byte[] sign(byte[] contentBytes, String providerName) throws SignatureGenerationException {
         try {
             ECPrivateKey privateKey = keyProvider.getPrivateKey();
             if (privateKey == null) {
                 throw new IllegalStateException("The given Private Key is null.");
             }
-            byte[] signature = crypto.createSignatureFor(getDescription(), privateKey, contentBytes);
+            byte[] signature = crypto.createSignatureFor(getDescription(), privateKey, contentBytes, providerName);
             return DERToJOSE(signature);
         } catch (NoSuchAlgorithmException | SignatureException | InvalidKeyException | IllegalStateException e) {
             throw new SignatureGenerationException(this, e);

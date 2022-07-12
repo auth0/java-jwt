@@ -131,7 +131,35 @@ class CryptoHelper {
             byte[] headerBytes,
             byte[] payloadBytes
     ) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
-        final Signature s = Signature.getInstance(algorithm);
+        return this.createSignatureFor(algorithm,privateKey, headerBytes, payloadBytes, (String) null);
+    }
+
+    /**
+     * Create signature for JWT header and payload using a private key.
+     *
+     * @param algorithm    algorithm name.
+     * @param privateKey   the private key to use for signing.
+     * @param headerBytes  JWT header.
+     * @param payloadBytes JWT payload.
+     * @return the signature bytes.
+     * @throws NoSuchAlgorithmException if the algorithm is not supported.
+     * @throws InvalidKeyException      if the given key is inappropriate for initializing the specified algorithm.
+     * @throws SignatureException       if this signature object is not initialized properly
+     *                                  or if this signature algorithm is unable to process the input data provided.
+     */
+    byte[] createSignatureFor(
+            String algorithm,
+            PrivateKey privateKey,
+            byte[] headerBytes,
+            byte[] payloadBytes,
+            String providerName
+    ) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+        final Signature s;
+        try {
+            s = providerName != null ? Signature.getInstance(algorithm, providerName) : Signature.getInstance(algorithm);
+        } catch (NoSuchProviderException e) {
+            throw new SignatureException("Unable to create signature with given provider", e);
+        }
         s.initSign(privateKey);
         s.update(headerBytes);
         s.update(JWT_PART_SEPARATOR);
@@ -198,9 +226,15 @@ class CryptoHelper {
     byte[] createSignatureFor(
             String algorithm,
             PrivateKey privateKey,
-            byte[] contentBytes
+            byte[] contentBytes,
+            String providerName
     ) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
-        final Signature s = Signature.getInstance(algorithm);
+        final Signature s;
+        try {
+            s = providerName != null ? Signature.getInstance(algorithm, providerName) : Signature.getInstance(algorithm);
+        } catch (NoSuchProviderException e) {
+            throw new SignatureException("Unable to use given provider to compute signature.", e);
+        }
         s.initSign(privateKey);
         s.update(contentBytes);
         return s.sign();

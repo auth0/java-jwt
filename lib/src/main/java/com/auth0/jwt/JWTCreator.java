@@ -540,18 +540,8 @@ public final class JWTCreator {
          *                                  or there was a problem with the signing key.
          */
         public String sign(Algorithm algorithm) throws IllegalArgumentException, JWTCreationException {
-            if (algorithm == null) {
-                throw new IllegalArgumentException("The Algorithm cannot be null.");
-            }
-            headerClaims.put(HeaderParams.ALGORITHM, algorithm.getName());
-            if (!headerClaims.containsKey(HeaderParams.TYPE)) {
-                headerClaims.put(HeaderParams.TYPE, "JWT");
-            }
-            String signingKeyId = algorithm.getSigningKeyId();
-            if (signingKeyId != null) {
-                withKeyId(signingKeyId);
-            }
-            return new JWTCreator(algorithm, headerClaims, payloadClaims).sign();
+
+            return this.sign(algorithm, (String) null);
         }
 
         private void assertNonNull(String name) {
@@ -563,18 +553,50 @@ public final class JWTCreator {
         private void addClaim(String name, Object value) {
             payloadClaims.put(name, value);
         }
+
+        /**
+         * Creates a new JWT and signs is with the given algorithm.
+         *
+         * @param algorithm used to sign the JWT
+         * @return a new JWT token
+         * @throws IllegalArgumentException if the provided algorithm is null.
+         * @throws JWTCreationException     if the claims could not be converted to a valid JSON
+         *                                  or there was a problem with the signing key.
+         */
+        public String sign(Algorithm algorithm, String providerName) throws IllegalArgumentException, JWTCreationException {
+            if (algorithm == null) {
+                throw new IllegalArgumentException("The Algorithm cannot be null.");
+            }
+            headerClaims.put(HeaderParams.ALGORITHM, algorithm.getName());
+            if (!headerClaims.containsKey(HeaderParams.TYPE)) {
+                headerClaims.put(HeaderParams.TYPE, "JWT");
+            }
+            String signingKeyId = algorithm.getSigningKeyId();
+            if (signingKeyId != null) {
+                withKeyId(signingKeyId);
+            }
+            return new JWTCreator(algorithm, headerClaims, payloadClaims).sign(providerName);
+        }
     }
 
     private String sign() throws SignatureGenerationException {
+        return sign((String) null);
+    }
+
+
+    // Added methods to support specifying provider
+
+    private String sign(String providerName) throws SignatureGenerationException {
         String header = Base64.getUrlEncoder().withoutPadding()
                 .encodeToString(headerJson.getBytes(StandardCharsets.UTF_8));
         String payload = Base64.getUrlEncoder().withoutPadding()
                 .encodeToString(payloadJson.getBytes(StandardCharsets.UTF_8));
 
         byte[] signatureBytes = algorithm.sign(header.getBytes(StandardCharsets.UTF_8),
-                payload.getBytes(StandardCharsets.UTF_8));
+                payload.getBytes(StandardCharsets.UTF_8), providerName);
         String signature = Base64.getUrlEncoder().withoutPadding().encodeToString((signatureBytes));
 
         return String.format("%s.%s.%s", header, payload, signature);
     }
+
 }
