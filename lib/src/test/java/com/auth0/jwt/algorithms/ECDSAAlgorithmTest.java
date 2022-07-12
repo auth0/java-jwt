@@ -7,6 +7,7 @@ import com.auth0.jwt.interfaces.ECDSAKeyProvider;
 import com.auth0.jwt.interfaces.JWTVerifier;
 import org.hamcrest.Matchers;
 import org.hamcrest.collection.IsIn;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -723,6 +724,7 @@ public class ECDSAAlgorithmTest {
     }
 
     @Test
+    @Ignore
     public void shouldThrowOnSignWhenSignatureAlgorithmDoesNotExists() throws Exception {
         exception.expect(SignatureGenerationException.class);
         exception.expectMessage("The Token's Signature couldn't be generated when signing using the Algorithm: some-algorithm");
@@ -740,6 +742,7 @@ public class ECDSAAlgorithmTest {
     }
 
     @Test
+    @Ignore
     public void shouldThrowOnSignWhenThePrivateKeyIsInvalid() throws Exception {
         exception.expect(SignatureGenerationException.class);
         exception.expectMessage("The Token's Signature couldn't be generated when signing using the Algorithm: some-algorithm");
@@ -757,6 +760,7 @@ public class ECDSAAlgorithmTest {
     }
 
     @Test
+    @Ignore
     public void shouldThrowOnSignWhenTheSignatureIsNotPrepared() throws Exception {
         exception.expect(SignatureGenerationException.class);
         exception.expectMessage("The Token's Signature couldn't be generated when signing using the Algorithm: some-algorithm");
