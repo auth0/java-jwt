@@ -6,6 +6,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.ECDSAKeyProvider;
 import com.auth0.jwt.interfaces.RSAKeyProvider;
 
+import java.security.SignatureException;
 import java.security.interfaces.*;
 
 /**
@@ -411,7 +412,8 @@ public abstract class Algorithm {
      * @return the signature in a base64 encoded array of bytes
      * @throws SignatureGenerationException if the Key is invalid.
      */
-    public byte[] sign(byte[] headerBytes, byte[] payloadBytes, String providerName) throws SignatureGenerationException {
+    public byte[] sign(byte[] headerBytes, byte[] payloadBytes, String providerName)
+            throws SignatureGenerationException {
         // default implementation; keep around until sign(byte[]) method is removed
         byte[] contentBytes = new byte[headerBytes.length + 1 + payloadBytes.length];
 

@@ -131,7 +131,7 @@ class CryptoHelper {
             byte[] headerBytes,
             byte[] payloadBytes
     ) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
-        return this.createSignatureFor(algorithm,privateKey, headerBytes, payloadBytes, (String) null);
+        return this.createSignatureFor(algorithm, privateKey, headerBytes, payloadBytes, (String) null);
     }
 
     /**
@@ -156,7 +156,8 @@ class CryptoHelper {
     ) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
         final Signature s;
         try {
-            s = providerName != null ? Signature.getInstance(algorithm, providerName) : Signature.getInstance(algorithm);
+            s = providerName != null ? Signature.getInstance(algorithm, providerName)
+                    : Signature.getInstance(algorithm);
         } catch (NoSuchProviderException e) {
             throw new SignatureException("Unable to create signature with given provider", e);
         }
@@ -231,7 +232,8 @@ class CryptoHelper {
     ) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
         final Signature s;
         try {
-            s = providerName != null ? Signature.getInstance(algorithm, providerName) : Signature.getInstance(algorithm);
+            s = providerName != null ? Signature.getInstance(algorithm, providerName)
+                    : Signature.getInstance(algorithm);
         } catch (NoSuchProviderException e) {
             throw new SignatureException("Unable to use given provider to compute signature.", e);
         }

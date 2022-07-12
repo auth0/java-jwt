@@ -63,7 +63,8 @@ class RSAAlgorithm extends Algorithm {
     }
 
     @Override
-    public byte[] sign(byte[] headerBytes, byte[] payloadBytes, String providerName) throws SignatureGenerationException {
+    public byte[] sign(byte[] headerBytes, byte[] payloadBytes, String providerName)
+            throws SignatureGenerationException {
         try {
             RSAPrivateKey privateKey = keyProvider.getPrivateKey();
             if (privateKey == null) {

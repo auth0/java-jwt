@@ -544,26 +544,18 @@ public final class JWTCreator {
             return this.sign(algorithm, (String) null);
         }
 
-        private void assertNonNull(String name) {
-            if (name == null) {
-                throw new IllegalArgumentException("The Custom Claim's name can't be null.");
-            }
-        }
-
-        private void addClaim(String name, Object value) {
-            payloadClaims.put(name, value);
-        }
-
         /**
          * Creates a new JWT and signs is with the given algorithm.
          *
          * @param algorithm used to sign the JWT
+         * @param providerName the provider to use for crypto operations
          * @return a new JWT token
          * @throws IllegalArgumentException if the provided algorithm is null.
          * @throws JWTCreationException     if the claims could not be converted to a valid JSON
          *                                  or there was a problem with the signing key.
          */
-        public String sign(Algorithm algorithm, String providerName) throws IllegalArgumentException, JWTCreationException {
+        public String sign(Algorithm algorithm, String providerName)
+                throws IllegalArgumentException, JWTCreationException {
             if (algorithm == null) {
                 throw new IllegalArgumentException("The Algorithm cannot be null.");
             }
@@ -577,6 +569,17 @@ public final class JWTCreator {
             }
             return new JWTCreator(algorithm, headerClaims, payloadClaims).sign(providerName);
         }
+
+        private void assertNonNull(String name) {
+            if (name == null) {
+                throw new IllegalArgumentException("The Custom Claim's name can't be null.");
+            }
+        }
+
+        private void addClaim(String name, Object value) {
+            payloadClaims.put(name, value);
+        }
+
     }
 
     private String sign() throws SignatureGenerationException {

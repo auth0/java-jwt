@@ -80,7 +80,8 @@ class HMACAlgorithm extends Algorithm {
     }
 
     /**
-     * This method does not take the provider name into consideration for computing the HMAC
+     * This method does not take the provider name into consideration for computing the HMAC.
+     *
      * @param providerName the cryptographic provider name
      */
     @Override
