@@ -33,4 +33,9 @@ class NoneAlgorithm extends Algorithm {
     public byte[] sign(byte[] contentBytes) throws SignatureGenerationException {
         return new byte[0];
     }
+
+    @Override
+    public byte[] sign(byte[] contentBytes, String providerName) throws SignatureGenerationException {
+        return new byte[0];
+    }
 }

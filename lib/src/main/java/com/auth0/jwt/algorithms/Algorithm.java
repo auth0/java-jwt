@@ -398,7 +398,39 @@ public abstract class Algorithm {
      * @return the signature in a base64 encoded array of bytes
      * @throws SignatureGenerationException if the Key is invalid.
      */
-
     public abstract byte[] sign(byte[] contentBytes) throws SignatureGenerationException;
 
+    /**
+     * Sign the given content using this Algorithm instance.
+     *
+     * @param headerBytes  an array of bytes representing the base64 encoded header content
+     *                     to be verified against the signature.
+     * @param payloadBytes an array of bytes representing the base64 encoded payload content
+     *                     to be verified against the signature.
+     * @param providerName the Cryptographic provider name
+     * @return the signature in a base64 encoded array of bytes
+     * @throws SignatureGenerationException if the Key is invalid.
+     */
+    public byte[] sign(byte[] headerBytes, byte[] payloadBytes, String providerName) throws SignatureGenerationException {
+        // default implementation; keep around until sign(byte[]) method is removed
+        byte[] contentBytes = new byte[headerBytes.length + 1 + payloadBytes.length];
+
+        System.arraycopy(headerBytes, 0, contentBytes, 0, headerBytes.length);
+        contentBytes[headerBytes.length] = (byte) '.';
+        System.arraycopy(payloadBytes, 0, contentBytes, headerBytes.length + 1, payloadBytes.length);
+
+        return sign(contentBytes, providerName);
+    }
+
+    /**
+     * Sign the given content using this Algorithm instance.
+     * To get the correct JWT Signature, ensure the content is in the format {HEADER}.{PAYLOAD}
+     *
+     * @param contentBytes an array of bytes representing the base64 encoded content
+     *                     to be verified against the signature.
+     * @param providerName the Cryptographic provider name
+     * @return the signature in a base64 encoded array of bytes
+     * @throws SignatureGenerationException if the Key is invalid.
+     */
+    public abstract byte[] sign(byte[] contentBytes, String providerName) throws SignatureGenerationException;
 }

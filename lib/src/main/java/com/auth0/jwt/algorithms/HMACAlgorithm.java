@@ -78,4 +78,13 @@ class HMACAlgorithm extends Algorithm {
             throw new SignatureGenerationException(this, e);
         }
     }
+
+    /**
+     * This method does not take the provider name into consideration for computing the HMAC
+     * @param providerName the cryptographic provider name
+     */
+    @Override
+    public byte[] sign(byte[] contentBytes, String providerName) throws SignatureGenerationException {
+        return this.sign(contentBytes);
+    }
 }
