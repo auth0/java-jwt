@@ -202,7 +202,7 @@ By using a `KeyProvider` you can change in runtime the key used either to verify
 The following example shows how this would work with `JwkProvider` from the [jwks-rsa-java](https://github.com/auth0/jwks-rsa-java) library.
 
 ```java
-final JwkProvider jwkStore = new UrlJwkProvider("https://samples.auth0.com/");
+final JwkProvider jwkProvider = new UrlJwkProvider("https://samples.auth0.com/");
 final RSAPrivateKey privateKey = //Get the key instance
 final String privateKeyId = //Create an Id for the above key
 
@@ -210,7 +210,7 @@ RSAKeyProvider keyProvider = new RSAKeyProvider() {
     @Override
     public RSAPublicKey getPublicKeyById(String kid) {
         //Received 'kid' value might be null if it wasn't defined in the Token's header
-        PublicKey publicKey = jwkStore.get(kid).getPublicKey();
+        PublicKey publicKey = jwkProvider.get(kid).getPublicKey();
         return (RSAPublicKey) publicKey;
     }
 
