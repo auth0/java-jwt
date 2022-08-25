@@ -13,7 +13,7 @@ abstract class TokenUtils {
      */
     static String[] splitToken(String token) throws JWTDecodeException {
         if (token == null) {
-           throw new JWTDecodeException("The token is null");
+            throw new JWTDecodeException("The token is null");
         }
         
         String[] parts = token.split("\\.");
