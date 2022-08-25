@@ -12,7 +12,7 @@ abstract class TokenUtils {
      * @throws JWTDecodeException if the Token doesn't have 3 parts.
      */
     static String[] splitToken(String token) throws JWTDecodeException {
-        if ( token == null ) {
+        if (token == null) {
            throw new JWTDecodeException("The token is null");
         }
         
