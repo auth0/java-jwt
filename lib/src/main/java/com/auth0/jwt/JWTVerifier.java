@@ -46,7 +46,11 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
     }
 
     /**
-     * {@link Verification} implementation that accepts all the expected Claim values for verification.
+     * {@link Verification} implementation that accepts all the expected Claim values for verification, and
+     * builds a {@link com.auth0.jwt.interfaces.JWTVerifier} used to verify a JWT's signature and expected claims.
+     *
+     * Note that this class is <strong>not</strong> thread-safe. Calling {@link #build()} returns an instance of
+     * {@link com.auth0.jwt.interfaces.JWTVerifier} which can be reused.
      */
     public static class BaseVerification implements Verification {
         private final Algorithm algorithm;
