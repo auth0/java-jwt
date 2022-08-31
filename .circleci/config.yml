@@ -22,14 +22,14 @@ commands:
     steps:
       - run: ./gradlew check jacocoTestReport --continue --console=plain
       - codecov/upload
-  run-api-diff:
-    steps:
-      # run apiDiff task
-      - run: ./gradlew apiDiff
-      - store_artifacts:
-          path: lib/build/reports/apiDiff/apiDiff.txt
-      - store_artifacts:
-          path: lib/build/reports/apiDiff/apiDiff.html
+  # run-api-diff:
+  #   steps:
+  #     # run apiDiff task
+  #     - run: ./gradlew apiDiff
+  #     - store_artifacts:
+  #         path: lib/build/reports/apiDiff/apiDiff.txt
+  #     - store_artifacts:
+  #         path: lib/build/reports/apiDiff/apiDiff.html
 jobs:
   build:
     docker:
