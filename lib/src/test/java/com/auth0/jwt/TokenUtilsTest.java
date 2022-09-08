@@ -52,4 +52,11 @@ public class TokenUtilsTest {
         String token = "two.parts";
         TokenUtils.splitToken(token);
     }
+
+    @Test
+    public void shouldThrowOnSplitTokenWithNullValue() {
+        exception.expect(JWTDecodeException.class);
+        exception.expectMessage("The token is null.");
+        TokenUtils.splitToken(null);
+    }
 }
