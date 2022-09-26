@@ -1,9 +1,8 @@
 plugins {
-    id 'java-library'
+    id 'java'
     id 'jacoco'
     id 'com.auth0.gradle.oss-library.java'
     id 'checkstyle'
-    id 'maven-publish'
 }
 
 checkstyle {
@@ -135,27 +134,3 @@ jar {
 
 compileModuleInfoJava.dependsOn compileJava
 classes.dependsOn compileModuleInfoJava
-
-publishing {
-    publications {
-    }
-    repositories {
-        maven {
-            name "INCM_Nexus_Snapshots"
-            url "https://srv-artifactory-prd-01.incm.int/repository/maven-MobileID-snapshots/"
-            credentials {
-                username property("mobid.mavenUser")
-                password property("mobid.mavenPass")
-            }
-        }
-
-        maven {
-            name "INCM_Nexus_Release"
-            url "https://srv-artifactory-prd-01.incm.int/repository/maven-MobileID-release/"
-            credentials {
-                username property("mobid.mavenUser")
-                password property("mobid.mavenPass")
-            }
-        }
-    }
-}

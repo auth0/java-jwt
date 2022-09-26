@@ -4,24 +4,6 @@ allprojects {
     group = 'com.auth0'
 
     repositories {
-    	maven {
-            name "INCM Nexus Snapshots"
-            url "https://srv-artifactory-prd-01.incm.int/repository/maven-MobileID-snapshots/"
-            credentials {
-                username property("mobid.mavenUser")
-                password property("mobid.mavenPass")
-            }
-        }
-
-        maven {
-            name "INCM Nexus Release"
-            url "https://srv-artifactory-prd-01.incm.int/repository/maven-MobileID-release/"
-            credentials {
-                username property("mobid.mavenUser")
-                password property("mobid.mavenPass")
-            }
-        }
-    
         mavenCentral()
     }
 }
