@@ -2,10 +2,10 @@ package com.auth0.jwt;
 
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.*;
+import com.auth0.jwt.impl.ExpectedCheckHolder;
 import com.auth0.jwt.impl.JWTParser;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.auth0.jwt.impl.ExpectedCheckHolder;
 import com.auth0.jwt.interfaces.Verification;
 
 import java.time.Clock;
@@ -24,8 +24,8 @@ import java.util.function.BiPredicate;
  * @see com.auth0.jwt.interfaces.JWTVerifier
  */
 public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
-    private final Algorithm algorithm;
     final List<ExpectedCheckHolder> expectedChecks;
+    private final Algorithm algorithm;
     private final JWTParser parser;
 
     JWTVerifier(Algorithm algorithm, List<ExpectedCheckHolder> expectedChecks) {
@@ -46,17 +46,81 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
     }
 
     /**
+     * Perform the verification against the given Token, using any previous configured options.
+     *
+     * @param token to verify.
+     * @return a verified and decoded JWT.
+     * @throws AlgorithmMismatchException     if the algorithm stated in the token's header is not equal to
+     *                                        the one defined in the {@link JWTVerifier}.
+     * @throws SignatureVerificationException if the signature is invalid.
+     * @throws TokenExpiredException          if the token has expired.
+     * @throws MissingClaimException          if a claim to be verified is missing.
+     * @throws IncorrectClaimException        if a claim contained a different value than the expected one.
+     */
+    @Override
+    public DecodedJWT verify(String token) throws JWTVerificationException {
+        DecodedJWT jwt = new JWTDecoder(parser, token);
+        return verify(jwt);
+    }
+
+    /**
+     * Perform the verification against the given decoded JWT, using any previous configured options.
+     *
+     * @param jwt to verify.
+     * @return a verified and decoded JWT.
+     * @throws AlgorithmMismatchException     if the algorithm stated in the token's header is not equal to
+     *                                        the one defined in the {@link JWTVerifier}.
+     * @throws SignatureVerificationException if the signature is invalid.
+     * @throws TokenExpiredException          if the token has expired.
+     * @throws MissingClaimException          if a claim to be verified is missing.
+     * @throws IncorrectClaimException        if a claim contained a different value than the expected one.
+     */
+    @Override
+    public DecodedJWT verify(DecodedJWT jwt) throws JWTVerificationException {
+        verifyAlgorithm(jwt, algorithm);
+        algorithm.verify(jwt);
+        verifyClaims(jwt, expectedChecks);
+        return jwt;
+    }
+
+    private void verifyAlgorithm(DecodedJWT jwt, Algorithm expectedAlgorithm) throws AlgorithmMismatchException {
+        if (!expectedAlgorithm.getName().equals(jwt.getAlgorithm())) {
+            throw new AlgorithmMismatchException(
+                    "The provided Algorithm doesn't match the one defined in the JWT's Header.");
+        }
+    }
+
+    private void verifyClaims(DecodedJWT jwt, List<ExpectedCheckHolder> expectedChecks)
+            throws TokenExpiredException, InvalidClaimException {
+        for (ExpectedCheckHolder expectedCheck : expectedChecks) {
+            boolean isValid;
+            String claimName = expectedCheck.getClaimName();
+            Claim claim = jwt.getClaim(claimName);
+
+            isValid = expectedCheck.verify(claim, jwt);
+
+            if (!isValid) {
+                throw new IncorrectClaimException(
+                        String.format("The Claim '%s' value doesn't match the required one.", claimName),
+                        claimName,
+                        claim
+                );
+            }
+        }
+    }
+
+    /**
      * {@link Verification} implementation that accepts all the expected Claim values for verification, and
      * builds a {@link com.auth0.jwt.interfaces.JWTVerifier} used to verify a JWT's signature and expected claims.
-     *
+     * <p>
      * Note that this class is <strong>not</strong> thread-safe. Calling {@link #build()} returns an instance of
      * {@link com.auth0.jwt.interfaces.JWTVerifier} which can be reused.
      */
     public static class BaseVerification implements Verification {
         private final Algorithm algorithm;
         private final List<ExpectedCheckHolder> expectedChecks;
-        private long defaultLeeway;
         private final Map<String, Long> customLeeways;
+        private long defaultLeeway;
         private boolean ignoreIssuedAt;
         private Clock clock;
 
@@ -423,71 +487,6 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
                 }
             }
             return isAllNull;
-        }
-    }
-
-
-    /**
-     * Perform the verification against the given Token, using any previous configured options.
-     *
-     * @param token to verify.
-     * @return a verified and decoded JWT.
-     * @throws AlgorithmMismatchException     if the algorithm stated in the token's header is not equal to
-     *                                        the one defined in the {@link JWTVerifier}.
-     * @throws SignatureVerificationException if the signature is invalid.
-     * @throws TokenExpiredException          if the token has expired.
-     * @throws MissingClaimException          if a claim to be verified is missing.
-     * @throws IncorrectClaimException        if a claim contained a different value than the expected one.
-     */
-    @Override
-    public DecodedJWT verify(String token) throws JWTVerificationException {
-        DecodedJWT jwt = new JWTDecoder(parser, token);
-        return verify(jwt);
-    }
-
-    /**
-     * Perform the verification against the given decoded JWT, using any previous configured options.
-     *
-     * @param jwt to verify.
-     * @return a verified and decoded JWT.
-     * @throws AlgorithmMismatchException     if the algorithm stated in the token's header is not equal to
-     *                                        the one defined in the {@link JWTVerifier}.
-     * @throws SignatureVerificationException if the signature is invalid.
-     * @throws TokenExpiredException          if the token has expired.
-     * @throws MissingClaimException          if a claim to be verified is missing.
-     * @throws IncorrectClaimException        if a claim contained a different value than the expected one.
-     */
-    @Override
-    public DecodedJWT verify(DecodedJWT jwt) throws JWTVerificationException {
-        verifyAlgorithm(jwt, algorithm);
-        algorithm.verify(jwt);
-        verifyClaims(jwt, expectedChecks);
-        return jwt;
-    }
-
-    private void verifyAlgorithm(DecodedJWT jwt, Algorithm expectedAlgorithm) throws AlgorithmMismatchException {
-        if (!expectedAlgorithm.getName().equals(jwt.getAlgorithm())) {
-            throw new AlgorithmMismatchException(
-                    "The provided Algorithm doesn't match the one defined in the JWT's Header.");
-        }
-    }
-
-    private void verifyClaims(DecodedJWT jwt, List<ExpectedCheckHolder> expectedChecks)
-            throws TokenExpiredException, InvalidClaimException {
-        for (ExpectedCheckHolder expectedCheck : expectedChecks) {
-            boolean isValid;
-            String claimName = expectedCheck.getClaimName();
-            Claim claim = jwt.getClaim(claimName);
-
-            isValid = expectedCheck.verify(claim, jwt);
-
-            if (!isValid) {
-                throw new IncorrectClaimException(
-                        String.format("The Claim '%s' value doesn't match the required one.", claimName),
-                        claimName,
-                        claim
-                );
-            }
         }
     }
 }

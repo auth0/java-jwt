@@ -29,10 +29,6 @@ import java.util.Map.Entry;
 @SuppressWarnings("WeakerAccess")
 public final class JWTCreator {
 
-    private final Algorithm algorithm;
-    private final String headerJson;
-    private final String payloadJson;
-
     private static final ObjectMapper mapper;
     private static final SimpleModule module;
 
@@ -44,6 +40,10 @@ public final class JWTCreator {
         mapper.registerModule(module);
         mapper.configure(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY, true);
     }
+
+    private final Algorithm algorithm;
+    private final String headerJson;
+    private final String payloadJson;
 
     private JWTCreator(Algorithm algorithm, Map<String, Object> headerClaims, Map<String, Object> payloadClaims)
             throws JWTCreationException {
@@ -66,6 +66,19 @@ public final class JWTCreator {
         return new Builder();
     }
 
+    private String sign(Provider cryptoProvider) throws SignatureGenerationException {
+        String header = Base64.getUrlEncoder().withoutPadding()
+                .encodeToString(headerJson.getBytes(StandardCharsets.UTF_8));
+        String payload = Base64.getUrlEncoder().withoutPadding()
+                .encodeToString(payloadJson.getBytes(StandardCharsets.UTF_8));
+
+        byte[] signatureBytes = algorithm.sign(header.getBytes(StandardCharsets.UTF_8),
+                payload.getBytes(StandardCharsets.UTF_8), cryptoProvider);
+        String signature = Base64.getUrlEncoder().withoutPadding().encodeToString((signatureBytes));
+
+        return String.format("%s.%s.%s", header, payload, signature);
+    }
+
     /**
      * The Builder class holds the Claims that defines the JWT to be created.
      */
@@ -76,6 +89,55 @@ public final class JWTCreator {
         Builder() {
             this.payloadClaims = new HashMap<>();
             this.headerClaims = new HashMap<>();
+        }
+
+        private static boolean validateClaim(Map<?, ?> map) {
+            // do not accept null values in maps
+            for (Entry<?, ?> entry : map.entrySet()) {
+                Object value = entry.getValue();
+                if (!isSupportedType(value)) {
+                    return false;
+                }
+
+                if (entry.getKey() == null || !(entry.getKey() instanceof String)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        private static boolean validateClaim(List<?> list) {
+            // accept null values in list
+            for (Object object : list) {
+                if (!isSupportedType(object)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        private static boolean isSupportedType(Object value) {
+            if (value instanceof List) {
+                return validateClaim((List<?>) value);
+            } else if (value instanceof Map) {
+                return validateClaim((Map<?, ?>) value);
+            } else {
+                return isBasicType(value);
+            }
+        }
+
+        private static boolean isBasicType(Object value) {
+            if (value == null) {
+                return true;
+            } else {
+                Class<?> c = value.getClass();
+
+                if (c.isArray()) {
+                    return c == Integer[].class || c == Long[].class || c == String[].class;
+                }
+                return c == String.class || c == Integer.class || c == Long.class || c == Double.class
+                        || c == Date.class || c == Instant.class || c == Boolean.class;
+            }
         }
 
         /**
@@ -487,55 +549,6 @@ public final class JWTCreator {
             return true;
         }
 
-        private static boolean validateClaim(Map<?, ?> map) {
-            // do not accept null values in maps
-            for (Entry<?, ?> entry : map.entrySet()) {
-                Object value = entry.getValue();
-                if (!isSupportedType(value)) {
-                    return false;
-                }
-
-                if (entry.getKey() == null || !(entry.getKey() instanceof String)) {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        private static boolean validateClaim(List<?> list) {
-            // accept null values in list
-            for (Object object : list) {
-                if (!isSupportedType(object)) {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        private static boolean isSupportedType(Object value) {
-            if (value instanceof List) {
-                return validateClaim((List<?>) value);
-            } else if (value instanceof Map) {
-                return validateClaim((Map<?, ?>) value);
-            } else {
-                return isBasicType(value);
-            }
-        }
-
-        private static boolean isBasicType(Object value) {
-            if (value == null) {
-                return true;
-            } else {
-                Class<?> c = value.getClass();
-
-                if (c.isArray()) {
-                    return c == Integer[].class || c == Long[].class || c == String[].class;
-                }
-                return c == String.class || c == Integer.class || c == Long.class || c == Double.class
-                        || c == Date.class || c == Instant.class || c == Boolean.class;
-            }
-        }
-
         /**
          * Creates a new JWT and signs is with the given algorithm.
          *
@@ -564,7 +577,7 @@ public final class JWTCreator {
          */
         public String sign(Algorithm algorithm, String providerName)
                 throws IllegalArgumentException, JWTCreationException, NoSuchProviderException {
-            if(providerName==null){
+            if (providerName == null) {
                 throw new IllegalArgumentException("providerName cannot be null");
             }
 
@@ -612,18 +625,5 @@ public final class JWTCreator {
             payloadClaims.put(name, value);
         }
 
-    }
-
-    private String sign(Provider cryptoProvider) throws SignatureGenerationException {
-        String header = Base64.getUrlEncoder().withoutPadding()
-                .encodeToString(headerJson.getBytes(StandardCharsets.UTF_8));
-        String payload = Base64.getUrlEncoder().withoutPadding()
-                .encodeToString(payloadJson.getBytes(StandardCharsets.UTF_8));
-
-        byte[] signatureBytes = algorithm.sign(header.getBytes(StandardCharsets.UTF_8),
-                payload.getBytes(StandardCharsets.UTF_8), cryptoProvider);
-        String signature = Base64.getUrlEncoder().withoutPadding().encodeToString((signatureBytes));
-
-        return String.format("%s.%s.%s", header, payload, signature);
     }
 }
