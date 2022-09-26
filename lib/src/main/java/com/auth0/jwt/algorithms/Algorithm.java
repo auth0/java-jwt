@@ -380,6 +380,7 @@ public abstract class Algorithm {
      * @throws SignatureVerificationException if the Token's Signature is invalid,
      *                                        meaning that it doesn't match the signatureBytes,
      *                                        or if the Key is invalid.
+     * @throws NoSuchProviderException if a provider with the given name is not registered
      */
 
     public void verify(DecodedJWT jwt, String providerName)

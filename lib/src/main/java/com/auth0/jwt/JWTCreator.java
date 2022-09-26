@@ -570,7 +570,7 @@ public final class JWTCreator {
          * Creates a new JWT and signs is with the given algorithm.
          *
          * @param algorithm    used to sign the JWT
-         * @param providerName the provider to use for crypto operations
+         * @param cryptoProvider the provider to use for crypto operations
          * @return a new JWT token
          * @throws IllegalArgumentException if the provided algorithm is null.
          * @throws JWTCreationException     if the claims could not be converted to a valid JSON
