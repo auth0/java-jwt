@@ -382,6 +382,10 @@ public abstract class Algorithm {
 
     public void verify(DecodedJWT jwt, String providerName)
             throws SignatureVerificationException, NoSuchProviderException {
+        if (providerName == null) {
+            throw new IllegalArgumentException("providerName cannot be null");
+        }
+
         Provider provider = Security.getProvider(providerName);
         if (provider == null) {
             throw new NoSuchProviderException(String.format("No provider named [%s] installed", providerName));
@@ -437,6 +441,10 @@ public abstract class Algorithm {
      */
     public byte[] sign(byte[] headerBytes, byte[] payloadBytes, String providerName)
             throws SignatureGenerationException, NoSuchProviderException {
+        if (providerName == null) {
+            throw new IllegalArgumentException("providerName cannot be null");
+        }
+
         Provider provider = Security.getProvider(providerName);
         if (provider == null) {
             throw new NoSuchProviderException(String.format("No provider named [%s] installed", providerName));

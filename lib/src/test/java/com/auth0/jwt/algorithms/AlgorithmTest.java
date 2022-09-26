@@ -9,6 +9,7 @@ import org.mockito.ArgumentCaptor;
 
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
+import java.security.NoSuchProviderException;
 import java.security.interfaces.*;
 
 import static org.hamcrest.Matchers.*;

@@ -861,6 +861,38 @@ public class ECDSAAlgorithmTest {
     }
 
     @Test
+    public void shouldThrowOnSignWhenProviderDoesNotExists() throws Exception {
+        exception.expect(NoSuchProviderException.class);
+        exception.expectMessage("No provider named [some-provider] installed");
+
+        CryptoHelper crypto = mock(CryptoHelper.class);
+        when(crypto.createSignatureFor(anyString(), any(PrivateKey.class), any(byte[].class), anyString()))
+                .thenThrow(NoSuchAlgorithmException.class);
+
+        ECPublicKey publicKey = mock(ECPublicKey.class);
+        ECPrivateKey privateKey = mock(ECPrivateKey.class);
+        ECDSAKeyProvider provider = ECDSAAlgorithm.providerForKeys(publicKey, privateKey);
+        Algorithm algorithm = new ECDSAAlgorithm(crypto, "some-alg", "some-algorithm", 32, provider);
+        algorithm.sign(ES256HeaderBytes, new byte[0], "some-provider");
+    }
+
+    @Test
+    public void shouldThrowOnSignWhenProviderIsNull() throws Exception {
+        exception.expect(IllegalArgumentException.class);
+        exception.expectMessage("providerName cannot be null");
+
+        CryptoHelper crypto = mock(CryptoHelper.class);
+        when(crypto.createSignatureFor(anyString(), any(PrivateKey.class), any(byte[].class), anyString()))
+                .thenThrow(NoSuchAlgorithmException.class);
+
+        ECPublicKey publicKey = mock(ECPublicKey.class);
+        ECPrivateKey privateKey = mock(ECPrivateKey.class);
+        ECDSAKeyProvider provider = ECDSAAlgorithm.providerForKeys(publicKey, privateKey);
+        Algorithm algorithm = new ECDSAAlgorithm(crypto, "some-alg", "some-algorithm", 32, provider);
+        algorithm.sign(ES256HeaderBytes, new byte[0], (String) null);
+    }
+
+    @Test
     public void shouldThrowOnSignWhenThePrivateKeyIsInvalid() throws Exception {
         exception.expect(SignatureGenerationException.class);
         exception.expectMessage("The Token's Signature couldn't be generated when signing using the Algorithm: some-algorithm");
@@ -981,6 +1013,32 @@ public class ECDSAAlgorithmTest {
         for (int i = 0; i < 10; i++) {
             String jwt = asJWT(algorithm256, header256, body);
             algorithm256.verify(JWT.decode(jwt));
+        }
+    }
+
+    @Test
+    public void shouldSignAndVerifyWithProviderByName() throws Exception {
+        ECDSAAlgorithm algorithm256 = (ECDSAAlgorithm) Algorithm.ECDSA256(
+                (ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC"),
+                (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_256, "EC"));
+        String header256 = "eyJhbGciOiJFUzI1NiJ9";
+        String body = "eyJpc3MiOiJhdXRoMCJ9";
+
+        for (int i = 0; i < 10; i++) {
+            String jwt = asJWT(algorithm256, header256, body, Security.getProvider("SunEC").getName());
+            algorithm256.verify(JWT.decode(jwt),Security.getProvider("SunEC").getName());
+        }
+    }
+
+    @Test
+    public void shouldSignAndVerifyWithProviderByInstance() throws Exception {
+        ECDSAAlgorithm algorithm256 = (ECDSAAlgorithm) Algorithm.ECDSA256((ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC"), (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_256, "EC"));
+        String header256 = "eyJhbGciOiJFUzI1NiJ9";
+        String body = "eyJpc3MiOiJhdXRoMCJ9";
+
+        for (int i = 0; i < 10; i++) {
+            String jwt = asJWT(algorithm256, header256, body, Security.getProvider("SunEC"));
+            algorithm256.verify(JWT.decode(jwt), Security.getProvider("SunEC"));
         }
     }
 
