@@ -199,10 +199,10 @@ By using a `KeyProvider` you can change in runtime the key used either to verify
 - `getPrivateKeyId()`: Its called during token signing and it should return the id of the key that identifies the one returned by `getPrivateKey()`. This value is preferred over the one set in the `JWTCreator.Builder#withKeyId(String)` method. If you don't need to set a `kid` value avoid instantiating an Algorithm using a `KeyProvider`.
 
 
-The following example shows how this would work with `JwkStore`, an imaginary [JWK Set](https://auth0.com/docs/jwks) implementation. For simple key rotation using JWKS, try the [jwks-rsa-java](https://github.com/auth0/jwks-rsa-java) library.
+The following example shows how this would work with `JwkProvider` from the [jwks-rsa-java](https://github.com/auth0/jwks-rsa-java) library.
 
 ```java
-final JwkStore jwkStore = new JwkStore("{JWKS_FILE_HOST}");
+final JwkProvider jwkProvider = new UrlJwkProvider("https://samples.auth0.com/");
 final RSAPrivateKey privateKey = //Get the key instance
 final String privateKeyId = //Create an Id for the above key
 
@@ -210,7 +210,7 @@ RSAKeyProvider keyProvider = new RSAKeyProvider() {
     @Override
     public RSAPublicKey getPublicKeyById(String kid) {
         //Received 'kid' value might be null if it wasn't defined in the Token's header
-        RSAPublicKey publicKey = jwkStore.get(kid);
+        PublicKey publicKey = jwkProvider.get(kid).getPublicKey();
         return (RSAPublicKey) publicKey;
     }
 

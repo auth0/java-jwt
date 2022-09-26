@@ -50,7 +50,7 @@ java {
 compileJava {
     exclude 'module-info.java'
     // Required to be compatible with JDK 8+
-    options.compilerArgs = ['--release', "8"]
+    options.release = 8
 }
 
 javadoc {
@@ -105,7 +105,8 @@ task compileModuleInfoJava(type: JavaCompile) {
 }
 
 compileTestJava {
-    options.compilerArgs = ['--release', "8", "-Xlint:deprecation"]
+    options.release = 8
+    options.compilerArgs = ["-Xlint:deprecation"]
 }
 
 def testJava8 = tasks.register('testJava8', Test) {
