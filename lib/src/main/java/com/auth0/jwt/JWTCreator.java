@@ -10,6 +10,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
 import java.nio.charset.StandardCharsets;
+import java.security.NoSuchProviderException;
+import java.security.Provider;
+import java.security.Security;
 import java.time.Instant;
 import java.util.*;
 import java.util.Map.Entry;
@@ -541,13 +544,13 @@ public final class JWTCreator {
          */
         public String sign(Algorithm algorithm) throws IllegalArgumentException, JWTCreationException {
 
-            return this.sign(algorithm, (String) null);
+            return this.sign(algorithm, (Provider) null);
         }
 
         /**
          * Creates a new JWT and signs is with the given algorithm.
          *
-         * @param algorithm used to sign the JWT
+         * @param algorithm    used to sign the JWT
          * @param providerName the provider to use for crypto operations
          * @return a new JWT token
          * @throws IllegalArgumentException if the provided algorithm is null.
@@ -555,6 +558,25 @@ public final class JWTCreator {
          *                                  or there was a problem with the signing key.
          */
         public String sign(Algorithm algorithm, String providerName)
+                throws IllegalArgumentException, JWTCreationException, NoSuchProviderException {
+            Provider provider = Security.getProvider(providerName);
+            if (provider == null)
+                throw new NoSuchProviderException(String.format("No provider named [%s] installed", providerName));
+
+            return new JWTCreator(algorithm, headerClaims, payloadClaims).sign(provider);
+        }
+
+        /**
+         * Creates a new JWT and signs is with the given algorithm.
+         *
+         * @param algorithm    used to sign the JWT
+         * @param providerName the provider to use for crypto operations
+         * @return a new JWT token
+         * @throws IllegalArgumentException if the provided algorithm is null.
+         * @throws JWTCreationException     if the claims could not be converted to a valid JSON
+         *                                  or there was a problem with the signing key.
+         */
+        public String sign(Algorithm algorithm, Provider cryptoProvider)
                 throws IllegalArgumentException, JWTCreationException {
             if (algorithm == null) {
                 throw new IllegalArgumentException("The Algorithm cannot be null.");
@@ -567,7 +589,7 @@ public final class JWTCreator {
             if (signingKeyId != null) {
                 withKeyId(signingKeyId);
             }
-            return new JWTCreator(algorithm, headerClaims, payloadClaims).sign(providerName);
+            return new JWTCreator(algorithm, headerClaims, payloadClaims).sign(cryptoProvider);
         }
 
         private void assertNonNull(String name) {
@@ -583,23 +605,30 @@ public final class JWTCreator {
     }
 
     private String sign() throws SignatureGenerationException {
-        return sign((String) null);
+        return sign((Provider) null);
     }
 
 
     // Added methods to support specifying provider
 
-    private String sign(String providerName) throws SignatureGenerationException {
+    private String sign(String providerName) throws SignatureGenerationException, NoSuchProviderException {
+        Provider provider = Security.getProvider(providerName);
+        if (provider == null)
+            throw new NoSuchProviderException(String.format("No provider named [%s] installed", providerName));
+
+        return this.sign(provider);
+    }
+
+    private String sign(Provider cryptoProvider) throws SignatureGenerationException {
         String header = Base64.getUrlEncoder().withoutPadding()
                 .encodeToString(headerJson.getBytes(StandardCharsets.UTF_8));
         String payload = Base64.getUrlEncoder().withoutPadding()
                 .encodeToString(payloadJson.getBytes(StandardCharsets.UTF_8));
 
         byte[] signatureBytes = algorithm.sign(header.getBytes(StandardCharsets.UTF_8),
-                payload.getBytes(StandardCharsets.UTF_8), providerName);
+                payload.getBytes(StandardCharsets.UTF_8), cryptoProvider);
         String signature = Base64.getUrlEncoder().withoutPadding().encodeToString((signatureBytes));
 
         return String.format("%s.%s.%s", header, payload, signature);
     }
-
 }

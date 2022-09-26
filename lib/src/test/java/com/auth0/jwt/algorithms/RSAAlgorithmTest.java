@@ -8,6 +8,7 @@ import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.mockito.ArgumentMatchers;
 
 import java.io.ByteArrayOutputStream;
 import java.security.*;
@@ -215,7 +216,7 @@ public class RSAAlgorithmTest {
         exception.expectCause(isA(NoSuchAlgorithmException.class));
         
         CryptoHelper crypto = mock(CryptoHelper.class);
-        when(crypto.verifySignatureFor(anyString(), any(PublicKey.class), any(String.class), any(String.class), any(byte[].class)))
+        when(crypto.verifySignatureFor(anyString(), any(PublicKey.class), any(String.class), any(String.class), any(byte[].class), (Provider) ArgumentMatchers.isNull()))
                 .thenThrow(NoSuchAlgorithmException.class);
 
         RSAPublicKey publicKey = mock(RSAPublicKey.class);
@@ -233,7 +234,7 @@ public class RSAAlgorithmTest {
         exception.expectCause(isA(InvalidKeyException.class));
 
         CryptoHelper crypto = mock(CryptoHelper.class);
-        when(crypto.verifySignatureFor(anyString(), any(PublicKey.class), any(String.class), any(String.class), any(byte[].class)))
+        when(crypto.verifySignatureFor(anyString(), any(PublicKey.class), any(String.class), any(String.class), any(byte[].class), (Provider) ArgumentMatchers.isNull()))
                 .thenThrow(InvalidKeyException.class);
 
         RSAPublicKey publicKey = mock(RSAPublicKey.class);
@@ -251,7 +252,7 @@ public class RSAAlgorithmTest {
         exception.expectCause(isA(SignatureException.class));
 
         CryptoHelper crypto = mock(CryptoHelper.class);
-        when(crypto.verifySignatureFor(anyString(), any(PublicKey.class), any(String.class), any(String.class), any(byte[].class)))
+        when(crypto.verifySignatureFor(anyString(), any(PublicKey.class), any(String.class), any(String.class), any(byte[].class), (Provider) ArgumentMatchers.isNull()))
                 .thenThrow(SignatureException.class);
 
         RSAPublicKey publicKey = mock(RSAPublicKey.class);

@@ -3,6 +3,8 @@ package com.auth0.jwt.algorithms;
 import com.auth0.jwt.exceptions.SignatureGenerationException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
+
+import java.security.Provider;
 import java.util.Base64;
 
 class NoneAlgorithm extends Algorithm {
@@ -25,6 +27,19 @@ class NoneAlgorithm extends Algorithm {
     }
 
     @Override
+    public void verify(DecodedJWT jwt, Provider cryptoProvider) throws SignatureVerificationException {
+        try {
+            byte[] signatureBytes = Base64.getUrlDecoder().decode(jwt.getSignature());
+
+            if (signatureBytes.length > 0) {
+                throw new SignatureVerificationException(this);
+            }
+        } catch (IllegalArgumentException e) {
+            throw new SignatureVerificationException(this, e);
+        }
+    }
+
+    @Override
     public byte[] sign(byte[] headerBytes, byte[] payloadBytes) throws SignatureGenerationException {
         return new byte[0];
     }
@@ -35,7 +50,7 @@ class NoneAlgorithm extends Algorithm {
     }
 
     @Override
-    public byte[] sign(byte[] contentBytes, String providerName) throws SignatureGenerationException {
+    public byte[] sign(byte[] contentBytes, Provider cryptoProvider) throws SignatureGenerationException {
         return new byte[0];
     }
 }

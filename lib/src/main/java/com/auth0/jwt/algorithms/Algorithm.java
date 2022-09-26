@@ -6,6 +6,9 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.ECDSAKeyProvider;
 import com.auth0.jwt.interfaces.RSAKeyProvider;
 
+import java.security.NoSuchProviderException;
+import java.security.Provider;
+import java.security.Security;
 import java.security.SignatureException;
 import java.security.interfaces.*;
 
@@ -370,6 +373,37 @@ public abstract class Algorithm {
     public abstract void verify(DecodedJWT jwt) throws SignatureVerificationException;
 
     /**
+     * Verify the given token using this Algorithm instance.
+     *
+     * @param jwt          the already decoded JWT that it's going to be verified.
+     * @param providerName the crypto provider to use.
+     * @throws SignatureVerificationException if the Token's Signature is invalid,
+     *                                        meaning that it doesn't match the signatureBytes,
+     *                                        or if the Key is invalid.
+     */
+
+    public void verify(DecodedJWT jwt, String providerName)
+            throws SignatureVerificationException, NoSuchProviderException {
+        Provider provider = Security.getProvider(providerName);
+        if (provider == null)
+            throw new NoSuchProviderException(String.format("No provider named [%s] installed", providerName));
+
+        this.verify(jwt, provider);
+    }
+
+    /**
+     * Verify the given token using this Algorithm instance.
+     *
+     * @param jwt            the already decoded JWT that it's going to be verified.
+     * @param cryptoProvider the crypto provider to use.
+     * @throws SignatureVerificationException if the Token's Signature is invalid,
+     *                                        meaning that it doesn't match the signatureBytes,
+     *                                        or if the Key is invalid.
+     */
+
+    public abstract void verify(DecodedJWT jwt, Provider cryptoProvider) throws SignatureVerificationException;
+
+    /**
      * Sign the given content using this Algorithm instance.
      *
      * @param headerBytes  an array of bytes representing the base64 encoded header content
@@ -392,6 +426,50 @@ public abstract class Algorithm {
 
     /**
      * Sign the given content using this Algorithm instance.
+     *
+     * @param headerBytes  an array of bytes representing the base64 encoded header content
+     *                     to be verified against the signature.
+     * @param payloadBytes an array of bytes representing the base64 encoded payload content
+     *                     to be verified against the signature.
+     * @param providerName the Cryptographic provider name
+     * @return the signature in a base64 encoded array of bytes
+     * @throws SignatureGenerationException if the Key is invalid.
+     * @throws NoSuchProviderException      if no provider with the given name is installed
+     */
+    public byte[] sign(byte[] headerBytes, byte[] payloadBytes, String providerName)
+            throws SignatureGenerationException, NoSuchProviderException {
+        Provider provider = Security.getProvider(providerName);
+        if (provider == null)
+            throw new NoSuchProviderException(String.format("No provider named [%s] installed", providerName));
+
+        return sign(headerBytes, payloadBytes, provider);
+    }
+
+    /**
+     * Sign the given content using this Algorithm instance.
+     *
+     * @param headerBytes    an array of bytes representing the base64 encoded header content
+     *                       to be verified against the signature.
+     * @param payloadBytes   an array of bytes representing the base64 encoded payload content
+     *                       to be verified against the signature.
+     * @param cryptoProvider the Cryptographic Provider to use (see {@link Provider})
+     * @return the signature in a base64 encoded array of bytes
+     * @throws SignatureGenerationException if the Key is invalid.
+     */
+    public byte[] sign(byte[] headerBytes, byte[] payloadBytes, Provider cryptoProvider)
+            throws SignatureGenerationException {
+        // default implementation; keep around until sign(byte[]) method is removed
+        byte[] contentBytes = new byte[headerBytes.length + 1 + payloadBytes.length];
+
+        System.arraycopy(headerBytes, 0, contentBytes, 0, headerBytes.length);
+        contentBytes[headerBytes.length] = (byte) '.';
+        System.arraycopy(payloadBytes, 0, contentBytes, headerBytes.length + 1, payloadBytes.length);
+
+        return sign(contentBytes, cryptoProvider);
+    }
+
+    /**
+     * Sign the given content using this Algorithm instance.
      * To get the correct JWT Signature, ensure the content is in the format {HEADER}.{PAYLOAD}
      *
      * @param contentBytes an array of bytes representing the base64 encoded content
@@ -403,36 +481,33 @@ public abstract class Algorithm {
 
     /**
      * Sign the given content using this Algorithm instance.
+     * To get the correct JWT Signature, ensure the content is in the format {HEADER}.{PAYLOAD}
      *
-     * @param headerBytes  an array of bytes representing the base64 encoded header content
+     * @param contentBytes an array of bytes representing the base64 encoded content
      *                     to be verified against the signature.
-     * @param payloadBytes an array of bytes representing the base64 encoded payload content
-     *                     to be verified against the signature.
-     * @param providerName the Cryptographic provider name
+     * @param providerName the Cryptographic Provider's name/ID as provided by {@link Provider#getName()}
      * @return the signature in a base64 encoded array of bytes
      * @throws SignatureGenerationException if the Key is invalid.
+     * @throws NoSuchProviderException      if a provider with the given name is installed
      */
-    public byte[] sign(byte[] headerBytes, byte[] payloadBytes, String providerName)
-            throws SignatureGenerationException {
-        // default implementation; keep around until sign(byte[]) method is removed
-        byte[] contentBytes = new byte[headerBytes.length + 1 + payloadBytes.length];
+    public byte[] sign(byte[] contentBytes, String providerName)
+            throws SignatureGenerationException, NoSuchProviderException {
+        Provider provider = Security.getProvider(providerName);
+        if (provider == null)
+            throw new NoSuchProviderException(String.format("No provider named [%s] installed", providerName));
 
-        System.arraycopy(headerBytes, 0, contentBytes, 0, headerBytes.length);
-        contentBytes[headerBytes.length] = (byte) '.';
-        System.arraycopy(payloadBytes, 0, contentBytes, headerBytes.length + 1, payloadBytes.length);
-
-        return sign(contentBytes, providerName);
+        return this.sign(contentBytes, provider);
     }
 
     /**
      * Sign the given content using this Algorithm instance.
      * To get the correct JWT Signature, ensure the content is in the format {HEADER}.{PAYLOAD}
      *
-     * @param contentBytes an array of bytes representing the base64 encoded content
-     *                     to be verified against the signature.
-     * @param providerName the Cryptographic provider name
+     * @param contentBytes   an array of bytes representing the base64 encoded content
+     *                       to be verified against the signature.
+     * @param cryptoProvider the Cryptographic Provider to use (see {@link Provider})
      * @return the signature in a base64 encoded array of bytes
      * @throws SignatureGenerationException if the Key is invalid.
      */
-    public abstract byte[] sign(byte[] contentBytes, String providerName) throws SignatureGenerationException;
+    public abstract byte[] sign(byte[] contentBytes, Provider cryptoProvider) throws SignatureGenerationException;
 }

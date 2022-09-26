@@ -6,9 +6,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.ECDSAKeyProvider;
 
 import java.math.BigInteger;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.SignatureException;
+import java.security.*;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
 import java.util.Base64;
@@ -43,6 +41,11 @@ class ECDSAAlgorithm extends Algorithm {
 
     @Override
     public void verify(DecodedJWT jwt) throws SignatureVerificationException {
+        this.verify(jwt, (Provider) null);
+    }
+
+    @Override
+    public void verify(DecodedJWT jwt, Provider cryptoProvider) throws SignatureVerificationException {
         try {
             byte[] signatureBytes = Base64.getUrlDecoder().decode(jwt.getSignature());
             ECPublicKey publicKey = keyProvider.getPublicKeyById(jwt.getKeyId());
@@ -51,50 +54,30 @@ class ECDSAAlgorithm extends Algorithm {
             }
             validateSignatureStructure(signatureBytes, publicKey);
             boolean valid = crypto.verifySignatureFor(
-                    getDescription(), publicKey, jwt.getHeader(), jwt.getPayload(), JOSEToDER(signatureBytes));
+                    getDescription(), publicKey, jwt.getHeader(), jwt.getPayload(), JOSEToDER(signatureBytes), cryptoProvider);
 
             if (!valid) {
                 throw new SignatureVerificationException(this);
             }
         } catch (NoSuchAlgorithmException | SignatureException | InvalidKeyException
-                | IllegalStateException | IllegalArgumentException e) {
+                 | IllegalStateException | IllegalArgumentException e) {
             throw new SignatureVerificationException(this, e);
         }
     }
 
     @Override
     public byte[] sign(byte[] contentBytes) throws SignatureGenerationException {
-        return this.sign(contentBytes, (String) null);
+        return this.sign(contentBytes, (Provider) null);
     }
 
     @Override
-    public byte[] sign(byte[] headerBytes, byte[] payloadBytes, String providerName)
-            throws SignatureGenerationException {
+    public byte[] sign(byte[] contentBytes, Provider cryptoProvider) throws SignatureGenerationException {
         try {
             ECPrivateKey privateKey = keyProvider.getPrivateKey();
             if (privateKey == null) {
                 throw new IllegalStateException("The given Private Key is null.");
             }
-            byte[] signature = crypto.createSignatureFor(
-                    getDescription(),
-                    privateKey,
-                    headerBytes,
-                    payloadBytes,
-                    providerName);
-            return DERToJOSE(signature);
-        } catch (NoSuchAlgorithmException | SignatureException | InvalidKeyException | IllegalStateException e) {
-            throw new SignatureGenerationException(this, e);
-        }
-    }
-
-    @Override
-    public byte[] sign(byte[] contentBytes, String providerName) throws SignatureGenerationException {
-        try {
-            ECPrivateKey privateKey = keyProvider.getPrivateKey();
-            if (privateKey == null) {
-                throw new IllegalStateException("The given Private Key is null.");
-            }
-            byte[] signature = crypto.createSignatureFor(getDescription(), privateKey, contentBytes, providerName);
+            byte[] signature = crypto.createSignatureFor(getDescription(), privateKey, contentBytes, cryptoProvider);
             return DERToJOSE(signature);
         } catch (NoSuchAlgorithmException | SignatureException | InvalidKeyException | IllegalStateException e) {
             throw new SignatureGenerationException(this, e);

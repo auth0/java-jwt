@@ -6,9 +6,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.RSAKeyProvider;
 
 import java.nio.charset.StandardCharsets;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.SignatureException;
+import java.security.*;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.util.Base64;
@@ -40,6 +38,11 @@ class RSAAlgorithm extends Algorithm {
 
     @Override
     public void verify(DecodedJWT jwt) throws SignatureVerificationException {
+        this.verify(jwt, (Provider) null);
+    }
+
+    @Override
+    public void verify(DecodedJWT jwt, Provider cryptoProvider) throws SignatureVerificationException {
         try {
             byte[] signatureBytes = Base64.getUrlDecoder().decode(jwt.getSignature());
             RSAPublicKey publicKey = keyProvider.getPublicKeyById(jwt.getKeyId());
@@ -47,43 +50,29 @@ class RSAAlgorithm extends Algorithm {
                 throw new IllegalStateException("The given Public Key is null.");
             }
             boolean valid = crypto.verifySignatureFor(
-                    getDescription(), publicKey, jwt.getHeader(), jwt.getPayload(), signatureBytes);
+                    getDescription(), publicKey, jwt.getHeader(), jwt.getPayload(), signatureBytes, cryptoProvider);
             if (!valid) {
                 throw new SignatureVerificationException(this);
             }
         } catch (NoSuchAlgorithmException | SignatureException | InvalidKeyException
-                | IllegalArgumentException | IllegalStateException e) {
+                 | IllegalArgumentException | IllegalStateException e) {
             throw new SignatureVerificationException(this, e);
         }
     }
 
     @Override
     public byte[] sign(byte[] contentBytes) throws SignatureGenerationException {
-        return this.sign(contentBytes, (String) null);
+        return this.sign(contentBytes, (Provider) null);
     }
 
     @Override
-    public byte[] sign(byte[] headerBytes, byte[] payloadBytes, String providerName)
-            throws SignatureGenerationException {
+    public byte[] sign(byte[] contentBytes, Provider cryptoProvider) throws SignatureGenerationException {
         try {
             RSAPrivateKey privateKey = keyProvider.getPrivateKey();
             if (privateKey == null) {
                 throw new IllegalStateException("The given Private Key is null.");
             }
-            return crypto.createSignatureFor(getDescription(), privateKey, headerBytes, payloadBytes, providerName);
-        } catch (NoSuchAlgorithmException | SignatureException | InvalidKeyException | IllegalStateException e) {
-            throw new SignatureGenerationException(this, e);
-        }
-    }
-
-    @Override
-    public byte[] sign(byte[] contentBytes, String providerName) throws SignatureGenerationException {
-        try {
-            RSAPrivateKey privateKey = keyProvider.getPrivateKey();
-            if (privateKey == null) {
-                throw new IllegalStateException("The given Private Key is null.");
-            }
-            return crypto.createSignatureFor(getDescription(), privateKey, contentBytes, providerName);
+            return crypto.createSignatureFor(getDescription(), privateKey, contentBytes, cryptoProvider);
         } catch (NoSuchAlgorithmException | SignatureException | InvalidKeyException | IllegalStateException e) {
             throw new SignatureGenerationException(this, e);
         }

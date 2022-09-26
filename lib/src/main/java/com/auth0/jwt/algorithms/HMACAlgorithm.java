@@ -5,8 +5,7 @@ import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 
 import java.nio.charset.StandardCharsets;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
+import java.security.*;
 import java.util.Arrays;
 import java.util.Base64;
 
@@ -49,22 +48,42 @@ class HMACAlgorithm extends Algorithm {
 
     @Override
     public void verify(DecodedJWT jwt) throws SignatureVerificationException {
+        this.verify(jwt, (Provider) null);
+    }
+
+    @Override
+    public void verify(DecodedJWT jwt, Provider cryptoProvider) throws SignatureVerificationException {
         try {
             byte[] signatureBytes = Base64.getUrlDecoder().decode(jwt.getSignature());
-            boolean valid = crypto.verifySignatureFor(
-                    getDescription(), secret, jwt.getHeader(), jwt.getPayload(), signatureBytes);
+            boolean valid = this.crypto.verifySignatureFor(
+                    getDescription(), secret, jwt.getHeader(), jwt.getPayload(), signatureBytes, cryptoProvider);
             if (!valid) {
                 throw new SignatureVerificationException(this);
             }
-        } catch (IllegalStateException | InvalidKeyException | NoSuchAlgorithmException | IllegalArgumentException e) {
+        } catch (IllegalStateException | InvalidKeyException | NoSuchAlgorithmException | IllegalArgumentException |
+                 NoSuchProviderException e) {
             throw new SignatureVerificationException(this, e);
         }
     }
 
     @Override
     public byte[] sign(byte[] headerBytes, byte[] payloadBytes) throws SignatureGenerationException {
+        return this.sign(headerBytes, payloadBytes, (Provider) null);
+    }
+
+    @Override
+    public byte[] sign(byte[] headerBytes, byte[] payloadBytes, String providerName) throws SignatureGenerationException, NoSuchProviderException {
+        Provider provider = Security.getProvider(providerName);
+        if(provider==null)
+            throw new NoSuchProviderException(String.format("No provider named [%s] installed", providerName));
+
+        return this.sign(headerBytes, payloadBytes, provider);
+    }
+
+    @Override
+    public byte[] sign(byte[] headerBytes, byte[] payloadBytes, Provider cryptoProvider) throws SignatureGenerationException {
         try {
-            return crypto.createSignatureFor(getDescription(), secret, headerBytes, payloadBytes);
+            return this.crypto.createSignatureFor(getDescription(), secret, headerBytes, payloadBytes, (Provider) null);
         } catch (NoSuchAlgorithmException | InvalidKeyException e) {
             throw new SignatureGenerationException(this, e);
         }
@@ -72,11 +91,7 @@ class HMACAlgorithm extends Algorithm {
 
     @Override
     public byte[] sign(byte[] contentBytes) throws SignatureGenerationException {
-        try {
-            return crypto.createSignatureFor(getDescription(), secret, contentBytes);
-        } catch (NoSuchAlgorithmException | InvalidKeyException e) {
-            throw new SignatureGenerationException(this, e);
-        }
+        return this.sign(contentBytes, (Provider) null);
     }
 
     /**
@@ -85,7 +100,20 @@ class HMACAlgorithm extends Algorithm {
      * @param providerName the cryptographic provider name
      */
     @Override
-    public byte[] sign(byte[] contentBytes, String providerName) throws SignatureGenerationException {
-        return this.sign(contentBytes);
+    public byte[] sign(byte[] contentBytes, String providerName) throws SignatureGenerationException, NoSuchProviderException {
+        Provider provider = Security.getProvider(providerName);
+        if (provider == null)
+            throw new NoSuchProviderException(String.format("No provider named [%s] installed", providerName));
+
+        return this.sign(contentBytes, provider);
+    }
+
+    @Override
+    public byte[] sign(byte[] contentBytes, Provider cryptoProvider) throws SignatureGenerationException {
+        try {
+            return this.crypto.createSignatureFor(getDescription(), secret, contentBytes, cryptoProvider);
+        } catch (NoSuchAlgorithmException | InvalidKeyException e) {
+            throw new SignatureGenerationException(this, e);
+        }
     }
 }

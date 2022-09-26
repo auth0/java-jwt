@@ -32,8 +32,7 @@ import static org.hamcrest.Matchers.isA;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.internal.matchers.ThrowableMessageMatcher.hasMessage;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -42,7 +41,7 @@ public class ECDSAAlgorithmTest {
     private static final String PRIVATE_KEY_FILE_256 = "src/test/resources/ec256-key-private.pem";
     private static final String PUBLIC_KEY_FILE_256 = "src/test/resources/ec256-key-public.pem";
     private static final String INVALID_PUBLIC_KEY_FILE_256 = "src/test/resources/ec256-key-public-invalid.pem";
-    
+
     private static final String PRIVATE_KEY_FILE_384 = "src/test/resources/ec384-key-private.pem";
     private static final String PUBLIC_KEY_FILE_384 = "src/test/resources/ec384-key-public.pem";
     private static final String INVALID_PUBLIC_KEY_FILE_384 = "src/test/resources/ec384-key-public-invalid.pem";
@@ -462,7 +461,7 @@ public class ECDSAAlgorithmTest {
         exception.expectCause(isA(NoSuchAlgorithmException.class));
 
         CryptoHelper crypto = mock(CryptoHelper.class);
-        when(crypto.verifySignatureFor(anyString(), any(PublicKey.class), any(String.class), any(String.class), any(byte[].class)))
+        when(crypto.verifySignatureFor(anyString(), any(PublicKey.class), any(String.class), any(String.class), any(byte[].class), (Provider) isNull()))
                 .thenThrow(NoSuchAlgorithmException.class);
 
         ECPublicKey publicKey = mock(ECPublicKey.class);
@@ -484,7 +483,7 @@ public class ECDSAAlgorithmTest {
         exception.expectCause(isA(InvalidKeyException.class));
 
         CryptoHelper crypto = mock(CryptoHelper.class);
-        when(crypto.verifySignatureFor(anyString(), any(PublicKey.class), any(String.class), any(String.class), any(byte[].class)))
+        when(crypto.verifySignatureFor(anyString(), any(PublicKey.class), any(String.class), any(String.class), any(byte[].class), (Provider) isNull()))
                 .thenThrow(InvalidKeyException.class);
 
         ECPublicKey publicKey = mock(ECPublicKey.class);
@@ -506,7 +505,7 @@ public class ECDSAAlgorithmTest {
         exception.expectCause(isA(SignatureException.class));
 
         CryptoHelper crypto = mock(CryptoHelper.class);
-        when(crypto.verifySignatureFor(anyString(), any(PublicKey.class), any(String.class), any(String.class), any(byte[].class)))
+        when(crypto.verifySignatureFor(anyString(), any(PublicKey.class), any(String.class), any(String.class), any(byte[].class), (Provider) isNull()))
                 .thenThrow(SignatureException.class);
 
         ECPublicKey publicKey = mock(ECPublicKey.class);
@@ -532,7 +531,7 @@ public class ECDSAAlgorithmTest {
         algorithm.verify(JWT.decode(jwt));
     }
 
-        //Sign
+    //Sign
     private static final String ES256Header = "eyJhbGciOiJFUzI1NiJ9";
     private static final String ES384Header = "eyJhbGciOiJFUzM4NCJ9";
     private static final String ES512Header = "eyJhbGciOiJFUzUxMiJ9";
@@ -1200,8 +1199,8 @@ public class ECDSAAlgorithmTest {
     /**
      * Test deprecated signing method error handling.
      *
-     * @see {@linkplain #shouldFailOnECDSA256SigningWhenProvidedPrivateKeyIsNull}
      * @throws Exception expected exception
+     * @see {@linkplain #shouldFailOnECDSA256SigningWhenProvidedPrivateKeyIsNull}
      */
 
     @Test
