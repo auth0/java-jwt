@@ -34,8 +34,8 @@ class CryptoHelper {
             String payload,
             byte[] signatureBytes
     ) throws NoSuchAlgorithmException, InvalidKeyException, NoSuchProviderException {
-        return this.verifySignatureFor(algorithm, secretBytes,
-                header.getBytes(StandardCharsets.UTF_8), payload.getBytes(StandardCharsets.UTF_8), signatureBytes, (Provider) null);
+        return this.verifySignatureFor(algorithm, secretBytes, header.getBytes(StandardCharsets.UTF_8),
+                payload.getBytes(StandardCharsets.UTF_8), signatureBytes, (Provider) null);
     }
 
     /**
@@ -66,7 +66,8 @@ class CryptoHelper {
         }
 
         return this.verifySignatureFor(algorithm, secretBytes,
-                header.getBytes(StandardCharsets.UTF_8), payload.getBytes(StandardCharsets.UTF_8), signatureBytes, provider);
+                header.getBytes(StandardCharsets.UTF_8), payload.getBytes(StandardCharsets.UTF_8), signatureBytes,
+                provider);
     }
 
     /**
@@ -91,8 +92,8 @@ class CryptoHelper {
             byte[] signatureBytes,
             Provider cryptoProvider
     ) throws NoSuchAlgorithmException, InvalidKeyException, NoSuchProviderException {
-        return verifySignatureFor(algorithm, secretBytes,
-                header.getBytes(StandardCharsets.UTF_8), payload.getBytes(StandardCharsets.UTF_8), signatureBytes, cryptoProvider);
+        return verifySignatureFor(algorithm, secretBytes, header.getBytes(StandardCharsets.UTF_8),
+                payload.getBytes(StandardCharsets.UTF_8), signatureBytes, cryptoProvider);
     }
 
     /**
@@ -115,8 +116,8 @@ class CryptoHelper {
             byte[] payloadBytes,
             byte[] signatureBytes
     ) throws NoSuchAlgorithmException, InvalidKeyException {
-        return MessageDigest.isEqual(createSignatureFor(algorithm, secretBytes, headerBytes, payloadBytes, (Provider) null),
-                signatureBytes);
+        return MessageDigest.isEqual(createSignatureFor(algorithm, secretBytes, headerBytes, payloadBytes,
+                (Provider) null), signatureBytes);
     }
 
     /**
@@ -172,8 +173,8 @@ class CryptoHelper {
             byte[] signatureBytes,
             Provider cryptoProvider
     ) throws NoSuchAlgorithmException, InvalidKeyException {
-        return MessageDigest.isEqual(createSignatureFor(algorithm, secretBytes, headerBytes, payloadBytes, cryptoProvider),
-                signatureBytes);
+        return MessageDigest.isEqual(createSignatureFor(algorithm, secretBytes, headerBytes, payloadBytes,
+                cryptoProvider), signatureBytes);
     }
 
     /**
@@ -273,8 +274,8 @@ class CryptoHelper {
             byte[] payloadBytes,
             byte[] signatureBytes
     ) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
-
-        return this.verifySignatureFor(algorithm, publicKey, headerBytes, payloadBytes, signatureBytes, (Provider) null);
+        return this.verifySignatureFor(algorithm, publicKey, headerBytes, payloadBytes, signatureBytes,
+                (Provider) null);
     }
 
     /**
@@ -327,7 +328,9 @@ class CryptoHelper {
             byte[] signatureBytes,
             Provider cryptoProvider
     ) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
-        final Signature s = cryptoProvider != null ? Signature.getInstance(algorithm, cryptoProvider) : Signature.getInstance(algorithm);
+        final Signature s = cryptoProvider != null
+                ? Signature.getInstance(algorithm, cryptoProvider)
+                : Signature.getInstance(algorithm);
         s.initVerify(publicKey);
         s.update(headerBytes);
         s.update(JWT_PART_SEPARATOR);
@@ -392,8 +395,8 @@ class CryptoHelper {
      * @param privateKey     the private key to use for signing.
      * @param headerBytes    JWT header.
      * @param payloadBytes   JWT payload.
-     * @param cryptoProvider The crypto provider to use. If <i>null</i> is given, then the default security provider will be
-     *                       used ({@link  Security#getProviders()})
+     * @param cryptoProvider The crypto provider to use. If <i>null</i> is given, then the default security provider
+     *                       will be used ({@link  Security#getProviders()}).
      * @return the signature bytes.
      * @throws NoSuchAlgorithmException if the algorithm is not supported.
      * @throws InvalidKeyException      if the given key is inappropriate for initializing the specified algorithm.
@@ -548,7 +551,9 @@ class CryptoHelper {
      */
     byte[] createSignatureFor(String algorithm, byte[] secretBytes, byte[] contentBytes, Provider cryptoProvider)
             throws NoSuchAlgorithmException, InvalidKeyException {
-        final Mac mac = cryptoProvider != null ? Mac.getInstance(algorithm, cryptoProvider) : Mac.getInstance(algorithm);
+        final Mac mac = cryptoProvider != null
+                ? Mac.getInstance(algorithm, cryptoProvider)
+                : Mac.getInstance(algorithm);
         mac.init(new SecretKeySpec(secretBytes, algorithm));
         return mac.doFinal(contentBytes);
     }

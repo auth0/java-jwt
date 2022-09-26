@@ -559,6 +559,8 @@ public final class JWTCreator {
          * @throws IllegalArgumentException if the provided algorithm is null.
          * @throws JWTCreationException     if the claims could not be converted to a valid JSON
          *                                  or there was a problem with the signing key.
+         * @throws NoSuchProviderException  if a provider with providerName name cannot be found with
+         *                                  {@link Security#getProvider(String)}
          */
         public String sign(Algorithm algorithm, String providerName)
                 throws IllegalArgumentException, JWTCreationException, NoSuchProviderException {

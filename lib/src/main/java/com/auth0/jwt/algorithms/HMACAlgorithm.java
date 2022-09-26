@@ -60,8 +60,8 @@ class HMACAlgorithm extends Algorithm {
             if (!valid) {
                 throw new SignatureVerificationException(this);
             }
-        } catch (IllegalStateException | InvalidKeyException | NoSuchAlgorithmException | IllegalArgumentException |
-                 NoSuchProviderException e) {
+        } catch (IllegalStateException | InvalidKeyException | NoSuchAlgorithmException | IllegalArgumentException
+                 | NoSuchProviderException e) {
             throw new SignatureVerificationException(this, e);
         }
     }
@@ -72,7 +72,8 @@ class HMACAlgorithm extends Algorithm {
     }
 
     @Override
-    public byte[] sign(byte[] headerBytes, byte[] payloadBytes, String providerName) throws SignatureGenerationException, NoSuchProviderException {
+    public byte[] sign(byte[] headerBytes, byte[] payloadBytes, String providerName)
+            throws SignatureGenerationException, NoSuchProviderException {
         Provider provider = Security.getProvider(providerName);
         if (provider == null) {
             throw new NoSuchProviderException(String.format("No provider named [%s] installed", providerName));
@@ -82,7 +83,8 @@ class HMACAlgorithm extends Algorithm {
     }
 
     @Override
-    public byte[] sign(byte[] headerBytes, byte[] payloadBytes, Provider cryptoProvider) throws SignatureGenerationException {
+    public byte[] sign(byte[] headerBytes, byte[] payloadBytes, Provider cryptoProvider)
+            throws SignatureGenerationException {
         try {
             return this.crypto.createSignatureFor(getDescription(), secret, headerBytes, payloadBytes, (Provider) null);
         } catch (NoSuchAlgorithmException | InvalidKeyException e) {
@@ -101,7 +103,8 @@ class HMACAlgorithm extends Algorithm {
      * @param providerName the cryptographic provider name
      */
     @Override
-    public byte[] sign(byte[] contentBytes, String providerName) throws SignatureGenerationException, NoSuchProviderException {
+    public byte[] sign(byte[] contentBytes, String providerName)
+            throws SignatureGenerationException, NoSuchProviderException {
         Provider provider = Security.getProvider(providerName);
         if (provider == null) {
             throw new NoSuchProviderException(String.format("No provider named [%s] installed", providerName));

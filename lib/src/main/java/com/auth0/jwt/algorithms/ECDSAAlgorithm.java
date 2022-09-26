@@ -79,8 +79,8 @@ class ECDSAAlgorithm extends Algorithm {
                 throw new IllegalStateException("The given Public Key is null.");
             }
             validateSignatureStructure(signatureBytes, publicKey);
-            boolean valid = crypto.verifySignatureFor(
-                    getDescription(), publicKey, jwt.getHeader(), jwt.getPayload(), JOSEToDER(signatureBytes), cryptoProvider);
+            boolean valid = crypto.verifySignatureFor(getDescription(), publicKey, jwt.getHeader(), jwt.getPayload(),
+                    JOSEToDER(signatureBytes), cryptoProvider);
 
             if (!valid) {
                 throw new SignatureVerificationException(this);
