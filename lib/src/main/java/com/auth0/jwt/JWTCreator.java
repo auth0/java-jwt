@@ -3,7 +3,10 @@ package com.auth0.jwt;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.SignatureGenerationException;
-import com.auth0.jwt.impl.*;
+import com.auth0.jwt.impl.HeaderClaimsHolder;
+import com.auth0.jwt.impl.HeaderSerializer;
+import com.auth0.jwt.impl.PayloadClaimsHolder;
+import com.auth0.jwt.impl.PayloadSerializer;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -560,8 +563,9 @@ public final class JWTCreator {
         public String sign(Algorithm algorithm, String providerName)
                 throws IllegalArgumentException, JWTCreationException, NoSuchProviderException {
             Provider provider = Security.getProvider(providerName);
-            if (provider == null)
+            if (provider == null) {
                 throw new NoSuchProviderException(String.format("No provider named [%s] installed", providerName));
+            }
 
             return new JWTCreator(algorithm, headerClaims, payloadClaims).sign(provider);
         }
@@ -569,7 +573,7 @@ public final class JWTCreator {
         /**
          * Creates a new JWT and signs is with the given algorithm.
          *
-         * @param algorithm    used to sign the JWT
+         * @param algorithm      used to sign the JWT
          * @param cryptoProvider the provider to use for crypto operations
          * @return a new JWT token
          * @throws IllegalArgumentException if the provided algorithm is null.
@@ -613,8 +617,9 @@ public final class JWTCreator {
 
     private String sign(String providerName) throws SignatureGenerationException, NoSuchProviderException {
         Provider provider = Security.getProvider(providerName);
-        if (provider == null)
+        if (provider == null) {
             throw new NoSuchProviderException(String.format("No provider named [%s] installed", providerName));
+        }
 
         return this.sign(provider);
     }

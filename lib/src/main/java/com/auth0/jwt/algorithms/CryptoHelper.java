@@ -61,8 +61,9 @@ class CryptoHelper {
             String providerName
     ) throws NoSuchAlgorithmException, InvalidKeyException, NoSuchProviderException {
         Provider provider = Security.getProvider(providerName);
-        if (provider == null)
+        if (provider == null) {
             throw new NoSuchProviderException(String.format("No provider named [%s] installed", providerName));
+        }
 
         return this.verifySignatureFor(algorithm, secretBytes,
                 header.getBytes(StandardCharsets.UTF_8), payload.getBytes(StandardCharsets.UTF_8), signatureBytes, provider);
@@ -141,8 +142,9 @@ class CryptoHelper {
             String providerName
     ) throws NoSuchAlgorithmException, InvalidKeyException, NoSuchProviderException {
         Provider provider = Security.getProvider(providerName);
-        if (provider == null)
+        if (provider == null) {
             throw new NoSuchProviderException(String.format("No provider named [%s] installed", providerName));
+        }
 
         return MessageDigest.isEqual(createSignatureFor(algorithm, secretBytes, headerBytes, payloadBytes, provider),
                 signatureBytes);
@@ -219,8 +221,9 @@ class CryptoHelper {
             String providerName
     ) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, NoSuchProviderException {
         Provider provider = Security.getProvider(providerName);
-        if (provider == null)
+        if (provider == null) {
             throw new NoSuchProviderException(String.format("No provider named [%s] installed", providerName));
+        }
 
         return verifySignatureFor(algorithm, publicKey, header.getBytes(StandardCharsets.UTF_8),
                 payload.getBytes(StandardCharsets.UTF_8), signatureBytes, provider);
@@ -296,8 +299,9 @@ class CryptoHelper {
             String providerName
     ) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, NoSuchProviderException {
         Provider provider = Security.getProvider(providerName);
-        if (provider == null)
+        if (provider == null) {
             throw new NoSuchProviderException(String.format("No provider named [%s] installed", providerName));
+        }
 
         return this.verifySignatureFor(algorithm, publicKey, headerBytes, payloadBytes, signatureBytes, provider);
     }
@@ -374,8 +378,9 @@ class CryptoHelper {
             String providerName
     ) throws NoSuchAlgorithmException, InvalidKeyException, NoSuchProviderException, SignatureException {
         Provider provider = Security.getProvider(providerName);
-        if (provider == null)
+        if (provider == null) {
             throw new NoSuchProviderException(String.format("No provider named [%s] installed", providerName));
+        }
 
         return this.createSignatureFor(algorithm, privateKey, headerBytes, payloadBytes, provider);
     }
@@ -455,8 +460,9 @@ class CryptoHelper {
             String providerName
     ) throws NoSuchAlgorithmException, InvalidKeyException, NoSuchProviderException {
         Provider provider = Security.getProvider(providerName);
-        if (provider == null)
+        if (provider == null) {
             throw new NoSuchProviderException(String.format("No provider named [%s] installed", providerName));
+        }
 
         return this.createSignatureFor(algorithm, secretBytes, headerBytes, payloadBytes,
                 provider);
@@ -521,8 +527,9 @@ class CryptoHelper {
     byte[] createSignatureFor(String algorithm, byte[] secretBytes, byte[] contentBytes, String providerName)
             throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, NoSuchProviderException {
         Provider provider = Security.getProvider(providerName);
-        if (provider == null)
+        if (provider == null) {
             throw new NoSuchProviderException(String.format("No provider named [%s] installed", providerName));
+        }
 
         return this.createSignatureFor(algorithm, secretBytes, contentBytes, provider);
     }
@@ -566,8 +573,9 @@ class CryptoHelper {
             String providerName
     ) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, NoSuchProviderException {
         Provider provider = Security.getProvider(providerName);
-        if (provider == null)
+        if (provider == null) {
             throw new NoSuchProviderException(String.format("No provider named [%s] installed", providerName));
+        }
 
         return this.createSignatureFor(algorithm, privateKey, contentBytes, provider);
     }

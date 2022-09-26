@@ -6,7 +6,10 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.ECDSAKeyProvider;
 
 import java.math.BigInteger;
-import java.security.*;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.Provider;
+import java.security.SignatureException;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
 import java.util.Base64;
@@ -37,6 +40,29 @@ class ECDSAAlgorithm extends Algorithm {
     ECDSAAlgorithm(String id, String algorithm, int ecNumberSize, ECDSAKeyProvider keyProvider)
             throws IllegalArgumentException {
         this(new CryptoHelper(), id, algorithm, ecNumberSize, keyProvider);
+    }
+
+    //Visible for testing
+    static ECDSAKeyProvider providerForKeys(final ECPublicKey publicKey, final ECPrivateKey privateKey) {
+        if (publicKey == null && privateKey == null) {
+            throw new IllegalArgumentException("Both provided Keys cannot be null.");
+        }
+        return new ECDSAKeyProvider() {
+            @Override
+            public ECPublicKey getPublicKeyById(String keyId) {
+                return publicKey;
+            }
+
+            @Override
+            public ECPrivateKey getPrivateKey() {
+                return privateKey;
+            }
+
+            @Override
+            public String getPrivateKeyId() {
+                return null;
+            }
+        };
     }
 
     @Override
@@ -273,28 +299,5 @@ class ECDSAAlgorithm extends Algorithm {
             padding++;
         }
         return (bytes[fromIndex + padding] & 0xff) > 0x7f ? padding - 1 : padding;
-    }
-
-    //Visible for testing
-    static ECDSAKeyProvider providerForKeys(final ECPublicKey publicKey, final ECPrivateKey privateKey) {
-        if (publicKey == null && privateKey == null) {
-            throw new IllegalArgumentException("Both provided Keys cannot be null.");
-        }
-        return new ECDSAKeyProvider() {
-            @Override
-            public ECPublicKey getPublicKeyById(String keyId) {
-                return publicKey;
-            }
-
-            @Override
-            public ECPrivateKey getPrivateKey() {
-                return privateKey;
-            }
-
-            @Override
-            public String getPrivateKeyId() {
-                return null;
-            }
-        };
     }
 }

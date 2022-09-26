@@ -9,7 +9,6 @@ import com.auth0.jwt.interfaces.RSAKeyProvider;
 import java.security.NoSuchProviderException;
 import java.security.Provider;
 import java.security.Security;
-import java.security.SignatureException;
 import java.security.interfaces.*;
 
 /**
@@ -22,6 +21,11 @@ public abstract class Algorithm {
 
     private final String name;
     private final String description;
+
+    protected Algorithm(String name, String description) {
+        this.name = name;
+        this.description = description;
+    }
 
     /**
      * Creates a new Algorithm instance using SHA256withRSA. Tokens specify this as "RS256".
@@ -209,7 +213,6 @@ public abstract class Algorithm {
         return new HMACAlgorithm("HS512", "HmacSHA512", secret);
     }
 
-
     /**
      * Creates a new Algorithm instance using SHA256withECDSA. Tokens specify this as "ES256".
      *
@@ -318,14 +321,8 @@ public abstract class Algorithm {
         return ECDSA512(publicKey, privateKey);
     }
 
-
     public static Algorithm none() {
         return new NoneAlgorithm();
-    }
-
-    protected Algorithm(String name, String description) {
-        this.name = name;
-        this.description = description;
     }
 
     /**
@@ -380,14 +377,15 @@ public abstract class Algorithm {
      * @throws SignatureVerificationException if the Token's Signature is invalid,
      *                                        meaning that it doesn't match the signatureBytes,
      *                                        or if the Key is invalid.
-     * @throws NoSuchProviderException if a provider with the given name is not registered
+     * @throws NoSuchProviderException        if a provider with the given name is not registered
      */
 
     public void verify(DecodedJWT jwt, String providerName)
             throws SignatureVerificationException, NoSuchProviderException {
         Provider provider = Security.getProvider(providerName);
-        if (provider == null)
+        if (provider == null) {
             throw new NoSuchProviderException(String.format("No provider named [%s] installed", providerName));
+        }
 
         this.verify(jwt, provider);
     }
@@ -440,8 +438,9 @@ public abstract class Algorithm {
     public byte[] sign(byte[] headerBytes, byte[] payloadBytes, String providerName)
             throws SignatureGenerationException, NoSuchProviderException {
         Provider provider = Security.getProvider(providerName);
-        if (provider == null)
+        if (provider == null) {
             throw new NoSuchProviderException(String.format("No provider named [%s] installed", providerName));
+        }
 
         return sign(headerBytes, payloadBytes, provider);
     }
@@ -494,8 +493,9 @@ public abstract class Algorithm {
     public byte[] sign(byte[] contentBytes, String providerName)
             throws SignatureGenerationException, NoSuchProviderException {
         Provider provider = Security.getProvider(providerName);
-        if (provider == null)
+        if (provider == null) {
             throw new NoSuchProviderException(String.format("No provider named [%s] installed", providerName));
+        }
 
         return this.sign(contentBytes, provider);
     }

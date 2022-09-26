@@ -5,8 +5,10 @@ import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.RSAKeyProvider;
 
-import java.nio.charset.StandardCharsets;
-import java.security.*;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.Provider;
+import java.security.SignatureException;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.util.Base64;
@@ -34,6 +36,29 @@ class RSAAlgorithm extends Algorithm {
 
     RSAAlgorithm(String id, String algorithm, RSAKeyProvider keyProvider) throws IllegalArgumentException {
         this(new CryptoHelper(), id, algorithm, keyProvider);
+    }
+
+    //Visible for testing
+    static RSAKeyProvider providerForKeys(final RSAPublicKey publicKey, final RSAPrivateKey privateKey) {
+        if (publicKey == null && privateKey == null) {
+            throw new IllegalArgumentException("Both provided Keys cannot be null.");
+        }
+        return new RSAKeyProvider() {
+            @Override
+            public RSAPublicKey getPublicKeyById(String keyId) {
+                return publicKey;
+            }
+
+            @Override
+            public RSAPrivateKey getPrivateKey() {
+                return privateKey;
+            }
+
+            @Override
+            public String getPrivateKeyId() {
+                return null;
+            }
+        };
     }
 
     @Override
@@ -81,28 +106,5 @@ class RSAAlgorithm extends Algorithm {
     @Override
     public String getSigningKeyId() {
         return keyProvider.getPrivateKeyId();
-    }
-
-    //Visible for testing
-    static RSAKeyProvider providerForKeys(final RSAPublicKey publicKey, final RSAPrivateKey privateKey) {
-        if (publicKey == null && privateKey == null) {
-            throw new IllegalArgumentException("Both provided Keys cannot be null.");
-        }
-        return new RSAKeyProvider() {
-            @Override
-            public RSAPublicKey getPublicKeyById(String keyId) {
-                return publicKey;
-            }
-
-            @Override
-            public RSAPrivateKey getPrivateKey() {
-                return privateKey;
-            }
-
-            @Override
-            public String getPrivateKeyId() {
-                return null;
-            }
-        };
     }
 }

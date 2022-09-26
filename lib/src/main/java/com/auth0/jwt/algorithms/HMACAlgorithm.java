@@ -74,8 +74,9 @@ class HMACAlgorithm extends Algorithm {
     @Override
     public byte[] sign(byte[] headerBytes, byte[] payloadBytes, String providerName) throws SignatureGenerationException, NoSuchProviderException {
         Provider provider = Security.getProvider(providerName);
-        if(provider==null)
+        if (provider == null) {
             throw new NoSuchProviderException(String.format("No provider named [%s] installed", providerName));
+        }
 
         return this.sign(headerBytes, payloadBytes, provider);
     }
@@ -102,8 +103,9 @@ class HMACAlgorithm extends Algorithm {
     @Override
     public byte[] sign(byte[] contentBytes, String providerName) throws SignatureGenerationException, NoSuchProviderException {
         Provider provider = Security.getProvider(providerName);
-        if (provider == null)
+        if (provider == null) {
             throw new NoSuchProviderException(String.format("No provider named [%s] installed", providerName));
+        }
 
         return this.sign(contentBytes, provider);
     }
