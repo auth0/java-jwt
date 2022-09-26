@@ -5,7 +5,7 @@ allprojects {
 
     repositories {
     	maven {
-            name "INCM_Nexus_Snapshots"
+            name "INCM Nexus Snapshots"
             url "https://srv-artifactory-prd-01.incm.int/repository/maven-MobileID-snapshots/"
             credentials {
                 username property("mobid.mavenUser")
@@ -14,7 +14,7 @@ allprojects {
         }
 
         maven {
-            name "INCM_Nexus_Release"
+            name "INCM Nexus Release"
             url "https://srv-artifactory-prd-01.incm.int/repository/maven-MobileID-release/"
             credentials {
                 username property("mobid.mavenUser")
@@ -25,5 +25,3 @@ allprojects {
         mavenCentral()
     }
 }
-
-

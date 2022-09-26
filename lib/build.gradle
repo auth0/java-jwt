@@ -1,13 +1,10 @@
 plugins {
     id 'java-library'
     id 'jacoco'
-    //id 'com.auth0.gradle.oss-library.java'
+    id 'com.auth0.gradle.oss-library.java'
     id 'checkstyle'
     id 'maven-publish'
 }
-
-group 'com.auth0'
-version '4.0.1-SNAPSHOT'
 
 checkstyle {
     toolVersion '10.0'
@@ -16,7 +13,7 @@ checkstyle {
 
 logger.lifecycle("Using version ${version} for ${group}.${name}")
 
-/*oss {
+oss {
     name "java jwt"
     repository "java-jwt"
     organization "auth0"
@@ -37,14 +34,12 @@ logger.lifecycle("Using version ${version} for ${group}.${name}")
             email = "hernan@auth0.com"
         }
     }
-}*/
+}
 
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(11)
     }
-    withJavadocJar()
-    withSourcesJar()
 }
 
 compileJava {
@@ -143,63 +138,24 @@ classes.dependsOn compileModuleInfoJava
 
 publishing {
     publications {
-        mavenJava(MavenPublication) {
-            artifactId = "${rootProject.name}"
-            from components.java
-            versionMapping {
-                usage('java-api') {
-                    fromResolutionOf('runtimeClasspath')
-                }
-                usage('java-runtime') {
-                    fromResolutionResult()
-                }
-            }
-            pom {
-                name = 'JWT library'
-                description = 'auth0 JWT library fork'
-                url = 'http://www.example.com/library'
-                properties = [
-                        myProp          : "value",
-                        "prop.with.dots": "anotherValue"
-                ]
-                licenses {
-                    license {
-                        name = 'The Apache License, Version 2.0'
-                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                    }
-                }
-                developers {
-                    developer {
-                        id = 'aps'
-                        name = 'Antonio Pedro Santos'
-                        email = 'aps@dnxt.pt'
-                    }
-                }
-                scm {
-                    connection = 'scm:git:git://example.com/my-library.git'
-                    developerConnection = 'scm:git:ssh://example.com/my-library.git'
-                    url = 'http://example.com/my-library/'
-                }
-            }
-        }
     }
     repositories {
         maven {
-            name "INCM_Nexus"
-            def snapshotsRepoUrl = "https://srv-artifactory-prd-01.incm.int/repository/maven-MobileID-snapshots/"
-            def releasesRepoUrl = "https://srv-artifactory-prd-01.incm.int/repository/maven-MobileID-release/"
-            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
-            //url "https://srv-artifactory-prd-01.incm.int/repository/maven-MobileID-snapshots/"
+            name "INCM_Nexus_Snapshots"
+            url "https://srv-artifactory-prd-01.incm.int/repository/maven-MobileID-snapshots/"
             credentials {
                 username property("mobid.mavenUser")
                 password property("mobid.mavenPass")
             }
         }
-    }
 
-    javadoc {
-        if(JavaVersion.current().isJava9Compatible()) {
-            options.addBooleanOption('html5', true)
+        maven {
+            name "INCM_Nexus_Release"
+            url "https://srv-artifactory-prd-01.incm.int/repository/maven-MobileID-release/"
+            credentials {
+                username property("mobid.mavenUser")
+                password property("mobid.mavenPass")
+            }
         }
     }
 }
