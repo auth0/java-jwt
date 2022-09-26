@@ -468,7 +468,7 @@ public class RSAAlgorithmTest {
         exception.expectCause(isA(NoSuchAlgorithmException.class));
 
         CryptoHelper crypto = mock(CryptoHelper.class);
-        when(crypto.createSignatureFor(anyString(), any(PrivateKey.class), any(byte[].class), any(byte[].class)))
+        when(crypto.createSignatureFor(anyString(), any(PrivateKey.class), any(byte[].class), (Provider) ArgumentMatchers.isNull()))
                 .thenThrow(NoSuchAlgorithmException.class);
 
         RSAPublicKey publicKey = mock(RSAPublicKey.class);
@@ -485,7 +485,7 @@ public class RSAAlgorithmTest {
         exception.expectCause(isA(InvalidKeyException.class));
 
         CryptoHelper crypto = mock(CryptoHelper.class);
-        when(crypto.createSignatureFor(anyString(), any(PrivateKey.class), any(byte[].class), any(byte[].class)))
+        when(crypto.createSignatureFor(anyString(), any(PrivateKey.class), any(byte[].class), (Provider) ArgumentMatchers.isNull()))
                 .thenThrow(InvalidKeyException.class);
 
         RSAPublicKey publicKey = mock(RSAPublicKey.class);
@@ -502,7 +502,7 @@ public class RSAAlgorithmTest {
         exception.expectCause(isA(SignatureException.class));
 
         CryptoHelper crypto = mock(CryptoHelper.class);
-        when(crypto.createSignatureFor(anyString(), any(PrivateKey.class), any(byte[].class), any(byte[].class)))
+        when(crypto.createSignatureFor(anyString(), any(PrivateKey.class), any(byte[].class), (Provider) ArgumentMatchers.isNull()))
                 .thenThrow(SignatureException.class);
 
         RSAPublicKey publicKey = mock(RSAPublicKey.class);

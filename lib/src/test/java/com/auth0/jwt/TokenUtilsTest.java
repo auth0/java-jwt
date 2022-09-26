@@ -34,7 +34,7 @@ public class TokenUtilsTest {
         assertThat(parts, is(arrayWithSize(3)));
         assertThat(parts[0], is("eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0"));
         assertThat(parts[1], is("eyJpc3MiOiJhdXRoMCJ9"));
-        assertThat(parts[2], is(isEmptyString()));
+        assertThat(parts[2], is(emptyString()));
     }
 
     @Test

@@ -726,7 +726,7 @@ public class ECDSABouncyCastleProviderTests {
         exception.expectCause(isA(NoSuchAlgorithmException.class));
 
         CryptoHelper crypto = mock(CryptoHelper.class);
-        when(crypto.createSignatureFor(anyString(), any(PrivateKey.class), any(byte[].class), any(byte[].class)))
+        when(crypto.createSignatureFor(anyString(), any(PrivateKey.class), any(byte[].class), (Provider) ArgumentMatchers.isNull()))
                 .thenThrow(NoSuchAlgorithmException.class);
 
         ECPublicKey publicKey = mock(ECPublicKey.class);
@@ -743,7 +743,7 @@ public class ECDSABouncyCastleProviderTests {
         exception.expectCause(isA(InvalidKeyException.class));
 
         CryptoHelper crypto = mock(CryptoHelper.class);
-        when(crypto.createSignatureFor(anyString(), any(PrivateKey.class), any(byte[].class), any(byte[].class)))
+        when(crypto.createSignatureFor(anyString(), any(PrivateKey.class), any(byte[].class), (Provider) ArgumentMatchers.isNull()))
                 .thenThrow(InvalidKeyException.class);
 
         ECPublicKey publicKey = mock(ECPublicKey.class);
@@ -760,7 +760,7 @@ public class ECDSABouncyCastleProviderTests {
         exception.expectCause(isA(SignatureException.class));
 
         CryptoHelper crypto = mock(CryptoHelper.class);
-        when(crypto.createSignatureFor(anyString(), any(PrivateKey.class), any(byte[].class), any(byte[].class)))
+        when(crypto.createSignatureFor(anyString(), any(PrivateKey.class), any(byte[].class), (Provider) ArgumentMatchers.isNull()))
                 .thenThrow(SignatureException.class);
 
         ECPublicKey publicKey = mock(ECPublicKey.class);
