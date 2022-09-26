@@ -9,6 +9,8 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import java.nio.charset.StandardCharsets;
+import java.security.NoSuchProviderException;
+import java.security.Security;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.RSAPrivateKey;
 import java.time.Instant;
@@ -576,6 +578,63 @@ public class JWTCreatorTest {
 
     @SuppressWarnings("unchecked")
     @Test
+    public void shouldAcceptCustomMapClaimOfBasicObjectTypesAndProvider() throws Exception {
+        Map<String, Object> data = new HashMap<>();
+
+        // simple types
+        data.put("string", "abc");
+        data.put("integer", 1);
+        data.put("long", Long.MAX_VALUE);
+        data.put("double", 123.456d);
+        data.put("date", new Date(123000L));
+        data.put("instant", Instant.ofEpochSecond(123));
+        data.put("boolean", true);
+
+        // array types
+        data.put("intArray", new Integer[]{3, 5});
+        data.put("longArray", new Long[]{Long.MAX_VALUE, Long.MIN_VALUE});
+        data.put("stringArray", new String[]{"string"});
+
+        data.put("list", Arrays.asList("a", "b", "c"));
+
+        Map<String, Object> sub = new HashMap<>();
+        sub.put("subKey", "subValue");
+
+        data.put("map", sub);
+
+        String jwt = JWTCreator.init()
+                .withClaim("data", data)
+                .sign(Algorithm.HMAC256("secret"), Security.getProvider("SunEC").getName());
+
+        assertThat(jwt, is(notNullValue()));
+        String[] parts = jwt.split("\\.");
+
+        String body = new String(Base64.getUrlDecoder().decode(parts[1]), StandardCharsets.UTF_8);
+        ObjectMapper mapper = new ObjectMapper();
+        Map<String, Object> map = (Map<String, Object>) mapper.readValue(body, Map.class).get("data");
+
+        assertThat(map.get("string"), is("abc"));
+        assertThat(map.get("integer"), is(1));
+        assertThat(map.get("long"), is(Long.MAX_VALUE));
+        assertThat(map.get("double"), is(123.456d));
+
+        assertThat(map.get("date"), is(123));
+        assertThat(map.get("instant"), is(123));
+        assertThat(map.get("boolean"), is(true));
+
+        // array types
+        assertThat(map.get("intArray"), is(Arrays.asList(3, 5)));
+        assertThat(map.get("longArray"), is(Arrays.asList(Long.MAX_VALUE, Long.MIN_VALUE)));
+        assertThat(map.get("stringArray"), is(Collections.singletonList("string")));
+
+        // list
+        assertThat(map.get("list"), is(Arrays.asList("a", "b", "c")));
+        assertThat(map.get("map"), is(sub));
+
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
     public void shouldAcceptCustomListClaimOfBasicObjectTypes() throws Exception {
         List<Object> data = new ArrayList<>();
 
@@ -651,6 +710,30 @@ public class JWTCreatorTest {
                 .sign(Algorithm.HMAC256("secret"));
     }
 
+    @Test
+    public void shouldRefuseNullProviderName() throws NoSuchProviderException {
+        Map<String, Object> data = new HashMap<>();
+        data.put("test1", Arrays.asList("a", null, "c"));
+
+        exception.expect(IllegalArgumentException.class);
+
+        JWTCreator.init()
+                .withClaim("pojo", data)
+                .sign(Algorithm.HMAC256("secret"), (String) null);
+    }
+
+    @Test
+    public void shouldRefuseProviderNotFound() throws NoSuchProviderException {
+        Map<String, Object> data = new HashMap<>();
+        data.put("test1", Arrays.asList("a", null, "c"));
+
+        exception.expect(NoSuchProviderException.class);
+
+        JWTCreator.init()
+                .withClaim("pojo", data)
+                .sign(Algorithm.HMAC256("secret"), "some-provider");
+    }
+
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Test
     public void shouldRefuseCustomMapClaimForNonStringKey() {
@@ -661,6 +744,15 @@ public class JWTCreatorTest {
 
         JWTCreator.init()
                 .withClaim("pojo", (Map<String, Object>) data)
+                .sign(Algorithm.HMAC256("secret"));
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    @Test
+    public void shouldAcceptNullValueClaim() {
+
+        JWTCreator.init()
+                .withNullClaim("pojo")
                 .sign(Algorithm.HMAC256("secret"));
     }
 

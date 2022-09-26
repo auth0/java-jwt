@@ -1026,8 +1026,106 @@ public class ECDSAAlgorithmTest {
 
         for (int i = 0; i < 10; i++) {
             String jwt = asJWT(algorithm256, header256, body, Security.getProvider("SunEC").getName());
-            algorithm256.verify(JWT.decode(jwt),Security.getProvider("SunEC").getName());
+            algorithm256.verify(JWT.decode(jwt), Security.getProvider("SunEC").getName());
         }
+    }
+
+    @Test
+    public void shouldSignAndVerifyWithContentAndProviderByName() throws Exception {
+        ECDSAAlgorithm algorithm256 = (ECDSAAlgorithm) Algorithm.ECDSA256(
+                (ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC"),
+                (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_256, "EC"));
+        String header256 = "eyJhbGciOiJFUzI1NiJ9";
+        String body = "eyJpc3MiOiJhdXRoMCJ9";
+
+        for (int i = 0; i < 10; i++) {
+            byte[] signatureBytes = algorithm256.sign(
+                    header256.getBytes(StandardCharsets.UTF_8),
+                    body.getBytes(StandardCharsets.UTF_8),
+                    Security.getProvider("SunEC").getName());
+            String jwtSignature = Base64.getUrlEncoder().withoutPadding().encodeToString(signatureBytes);
+            String jwt = String.format("%s.%s.%s", header256, body, jwtSignature);
+
+            algorithm256.verify(JWT.decode(jwt), Security.getProvider("SunEC").getName());
+        }
+    }
+
+    @Test
+    public void shouldThrowOnSignHeaderAndPayloadWithNullProviderName() throws Exception {
+        ECPublicKey publicKey = (ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC");
+        ECDSAAlgorithm algorithm256 = (ECDSAAlgorithm) Algorithm.ECDSA256(publicKey, (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_256, "EC"));
+        byte[] joseSignature = new byte[32 * 2 - 1];
+        exception.expect(IllegalArgumentException.class);
+        exception.expectMessage("providerName cannot be null");
+
+        String header256 = "eyJhbGciOiJFUzI1NiJ9";
+        String body = "eyJpc3MiOiJhdXRoMCJ9";
+
+        byte[] signatureBytes = algorithm256.sign(
+                header256.getBytes(StandardCharsets.UTF_8),
+                body.getBytes(StandardCharsets.UTF_8),
+                Security.getProvider("SunEC").getName());
+        String jwtSignature = Base64.getUrlEncoder().withoutPadding().encodeToString(signatureBytes);
+        String jwt = String.format("%s.%s.%s", header256, body, jwtSignature);
+
+        algorithm256.verify(JWT.decode(jwt), (String) null);
+    }
+
+    @Test
+    public void shouldThrowOnSignContentWithNullProviderName() throws Exception {
+        ECPublicKey publicKey = (ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC");
+        ECDSAAlgorithm algorithm256 = (ECDSAAlgorithm) Algorithm.ECDSA256(publicKey, (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_256, "EC"));
+        byte[] joseSignature = new byte[32 * 2 - 1];
+        exception.expect(IllegalArgumentException.class);
+        exception.expectMessage("providerName cannot be null");
+
+        String header256 = "eyJhbGciOiJFUzI1NiJ9";
+        String body = "eyJpc3MiOiJhdXRoMCJ9";
+
+        byte[] signatureBytes = algorithm256.sign(
+                (header256 + "." + body).getBytes(StandardCharsets.UTF_8), (String) null);
+        String jwtSignature = Base64.getUrlEncoder().withoutPadding().encodeToString(signatureBytes);
+        String jwt = String.format("%s.%s.%s", header256, body, jwtSignature);
+
+        algorithm256.verify(JWT.decode(jwt), (String) null);
+    }
+
+    @Test
+    public void shouldThrowOnSignContentWithNoSuchProvider() throws Exception {
+        ECPublicKey publicKey = (ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC");
+        ECDSAAlgorithm algorithm256 = (ECDSAAlgorithm) Algorithm.ECDSA256(publicKey, (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_256, "EC"));
+        byte[] joseSignature = new byte[32 * 2 - 1];
+        exception.expect(NoSuchProviderException.class);
+        exception.expectMessage("No provider named [some-provider] installed");
+
+        String header256 = "eyJhbGciOiJFUzI1NiJ9";
+        String body = "eyJpc3MiOiJhdXRoMCJ9";
+
+        byte[] signatureBytes = algorithm256.sign(
+                (header256 + "." + body).getBytes(StandardCharsets.UTF_8), "some-provider");
+        String jwtSignature = Base64.getUrlEncoder().withoutPadding().encodeToString(signatureBytes);
+        String jwt = String.format("%s.%s.%s", header256, body, jwtSignature);
+
+        algorithm256.verify(JWT.decode(jwt), "some-provider");
+    }
+
+    @Test
+    public void shouldThrowOnVerifyContentWithNoSuchProvider() throws Exception {
+        ECPublicKey publicKey = (ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC");
+        ECDSAAlgorithm algorithm256 = (ECDSAAlgorithm) Algorithm.ECDSA256(publicKey, (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_256, "EC"));
+        byte[] joseSignature = new byte[32 * 2 - 1];
+        exception.expect(NoSuchProviderException.class);
+        exception.expectMessage("No provider named [some-provider] installed");
+
+        String header256 = "eyJhbGciOiJFUzI1NiJ9";
+        String body = "eyJpc3MiOiJhdXRoMCJ9";
+
+        byte[] signatureBytes = algorithm256.sign(
+                (header256 + "." + body).getBytes(StandardCharsets.UTF_8), "SunEC");
+        String jwtSignature = Base64.getUrlEncoder().withoutPadding().encodeToString(signatureBytes);
+        String jwt = String.format("%s.%s.%s", header256, body, jwtSignature);
+
+        algorithm256.verify(JWT.decode(jwt), "some-provider");
     }
 
     @Test
@@ -1037,8 +1135,20 @@ public class ECDSAAlgorithmTest {
         String body = "eyJpc3MiOiJhdXRoMCJ9";
 
         for (int i = 0; i < 10; i++) {
-            String jwt = asJWT(algorithm256, header256, body, Security.getProvider("SunEC"));
+            String jwt = asJWT(algorithm256, (header256 + "." + body).getBytes(StandardCharsets.UTF_8), Security.getProvider("SunEC"));
             algorithm256.verify(JWT.decode(jwt), Security.getProvider("SunEC"));
+        }
+    }
+
+    @Test
+    public void shouldSignContentAndVerifyWithProviderByName() throws Exception {
+        ECDSAAlgorithm algorithm256 = (ECDSAAlgorithm) Algorithm.ECDSA256((ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC"), (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_256, "EC"));
+        String header256 = "eyJhbGciOiJFUzI1NiJ9";
+        String body = "eyJpc3MiOiJhdXRoMCJ9";
+
+        for (int i = 0; i < 10; i++) {
+            String jwt = asJWT(algorithm256, (header256 + "." + body).getBytes(StandardCharsets.UTF_8), Security.getProvider("SunEC"));
+            algorithm256.verify(JWT.decode(jwt), "SunEC");
         }
     }
 

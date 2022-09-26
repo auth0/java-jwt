@@ -33,6 +33,18 @@ public abstract class CryptoTestHelper {
         return String.format("%s.%s.%s", header, payload, jwtSignature);
     }
 
+    public static String asJWT(Algorithm algorithm, byte[] content, String providerName) throws NoSuchProviderException {
+        byte[] signatureBytes = algorithm.sign(content, providerName);
+        String jwtSignature = Base64.getUrlEncoder().withoutPadding().encodeToString(signatureBytes);
+        return String.format("%s.%s", new String(content, StandardCharsets.UTF_8), jwtSignature);
+    }
+
+    public static String asJWT(Algorithm algorithm, byte[] content, Provider provider) {
+        byte[] signatureBytes = algorithm.sign(content, provider);
+        String jwtSignature = Base64.getUrlEncoder().withoutPadding().encodeToString(signatureBytes);
+        return String.format("%s.%s", new String(content), jwtSignature);
+    }
+
     public static void assertSignatureValue(String jwt, String expectedSignature) {
         String jwtSignature = jwt.substring(jwt.lastIndexOf('.') + 1);
         assertThat(jwtSignature, is(expectedSignature));

@@ -367,7 +367,9 @@ public abstract class Algorithm {
      *                                        meaning that it doesn't match the signatureBytes,
      *                                        or if the Key is invalid.
      */
-    public abstract void verify(DecodedJWT jwt) throws SignatureVerificationException;
+    public void verify(DecodedJWT jwt) throws SignatureVerificationException {
+        this.verify(jwt, (Provider) null);
+    }
 
     /**
      * Verify the given token using this Algorithm instance.
@@ -418,13 +420,8 @@ public abstract class Algorithm {
      */
     public byte[] sign(byte[] headerBytes, byte[] payloadBytes) throws SignatureGenerationException {
         // default implementation; keep around until sign(byte[]) method is removed
-        byte[] contentBytes = new byte[headerBytes.length + 1 + payloadBytes.length];
 
-        System.arraycopy(headerBytes, 0, contentBytes, 0, headerBytes.length);
-        contentBytes[headerBytes.length] = (byte) '.';
-        System.arraycopy(payloadBytes, 0, contentBytes, headerBytes.length + 1, payloadBytes.length);
-
-        return sign(contentBytes);
+        return this.sign(headerBytes, payloadBytes, (Provider) null);
     }
 
     /**
@@ -485,7 +482,9 @@ public abstract class Algorithm {
      * @return the signature in a base64 encoded array of bytes
      * @throws SignatureGenerationException if the Key is invalid.
      */
-    public abstract byte[] sign(byte[] contentBytes) throws SignatureGenerationException;
+    public byte[] sign(byte[] contentBytes) throws SignatureGenerationException {
+        return this.sign(contentBytes, (Provider) null);
+    }
 
     /**
      * Sign the given content using this Algorithm instance.
@@ -500,6 +499,10 @@ public abstract class Algorithm {
      */
     public byte[] sign(byte[] contentBytes, String providerName)
             throws SignatureGenerationException, NoSuchProviderException {
+        if (providerName == null) {
+            throw new IllegalArgumentException("providerName cannot be null");
+        }
+
         Provider provider = Security.getProvider(providerName);
         if (provider == null) {
             throw new NoSuchProviderException(String.format("No provider named [%s] installed", providerName));

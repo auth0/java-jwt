@@ -564,6 +564,10 @@ public final class JWTCreator {
          */
         public String sign(Algorithm algorithm, String providerName)
                 throws IllegalArgumentException, JWTCreationException, NoSuchProviderException {
+            if(providerName==null){
+                throw new IllegalArgumentException("providerName cannot be null");
+            }
+
             Provider provider = Security.getProvider(providerName);
             if (provider == null) {
                 throw new NoSuchProviderException(String.format("No provider named [%s] installed", providerName));
@@ -608,22 +612,6 @@ public final class JWTCreator {
             payloadClaims.put(name, value);
         }
 
-    }
-
-    private String sign() throws SignatureGenerationException {
-        return sign((Provider) null);
-    }
-
-
-    // Added methods to support specifying provider
-
-    private String sign(String providerName) throws SignatureGenerationException, NoSuchProviderException {
-        Provider provider = Security.getProvider(providerName);
-        if (provider == null) {
-            throw new NoSuchProviderException(String.format("No provider named [%s] installed", providerName));
-        }
-
-        return this.sign(provider);
     }
 
     private String sign(Provider cryptoProvider) throws SignatureGenerationException {

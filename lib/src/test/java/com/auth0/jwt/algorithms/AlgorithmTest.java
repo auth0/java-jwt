@@ -10,10 +10,12 @@ import org.mockito.ArgumentCaptor;
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchProviderException;
+import java.security.Provider;
 import java.security.interfaces.*;
 
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.withSettings;
 import static org.mockito.ArgumentMatchers.any;
@@ -562,7 +564,8 @@ public class AlgorithmTest {
 
         byte[] signature = new byte[]{0x10, 0x11, 0x12};
         when(algorithm.sign(any(byte[].class), any(byte[].class))).thenCallRealMethod();
-        when(algorithm.sign(contentCaptor.capture())).thenReturn(signature);
+        when(algorithm.sign(any(byte[].class), any(byte[].class), (Provider) isNull())).thenCallRealMethod();
+        when(algorithm.sign(contentCaptor.capture(), (Provider) isNull())).thenReturn(signature);
 
         byte[] sign = algorithm.sign(header, payload);
 

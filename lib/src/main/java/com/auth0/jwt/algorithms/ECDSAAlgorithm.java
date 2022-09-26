@@ -66,11 +66,6 @@ class ECDSAAlgorithm extends Algorithm {
     }
 
     @Override
-    public void verify(DecodedJWT jwt) throws SignatureVerificationException {
-        this.verify(jwt, (Provider) null);
-    }
-
-    @Override
     public void verify(DecodedJWT jwt, Provider cryptoProvider) throws SignatureVerificationException {
         try {
             byte[] signatureBytes = Base64.getUrlDecoder().decode(jwt.getSignature());
@@ -89,11 +84,6 @@ class ECDSAAlgorithm extends Algorithm {
                  | IllegalStateException | IllegalArgumentException e) {
             throw new SignatureVerificationException(this, e);
         }
-    }
-
-    @Override
-    public byte[] sign(byte[] contentBytes) throws SignatureGenerationException {
-        return this.sign(contentBytes, (Provider) null);
     }
 
     @Override

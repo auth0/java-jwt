@@ -14,19 +14,6 @@ class NoneAlgorithm extends Algorithm {
     }
 
     @Override
-    public void verify(DecodedJWT jwt) throws SignatureVerificationException {
-        try {
-            byte[] signatureBytes = Base64.getUrlDecoder().decode(jwt.getSignature());
-
-            if (signatureBytes.length > 0) {
-                throw new SignatureVerificationException(this);
-            }
-        } catch (IllegalArgumentException e) {
-            throw new SignatureVerificationException(this, e);
-        }
-    }
-
-    @Override
     public void verify(DecodedJWT jwt, Provider cryptoProvider) throws SignatureVerificationException {
         try {
             byte[] signatureBytes = Base64.getUrlDecoder().decode(jwt.getSignature());
@@ -37,11 +24,6 @@ class NoneAlgorithm extends Algorithm {
         } catch (IllegalArgumentException e) {
             throw new SignatureVerificationException(this, e);
         }
-    }
-
-    @Override
-    public byte[] sign(byte[] headerBytes, byte[] payloadBytes) throws SignatureGenerationException {
-        return new byte[0];
     }
 
     @Override
