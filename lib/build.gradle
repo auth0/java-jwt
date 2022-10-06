@@ -1,8 +1,19 @@
+buildscript {
+    version = "4.0.0"
+}
+
 plugins {
     id 'java'
     id 'jacoco'
     id 'com.auth0.gradle.oss-library.java'
     id 'checkstyle'
+}
+
+def signingKey = findProperty('SIGNING_KEY')
+def signingKeyPwd = findProperty('SIGNING_PASSWORD')
+
+signing {
+    useInMemoryPgpKeys(signingKey, signingKeyPwd)
 }
 
 checkstyle {
@@ -134,3 +145,11 @@ jar {
 
 compileModuleInfoJava.dependsOn compileJava
 classes.dependsOn compileModuleInfoJava
+
+// Creates a version.txt file containing the current version of the SDK.
+// This file is picked up and parsed by our Ship Orb to determine the version.
+task exportVersion()  {
+    doLast {
+        new File(rootDir, "version.txt").text = "$version"
+    }
+}
