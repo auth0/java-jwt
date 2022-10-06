@@ -19,17 +19,17 @@ abstract class TokenUtils {
         char delimiter = '.';
 
         int firstPeriodIndex = token.indexOf(delimiter);
-        if(firstPeriodIndex == -1) {
-           throw wrongNumberOfParts(0);
+        if (firstPeriodIndex == -1) {
+            throw wrongNumberOfParts(0);
         }
 
         int secondPeriodIndex = token.indexOf(delimiter, firstPeriodIndex + 1);
-        if(secondPeriodIndex == -1) {
+        if (secondPeriodIndex == -1) {
             throw wrongNumberOfParts(2);
         }
 
         // too many ?
-        if(token.indexOf(delimiter, secondPeriodIndex + 1) != -1) {
+        if (token.indexOf(delimiter, secondPeriodIndex + 1) != -1) {
             throw wrongNumberOfParts("> 3");
         }
 
