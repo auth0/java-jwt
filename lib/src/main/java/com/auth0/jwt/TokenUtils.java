@@ -42,6 +42,6 @@ abstract class TokenUtils {
     }
 
     private static JWTDecodeException wrongNumberOfParts(Object partCount) {
-        throw new JWTDecodeException(String.format("The token was expected to have 3 parts, but got %s.", partCount));
+        return new JWTDecodeException(String.format("The token was expected to have 3 parts, but got %s.", partCount));
     }
 }
