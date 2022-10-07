@@ -70,7 +70,15 @@ public class TokenUtilsTest {
     }
 
     @Test
-    public void shouldThrowOnSplitTokenWithLessThan3Parts() {
+    public void shouldThrowOnSplitTokenWithNoParts() {
+        exception.expect(JWTDecodeException.class);
+        exception.expectMessage("The token was expected to have 3 parts, but got 0.");
+        String token = "notajwt";
+        TokenUtils.splitToken(token);
+    }
+
+    @Test
+    public void shouldThrowOnSplitTokenWith2Parts() {
         exception.expect(JWTDecodeException.class);
         exception.expectMessage("The token was expected to have 3 parts, but got 2.");
         String token = "two.parts";
