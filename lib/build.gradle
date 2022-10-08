@@ -170,10 +170,24 @@ task exportVersion()  {
     }
 }
 
-tasks.register('runBenchmarks', JavaExec) {
-    description = 'Run JMH benchmarks.'
-    group = 'verification'
+// you can pass any arguments JMH accepts via Gradle args.
+// Example: ./gradlew runJMH --args="-lrf"
+tasks.register('runJMH', JavaExec) {
+    description 'Run JMH benchmarks.'
+    group 'verification'
 
     main 'org.openjdk.jmh.Main'
     classpath sourceSets.jmh.runtimeClasspath
+
+    args project.hasProperty("args") ? project.property("args").split() : ""
 }
+tasks.register('jmhHelp', JavaExec) {
+    description 'Prints the available command line options for JMH.'
+    group 'help'
+
+    main 'org.openjdk.jmh.Main'
+    classpath sourceSets.jmh.runtimeClasspath
+
+    args '-h'
+}
+
