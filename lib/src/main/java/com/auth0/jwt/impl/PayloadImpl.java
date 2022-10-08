@@ -2,12 +2,16 @@ package com.auth0.jwt.impl;
 
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.Payload;
+import com.fasterxml.jackson.core.ObjectCodec;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectReader;
 
 import java.io.Serializable;
 import java.time.Instant;
-import java.util.*;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static com.auth0.jwt.impl.JsonNodeClaim.extractClaim;
 
@@ -30,7 +34,7 @@ class PayloadImpl implements Payload, Serializable {
     private final Instant issuedAt;
     private final String jwtId;
     private final Map<String, JsonNode> tree;
-    private final ObjectReader objectReader;
+    private final ObjectCodec objectCodec;
 
     PayloadImpl(
             String issuer,
@@ -41,7 +45,7 @@ class PayloadImpl implements Payload, Serializable {
             Instant issuedAt,
             String jwtId,
             Map<String, JsonNode> tree,
-            ObjectReader objectReader
+            ObjectCodec objectCodec
     ) {
         this.issuer = issuer;
         this.subject = subject;
@@ -50,8 +54,8 @@ class PayloadImpl implements Payload, Serializable {
         this.notBefore = notBefore;
         this.issuedAt = issuedAt;
         this.jwtId = jwtId;
-        this.tree = tree != null ? Collections.unmodifiableMap(tree) : Collections.<String, JsonNode>emptyMap();
-        this.objectReader = objectReader;
+        this.tree = tree != null ? Collections.unmodifiableMap(tree) : Collections.emptyMap();
+        this.objectCodec = objectCodec;
     }
 
     Map<String, JsonNode> getTree() {
@@ -111,14 +115,14 @@ class PayloadImpl implements Payload, Serializable {
 
     @Override
     public Claim getClaim(String name) {
-        return extractClaim(name, tree, objectReader);
+        return extractClaim(name, tree, objectCodec);
     }
 
     @Override
     public Map<String, Claim> getClaims() {
         Map<String, Claim> claims = new HashMap<>(tree.size() * 2);
         for (String name : tree.keySet()) {
-            claims.put(name, extractClaim(name, tree, objectReader));
+            claims.put(name, extractClaim(name, tree, objectCodec));
         }
         return Collections.unmodifiableMap(claims);
     }

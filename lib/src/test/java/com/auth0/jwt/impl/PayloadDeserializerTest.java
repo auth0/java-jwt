@@ -35,9 +35,12 @@ public class PayloadDeserializerTest {
     public ExpectedException exception = ExpectedException.none();
     private PayloadDeserializer deserializer;
 
+    private ObjectMapper objectMapper;
+
     @Before
     public void setUp() {
-        deserializer = new PayloadDeserializer(new ObjectMapper().reader());
+        objectMapper = new ObjectMapper();
+        deserializer = new PayloadDeserializer();
     }
 
     @Test
@@ -68,7 +71,7 @@ public class PayloadDeserializerTest {
         ArrayNode arrNode = new ArrayNode(JsonNodeFactory.instance, subNodes);
         tree.put("key", arrNode);
 
-        deserializer.getStringOrArray(tree, "key");
+        deserializer.getStringOrArray(objectMapper, tree, "key");
     }
 
     @Test
@@ -123,7 +126,7 @@ public class PayloadDeserializerTest {
         ArrayNode arrNode = new ArrayNode(JsonNodeFactory.instance, subNodes);
         tree.put("key", arrNode);
 
-        List<String> values = deserializer.getStringOrArray(tree, "key");
+        List<String> values = deserializer.getStringOrArray(objectMapper, tree, "key");
         assertThat(values, is(notNullValue()));
         assertThat(values, is(IsCollectionWithSize.hasSize(2)));
         assertThat(values, is(IsIterableContaining.hasItems("one", "two")));
@@ -135,7 +138,7 @@ public class PayloadDeserializerTest {
         TextNode textNode = new TextNode("something");
         tree.put("key", textNode);
 
-        List<String> values = deserializer.getStringOrArray(tree, "key");
+        List<String> values = deserializer.getStringOrArray(objectMapper, tree, "key");
         assertThat(values, is(notNullValue()));
         assertThat(values, is(IsCollectionWithSize.hasSize(1)));
         assertThat(values, is(IsIterableContaining.hasItems("something")));
@@ -147,7 +150,7 @@ public class PayloadDeserializerTest {
         TextNode textNode = new TextNode("");
         tree.put("key", textNode);
 
-        List<String> values = deserializer.getStringOrArray(tree, "key");
+        List<String> values = deserializer.getStringOrArray(objectMapper, tree, "key");
         assertThat(values, is(notNullValue()));
         assertThat(values, is(IsEmptyCollection.empty()));
     }
@@ -158,7 +161,7 @@ public class PayloadDeserializerTest {
         NullNode node = NullNode.getInstance();
         tree.put("key", node);
 
-        List<String> values = deserializer.getStringOrArray(tree, "key");
+        List<String> values = deserializer.getStringOrArray(objectMapper, tree, "key");
         assertThat(values, is(nullValue()));
     }
 
@@ -167,7 +170,7 @@ public class PayloadDeserializerTest {
         Map<String, JsonNode> tree = new HashMap<>();
         tree.put("key", null);
 
-        List<String> values = deserializer.getStringOrArray(tree, "key");
+        List<String> values = deserializer.getStringOrArray(objectMapper, tree, "key");
         assertThat(values, is(nullValue()));
     }
 
@@ -177,7 +180,7 @@ public class PayloadDeserializerTest {
         IntNode node = new IntNode(456789);
         tree.put("key", node);
 
-        List<String> values = deserializer.getStringOrArray(tree, "key");
+        List<String> values = deserializer.getStringOrArray(objectMapper, tree, "key");
         assertThat(values, is(nullValue()));
     }
 

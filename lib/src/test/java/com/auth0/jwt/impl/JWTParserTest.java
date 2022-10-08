@@ -42,7 +42,7 @@ public class JWTParserTest {
     @Test
     public void shouldAddDeserializers() {
         ObjectMapper mapper = mock(ObjectMapper.class);
-        new JWTParser(mapper);
+        JWTParser.addDeserializers(mapper);
         verify(mapper).registerModule(any(Module.class));
     }
 
