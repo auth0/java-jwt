@@ -1,6 +1,6 @@
 version: 2.1
 orbs:
-  ship: auth0/ship@dev:9412fdc
+  ship: auth0/ship@dev:d4bf2df
   codecov: codecov/codecov@3
 
 commands:
@@ -59,7 +59,6 @@ workflows:
       - build
       - ship/java-publish:
           prefix-tag: false
-          package-name: java-jwt
           context:
             - publish-gh
             - publish-sonatype
