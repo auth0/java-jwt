@@ -1,6 +1,6 @@
 version: 2.1
 orbs:
-  ship: auth0/ship@0.7.1
+  ship: auth0/ship@dev:a88c4d7
   codecov: codecov/codecov@3
 
 commands:
@@ -66,6 +66,7 @@ workflows:
             branches:
               only:
                 - master
+                - automated-release
           requires:
             - build
   # api-diff:
