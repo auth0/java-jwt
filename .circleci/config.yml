@@ -59,6 +59,7 @@ workflows:
       - build
       - ship/java-publish:
           prefix-tag: false
+          package-name: java-jwt
           context:
             - publish-gh
             - publish-sonatype
