@@ -9,8 +9,8 @@ plugins {
     id 'checkstyle'
 }
 
-def signingKey = findProperty('SIGNING_KEY')
-def signingKeyPwd = findProperty('SIGNING_PASSWORD')
+def signingKey = findProperty('signingKey')
+def signingKeyPwd = findProperty('signingPassword')
 
 signing {
     useInMemoryPgpKeys(signingKey, signingKeyPwd)
@@ -29,6 +29,7 @@ oss {
     organization "auth0"
     description "Java implementation of JSON Web Token (JWT)"
     baselineCompareVersion "4.0.0"
+    skipAssertSigningConfiguration true
 
     developers {
         auth0 {
@@ -65,6 +66,7 @@ javadoc {
 
 dependencies {
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.2.2'
+
 
     testImplementation 'org.bouncycastle:bcprov-jdk15on:1.70'
     testImplementation 'junit:junit:4.13.2'
