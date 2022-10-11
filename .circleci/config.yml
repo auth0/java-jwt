@@ -1,6 +1,6 @@
 version: 2.1
 orbs:
-  ship: auth0/ship@dev:d4bf2df
+  ship: auth0/ship@0.7.2
   codecov: codecov/codecov@3
 
 commands:
