@@ -1,5 +1,26 @@
 # Change Log
 
+## [4.1.0](https://github.com/auth0/java-jwt/tree/4.1.0) (2022-10-06)
+[Full Changelog](https://github.com/auth0/java-jwt/compare/4.0.0...4.1.0)
+
+**⚠️ BREAKING CHANGES**
+- Make JWT constants final values [\#604](https://github.com/auth0/java-jwt/pull/604) ([poovamraj](https://github.com/poovamraj))
+
+**Added**
+- Add integration with our Shipping orb [\#612](https://github.com/auth0/java-jwt/pull/612) ([frederikprijck](https://github.com/frederikprijck))
+- Add Ship CLI support [\#609](https://github.com/auth0/java-jwt/pull/609) ([jimmyjames](https://github.com/jimmyjames))
+- Provide straightforward example for JWKS [\#600](https://github.com/auth0/java-jwt/pull/600) ([poovamraj](https://github.com/poovamraj))
+
+**Changed**
+- Update to gradle 6.9.2 [\#608](https://github.com/auth0/java-jwt/pull/608) ([jimmyjames](https://github.com/jimmyjames))
+- Update OSS plugin to latest [\#607](https://github.com/auth0/java-jwt/pull/607) ([jimmyjames](https://github.com/jimmyjames))
+- [SDK-3466] Upgrade Codecov [\#595](https://github.com/auth0/java-jwt/pull/595) ([evansims](https://github.com/evansims))
+- Update README.md [\#590](https://github.com/auth0/java-jwt/pull/590) ([poovamraj](https://github.com/poovamraj))
+
+**Fixed**
+- Check for null token before splitting [\#606](https://github.com/auth0/java-jwt/pull/606) ([jimmyjames](https://github.com/jimmyjames))
+- [SDK-3816] Update docs for verification thread-safety [\#605](https://github.com/auth0/java-jwt/pull/605) ([jimmyjames](https://github.com/jimmyjames))
+
 ## [4.0.0](https://github.com/auth0/java-jwt/tree/4.0.0) (2022-06-24)
 [Full Changelog](https://github.com/auth0/java-jwt/compare/3.19.2...4.0.0)
 
