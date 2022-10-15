@@ -15,15 +15,33 @@ abstract class TokenUtils {
         if (token == null) {
             throw new JWTDecodeException("The token is null.");
         }
-        String[] parts = token.split("\\.");
-        if (parts.length == 2 && token.endsWith(".")) {
-            //Tokens with alg='none' have empty String as Signature.
-            parts = new String[]{parts[0], parts[1], ""};
+
+        char delimiter = '.';
+
+        int firstPeriodIndex = token.indexOf(delimiter);
+        if (firstPeriodIndex == -1) {
+            throw wrongNumberOfParts(0);
         }
-        if (parts.length != 3) {
-            throw new JWTDecodeException(
-                    String.format("The token was expected to have 3 parts, but got %s.", parts.length));
+
+        int secondPeriodIndex = token.indexOf(delimiter, firstPeriodIndex + 1);
+        if (secondPeriodIndex == -1) {
+            throw wrongNumberOfParts(2);
         }
+
+        // too many ?
+        if (token.indexOf(delimiter, secondPeriodIndex + 1) != -1) {
+            throw wrongNumberOfParts("> 3");
+        }
+
+        String[] parts = new String[3];
+        parts[0] = token.substring(0, firstPeriodIndex);
+        parts[1] = token.substring(firstPeriodIndex + 1, secondPeriodIndex);
+        parts[2] = token.substring(secondPeriodIndex + 1);
+
         return parts;
+    }
+
+    private static JWTDecodeException wrongNumberOfParts(Object partCount) {
+        return new JWTDecodeException(String.format("The token was expected to have 3 parts, but got %s.", partCount));
     }
 }
