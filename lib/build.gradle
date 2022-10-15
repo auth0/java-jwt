@@ -28,7 +28,7 @@ oss {
     repository "java-jwt"
     organization "auth0"
     description "Java implementation of JSON Web Token (JWT)"
-    baselineCompareVersion "4.0.0"
+    baselineCompareVersion "4.1.0"
     skipAssertSigningConfiguration true
 
     developers {
