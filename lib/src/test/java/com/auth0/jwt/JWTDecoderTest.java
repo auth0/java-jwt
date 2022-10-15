@@ -50,7 +50,7 @@ public class JWTDecoderTest {
     @Test
     public void shouldThrowIfMoreThan3Parts() {
         exception.expect(JWTDecodeException.class);
-        exception.expectMessage("The token was expected to have 3 parts, but got 4.");
+        exception.expectMessage("The token was expected to have 3 parts, but got > 3.");
         JWT.decode("this.has.four.parts");
     }
 
