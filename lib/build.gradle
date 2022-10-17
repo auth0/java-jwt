@@ -35,7 +35,6 @@ checkstyle {
 tasks.named("checkstyleTest").configure({
     enabled = false
 })
-
 tasks.named("checkstyleJmh").configure({
     enabled = false
 })
