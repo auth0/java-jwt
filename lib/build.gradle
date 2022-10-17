@@ -1,5 +1,5 @@
 buildscript {
-    version = "4.0.0"
+    version = "4.1.0"
 }
 
 plugins {
@@ -21,8 +21,8 @@ configurations {
     }
 }
 
-def signingKey = findProperty('SIGNING_KEY')
-def signingKeyPwd = findProperty('SIGNING_PASSWORD')
+def signingKey = findProperty('signingKey')
+def signingKeyPwd = findProperty('signingPassword')
 
 signing {
     useInMemoryPgpKeys(signingKey, signingKeyPwd)
@@ -41,6 +41,7 @@ oss {
     organization "auth0"
     description "Java implementation of JSON Web Token (JWT)"
     baselineCompareVersion "4.0.0"
+    skipAssertSigningConfiguration true
 
     developers {
         auth0 {
