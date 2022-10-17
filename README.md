@@ -39,7 +39,7 @@ This library is supported for Java 8, 11, and 17. For issues on non-LTS versions
 ### Gradle
 
 ```gradle
-implementation 'com.auth0:java-jwt:4.0.0'
+implementation 'com.auth0:java-jwt:4.1.0'
 ```
 
 ### Maven
@@ -48,7 +48,7 @@ implementation 'com.auth0:java-jwt:4.0.0'
 <dependency>
     <groupId>com.auth0</groupId>
     <artifactId>java-jwt</artifactId>
-    <version>4.0.0</version>
+    <version>4.1.0</version>
 </dependency>
 ```
 
