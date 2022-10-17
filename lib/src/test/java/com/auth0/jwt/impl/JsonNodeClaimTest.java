@@ -7,7 +7,6 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
 import com.fasterxml.jackson.databind.node.MissingNode;
 import com.fasterxml.jackson.databind.node.NullNode;
@@ -21,20 +20,31 @@ import org.mockito.ArgumentMatchers;
 
 import java.io.IOException;
 import java.time.Instant;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.auth0.jwt.impl.JWTParser.getDefaultObjectMapper;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.arrayContaining;
+import static org.hamcrest.Matchers.hasEntry;
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.hasKey;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertNull;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 public class JsonNodeClaimTest {
 
     private ObjectMapper mapper;
-    private ObjectReader objectReader;
 
     @Rule
     public ExpectedException exception = ExpectedException.none();
@@ -42,7 +52,6 @@ public class JsonNodeClaimTest {
     @Before
     public void setUp() {
         mapper = getDefaultObjectMapper();
-        objectReader = mapper.reader();
     }
 
     @Test
@@ -55,7 +64,7 @@ public class JsonNodeClaimTest {
     }
 
     private Claim claimFromNode(JsonNode value) {
-        return JsonNodeClaim.claimFromNode(value, objectReader);
+        return JsonNodeClaim.claimFromNode(value, mapper);
     }
 
     @Test
@@ -282,7 +291,7 @@ public class JsonNodeClaimTest {
         JsonNode value = mock(ObjectNode.class);
         when(value.getNodeType()).thenReturn(JsonNodeType.OBJECT);
 
-        ObjectReader mockedMapper = mock(ObjectReader.class);
+        ObjectMapper mockedMapper = mock(ObjectMapper.class);
 
         JsonNodeClaim claim = (JsonNodeClaim) JsonNodeClaim.claimFromNode(value, mockedMapper);
         JsonNodeClaim spiedClaim = spy(claim);

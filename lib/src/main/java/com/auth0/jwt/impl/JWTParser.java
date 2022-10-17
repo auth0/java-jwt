@@ -16,15 +16,21 @@ import java.io.IOException;
  * {@link HeaderSerializer} and {@link PayloadSerializer}.
  */
 public class JWTParser implements JWTPartsParser {
+    private static final ObjectMapper DEFAULT_OBJECT_MAPPER = createDefaultObjectMapper();
+    private static final ObjectReader DEFAULT_PAYLOAD_READER = DEFAULT_OBJECT_MAPPER.readerFor(Payload.class);
+    private static final ObjectReader DEFAULT_HEADER_READER = DEFAULT_OBJECT_MAPPER.readerFor(Header.class);
+
     private final ObjectReader payloadReader;
     private final ObjectReader headerReader;
 
     public JWTParser() {
-        this(getDefaultObjectMapper());
+        this.payloadReader = DEFAULT_PAYLOAD_READER;
+        this.headerReader = DEFAULT_HEADER_READER;
     }
 
     JWTParser(ObjectMapper mapper) {
         addDeserializers(mapper);
+
         this.payloadReader = mapper.readerFor(Payload.class);
         this.headerReader = mapper.readerFor(Header.class);
     }
@@ -55,18 +61,24 @@ public class JWTParser implements JWTPartsParser {
         }
     }
 
-    private void addDeserializers(ObjectMapper mapper) {
+    static void addDeserializers(ObjectMapper mapper) {
         SimpleModule module = new SimpleModule();
-        ObjectReader reader = mapper.reader();
-        module.addDeserializer(Payload.class, new PayloadDeserializer(reader));
-        module.addDeserializer(Header.class, new HeaderDeserializer(reader));
+        module.addDeserializer(Payload.class, new PayloadDeserializer());
+        module.addDeserializer(Header.class, new HeaderDeserializer());
         mapper.registerModule(module);
     }
 
     static ObjectMapper getDefaultObjectMapper() {
+        return DEFAULT_OBJECT_MAPPER;
+    }
+
+    private static ObjectMapper createDefaultObjectMapper() {
         ObjectMapper mapper = new ObjectMapper();
         mapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
         mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
+
+        addDeserializers(mapper);
+
         return mapper;
     }
 

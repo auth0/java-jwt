@@ -5,6 +5,7 @@ import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.interfaces.Payload;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.ObjectCodec;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -24,16 +25,8 @@ import java.util.*;
  */
 class PayloadDeserializer extends StdDeserializer<Payload> {
 
-    private final ObjectReader objectReader;
-
-    PayloadDeserializer(ObjectReader reader) {
-        this(null, reader);
-    }
-
-    private PayloadDeserializer(Class<?> vc, ObjectReader reader) {
-        super(vc);
-
-        this.objectReader = reader;
+    PayloadDeserializer() {
+        super(Payload.class);
     }
 
     @Override
@@ -46,16 +39,17 @@ class PayloadDeserializer extends StdDeserializer<Payload> {
 
         String issuer = getString(tree, RegisteredClaims.ISSUER);
         String subject = getString(tree, RegisteredClaims.SUBJECT);
-        List<String> audience = getStringOrArray(tree, RegisteredClaims.AUDIENCE);
+        List<String> audience = getStringOrArray(p.getCodec(), tree, RegisteredClaims.AUDIENCE);
         Instant expiresAt = getInstantFromSeconds(tree, RegisteredClaims.EXPIRES_AT);
         Instant notBefore = getInstantFromSeconds(tree, RegisteredClaims.NOT_BEFORE);
         Instant issuedAt = getInstantFromSeconds(tree, RegisteredClaims.ISSUED_AT);
         String jwtId = getString(tree, RegisteredClaims.JWT_ID);
 
-        return new PayloadImpl(issuer, subject, audience, expiresAt, notBefore, issuedAt, jwtId, tree, objectReader);
+        return new PayloadImpl(issuer, subject, audience, expiresAt, notBefore, issuedAt, jwtId, tree, p.getCodec());
     }
 
-    List<String> getStringOrArray(Map<String, JsonNode> tree, String claimName) throws JWTDecodeException {
+    List<String> getStringOrArray(ObjectCodec codec, Map<String, JsonNode> tree, String claimName)
+            throws JWTDecodeException {
         JsonNode node = tree.get(claimName);
         if (node == null || node.isNull() || !(node.isArray() || node.isTextual())) {
             return null;
@@ -67,7 +61,7 @@ class PayloadDeserializer extends StdDeserializer<Payload> {
         List<String> list = new ArrayList<>(node.size());
         for (int i = 0; i < node.size(); i++) {
             try {
-                list.add(objectReader.treeToValue(node.get(i), String.class));
+                list.add(codec.treeToValue(node.get(i), String.class));
             } catch (JsonProcessingException e) {
                 throw new JWTDecodeException("Couldn't map the Claim's array contents to String", e);
             }

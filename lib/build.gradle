@@ -30,8 +30,14 @@ signing {
 
 checkstyle {
     toolVersion '10.0'
-    checkstyleTest.enabled = false //We are disabling lint checks for tests
 }
+//We are disabling lint checks for tests
+tasks.named("checkstyleTest").configure({
+    enabled = false
+})
+tasks.named("checkstyleJmh").configure({
+    enabled = false
+})
 
 logger.lifecycle("Using version ${version} for ${group}.${name}")
 
