@@ -11,7 +11,7 @@ A Java implementation of [JSON Web Token (JWT) - RFC 7519](https://tools.ietf.or
 :books: [Documentation](#documentation) - :rocket: [Getting Started](#getting-started) - :computer: [API Reference](#api-reference) :speech_balloon: [Feedback](#feedback)
 
 ## Documentation
-- [Examples](./EXAMPLES.md) - code samples for common auth0-java scenarios.
+- [Examples](./EXAMPLES.md) - code samples for common java-jwt scenarios.
 - [Docs site](https://www.auth0.com/docs) - explore our docs site and learn more about Auth0.
 
 ## Getting Started
@@ -20,7 +20,7 @@ A Java implementation of [JSON Web Token (JWT) - RFC 7519](https://tools.ietf.or
 
 This library is supported for Java LTS versions 8, 11, and 17. For issues on non-LTS versions above 8, consideration will be given on a case-by-case basis.
 
-> `auth0-java` is intended for server-side JVM applications. Android applications should use the [Auth0.Android SDK](https://github.com/auth0/auth0.android).
+> `java-jwt` is intended for server-side JVM applications. Android applications should use [JWTDecode.Android](https://github.com/auth0/JWTDecode.Android).
 
 `java-jwt` supports the following algorithms for both signing and verification:
 
