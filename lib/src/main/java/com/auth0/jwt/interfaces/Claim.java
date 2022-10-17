@@ -62,9 +62,10 @@ public interface Claim {
 
     /**
      * Get this Claim as a String.
-     * If the value isn't of type String or it can't be converted to a String, {@code null} will be returned.
+     * If the value isn't of type String, {@code null} will be returned. For a String representation of non-textual
+     * claim types, clients can call {@code toString()}.
      *
-     * @return the value as a String or null.
+     * @return the value as a String or null if the underlying value is not a string.
      */
     String asString();
 
