@@ -1,7 +1,7 @@
 {
   "files": {
     "README.md": [],
-    "lib/build.gradle": []
+    "lib/build.gradle": ["version[[:blank:]]*=[[:blank:]]*{MAJOR}.{MINOR}.{PATCH}"]
   },
   "prefixVersion": false
 }
