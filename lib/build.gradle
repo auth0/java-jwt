@@ -1,7 +1,19 @@
+
+buildscript {
+    version = "3.19.2"
+}
+
 plugins {
     id 'java'
     id 'jacoco'
     id 'com.auth0.gradle.oss-library.java'
+}
+
+def signingKey = findProperty('signingKey')
+def signingKeyPwd = findProperty('signingPassword')
+
+signing {
+    useInMemoryPgpKeys(signingKey, signingKeyPwd)
 }
 
 logger.lifecycle("Using version ${version} for ${group}.${name}")
@@ -12,6 +24,7 @@ oss {
     organization "auth0"
     description "Java implementation of JSON Web Token (JWT)"
     baselineCompareVersion "3.18.2"
+    skipAssertSigningConfiguration true
 
     developers {
         auth0 {
@@ -93,3 +106,11 @@ jar {
 
 compileModuleInfoJava.dependsOn compileJava
 classes.dependsOn compileModuleInfoJava
+
+// Creates a version.txt file containing the current version of the SDK.
+// This file is picked up and parsed by our Ship Orb to determine the version.
+task exportVersion()  {
+    doLast {
+        new File(rootDir, "version.txt").text = "$version"
+    }
+}
