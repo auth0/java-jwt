@@ -1,5 +1,17 @@
 # Change Log
 
+## [4.2.0](https://github.com/auth0/java-jwt/tree/4.2.0) (2022-10-19)
+[Full Changelog](https://github.com/auth0/java-jwt/compare/4.1.0...4.2.0)
+
+**Changed**
+- Re-enable japicmp API diff checking [\#619](https://github.com/auth0/java-jwt/pull/619) ([jimmyjames](https://github.com/jimmyjames))
+- Update .shiprc to only update lib version in build.gradle [\#625](https://github.com/auth0/java-jwt/pull/625) ([jimmyjames](https://github.com/jimmyjames))
+- Optimise TokenUtils parsing [\#611](https://github.com/auth0/java-jwt/pull/611) ([noetro](https://github.com/noetro))
+- Update Circle Ship Orb configuration [\#616](https://github.com/auth0/java-jwt/pull/616) ([frederikprijck](https://github.com/frederikprijck))
+
+**Fixed**
+- Update Claim#asString documentation [\#615](https://github.com/auth0/java-jwt/pull/615) ([jimmyjames](https://github.com/jimmyjames))
+
 ## [4.1.0](https://github.com/auth0/java-jwt/tree/4.1.0) (2022-10-06)
 [Full Changelog](https://github.com/auth0/java-jwt/compare/4.0.0...4.1.0)
 
