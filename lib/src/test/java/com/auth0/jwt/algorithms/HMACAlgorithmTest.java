@@ -168,6 +168,11 @@ public class HMACAlgorithmTest {
         assertSignaturePresent(jwt);
         assertSignatureValue(jwt, expectedSignature);
         algorithm.verify(JWT.decode(jwt));
+
+        jwt = asJWT(algorithm, HS256Header, auth0IssPayload, false);
+
+        assertSignaturePresent(jwt);
+        algorithm.verify(JWT.decode(jwt), false);
     }
 
     @Test

@@ -13,9 +13,15 @@ public abstract class CryptoTestHelper {
     private static final Pattern authHeaderPattern = Pattern.compile("^([\\w-]+)\\.([\\w-]+)\\.([\\w-]+)");
 
 	public static String asJWT(Algorithm algorithm, String header, String payload) {
-	    byte[] signatureBytes = algorithm.sign(header.getBytes(StandardCharsets.UTF_8), payload.getBytes(StandardCharsets.UTF_8));
-	    String jwtSignature = Base64.getUrlEncoder().withoutPadding().encodeToString(signatureBytes);
-	    return String.format("%s.%s.%s", header, payload, jwtSignature);
+	    return asJWT(algorithm, header, payload, true);
+	}
+
+	public static String asJWT(Algorithm algorithm, String header, String payload, boolean urlEncoder) {
+		byte[] signatureBytes = algorithm.sign(header.getBytes(StandardCharsets.UTF_8), payload.getBytes(StandardCharsets.UTF_8));
+
+		Base64.Encoder encoder = urlEncoder ? Base64.getUrlEncoder() : Base64.getEncoder();
+		String jwtSignature = encoder.withoutPadding().encodeToString(signatureBytes);
+		return String.format("%s.%s.%s", header, payload, jwtSignature);
 	}
 	
 	public static void assertSignatureValue(String jwt, String expectedSignature) {

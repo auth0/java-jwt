@@ -280,6 +280,11 @@ public class RSAAlgorithmTest {
         assertSignaturePresent(jwt);
         assertSignatureValue(jwt, expectedSignature);
         algorithmVerify.verify(JWT.decode(jwt));
+
+        jwt = asJWT(algorithmSign, RS256Header, auth0IssPayload, false);
+
+        assertSignaturePresent(jwt);
+        algorithmVerify.verify(JWT.decode(jwt), false);
     }
 
     @Test

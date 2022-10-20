@@ -535,6 +535,11 @@ public class ECDSABouncyCastleProviderTests {
 
         assertSignaturePresent(jwt);
         algorithmVerify.verify(JWT.decode(jwt));
+
+        jwt = asJWT(algorithmSign, ES256Header, auth0IssPayload, false);
+
+        assertSignaturePresent(jwt);
+        algorithmVerify.verify(JWT.decode(jwt), false);
     }
 
     @Test
