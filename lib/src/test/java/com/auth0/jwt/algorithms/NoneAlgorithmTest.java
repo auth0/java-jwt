@@ -22,6 +22,8 @@ public class NoneAlgorithmTest {
         Algorithm algorithm = Algorithm.none();
         String jwt = "eyJhbGciOiJub25lIiwiY3R5IjoiSldUIn0.eyJpc3MiOiJhdXRoMCJ9.";
         algorithm.verify(JWT.decode(jwt));
+
+        algorithm.verify(JWT.decode(jwt), true);
     }
 
     @Test
