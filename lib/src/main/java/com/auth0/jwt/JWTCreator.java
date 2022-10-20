@@ -454,11 +454,26 @@ public final class JWTCreator {
          * Creates a new JWT and signs is with the given algorithm
          *
          * @param algorithm used to sign the JWT
-         * @return a new JWT token
+         * @return a new JWT token with urlEncoded default
          * @throws IllegalArgumentException if the provided algorithm is null.
          * @throws JWTCreationException     if the claims could not be converted to a valid JSON or there was a problem with the signing key.
          */
         public String sign(Algorithm algorithm) throws IllegalArgumentException, JWTCreationException {
+            return sign(algorithm, true);
+        }
+
+        /**
+         * Creates a new JWT and signs is with the given algorithm.
+         *
+         * @param algorithm used to sign the JWT
+         * @param urlEncoder used urlEncoder to encode the JWT
+         *
+         * @return a new JWT token
+         * @throws IllegalArgumentException if the provided algorithm is null.
+         * @throws JWTCreationException     if the claims could not be converted to a valid JSON or there was a
+         * problem with the signing key.
+         */
+        public String sign(Algorithm algorithm, boolean urlEncoder) throws IllegalArgumentException, JWTCreationException {
             if (algorithm == null) {
                 throw new IllegalArgumentException("The Algorithm cannot be null.");
             }
@@ -470,7 +485,7 @@ public final class JWTCreator {
             if (signingKeyId != null) {
                 withKeyId(signingKeyId);
             }
-            return new JWTCreator(algorithm, headerClaims, payloadClaims).sign();
+            return new JWTCreator(algorithm, headerClaims, payloadClaims).sign(urlEncoder);
         }
 
         private void assertNonNull(String name) {
@@ -488,9 +503,11 @@ public final class JWTCreator {
         }
     }
 
-    private String sign() throws SignatureGenerationException {
-        String header = Base64.getUrlEncoder().withoutPadding().encodeToString(headerJson.getBytes(StandardCharsets.UTF_8));
-        String payload = Base64.getUrlEncoder().withoutPadding().encodeToString(payloadJson.getBytes(StandardCharsets.UTF_8));
+    private String sign(boolean urlEncoder) throws SignatureGenerationException {
+        Base64.Encoder encoder = urlEncoder ? Base64.getUrlEncoder() : Base64.getEncoder();
+
+        String header = encoder.withoutPadding().encodeToString(headerJson.getBytes(StandardCharsets.UTF_8));
+        String payload = encoder.withoutPadding().encodeToString(payloadJson.getBytes(StandardCharsets.UTF_8));
 
         byte[] signatureBytes = algorithm.sign(header.getBytes(StandardCharsets.UTF_8), payload.getBytes(StandardCharsets.UTF_8));
         String signature = Base64.getUrlEncoder().withoutPadding().encodeToString((signatureBytes));

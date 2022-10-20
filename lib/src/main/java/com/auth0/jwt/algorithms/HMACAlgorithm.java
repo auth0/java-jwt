@@ -46,9 +46,10 @@ class HMACAlgorithm extends Algorithm {
     }
 
     @Override
-    public void verify(DecodedJWT jwt) throws SignatureVerificationException {
+    public void verify(DecodedJWT jwt, boolean isUrlEncoded) throws SignatureVerificationException {
         try {
-            byte[] signatureBytes = Base64.getUrlDecoder().decode(jwt.getSignature());
+            Base64.Decoder decoder = isUrlEncoded ? Base64.getUrlDecoder() : Base64.getDecoder();
+            byte[] signatureBytes = decoder.decode(jwt.getSignature());
             boolean valid = crypto.verifySignatureFor(getDescription(), secret, jwt.getHeader(), jwt.getPayload(), signatureBytes);
             if (!valid) {
                 throw new SignatureVerificationException(this);
