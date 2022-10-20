@@ -23,14 +23,14 @@ commands:
     steps:
       - run: ./gradlew check jacocoTestReport --continue --console=plain
       - codecov/upload
-  # run-api-diff:
-  #   steps:
-  #     # run apiDiff task
-  #     - run: ./gradlew apiDiff
-  #     - store_artifacts:
-  #         path: lib/build/reports/apiDiff/apiDiff.txt
-  #     - store_artifacts:
-  #         path: lib/build/reports/apiDiff/apiDiff.html
+  run-api-diff:
+    steps:
+      # run apiDiff task
+      - run: ./gradlew apiDiff
+      - store_artifacts:
+          path: lib/build/reports/apiDiff/apiDiff.txt
+      - store_artifacts:
+          path: lib/build/reports/apiDiff/apiDiff.html
 jobs:
   build:
     docker:
@@ -42,16 +42,16 @@ jobs:
       GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx2048m -XX:+HeapDumpOnOutOfMemoryError"'
       _JAVA_OPTIONS: "-Xms512m -Xmx1024m"
       TERM: dumb
-  # api-diff:
-  #   docker:
-  #     - image: openjdk:11.0-jdk
-  #   steps:
-  #     - checkout-and-build
-  #     - run-api-diff
-  #   environment:
-  #     GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx2048m -XX:+HeapDumpOnOutOfMemoryError"'
-  #     _JAVA_OPTIONS: "-Xms512m -Xmx1024m"
-  #     TERM: dumb
+  api-diff:
+    docker:
+      - image: openjdk:11.0-jdk
+    steps:
+      - checkout-and-build
+      - run-api-diff
+    environment:
+      GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx2048m -XX:+HeapDumpOnOutOfMemoryError"'
+      _JAVA_OPTIONS: "-Xms512m -Xmx1024m"
+      TERM: dumb
 
 workflows:
   build-and-test:
@@ -68,6 +68,6 @@ workflows:
                 - master
           requires:
             - build
-  # api-diff:
-  #   jobs:
-  #     - api-diff
+  api-diff:
+    jobs:
+      - api-diff
