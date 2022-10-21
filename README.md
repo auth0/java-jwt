@@ -124,8 +124,8 @@ Please do not report security vulnerabilities on the public Github issue tracker
 
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: light)" srcset="./assets/auth0_light_mode.png"   width="150">
-    <source media="(prefers-color-scheme: dark)" srcset="./assets/auth0_dark_mode.png" width="150">
+    <source media="(prefers-color-scheme: light)" srcset="https://cdn.auth0.com/website/sdks/logos/auth0_light_mode.png"   width="150">
+    <source media="(prefers-color-scheme: dark)" srcset="https://cdn.auth0.com/website/sdks/logos/auth0_dark_mode.png" width="150">
     <img alt="Auth0 Logo" src="./auth0_light_mode.png" width="150">
   </picture>
 </p>
