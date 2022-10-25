@@ -1,5 +1,12 @@
 # Change Log
 
+## [4.2.1](https://github.com/auth0/java-jwt/tree/4.2.1) (2022-10-24)
+[Full Changelog](https://github.com/auth0/java-jwt/compare/4.2.0...4.2.1)
+
+**Security**
+- Use latest ship orb [\#634](https://github.com/auth0/java-jwt/pull/634) ([jimmyjames](https://github.com/jimmyjames))
+- Bump `com.fasterxml.jackson.core:jackson-databind` to 2.13.4.2 [\#630](https://github.com/auth0/java-jwt/pull/630) ([evansims](https://github.com/evansims))
+
 ## [4.2.0](https://github.com/auth0/java-jwt/tree/4.2.0) (2022-10-19)
 [Full Changelog](https://github.com/auth0/java-jwt/compare/4.1.0...4.2.0)
 
