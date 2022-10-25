@@ -45,14 +45,14 @@ Add the dependency via Maven:
 <dependency>
   <groupId>com.auth0</groupId>
   <artifactId>java-jwt</artifactId>
-  <version>4.1.0</version>
+  <version>4.2.1</version>
 </dependency>
 ```
 
 or Gradle:
 
 ```gradle
-implementation 'com.auth0:jva-jwt:4.1.0'
+implementation 'com.auth0:jva-jwt:4.2.1'
 ```
 
 ### Create a JWT
