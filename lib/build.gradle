@@ -1,6 +1,6 @@
 
 buildscript {
-    version = "3.19.2"
+    version = "3.19.3"
 }
 
 plugins {
