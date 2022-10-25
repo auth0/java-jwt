@@ -1,5 +1,11 @@
 # Change Log
 
+## [3.19.3](https://github.com/auth0/java-jwt/tree/3.19.3) (2022-10-24)
+[Full Changelog](https://github.com/auth0/java-jwt/compare/3.19.2...3.19.3)
+
+**Security**
+- Update com.fasterxml.jackson.core:jackson-databind to 2.13.4.2 [\#631](https://github.com/auth0/java-jwt/pull/631) ([jimmyjames](https://github.com/jimmyjames))
+
 ## [3.19.2](https://github.com/auth0/java-jwt/tree/3.19.2) (2022-05-05)
 [Full Changelog](https://github.com/auth0/java-jwt/compare/3.19.1...3.19.2)
 
