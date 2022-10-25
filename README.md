@@ -1,6 +1,4 @@
-# Java JWT
-
-A Java implementation of [JSON Web Token (JWT) - RFC 7519](https://tools.ietf.org/html/rfc7519)
+![A Java implementation of JSON Web Token (JWT) - RFC 7519.](https://cdn.auth0.com/website/sdks/banners/java-jwt-banner.png)
 
 [![CircleCI](https://img.shields.io/circleci/project/github/auth0/java-jwt.svg?style=flat-square)](https://circleci.com/gh/auth0/java-jwt/tree/master)
 [![Coverage Status](https://img.shields.io/codecov/c/github/auth0/java-jwt.svg?style=flat-square)](https://codecov.io/github/auth0/java-jwt)
