@@ -53,6 +53,12 @@ public class JWTTest {
         DecodedJWT decodedJWT = jwt.decodeJwt(token);
 
         assertThat(decodedJWT, is(notNullValue()));
+
+        // base64 encoded
+        token = "eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJpc3MiOiJhdXRoMCJ9.";
+        decodedJWT = jwt.decodeJwt(token, false);
+
+        assertThat(decodedJWT, is(notNullValue()));
     }
 
     // getToken
@@ -73,7 +79,6 @@ public class JWTTest {
         assertThat(decodedJWT.getToken(), is(notNullValue()));
         assertThat(decodedJWT.getToken(), is("eyJhbGciOiJIUzI1NiJ9.e30.XmNK3GpH3Ys_7wsYBfq4C3M6goz71I7dTgUkuIa5lyQ"));
     }
-
     // Verify
 
     @Test
