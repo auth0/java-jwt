@@ -28,7 +28,7 @@ public class JWT {
      * @throws JWTDecodeException if any part of the token contained an invalid jwt or JSON format of each of the jwt parts.
      */
     public DecodedJWT decodeJwt(String token) throws JWTDecodeException {
-        return decodeJwt(token, true);
+        return new JWTDecoder(token);
     }
 
     /**
@@ -55,7 +55,7 @@ public class JWT {
      * @throws JWTDecodeException if any part of the token contained an invalid jwt or JSON format of each of the jwt parts.
      */
     public static DecodedJWT decode(String token) throws JWTDecodeException {
-        return decode(token, true);
+        return new JWTDecoder(token);
     }
 
     /**

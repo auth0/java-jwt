@@ -29,7 +29,7 @@ final class JWTDecoder implements DecodedJWT, Serializable {
     private final boolean urlEncoded;
 
     JWTDecoder(String jwt) throws JWTDecodeException {
-        this(new JWTParser(), jwt, true);
+        this(new JWTParser(), jwt);
     }
 
     JWTDecoder(String jwt, boolean isUrlEncoded) throws JWTDecodeException {
