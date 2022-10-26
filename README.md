@@ -52,7 +52,7 @@ Add the dependency via Maven:
 or Gradle:
 
 ```gradle
-implementation 'com.auth0:jva-jwt:4.2.1'
+implementation 'com.auth0:java-jwt:4.2.1'
 ```
 
 ### Create a JWT
