@@ -10,7 +10,6 @@ import com.auth0.jwt.interfaces.Payload;
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
-import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -27,18 +26,28 @@ final class JWTDecoder implements DecodedJWT, Serializable {
     private final String[] parts;
     private final Header header;
     private final Payload payload;
+    private final boolean urlEncoded;
 
     JWTDecoder(String jwt) throws JWTDecodeException {
-        this(new JWTParser(), jwt);
+        this(new JWTParser(), jwt, true);
+    }
+
+    JWTDecoder(String jwt, boolean isUrlEncoded) throws JWTDecodeException {
+        this(new JWTParser(), jwt, isUrlEncoded);
     }
 
     JWTDecoder(JWTParser converter, String jwt) throws JWTDecodeException {
+        this(converter, jwt, true);
+    }
+
+    JWTDecoder(JWTParser converter, String jwt, boolean isUrlEncoded) throws JWTDecodeException {
         parts = TokenUtils.splitToken(jwt);
+        urlEncoded = isUrlEncoded;
         String headerJson;
         String payloadJson;
         try {
-            headerJson = new String(Base64.getUrlDecoder().decode(parts[0]), StandardCharsets.UTF_8);
-            payloadJson = new String(Base64.getUrlDecoder().decode(parts[1]), StandardCharsets.UTF_8);
+            headerJson = new String(getDecodedHeader(), StandardCharsets.UTF_8);
+            payloadJson = new String(getDecodedPayload(), StandardCharsets.UTF_8);
         } catch (NullPointerException e) {
             throw new JWTDecodeException("The UTF-8 Charset isn't initialized.", e);
         } catch (IllegalArgumentException e){
@@ -147,6 +156,11 @@ final class JWTDecoder implements DecodedJWT, Serializable {
     @Override
     public String getSignature() {
         return parts[2];
+    }
+
+    @Override
+    public boolean isUrlEncoded() {
+        return urlEncoded;
     }
 
     @Override

@@ -40,11 +40,10 @@ class ECDSAAlgorithm extends Algorithm {
     }
 
     @Override
-    public void verify(DecodedJWT jwt, boolean isUrlEncoded) throws SignatureVerificationException {
+    public void verify(DecodedJWT jwt) throws SignatureVerificationException {
         try {
-            Base64.Decoder decoder = isUrlEncoded ? Base64.getUrlDecoder() : Base64.getDecoder();
 
-            byte[] signatureBytes = decoder.decode(jwt.getSignature());
+            byte[] signatureBytes = jwt.getDecodedSignature();
             ECPublicKey publicKey = keyProvider.getPublicKeyById(jwt.getKeyId());
             if (publicKey == null) {
                 throw new IllegalStateException("The given Public Key is null.");

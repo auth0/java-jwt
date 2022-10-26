@@ -28,7 +28,21 @@ public class JWT {
      * @throws JWTDecodeException if any part of the token contained an invalid jwt or JSON format of each of the jwt parts.
      */
     public DecodedJWT decodeJwt(String token) throws JWTDecodeException {
-        return new JWTDecoder(parser, token);
+        return decodeJwt(token, true);
+    }
+
+    /**
+     * Decode a given Json Web Token.
+     * <p>
+     * Note that this method <b>doesn't verify the token's signature!</b> Use it only if you trust the token or you already verified it.
+     *
+     * @param token with jwt format as string.
+     * @param isUrlEncoded dose the JWT encoded with urlEncoder
+     * @return a decoded JWT.
+     * @throws JWTDecodeException if any part of the token contained an invalid jwt or JSON format of each of the jwt parts.
+     */
+    public DecodedJWT decodeJwt(String token, boolean isUrlEncoded) throws JWTDecodeException {
+        return new JWTDecoder(token, isUrlEncoded);
     }
 
     /**
@@ -41,8 +55,23 @@ public class JWT {
      * @throws JWTDecodeException if any part of the token contained an invalid jwt or JSON format of each of the jwt parts.
      */
     public static DecodedJWT decode(String token) throws JWTDecodeException {
-        return new JWTDecoder(token);
+        return decode(token, true);
     }
+
+    /**
+     * Decode a given Json Web Token.
+     * <p>
+     * Note that this method <b>doesn't verify the token's signature!</b> Use it only if you trust the token or you already verified it.
+     *
+     * @param token with jwt format as string.
+     * @param isUrlEncoded dose the JWT encoded with urlEncoder
+     * @return a decoded JWT.
+     * @throws JWTDecodeException if any part of the token contained an invalid jwt or JSON format of each of the jwt parts.
+     */
+    public static DecodedJWT decode(String token, boolean isUrlEncoded) throws JWTDecodeException {
+        return new JWTDecoder(token, isUrlEncoded);
+    }
+
 
     /**
      * Returns a {@link JWTVerifier} builder with the algorithm to be used to validate token signature.

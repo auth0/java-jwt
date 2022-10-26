@@ -539,7 +539,7 @@ public class ECDSAAlgorithmTest {
         jwt = asJWT(algorithm, ES256Header, auth0IssPayload, false);
 
         assertSignaturePresent(jwt);
-        algorithmVerify.verify(JWT.decode(jwt), false);
+        algorithmVerify.verify(JWT.decode(jwt, false));
     }
 
     @Test
