@@ -89,7 +89,7 @@ try {
         // reusable verifier instance
         .build();
         
-    decodedJWT jwt = verifier.verify(token);
+    decodedJWT = verifier.verify(token);
 } catch (JWTVerificationException exception){
     // Invalid signature/claims
 }
