@@ -37,7 +37,7 @@ class BasicHeader implements Header, Serializable {
         this.type = type;
         this.contentType = contentType;
         this.keyId = keyId;
-        this.tree = Collections.unmodifiableMap(tree == null ? new HashMap<String, JsonNode>() : tree);
+        this.tree = Collections.unmodifiableMap(tree == null ? new HashMap<>() : tree);
         this.objectReader = objectReader;
     }
 
