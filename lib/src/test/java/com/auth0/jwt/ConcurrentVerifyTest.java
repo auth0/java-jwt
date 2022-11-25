@@ -10,14 +10,11 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import java.security.interfaces.ECKey;
-import java.security.interfaces.ECPrivateKey;
-import java.security.interfaces.ECPublicKey;
 import java.security.interfaces.RSAKey;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.*;
 
-import static com.auth0.jwt.PemUtils.readPrivateKeyFromFile;
 import static com.auth0.jwt.PemUtils.readPublicKeyFromFile;
 
 //@Ignore("Skipping concurrency tests")
