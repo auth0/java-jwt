@@ -107,7 +107,7 @@ public final class JWTCreator {
                 return this;
             }
 
-            Map<String,Object> headerClaims = mapper.readValue(headerClaimsJson, HashMap.class);
+            Map<String, Object> headerClaims = mapper.readValue(headerClaimsJson, HashMap.class);
 
             return withHeader(headerClaims);
         }
@@ -499,7 +499,7 @@ public final class JWTCreator {
                 return this;
             }
 
-            Map<String,Object> payloadClaims =  mapper.readValue(payloadClaimsJson, HashMap.class);
+            Map<String, Object> payloadClaims =  mapper.readValue(payloadClaimsJson, HashMap.class);
 
             return withPayload(payloadClaims);
         }
