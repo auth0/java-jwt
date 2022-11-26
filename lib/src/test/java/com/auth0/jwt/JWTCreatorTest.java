@@ -94,7 +94,7 @@ public class JWTCreatorTest {
     }
 
     @Test
-    public void shouldOverwriteExistingHeaderIfHeaderMapContainsTheSameKey() throws JsonProcessingException {
+    public void shouldSupportJsonValueHeaderWithNestedDataStructure() throws JsonProcessingException {
         String stringClaim = "someClaim";
         Integer intClaim = 1;
         List<String> nestedListClaims = Arrays.asList("1", "2");
@@ -114,7 +114,7 @@ public class JWTCreatorTest {
     }
 
     @Test
-    public void shouldSupportJsonValueHeaderWithNestedDataStructure() {
+    public void shouldOverwriteExistingHeaderIfHeaderMapContainsTheSameKey() {
         Map<String, Object> header = new HashMap<>();
         header.put(HeaderParams.KEY_ID, "xyz");
 
