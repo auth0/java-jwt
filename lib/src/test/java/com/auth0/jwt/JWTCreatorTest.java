@@ -972,7 +972,7 @@ public class JWTCreatorTest {
     @Test
     public void shouldCreatePayloadWithNullForMap() {
         String jwt = JWTCreator.init()
-                .withClaim("name", (Map<String, ?>) null)
+                .withClaim("name", (Map<String,?>) null)
                 .sign(Algorithm.HMAC256("secret"));
         assertThat(jwt, is(notNullValue()));
         assertTrue(JWT.decode(jwt).getClaim("name").isNull());
