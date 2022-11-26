@@ -96,6 +96,23 @@ public final class JWTCreator {
         }
 
         /**
+         * Add specific Claims to set as the Header.
+         * If provided json is null then nothing is changed
+         *
+         * @param headerClaimsJson the values to use as Claims in the token's Header.
+         * @return this same Builder instance.
+         */
+        public Builder withHeader(String headerClaimsJson) throws JsonProcessingException {
+            if (headerClaimsJson == null) {
+                return this;
+            }
+
+            Map<String,Object> headerClaims = mapper.readValue(headerClaimsJson, HashMap.class);
+
+            return withHeader(headerClaims);
+        }
+
+        /**
          * Add a specific Key Id ("kid") claim to the Header.
          * If the {@link Algorithm} used to sign this token was instantiated with a KeyProvider,
          * the 'kid' value will be taken from that provider and this one will be ignored.
@@ -462,6 +479,29 @@ public final class JWTCreator {
             }
 
             return this;
+        }
+
+        /**
+         * Add specific Claims to set as the Payload. If the provided json is null then
+         * nothing is changed.
+         *
+         * <p>
+         * If any of the claims are invalid, none will be added.
+         * </p>
+         *
+         * @param payloadClaimsJson the values to use as Claims in the token's payload.
+         * @return this same Builder instance.
+         * @throws IllegalArgumentException if any of the claim keys or null,
+         *                                  or if the values are not of a supported type.
+         */
+        public Builder withPayload(String payloadClaimsJson) throws IllegalArgumentException, JsonProcessingException {
+            if (payloadClaimsJson == null) {
+                return this;
+            }
+
+            Map<String,Object> payloadClaims =  mapper.readValue(payloadClaimsJson, HashMap.class);
+
+            return withPayload(payloadClaims);
         }
 
         private boolean validatePayload(Map<String, ?> payload) {
