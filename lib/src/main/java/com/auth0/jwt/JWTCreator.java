@@ -100,6 +100,7 @@ public final class JWTCreator {
          * If provided json is null then nothing is changed
          *
          * @param headerClaimsJson the values to use as Claims in the token's Header.
+         * @throws JsonProcessingException  if json value has invalid structure
          * @return this same Builder instance.
          */
         public Builder withHeader(String headerClaimsJson) throws JsonProcessingException {
@@ -493,6 +494,7 @@ public final class JWTCreator {
          * @return this same Builder instance.
          * @throws IllegalArgumentException if any of the claim keys or null,
          *                                  or if the values are not of a supported type.
+         * @throws JsonProcessingException  if json value has invalid structure
          */
         public Builder withPayload(String payloadClaimsJson) throws IllegalArgumentException, JsonProcessingException {
             if (payloadClaimsJson == null) {
