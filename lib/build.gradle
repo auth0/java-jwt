@@ -1,19 +1,8 @@
 
-buildscript {
-    version = "3.19.3"
-}
-
 plugins {
     id 'java'
     id 'jacoco'
     id 'com.auth0.gradle.oss-library.java'
-}
-
-def signingKey = findProperty('signingKey')
-def signingKeyPwd = findProperty('signingPassword')
-
-signing {
-    useInMemoryPgpKeys(signingKey, signingKeyPwd)
 }
 
 logger.lifecycle("Using version ${version} for ${group}.${name}")
@@ -24,7 +13,6 @@ oss {
     organization "auth0"
     description "Java implementation of JSON Web Token (JWT)"
     baselineCompareVersion "3.18.2"
-    skipAssertSigningConfiguration true
 
     developers {
         auth0 {
