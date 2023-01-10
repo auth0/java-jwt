@@ -1,6 +1,5 @@
 version: 2.1
 orbs:
-  ship: auth0/ship@0
   codecov: codecov/codecov@3
 
 commands:
@@ -58,17 +57,6 @@ workflows:
   build-and-test:
     jobs:
       - build
-      - ship/java-publish:
-          prefix-tag: false
-          context:
-            - publish-gh
-            - publish-sonatype
-          filters:
-            branches:
-              only:
-                - v3
-          requires:
-            - build
   api-diff:
     jobs:
       - api-diff
