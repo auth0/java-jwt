@@ -7,6 +7,12 @@
 [![License](https://img.shields.io/:license-mit-blue.svg?style=flat)](https://doge.mit-license.org)
 [![Javadoc](https://javadoc.io/badge2/com.auth0/java-jwt/javadoc.svg)](https://javadoc.io/doc/com.auth0/java-jwt/latest/index.html)
 
+> **Note**
+> As part of our ongoing commitment to best security practices, we have rotated the signing keys used to sign previous releases of this SDK. As a result, new patch builds have been released using the new signing key. Please upgrade at your earliest convenience.
+> 
+> While this change won’t affect most developers, if you have implemented a dependency signature validation step in your build process, you may notice a warning that past releases can’t be verified. This is expected, and a result of the key rotation process. Updating to the latest version will resolve this for you.
+
+
 A Java implementation of [JSON Web Token (JWT) - RFC 7519](https://tools.ietf.org/html/rfc7519).
 
 > :warning:  **Important security note:** JVM has a critical vulnerability for ECDSA Algorithms - [CVE-2022-21449](https://nvd.nist.gov/vuln/detail/CVE-2022-21449). Please review the details of the vulnerability and update your environment.
@@ -25,14 +31,14 @@ The library is available on both Maven Central and Bintray, and the Javadoc is p
 <dependency>
     <groupId>com.auth0</groupId>
     <artifactId>java-jwt</artifactId>
-    <version>3.19.3</version>
+    <version>3.19.4</version>
 </dependency>
 ```
 
 ### Gradle
 
 ```gradle
-implementation 'com.auth0:java-jwt:3.19.3'
+implementation 'com.auth0:java-jwt:3.19.4'
 ```
 
 ## Available Algorithms
