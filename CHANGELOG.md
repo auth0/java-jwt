@@ -1,5 +1,11 @@
 # Change Log
 
+## [4.2.2](https://github.com/auth0/java-jwt/tree/4.2.2) (2023-01-11)
+[Full Changelog](https://github.com/auth0/java-jwt/compare/4.2.1...4.2.2)
+
+This patch release does not contain any functional changes, but is being released using an updated signing key for verification as part of our commitment to best security practices.
+Please review [the README note for additional details.](https://github.com/auth0/java-jwt/blob/master/README.md)
+
 ## [4.2.1](https://github.com/auth0/java-jwt/tree/4.2.1) (2022-10-24)
 [Full Changelog](https://github.com/auth0/java-jwt/compare/4.2.0...4.2.1)
 
