@@ -657,6 +657,7 @@ public class JWTVerifierTest {
     }
 
     // Expires At
+
     @Test
     public void shouldValidateExpiresAtWithLeeway() {
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE0Nzc1OTJ9.isvT0Pqx0yjnZk53mUFSeYFJLDs-Ls9IsNAm86gIdZo";
@@ -674,10 +675,24 @@ public class JWTVerifierTest {
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE0Nzc1OTJ9.isvT0Pqx0yjnZk53mUFSeYFJLDs-Ls9IsNAm86gIdZo";
         JWTVerifier.BaseVerification verification = (JWTVerifier.BaseVerification) JWTVerifier.init(Algorithm.HMAC256("secret"));
         DecodedJWT jwt = verification
-                .build(mockNow)
+                .build(mockOneSecondEarlier)
                 .verify(token);
 
         assertThat(jwt, is(notNullValue()));
+    }
+
+    @Test
+    public void shouldThrowWhenExpiresAtIsNow() {
+        // exp must be > now
+        TokenExpiredException e = assertThrows(null, TokenExpiredException.class, () -> {
+            String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE0Nzc1OTJ9.isvT0Pqx0yjnZk53mUFSeYFJLDs-Ls9IsNAm86gIdZo";
+            JWTVerifier.BaseVerification verification = (JWTVerifier.BaseVerification) JWTVerifier.init(Algorithm.HMAC256("secret"));
+            verification
+                    .build(mockNow)
+                    .verify(token);
+        });
+        assertThat(e.getMessage(), is("The Token has expired on 1970-01-18T02:26:32Z."));
+        assertThat(e.getExpiredOn(), is(Instant.ofEpochSecond(1477592L)));
     }
 
     @Test
@@ -731,7 +746,18 @@ public class JWTVerifierTest {
 
     @Test
     public void shouldValidateNotBeforeIfPresent() {
-        String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE0Nzc1OTJ9.isvT0Pqx0yjnZk53mUFSeYFJLDs-Ls9IsNAm86gIdZo";
+        String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYmYiOjE0Nzc1OTN9.f4zVV0TbbTG5xxDjSoGZ320JIMchGoQCWrnT5MyQdT0";
+        JWTVerifier.BaseVerification verification = (JWTVerifier.BaseVerification) JWTVerifier.init(Algorithm.HMAC256("secret"));
+        DecodedJWT jwt = verification
+                .build(mockOneSecondLater)
+                .verify(token);
+
+        assertThat(jwt, is(notNullValue()));
+    }
+
+    @Test
+    public void shouldAcceptNotBeforeEqualToNow() {
+        String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYmYiOjE0Nzc1OTJ9.71XBtRmkAa4iKnyhbS4NPW-Xr26eAVAdHZgmupS7a5o";
         JWTVerifier.BaseVerification verification = (JWTVerifier.BaseVerification) JWTVerifier.init(Algorithm.HMAC256("secret"));
         DecodedJWT jwt = verification
                 .build(mockNow)
