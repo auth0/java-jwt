@@ -1,6 +1,3 @@
-buildscript {
-    version = "4.2.1"
-}
 
 plugins {
     id 'java'
@@ -19,13 +16,6 @@ configurations {
     jmhImplementation {
         extendsFrom implementation
     }
-}
-
-def signingKey = findProperty('signingKey')
-def signingKeyPwd = findProperty('signingPassword')
-
-signing {
-    useInMemoryPgpKeys(signingKey, signingKeyPwd)
 }
 
 checkstyle {
@@ -47,7 +37,6 @@ oss {
     organization "auth0"
     description "Java implementation of JSON Web Token (JWT)"
     baselineCompareVersion "4.1.0"
-    skipAssertSigningConfiguration true
 
     developers {
         auth0 {

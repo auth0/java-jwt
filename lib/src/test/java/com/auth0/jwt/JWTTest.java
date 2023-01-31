@@ -12,6 +12,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.interfaces.ECKey;
 import java.security.interfaces.RSAKey;
 import java.time.Clock;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.Base64;
@@ -270,12 +271,12 @@ public class JWTTest {
     @Test
     public void shouldGetExpirationTime() {
         long seconds = 1477592L;
-        Clock clock = Clock.fixed(Instant.ofEpochSecond(seconds), ZoneId.of("UTC"));
+        Clock mockNow = Clock.fixed(Instant.ofEpochSecond(seconds - 1), ZoneId.of("UTC"));
 
         String token = "eyJhbGciOiJIUzI1NiJ9.eyJleHAiOjE0Nzc1OTJ9.x_ZjkPkKYUV5tdvc0l8go6D_z2kez1MQcOxokXrDc3k";
         JWTVerifier.BaseVerification verification = (JWTVerifier.BaseVerification) JWT.require(Algorithm.HMAC256("secret"));
         DecodedJWT jwt = verification
-                .build(clock)
+                .build(mockNow)
                 .verify(token);
 
         assertThat(jwt, is(notNullValue()));

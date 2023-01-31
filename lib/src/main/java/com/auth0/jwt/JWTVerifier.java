@@ -346,7 +346,7 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
                     throw new TokenExpiredException(String.format("The Token has expired on %s.", claimVal), claimVal);
                 }
             } else {
-                isValid = assertInstantIsPast(claimVal, leeway, now);
+                isValid = assertInstantIsLessThanOrEqualToNow(claimVal, leeway, now);
                 if (!isValid) {
                     throw new IncorrectClaimException(
                             String.format("The Token can't be used before %s.", claimVal), claimName, claim);
@@ -356,10 +356,10 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
         }
 
         private boolean assertInstantIsFuture(Instant claimVal, long leeway, Instant now) {
-            return !(claimVal != null && now.minus(Duration.ofSeconds(leeway)).isAfter(claimVal));
+            return claimVal == null || now.minus(Duration.ofSeconds(leeway)).isBefore(claimVal);
         }
 
-        private boolean assertInstantIsPast(Instant claimVal, long leeway, Instant now) {
+        private boolean assertInstantIsLessThanOrEqualToNow(Instant claimVal, long leeway, Instant now) {
             return !(claimVal != null && now.plus(Duration.ofSeconds(leeway)).isBefore(claimVal));
         }
 

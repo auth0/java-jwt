@@ -13,7 +13,6 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
 
 import static com.auth0.jwt.algorithms.CryptoTestHelper.asJWT;
 import static com.auth0.jwt.algorithms.CryptoTestHelper.assertSignaturePresent;
