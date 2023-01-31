@@ -2,11 +2,11 @@ package com.auth0.jwt.impl;
 
 import com.auth0.jwt.HeaderParams;
 import com.auth0.jwt.exceptions.JWTDecodeException;
+import com.auth0.jwt.interfaces.Header;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 
 import java.io.IOException;
@@ -19,22 +19,14 @@ import java.util.Map;
  *
  * @see JWTParser
  */
-class HeaderDeserializer extends StdDeserializer<BasicHeader> {
+class HeaderDeserializer extends StdDeserializer<Header> {
 
-    private final ObjectReader objectReader;
-
-    HeaderDeserializer(ObjectReader objectReader) {
-        this(null, objectReader);
-    }
-
-    private HeaderDeserializer(Class<?> vc, ObjectReader objectReader) {
-        super(vc);
-
-        this.objectReader = objectReader;
+    HeaderDeserializer() {
+        super(Header.class);
     }
 
     @Override
-    public BasicHeader deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+    public Header deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
         Map<String, JsonNode> tree = p.getCodec().readValue(p, new TypeReference<Map<String, JsonNode>>() {
         });
         if (tree == null) {
@@ -45,7 +37,7 @@ class HeaderDeserializer extends StdDeserializer<BasicHeader> {
         String type = getString(tree, HeaderParams.TYPE);
         String contentType = getString(tree, HeaderParams.CONTENT_TYPE);
         String keyId = getString(tree, HeaderParams.KEY_ID);
-        return new BasicHeader(algorithm, type, contentType, keyId, tree, objectReader);
+        return new BasicHeader(algorithm, type, contentType, keyId, tree, p.getCodec());
     }
 
     String getString(Map<String, JsonNode> tree, String claimName) {

@@ -4,9 +4,9 @@ import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.interfaces.Claim;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.ObjectCodec;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectReader;
 
 import java.io.IOException;
 import java.lang.reflect.Array;
@@ -21,12 +21,12 @@ import java.util.Map;
  */
 class JsonNodeClaim implements Claim {
 
-    private final ObjectReader objectReader;
+    private final ObjectCodec codec;
     private final JsonNode data;
 
-    private JsonNodeClaim(JsonNode node, ObjectReader objectReader) {
+    private JsonNodeClaim(JsonNode node, ObjectCodec codec) {
         this.data = node;
-        this.objectReader = objectReader;
+        this.codec = codec;
     }
 
     @Override
@@ -82,7 +82,7 @@ class JsonNodeClaim implements Claim {
         T[] arr = (T[]) Array.newInstance(clazz, data.size());
         for (int i = 0; i < data.size(); i++) {
             try {
-                arr[i] = objectReader.treeToValue(data.get(i), clazz);
+                arr[i] = codec.treeToValue(data.get(i), clazz);
             } catch (JsonProcessingException e) {
                 throw new JWTDecodeException("Couldn't map the Claim's array contents to " + clazz.getSimpleName(), e);
             }
@@ -99,7 +99,7 @@ class JsonNodeClaim implements Claim {
         List<T> list = new ArrayList<>();
         for (int i = 0; i < data.size(); i++) {
             try {
-                list.add(objectReader.treeToValue(data.get(i), clazz));
+                list.add(codec.treeToValue(data.get(i), clazz));
             } catch (JsonProcessingException e) {
                 throw new JWTDecodeException("Couldn't map the Claim's array contents to " + clazz.getSimpleName(), e);
             }
@@ -113,11 +113,11 @@ class JsonNodeClaim implements Claim {
             return null;
         }
 
-        try {
-            TypeReference<Map<String, Object>> mapType = new TypeReference<Map<String, Object>>() {
-            };
-            JsonParser thisParser = objectReader.treeAsTokens(data);
-            return thisParser.readValueAs(mapType);
+        TypeReference<Map<String, Object>> mapType = new TypeReference<Map<String, Object>>() {
+        };
+
+        try (JsonParser parser = codec.treeAsTokens(data)) {
+            return parser.readValueAs(mapType);
         } catch (IOException e) {
             throw new JWTDecodeException("Couldn't map the Claim value to Map", e);
         }
@@ -129,8 +129,8 @@ class JsonNodeClaim implements Claim {
             if (isMissing() || isNull()) {
                 return null;
             }
-            return objectReader.treeAsTokens(data).readValueAs(clazz);
-        } catch (IOException e) {
+            return codec.treeToValue(data, clazz);
+        } catch (JsonProcessingException e) {
             throw new JWTDecodeException("Couldn't map the Claim value to " + clazz.getSimpleName(), e);
         }
     }
@@ -160,21 +160,23 @@ class JsonNodeClaim implements Claim {
      *
      * @param claimName the Claim to search for.
      * @param tree      the JsonNode tree to search the Claim in.
+     * @param objectCodec the object codec in use for deserialization
      * @return a valid non-null Claim.
      */
-    static Claim extractClaim(String claimName, Map<String, JsonNode> tree, ObjectReader objectReader) {
+    static Claim extractClaim(String claimName, Map<String, JsonNode> tree, ObjectCodec objectCodec) {
         JsonNode node = tree.get(claimName);
-        return claimFromNode(node, objectReader);
+        return claimFromNode(node, objectCodec);
     }
 
     /**
      * Helper method to create a Claim representation from the given JsonNode.
      *
      * @param node the JsonNode to convert into a Claim.
+     * @param objectCodec the object codec in use for deserialization
      * @return a valid Claim instance. If the node is null or missing, a NullClaim will be returned.
      */
-    static Claim claimFromNode(JsonNode node, ObjectReader objectReader) {
-        return new JsonNodeClaim(node, objectReader);
+    static Claim claimFromNode(JsonNode node, ObjectCodec objectCodec) {
+        return new JsonNodeClaim(node, objectCodec);
     }
 
 }

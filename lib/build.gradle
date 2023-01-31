@@ -6,10 +6,28 @@ plugins {
     id 'checkstyle'
 }
 
+sourceSets {
+    jmh {
+
+    }
+}
+
+configurations {
+    jmhImplementation {
+        extendsFrom implementation
+    }
+}
+
 checkstyle {
     toolVersion '10.0'
-    checkstyleTest.enabled = false //We are disabling lint checks for tests
 }
+//We are disabling lint checks for tests
+tasks.named("checkstyleTest").configure({
+    enabled = false
+})
+tasks.named("checkstyleJmh").configure({
+    enabled = false
+})
 
 logger.lifecycle("Using version ${version} for ${group}.${name}")
 
@@ -61,6 +79,10 @@ dependencies {
     testImplementation 'net.jodah:concurrentunit:0.4.6'
     testImplementation 'org.hamcrest:hamcrest:2.2'
     testImplementation 'org.mockito:mockito-core:4.4.0'
+
+    jmhImplementation sourceSets.main.output
+    jmhImplementation 'org.openjdk.jmh:jmh-core:1.35'
+    jmhAnnotationProcessor 'org.openjdk.jmh:jmh-generator-annprocess:1.35'
 }
 
 jacoco {
@@ -143,3 +165,25 @@ task exportVersion()  {
         new File(rootDir, "version.txt").text = "$version"
     }
 }
+
+// you can pass any arguments JMH accepts via Gradle args.
+// Example: ./gradlew runJMH --args="-lrf"
+tasks.register('runJMH', JavaExec) {
+    description 'Run JMH benchmarks.'
+    group 'verification'
+
+    main 'org.openjdk.jmh.Main'
+    classpath sourceSets.jmh.runtimeClasspath
+
+    args project.hasProperty("args") ? project.property("args").split() : ""
+}
+tasks.register('jmhHelp', JavaExec) {
+    description 'Prints the available command line options for JMH.'
+    group 'help'
+
+    main 'org.openjdk.jmh.Main'
+    classpath sourceSets.jmh.runtimeClasspath
+
+    args '-h'
+}
+
