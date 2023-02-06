@@ -10,7 +10,7 @@ import java.security.PublicKey;
  * @param <U> the class that represents the Public Key
  * @param <R> the class that represents the Private Key
  */
-interface KeyProvider<U extends PublicKey, R extends PrivateKey> {
+public interface KeyProvider<U extends PublicKey, R extends PrivateKey> {
 
     /**
      * Getter for the Public Key instance with the given Id. Used to verify the signature on the JWT verification stage.
