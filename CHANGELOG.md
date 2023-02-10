@@ -1,5 +1,15 @@
 # Change Log
 
+## [4.3.0](https://github.com/auth0/java-jwt/tree/4.3.0) (2023-02-10)
+[Full Changelog](https://github.com/auth0/java-jwt/compare/4.2.2...4.3.0)
+
+**Changed**
+- Improve JWT parse/decode performance [\#620](https://github.com/auth0/java-jwt/pull/620) ([noetro](https://github.com/noetro))
+
+**Fixed**
+- Fix for exp claim considered valid if equal to now [\#652](https://github.com/auth0/java-jwt/pull/652) ([jimmyjames](https://github.com/jimmyjames))
+- Code cleanup [\#642](https://github.com/auth0/java-jwt/pull/642) ([CodeDead](https://github.com/CodeDead))
+
 ## [4.2.2](https://github.com/auth0/java-jwt/tree/4.2.2) (2023-01-11)
 [Full Changelog](https://github.com/auth0/java-jwt/compare/4.2.1...4.2.2)
 
