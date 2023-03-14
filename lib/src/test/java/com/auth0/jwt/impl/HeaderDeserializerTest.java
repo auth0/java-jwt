@@ -10,7 +10,6 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import org.junit.Before;
@@ -22,8 +21,10 @@ import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -34,11 +35,10 @@ public class HeaderDeserializerTest {
     @Rule
     public ExpectedException exception = ExpectedException.none();
     private HeaderDeserializer deserializer;
-    private ObjectReader objectReader = new ObjectMapper().reader();
 
     @Before
     public void setUp() {
-        deserializer = new HeaderDeserializer(objectReader);
+        deserializer = new HeaderDeserializer();
     }
 
     @Test
@@ -46,7 +46,7 @@ public class HeaderDeserializerTest {
         exception.expect(JWTDecodeException.class);
         exception.expectMessage("Parsing the Header's JSON resulted on a Null map");
 
-        JsonDeserializer deserializer = new HeaderDeserializer(objectReader);
+        JsonDeserializer deserializer = new HeaderDeserializer();
         JsonParser parser = mock(JsonParser.class);
         ObjectCodec codec = mock(ObjectCodec.class);
         DeserializationContext context = mock(DeserializationContext.class);

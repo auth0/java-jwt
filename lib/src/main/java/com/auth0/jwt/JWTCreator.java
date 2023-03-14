@@ -7,6 +7,7 @@ import com.auth0.jwt.impl.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
 import java.nio.charset.StandardCharsets;
@@ -31,12 +32,14 @@ public final class JWTCreator {
     private static final SimpleModule module;
 
     static {
-        mapper = new ObjectMapper();
         module = new SimpleModule();
         module.addSerializer(PayloadClaimsHolder.class, new PayloadSerializer());
         module.addSerializer(HeaderClaimsHolder.class, new HeaderSerializer());
-        mapper.registerModule(module);
-        mapper.configure(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY, true);
+
+        mapper = JsonMapper.builder()
+                .configure(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY, true)
+                .build()
+                .registerModule(module);
     }
 
     private JWTCreator(Algorithm algorithm, Map<String, Object> headerClaims, Map<String, Object> payloadClaims)
@@ -531,7 +534,7 @@ public final class JWTCreator {
                     return false;
                 }
 
-                if (entry.getKey() == null || !(entry.getKey() instanceof String)) {
+                if (!(entry.getKey() instanceof String)) {
                     return false;
                 }
             }
