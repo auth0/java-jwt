@@ -104,16 +104,19 @@ public final class JWTCreator {
          *
          * @param headerClaimsJson the values to use as Claims in the token's Header.
          * @return this same Builder instance.
-         * @throws JsonProcessingException if json value has invalid structure
+         * @throws IllegalArgumentException if json value has invalid structure
          */
-        public Builder withHeader(String headerClaimsJson) throws JsonProcessingException {
+        public Builder withHeader(String headerClaimsJson) throws IllegalArgumentException {
             if (headerClaimsJson == null) {
                 return this;
             }
 
-            Map<String, Object> headerClaims = mapper.readValue(headerClaimsJson, HashMap.class);
-
-            return withHeader(headerClaims);
+            try {
+                Map<String, Object> headerClaims = mapper.readValue(headerClaimsJson, HashMap.class);
+                return withHeader(headerClaims);
+            } catch (JsonProcessingException e) {
+                throw new IllegalArgumentException("Invalid header JSON", e);
+            }
         }
 
         /**
@@ -496,17 +499,20 @@ public final class JWTCreator {
          * @param payloadClaimsJson the values to use as Claims in the token's payload.
          * @return this same Builder instance.
          * @throws IllegalArgumentException if any of the claim keys or null,
-         *                                  or if the values are not of a supported type.
-         * @throws JsonProcessingException if json value has invalid structure
+         *                                  or if the values are not of a supported type,
+         *                                  or if json value has invalid structure.
          */
-        public Builder withPayload(String payloadClaimsJson) throws IllegalArgumentException, JsonProcessingException {
+        public Builder withPayload(String payloadClaimsJson) throws IllegalArgumentException {
             if (payloadClaimsJson == null) {
                 return this;
             }
 
-            Map<String, Object> payloadClaims =  mapper.readValue(payloadClaimsJson, HashMap.class);
-
-            return withPayload(payloadClaims);
+            try {
+                Map<String, Object> payloadClaims =  mapper.readValue(payloadClaimsJson, HashMap.class);
+                return withPayload(payloadClaims);
+            } catch (JsonProcessingException e) {
+                throw new IllegalArgumentException("Invalid payload JSON", e);
+            }
         }
 
         private boolean validatePayload(Map<String, ?> payload) {

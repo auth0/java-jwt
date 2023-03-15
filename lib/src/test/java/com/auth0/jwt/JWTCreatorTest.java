@@ -82,7 +82,7 @@ public class JWTCreatorTest {
     }
 
     @Test
-    public void shouldReturnBuilderIfNullMapIsProvided() throws JsonProcessingException {
+    public void shouldReturnBuilderIfNullMapIsProvided() {
         Map<String, Object> nullMap = null;
         String nullString = null;
         String signed = JWTCreator.init()
@@ -94,7 +94,7 @@ public class JWTCreatorTest {
     }
 
     @Test
-    public void shouldSupportJsonValueHeaderWithNestedDataStructure() throws JsonProcessingException {
+    public void shouldSupportJsonValueHeaderWithNestedDataStructure() {
         String stringClaim = "someClaim";
         Integer intClaim = 1;
         List<String> nestedListClaims = Arrays.asList("1", "2");
@@ -739,7 +739,7 @@ public class JWTCreatorTest {
     }
 
     @Test
-    public void withPayloadShouldCreateJwtWithEmptyBodyIfPayloadNull() throws JsonProcessingException {
+    public void withPayloadShouldCreateJwtWithEmptyBodyIfPayloadNull() {
         Map<String, Object> nullMap = null;
         String nullString = null;
         String jwt = JWTCreator.init()
@@ -950,7 +950,7 @@ public class JWTCreatorTest {
     }
 
     @Test
-    public void withPayloadShouldSupportJsonValueWithNestedDataStructure() throws JsonProcessingException {
+    public void withPayloadShouldSupportJsonValueWithNestedDataStructure() {
         String stringClaim = "someClaim";
         Integer intClaim = 1;
         List<String> nestedListClaims = Arrays.asList("1", "2");
