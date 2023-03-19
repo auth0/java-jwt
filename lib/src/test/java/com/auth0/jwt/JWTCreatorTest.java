@@ -114,6 +114,18 @@ public class JWTCreatorTest {
     }
 
     @Test
+    public void shouldFailWithIllegalArgumentExceptionForInvalidJsonForHeaderClaims() {
+        String invalidJson = "{ invalidJson }";
+
+        exception.expect(IllegalArgumentException.class);
+        exception.expectMessage("Invalid header JSON");
+
+        JWTCreator.init()
+                .withHeader(invalidJson)
+                .sign(Algorithm.HMAC256("secret"));
+    }
+
+    @Test
     public void shouldOverwriteExistingHeaderIfHeaderMapContainsTheSameKey() {
         Map<String, Object> header = new HashMap<>();
         header.put(HeaderParams.KEY_ID, "xyz");
@@ -970,9 +982,21 @@ public class JWTCreatorTest {
     }
 
     @Test
+    public void shouldFailWithIllegalArgumentExceptionForInvalidJsonForPayloadClaims() {
+        String invalidJson = "{ invalidJson }";
+
+        exception.expect(IllegalArgumentException.class);
+        exception.expectMessage("Invalid payload JSON");
+
+        JWTCreator.init()
+                .withPayload(invalidJson)
+                .sign(Algorithm.HMAC256("secret"));
+    }
+
+    @Test
     public void shouldCreatePayloadWithNullForMap() {
         String jwt = JWTCreator.init()
-                .withClaim("name", (Map<String,?>) null)
+                .withClaim("name", (Map<String, ?>) null)
                 .sign(Algorithm.HMAC256("secret"));
         assertThat(jwt, is(notNullValue()));
         assertTrue(JWT.decode(jwt).getClaim("name").isNull());
