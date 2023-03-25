@@ -71,8 +71,8 @@ public final class JWTCreator {
         private final Map<String, Object> headerClaims;
 
         Builder() {
-            this.payloadClaims = new HashMap<>();
-            this.headerClaims = new HashMap<>();
+            this.payloadClaims = new LinkedHashMap<>();
+            this.headerClaims = new LinkedHashMap<>();
         }
 
         /**

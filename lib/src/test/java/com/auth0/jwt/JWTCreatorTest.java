@@ -4,6 +4,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.ECDSAKeyProvider;
 import com.auth0.jwt.interfaces.RSAKeyProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -937,5 +938,47 @@ public class JWTCreatorTest {
                 .sign(Algorithm.HMAC256("secret"));
         assertThat(jwt, is(notNullValue()));
         assertTrue(JWT.decode(jwt).getClaim("name").isNull());
+    }
+
+    @Test
+    public void shouldPreserveInsertionOrder() throws Exception {
+        List<String> headerInsertionOrder = new ArrayList<>();
+        Map<String, Object> header = new LinkedHashMap<>();
+        for (int i = 0; i < 10; i++) {
+            String key = "h" + i;
+            header.put(key, "v" + 1);
+            headerInsertionOrder.add(key);
+        }
+
+        List<String> payloadInsertionOrder = new ArrayList<>();
+        JWTCreator.Builder builder = JWTCreator.init().withHeader(header);
+        for (int i = 0; i < 10; i++) {
+            String name = "c" + i;
+            builder = builder.withClaim(name, "v" + i);
+            payloadInsertionOrder.add(name);
+        }
+        String signed = builder.sign(Algorithm.HMAC256("secret"));
+
+        assertThat(signed, is(notNullValue()));
+        String[] parts = signed.split("\\.");
+        Base64.Decoder urlDecoder = Base64.getUrlDecoder();
+        String headerJson = new String(urlDecoder.decode(parts[0]), StandardCharsets.UTF_8);
+        String payloadJson = new String(urlDecoder.decode(parts[1]), StandardCharsets.UTF_8);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        List<String> headerFields = new ArrayList<>();
+        objectMapper.readValue(headerJson, ObjectNode.class)
+                .fieldNames().forEachRemaining(headerFields::add);
+        headerFields.retainAll(headerInsertionOrder);
+        assertThat("Header insertion order should be preserved",
+                headerFields, is(equalTo(headerInsertionOrder)));
+
+        List<String> payloadFields = new ArrayList<>();
+        objectMapper.readValue(payloadJson, ObjectNode.class)
+                .fieldNames().forEachRemaining(payloadFields::add);
+        payloadFields.retainAll(payloadInsertionOrder);
+        assertThat("Claim insertion order should be preserved",
+                payloadFields, is(equalTo(payloadInsertionOrder)));
     }
 }
