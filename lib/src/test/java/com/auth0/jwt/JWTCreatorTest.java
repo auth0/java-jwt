@@ -3,6 +3,7 @@ package com.auth0.jwt;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.ECDSAKeyProvider;
 import com.auth0.jwt.interfaces.RSAKeyProvider;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.Rule;
@@ -83,11 +84,46 @@ public class JWTCreatorTest {
 
     @Test
     public void shouldReturnBuilderIfNullMapIsProvided() {
+        Map<String, Object> nullMap = null;
+        String nullString = null;
         String signed = JWTCreator.init()
-                .withHeader(null)
+                .withHeader(nullMap)
+                .withHeader(nullString)
                 .sign(Algorithm.HMAC256("secret"));
 
         assertThat(signed, is(notNullValue()));
+    }
+
+    @Test
+    public void shouldSupportJsonValueHeaderWithNestedDataStructure() {
+        String stringClaim = "someClaim";
+        Integer intClaim = 1;
+        List<String> nestedListClaims = Arrays.asList("1", "2");
+        String claimsJson = "{\"stringClaim\": \"someClaim\", \"intClaim\": 1, \"nestedClaim\": { \"listClaim\": [ \"1\", \"2\" ]}}";
+
+        String jwt = JWTCreator.init()
+                .withHeader(claimsJson)
+                .sign(Algorithm.HMAC256("secret"));
+
+        assertThat(jwt, is(notNullValue()));
+        String[] parts = jwt.split("\\.");
+        String headerJson = new String(Base64.getUrlDecoder().decode(parts[0]), StandardCharsets.UTF_8);
+
+        assertThat(headerJson, JsonMatcher.hasEntry("stringClaim", stringClaim));
+        assertThat(headerJson, JsonMatcher.hasEntry("intClaim", intClaim));
+        assertThat(headerJson, JsonMatcher.hasEntry("listClaim", nestedListClaims));
+    }
+
+    @Test
+    public void shouldFailWithIllegalArgumentExceptionForInvalidJsonForHeaderClaims() {
+        String invalidJson = "{ invalidJson }";
+
+        exception.expect(IllegalArgumentException.class);
+        exception.expectMessage("Invalid header JSON");
+
+        JWTCreator.init()
+                .withHeader(invalidJson)
+                .sign(Algorithm.HMAC256("secret"));
     }
 
     @Test
@@ -105,6 +141,7 @@ public class JWTCreatorTest {
         String headerJson = new String(Base64.getUrlDecoder().decode(parts[0]), StandardCharsets.UTF_8);
         assertThat(headerJson, JsonMatcher.hasEntry(HeaderParams.KEY_ID, "xyz"));
     }
+
 
     @Test
     public void shouldOverwriteExistingHeadersWhenSettingSameHeaderKey() {
@@ -716,8 +753,11 @@ public class JWTCreatorTest {
 
     @Test
     public void withPayloadShouldCreateJwtWithEmptyBodyIfPayloadNull() {
+        Map<String, Object> nullMap = null;
+        String nullString = null;
         String jwt = JWTCreator.init()
-                .withPayload(null)
+                .withPayload(nullMap)
+                .withPayload(nullString)
                 .sign(Algorithm.HMAC256("secret"));
 
         assertThat(jwt, is(notNullValue()));
@@ -923,9 +963,41 @@ public class JWTCreatorTest {
     }
 
     @Test
+    public void withPayloadShouldSupportJsonValueWithNestedDataStructure() {
+        String stringClaim = "someClaim";
+        Integer intClaim = 1;
+        List<String> nestedListClaims = Arrays.asList("1", "2");
+        String claimsJson = "{\"stringClaim\": \"someClaim\", \"intClaim\": 1, \"nestedClaim\": { \"listClaim\": [ \"1\", \"2\" ]}}";
+
+        String jwt = JWTCreator.init()
+                .withPayload(claimsJson)
+                .sign(Algorithm.HMAC256("secret"));
+
+        assertThat(jwt, is(notNullValue()));
+        String[] parts = jwt.split("\\.");
+        String payloadJson = new String(Base64.getUrlDecoder().decode(parts[1]), StandardCharsets.UTF_8);
+
+        assertThat(payloadJson, JsonMatcher.hasEntry("stringClaim", stringClaim));
+        assertThat(payloadJson, JsonMatcher.hasEntry("intClaim", intClaim));
+        assertThat(payloadJson, JsonMatcher.hasEntry("listClaim", nestedListClaims));
+    }
+
+    @Test
+    public void shouldFailWithIllegalArgumentExceptionForInvalidJsonForPayloadClaims() {
+        String invalidJson = "{ invalidJson }";
+
+        exception.expect(IllegalArgumentException.class);
+        exception.expectMessage("Invalid payload JSON");
+
+        JWTCreator.init()
+                .withPayload(invalidJson)
+                .sign(Algorithm.HMAC256("secret"));
+    }
+
+    @Test
     public void shouldCreatePayloadWithNullForMap() {
         String jwt = JWTCreator.init()
-                .withClaim("name", (Map<String,?>) null)
+                .withClaim("name", (Map<String, ?>) null)
                 .sign(Algorithm.HMAC256("secret"));
         assertThat(jwt, is(notNullValue()));
         assertTrue(JWT.decode(jwt).getClaim("name").isNull());
