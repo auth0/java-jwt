@@ -3,7 +3,6 @@ package com.auth0.jwt;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.ECDSAKeyProvider;
 import com.auth0.jwt.interfaces.RSAKeyProvider;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.Rule;
@@ -974,7 +973,7 @@ public class JWTCreatorTest {
                 .sign(Algorithm.HMAC256("secret"));
 
         assertThat(jwt, is(notNullValue()));
-        String[] parts = jwt.split("\\.");
+        String[] parts = jwt.split("\\.")  ;
         String payloadJson = new String(Base64.getUrlDecoder().decode(parts[1]), StandardCharsets.UTF_8);
 
         assertThat(payloadJson, JsonMatcher.hasEntry("stringClaim", stringClaim));
@@ -1014,7 +1013,9 @@ public class JWTCreatorTest {
 
     @Test
     public void shouldPreserveInsertionOrder() throws Exception {
-        List<String> headerInsertionOrder = new ArrayList<>();
+        String taxonomyJson = "{\"class\": \"mammalia\", \"order\": \"carnivora\", \"family\": \"canidae\", \"genus\": \"vulpes\"}";
+        List<String> taxonomyClaims = Arrays.asList("class", "order", "family", "genus");
+        List<String> headerInsertionOrder = new ArrayList<>(taxonomyClaims);
         Map<String, Object> header = new LinkedHashMap<>();
         for (int i = 0; i < 10; i++) {
             String key = "h" + i;
@@ -1022,8 +1023,11 @@ public class JWTCreatorTest {
             headerInsertionOrder.add(key);
         }
 
-        List<String> payloadInsertionOrder = new ArrayList<>();
-        JWTCreator.Builder builder = JWTCreator.init().withHeader(header);
+        List<String> payloadInsertionOrder = new ArrayList<>(taxonomyClaims);
+        JWTCreator.Builder builder = JWTCreator.init()
+                .withHeader(taxonomyJson)
+                .withHeader(header)
+                .withPayload(taxonomyJson);
         for (int i = 0; i < 10; i++) {
             String name = "c" + i;
             builder = builder.withClaim(name, "v" + i);
