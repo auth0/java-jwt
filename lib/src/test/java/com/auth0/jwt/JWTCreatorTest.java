@@ -973,7 +973,7 @@ public class JWTCreatorTest {
                 .sign(Algorithm.HMAC256("secret"));
 
         assertThat(jwt, is(notNullValue()));
-        String[] parts = jwt.split("\\.")  ;
+        String[] parts = jwt.split("\\.");
         String payloadJson = new String(Base64.getUrlDecoder().decode(parts[1]), StandardCharsets.UTF_8);
 
         assertThat(payloadJson, JsonMatcher.hasEntry("stringClaim", stringClaim));
