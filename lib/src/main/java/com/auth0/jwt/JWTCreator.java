@@ -71,8 +71,8 @@ public final class JWTCreator {
         private final Map<String, Object> headerClaims;
 
         Builder() {
-            this.payloadClaims = new HashMap<>();
-            this.headerClaims = new HashMap<>();
+            this.payloadClaims = new LinkedHashMap<>();
+            this.headerClaims = new LinkedHashMap<>();
         }
 
         /**
@@ -112,7 +112,7 @@ public final class JWTCreator {
             }
 
             try {
-                Map<String, Object> headerClaims = mapper.readValue(headerClaimsJson, HashMap.class);
+                Map<String, Object> headerClaims = mapper.readValue(headerClaimsJson, LinkedHashMap.class);
                 return withHeader(headerClaims);
             } catch (JsonProcessingException e) {
                 throw new IllegalArgumentException("Invalid header JSON", e);
@@ -508,7 +508,7 @@ public final class JWTCreator {
             }
 
             try {
-                Map<String, Object> payloadClaims =  mapper.readValue(payloadClaimsJson, HashMap.class);
+                Map<String, Object> payloadClaims =  mapper.readValue(payloadClaimsJson, LinkedHashMap.class);
                 return withPayload(payloadClaims);
             } catch (JsonProcessingException e) {
                 throw new IllegalArgumentException("Invalid payload JSON", e);
