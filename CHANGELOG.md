@@ -1,5 +1,13 @@
 # Change Log
 
+## [4.4.0](https://github.com/auth0/java-jwt/tree/4.4.0) (2023-03-31)
+[Full Changelog](https://github.com/auth0/java-jwt/compare/4.3.0...4.4.0)
+
+**Changed**
+- Add support for passing json values for header and payload [\#643](https://github.com/auth0/java-jwt/pull/643) ([andrewrigas](https://github.com/andrewrigas))
+- Preserve insertion order for claims [\#656](https://github.com/auth0/java-jwt/pull/656) ([snago](https://github.com/snago))
+- Update Jackson to 2.14.2 [\#657](https://github.com/auth0/java-jwt/pull/657) ([jimmyjames](https://github.com/jimmyjames))
+
 ## [4.3.0](https://github.com/auth0/java-jwt/tree/4.3.0) (2023-02-10)
 [Full Changelog](https://github.com/auth0/java-jwt/compare/4.2.2...4.3.0)
 
