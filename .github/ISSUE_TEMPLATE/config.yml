@@ -1,8 +1,5 @@
 blank_issues_enabled: false
 contact_links:
   - name: Auth0 Community
-    url: https://community.auth0.com/c/sdks/5
-    about: Discuss this SDK in the Auth0 Community forums
-  - name: Library Documentation
-    url: https://github.com/auth0/java-jwt/blob/master/README.md
-    about: Read the library documentation
+    url: https://community.auth0.com
+    about: Discuss this library in the Auth0 Community forums

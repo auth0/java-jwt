@@ -1,0 +1,53 @@
+name: 🧩 Feature request
+description: Suggest an idea or a feature for this library
+labels: ["feature request"]
+
+body:
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: I have looked into the [Readme](https://github.com/auth0/java-jwt#readme) and [Examples](https://github.com/auth0/java-jwt/blob/master/EXAMPLES.md), and have not found a suitable solution or answer.
+          required: true
+        - label: I have looked into the [API documentation](https://javadoc.io/doc/com.auth0/java-jwt/latest/index.html) and have not found a suitable solution or answer.
+          required: true
+        - label: I have searched the [issues](https://github.com/auth0/java-jwt/issues) and have not found a suitable solution or answer.
+          required: true
+        - label: I have searched the [Auth0 Community](https://community.auth0.com) forums and have not found a suitable solution or answer.
+          required: true
+        - label: I agree to the terms within the [Auth0 Code of Conduct](https://github.com/auth0/open-source-template/blob/master/CODE-OF-CONDUCT.md).
+          required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Describe the problem you'd like to have solved
+      description: A clear and concise description of what the problem is.
+      placeholder: I'm always frustrated when...
+    validations:
+      required: true
+
+  - type: textarea
+    id: ideal-solution
+    attributes:
+      label: Describe the ideal solution
+      description: A clear and concise description of what you want to happen.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives-and-workarounds
+    attributes:
+      label: Alternatives and current workarounds
+      description: A clear and concise description of any alternatives you've considered or any workarounds that are currently in place.
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional context
+      description: Add any other context or screenshots about the feature request here.
+    validations:
+      required: false
