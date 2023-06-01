@@ -145,14 +145,14 @@ public class PayloadDeserializerTest {
     }
 
     @Test
-    public void shouldGetEmptyStringArrayWhenParsingEmptyTextNode() {
+    public void shouldGetEmptyStringInArrayWhenParsingEmptyTextNode() {
         Map<String, JsonNode> tree = new HashMap<>();
         TextNode textNode = new TextNode("");
         tree.put("key", textNode);
 
         List<String> values = deserializer.getStringOrArray(objectMapper, tree, "key");
         assertThat(values, is(notNullValue()));
-        assertThat(values, is(IsEmptyCollection.empty()));
+        assertThat(values, is(IsIterableContaining.hasItem("")));
     }
 
     @Test
