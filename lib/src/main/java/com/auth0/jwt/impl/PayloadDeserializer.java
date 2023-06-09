@@ -54,7 +54,7 @@ class PayloadDeserializer extends StdDeserializer<Payload> {
         if (node == null || node.isNull() || !(node.isArray() || node.isTextual())) {
             return null;
         }
-        if (node.isTextual() && !node.asText().isEmpty()) {
+        if (node.isTextual()) {
             return Collections.singletonList(node.asText());
         }
 
