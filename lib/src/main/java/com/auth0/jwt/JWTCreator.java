@@ -28,20 +28,22 @@ public final class JWTCreator {
     private final Algorithm algorithm;
     private final String headerJson;
     private final String payloadJson;
+    private static final ObjectMapper mapper = createDefaultObjectMapper();
 
-    private static final ObjectMapper mapper;
-    private static final SimpleModule module;
-
-    static {
-        module = new SimpleModule();
+    static void addSerializers(ObjectMapper mapper) {
+        SimpleModule module = new SimpleModule();
         module.addSerializer(PayloadClaimsHolder.class, new PayloadSerializer());
         module.addSerializer(HeaderClaimsHolder.class, new HeaderSerializer());
+        mapper.registerModule(module);
+    }
 
-        mapper = JsonMapper.builder()
+    static ObjectMapper createDefaultObjectMapper() {
+        ObjectMapper mapper = JsonMapper.builder()
                 .configure(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY, true)
                 .addModule(new AfterburnerModule())
-                .build()
-                .registerModule(module);
+                .build();
+        addSerializers(mapper);
+        return mapper;
     }
 
     private JWTCreator(Algorithm algorithm, Map<String, Object> headerClaims, Map<String, Object> payloadClaims)
