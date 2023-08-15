@@ -1,0 +1,27 @@
+name: auth0/java-jwt/build-and-test
+
+on:
+  pull_request:
+  merge_group:
+  push:
+    branches: ["master", "main", "v1"]
+
+jobs:
+  gradle:
+    runs-on:  ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 11
+      - uses: gradle/gradle-build-action@a4cf152f482c7ca97ef56ead29bf08bcd953284c
+        with:
+          arguments: assemble apiDiff check jacocoTestReport --continue --console=plain
+      - uses: codecov/codecov-action@eaaf4bedf32dbdc6b720b63067d99c4d77d6047d
+        with:
+          flags: unittests
+      - uses: actions/upload-artifact@v3
+        with:
+          name: Reports
+          path: build/reports
