@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.module.afterburner.AfterburnerModule;
 
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
@@ -38,6 +39,7 @@ public final class JWTCreator {
 
         mapper = JsonMapper.builder()
                 .configure(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY, true)
+                .addModule(new AfterburnerModule())
                 .build()
                 .registerModule(module);
     }
@@ -508,7 +510,7 @@ public final class JWTCreator {
             }
 
             try {
-                Map<String, Object> payloadClaims =  mapper.readValue(payloadClaimsJson, LinkedHashMap.class);
+                Map<String, Object> payloadClaims = mapper.readValue(payloadClaimsJson, LinkedHashMap.class);
                 return withPayload(payloadClaims);
             } catch (JsonProcessingException e) {
                 throw new IllegalArgumentException("Invalid payload JSON", e);

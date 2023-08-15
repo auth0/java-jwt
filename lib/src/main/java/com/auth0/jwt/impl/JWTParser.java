@@ -8,7 +8,10 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.module.afterburner.AfterburnerModule;
+
 import java.io.IOException;
 
 /**
@@ -73,12 +76,11 @@ public class JWTParser implements JWTPartsParser {
     }
 
     private static ObjectMapper createDefaultObjectMapper() {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
-        mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
-
+        ObjectMapper mapper = JsonMapper.builder()
+                .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
+                .serializationInclusion(JsonInclude.Include.NON_EMPTY)
+                .addModule(new AfterburnerModule()).build();
         addDeserializers(mapper);
-
         return mapper;
     }
 

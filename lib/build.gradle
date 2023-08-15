@@ -73,6 +73,7 @@ javadoc {
 
 dependencies {
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.14.2'
+    implementation 'com.fasterxml.jackson.module:jackson-module-afterburner:2.14.2'
 
     testImplementation 'org.bouncycastle:bcprov-jdk15on:1.70'
     testImplementation 'junit:junit:4.13.2'
