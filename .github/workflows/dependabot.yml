@@ -5,8 +5,8 @@ updates:
     schedule:
       interval: "daily"
 
-  - package-ecosystem: "pip"
-    directory: "/"
+  - package-ecosystem: "gradle"
+    directory: "lib"
     schedule:
       interval: "daily"
     ignore:
