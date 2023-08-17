@@ -5,7 +5,7 @@
 
 ![A Java implementation of JSON Web Token (JWT) - RFC 7519.](https://cdn.auth0.com/website/sdks/banners/java-jwt-banner.png)
 
-[![CircleCI](https://img.shields.io/circleci/project/github/auth0/java-jwt.svg?style=flat-square)](https://circleci.com/gh/auth0/java-jwt/tree/master)
+![Build Status](https://img.shields.io/github/checks-status/auth0/java-jwt/master)
 [![Coverage Status](https://img.shields.io/codecov/c/github/auth0/java-jwt.svg?style=flat-square)](https://codecov.io/github/auth0/java-jwt)
 [![License](http://img.shields.io/:license-mit-blue.svg?style=flat)](https://doge.mit-license.org/)
 [![Maven Central](https://img.shields.io/maven-central/v/com.auth0/java-jwt.svg?style=flat-square)](https://mvnrepository.com/artifact/com.auth0/java-jwt)
