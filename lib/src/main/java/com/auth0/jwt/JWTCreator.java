@@ -586,7 +586,7 @@ public final class JWTCreator {
         }
 
         /**
-         * Creates a new JWT and signs is with the given algorithm.
+         * Creates a new JWT and signs it with the given algorithm.
          *
          * @param algorithm used to sign the JWT
          * @return a new JWT token
