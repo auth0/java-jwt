@@ -1,6 +1,7 @@
 package com.auth0.jwt;
 
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.algorithms.AlgorithmImplementation;
 import com.auth0.jwt.exceptions.*;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
@@ -41,7 +42,7 @@ public class JWTVerifierTest {
     @Test
     public void shouldThrowWhenAlgorithmDoesntMatchTheTokensAlgorithm() {
         AlgorithmMismatchException e = assertThrows(null, AlgorithmMismatchException.class, () -> {
-            JWTVerifier verifier = JWTVerifier.init(Algorithm.HMAC512("secret")).build();
+            JWTVerifier verifier = JWTVerifier.init(AlgorithmImplementation.HMAC512("secret")).build();
             verifier.verify("eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJhdXRoMCJ9.s69x7Mmu4JqwmdxiK6sesALO7tcedbFsKEEITUxw9ho");
         });
         assertThat(e.getMessage(), is("The provided Algorithm doesn't match the one defined in the JWT's Header."));
@@ -50,7 +51,7 @@ public class JWTVerifierTest {
     @Test
     public void shouldValidateIssuer() {
         String token = "eyJhbGciOiJIUzI1NiIsImN0eSI6IkpXVCJ9.eyJpc3MiOiJhdXRoMCJ9.mZ0m_N1J4PgeqWmi903JuUoDRZDBPB7HwkS4nVyWH1M";
-        DecodedJWT jwt = JWTVerifier.init(Algorithm.HMAC256("secret"))
+        DecodedJWT jwt = JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"))
                 .withIssuer("auth0")
                 .build()
                 .verify(token);
@@ -59,7 +60,7 @@ public class JWTVerifierTest {
         //  "iss": ["auth0", "okta"]
         IncorrectClaimException e = assertThrows(null, IncorrectClaimException.class, ()-> {
             String token1 = "eyJhbGciOiJIUzI1NiIsImN0eSI6IkpXVCJ9.eyJpc3MiOiJhdXRoMCJ9.mZ0m_N1J4PgeqWmi903JuUoDRZDBPB7HwkS4nVyWH1M";
-            JWTVerifier.init(Algorithm.HMAC256("secret"))
+            JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"))
                     .withIssuer((String[]) null)
                     .build()
                     .verify(token1);
@@ -72,7 +73,7 @@ public class JWTVerifierTest {
     public void shouldValidateMultipleIssuers() {
         String auth0Token = "eyJhbGciOiJIUzI1NiIsImN0eSI6IkpXVCJ9.eyJpc3MiOiJhdXRoMCJ9.mZ0m_N1J4PgeqWmi903JuUoDRZDBPB7HwkS4nVyWH1M";
         String otherIssuertoken = "eyJhbGciOiJIUzI1NiIsImN0eSI6IkpXVCJ9.eyJpc3MiOiJvdGhlcklzc3VlciJ9.k4BCOJJl-c0_Y-49VD_mtt-u0QABKSV5i3W-RKc74co";
-        JWTVerifier verifier = JWTVerifier.init(Algorithm.HMAC256("secret"))
+        JWTVerifier verifier = JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"))
                 .withIssuer("otherIssuer", "auth0")
                 .build();
 
@@ -84,7 +85,7 @@ public class JWTVerifierTest {
     public void shouldThrowOnInvalidIssuer() {
         IncorrectClaimException e = assertThrows(null, IncorrectClaimException.class, () -> {
             String token = "eyJhbGciOiJIUzI1NiIsImN0eSI6IkpXVCJ9.eyJpc3MiOiJhdXRoMCJ9.mZ0m_N1J4PgeqWmi903JuUoDRZDBPB7HwkS4nVyWH1M";
-            JWTVerifier.init(Algorithm.HMAC256("secret"))
+            JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"))
                     .withIssuer("invalid")
                     .build()
                     .verify(token);
@@ -98,7 +99,7 @@ public class JWTVerifierTest {
     public void shouldThrowOnNullIssuer() {
         IncorrectClaimException e = assertThrows(null, IncorrectClaimException.class, () -> {
             String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOm51bGx9.OoiCLipSfflWxkFX2rytvtwEiJ8eAL0opkdXY_ap0qA";
-            JWTVerifier.init(Algorithm.HMAC256("secret"))
+            JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"))
                     .withIssuer("auth0")
                     .build()
                     .verify(token);
@@ -112,9 +113,9 @@ public class JWTVerifierTest {
     public void shouldThrowOnMissingIssuer() {
         MissingClaimException e = assertThrows(null, MissingClaimException.class, () -> {
             String jwt = JWTCreator.init()
-                    .sign(Algorithm.HMAC256("secret"));
+                    .sign(AlgorithmImplementation.HMAC256("secret"));
 
-            JWTVerifier.init(Algorithm.HMAC256("secret"))
+            JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"))
                     .withIssuer("nope")
                     .build()
                     .verify(jwt);
@@ -126,7 +127,7 @@ public class JWTVerifierTest {
     @Test
     public void shouldValidateSubject() {
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.Rq8IxqeX7eA6GgYxlcHdPFVRNFFZc5rEI3MQTZZbK3I";
-        DecodedJWT jwt = JWTVerifier.init(Algorithm.HMAC256("secret"))
+        DecodedJWT jwt = JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"))
                 .withSubject("1234567890")
                 .build()
                 .verify(token);
@@ -138,7 +139,7 @@ public class JWTVerifierTest {
     public void shouldThrowOnInvalidSubject() {
         IncorrectClaimException e = assertThrows(null, IncorrectClaimException.class, () -> {
             String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.Rq8IxqeX7eA6GgYxlcHdPFVRNFFZc5rEI3MQTZZbK3I";
-            JWTVerifier.init(Algorithm.HMAC256("secret"))
+            JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"))
                     .withSubject("invalid")
                     .build()
                     .verify(token);
@@ -152,7 +153,7 @@ public class JWTVerifierTest {
     public void shouldAcceptAudienceWhenWithAudienceContainsAll() {
         // Token 'aud': ["Mark"]
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJNYXJrIn0.xWB6czYI0XObbVhLAxe55TwChWZg7zO08RxONWU2iY4";
-        DecodedJWT jwt = JWTVerifier.init(Algorithm.HMAC256("secret"))
+        DecodedJWT jwt = JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"))
                 .withAudience("Mark")
                 .build()
                 .verify(token);
@@ -161,7 +162,7 @@ public class JWTVerifierTest {
 
         // Token 'aud': ["Mark", "David"]
         String tokenArr = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOlsiTWFyayIsIkRhdmlkIl19.6WfbIt8m61f9WlCYIQn5CThvw4UNyC66qrPaoinfssw";
-        DecodedJWT jwtArr = JWTVerifier.init(Algorithm.HMAC256("secret"))
+        DecodedJWT jwtArr = JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"))
                 .withAudience("Mark", "David")
                 .build()
                 .verify(tokenArr);
@@ -173,7 +174,7 @@ public class JWTVerifierTest {
     public void shouldAllowWithAnyOfAudienceVerificationToOverrideWithAudience() {
         // Token 'aud' = ["Mark", "David", "John"]
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOlsiTWFyayIsIkRhdmlkIiwiSm9obiJdfQ.DX5xXiCaYvr54x_iL0LZsJhK7O6HhAdHeDYkgDeb0Rw";
-        Verification verification = JWTVerifier.init(Algorithm.HMAC256("secret")).withAudience("Mark", "Jim");
+        Verification verification = JWTVerifier.init(AlgorithmImplementation.HMAC256("secret")).withAudience("Mark", "Jim");
 
         Exception exception = null;
         try {
@@ -187,7 +188,7 @@ public class JWTVerifierTest {
         assertThat(exception, is(instanceOf(IncorrectClaimException.class)));
         assertThat(exception.getMessage(), is("The Claim 'aud' value doesn't contain the required audience."));
 
-        DecodedJWT jwt = JWTVerifier.init(Algorithm.HMAC256("secret")).withAnyOfAudience("Mark", "Jim").build().verify(token);
+        DecodedJWT jwt = JWTVerifier.init(AlgorithmImplementation.HMAC256("secret")).withAnyOfAudience("Mark", "Jim").build().verify(token);
         assertThat(jwt, is(notNullValue()));
     }
 
@@ -195,7 +196,7 @@ public class JWTVerifierTest {
     public void shouldAllowWithAudienceVerificationToOverrideWithAnyOfAudience() {
         // Token 'aud' = ["Mark", "David", "John"]
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOlsiTWFyayIsIkRhdmlkIiwiSm9obiJdfQ.DX5xXiCaYvr54x_iL0LZsJhK7O6HhAdHeDYkgDeb0Rw";
-        Verification verification = JWTVerifier.init(Algorithm.HMAC256("secret")).withAnyOfAudience("Jim");
+        Verification verification = JWTVerifier.init(AlgorithmImplementation.HMAC256("secret")).withAnyOfAudience("Jim");
 
         Exception exception = null;
         try {
@@ -209,7 +210,7 @@ public class JWTVerifierTest {
         assertThat(exception, is(instanceOf(IncorrectClaimException.class)));
         assertThat(exception.getMessage(), is("The Claim 'aud' value doesn't contain the required audience."));
 
-        DecodedJWT jwt = JWTVerifier.init(Algorithm.HMAC256("secret")).withAudience("Mark").build().verify(token);
+        DecodedJWT jwt = JWTVerifier.init(AlgorithmImplementation.HMAC256("secret")).withAudience("Mark").build().verify(token);
         assertThat(jwt, is(notNullValue()));
     }
 
@@ -217,7 +218,7 @@ public class JWTVerifierTest {
     public void shouldAcceptAudienceWhenWithAudienceAndPartialExpected() {
         // Token 'aud' = ["Mark", "David", "John"]
         String tokenArr = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOlsiTWFyayIsIkRhdmlkIiwiSm9obiJdfQ.DX5xXiCaYvr54x_iL0LZsJhK7O6HhAdHeDYkgDeb0Rw";
-        DecodedJWT jwtArr = JWTVerifier.init(Algorithm.HMAC256("secret"))
+        DecodedJWT jwtArr = JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"))
                 .withAudience("John")
                 .build()
                 .verify(tokenArr);
@@ -229,7 +230,7 @@ public class JWTVerifierTest {
     public void shouldAcceptAudienceWhenAnyOfAudienceAndAllContained() {
         // Token 'aud' = ["Mark", "David", "John"]
         String tokenArr = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOlsiTWFyayIsIkRhdmlkIiwiSm9obiJdfQ.DX5xXiCaYvr54x_iL0LZsJhK7O6HhAdHeDYkgDeb0Rw";
-        DecodedJWT jwtArr = JWTVerifier.init(Algorithm.HMAC256("secret"))
+        DecodedJWT jwtArr = JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"))
                 .withAnyOfAudience("Mark", "David", "John")
                 .build()
                 .verify(tokenArr);
@@ -242,7 +243,7 @@ public class JWTVerifierTest {
         IncorrectClaimException e = assertThrows(null, IncorrectClaimException.class, () -> {
             // Token 'aud' = ["Mark", "David", "John"]
             String tokenArr = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOlsiTWFyayIsIkRhdmlkIiwiSm9obiJdfQ.DX5xXiCaYvr54x_iL0LZsJhK7O6HhAdHeDYkgDeb0Rw";
-            JWTVerifier.init(Algorithm.HMAC256("secret"))
+            JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"))
                     .withAnyOfAudience("Joe", "Jim")
                     .build()
                     .verify(tokenArr);
@@ -257,7 +258,7 @@ public class JWTVerifierTest {
         IncorrectClaimException e = assertThrows(null, IncorrectClaimException.class, () -> {
             // Token 'aud' = ["Mark", "David", "John"]
             String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOlsiTWFyayIsIkRhdmlkIiwiSm9obiJdfQ.DX5xXiCaYvr54x_iL0LZsJhK7O6HhAdHeDYkgDeb0Rw";
-            JWTVerifier.init(Algorithm.HMAC256("secret"))
+            JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"))
                     .withAudience("Mark", "Joe")
                     .build()
                     .verify(token);
@@ -272,7 +273,7 @@ public class JWTVerifierTest {
         IncorrectClaimException e = assertThrows(null, IncorrectClaimException.class, () -> {
             // Token 'aud': null
             String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiYXVkIjpudWxsfQ.bpPyquk3b8KepErKgTidjJ1ZwiOGuoTxam2_x7cElKI";
-            JWTVerifier.init(Algorithm.HMAC256("secret"))
+            JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"))
                     .withAudience("nope")
                     .build()
                     .verify(token);
@@ -286,7 +287,7 @@ public class JWTVerifierTest {
     public void shouldThrowWhenAudienceClaimIsMissing(){
         MissingClaimException e = assertThrows(null, MissingClaimException.class, () -> {
             String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.Rq8IxqeX7eA6GgYxlcHdPFVRNFFZc5rEI3MQTZZbK3I";
-            JWTVerifier.init(Algorithm.HMAC256("secret"))
+            JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"))
                     .withAudience("nope")
                     .build()
                     .verify(token);
@@ -300,7 +301,7 @@ public class JWTVerifierTest {
         IncorrectClaimException e = assertThrows(null, IncorrectClaimException.class, () -> {
             // Token 'aud': [null]
             String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiYXVkIjpbbnVsbF19.2cBf7FbkX52h8Vmjnl1DY1PYe_J_YP0KsyeoeYmuca8";
-            JWTVerifier.init(Algorithm.HMAC256("secret"))
+            JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"))
                     .withAnyOfAudience("nope")
                     .build()
                     .verify(token);
@@ -312,7 +313,7 @@ public class JWTVerifierTest {
 
     @Test
     public void shouldNotReplaceWhenMultipleChecksAreAdded() {
-        JWTVerifier verifier = JWTVerifier.init(Algorithm.HMAC256("secret"))
+        JWTVerifier verifier = JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"))
                 .withAudience((String[]) null)
                 .withAudience()
                 .withAnyOfAudience((String[]) null)
@@ -326,7 +327,7 @@ public class JWTVerifierTest {
     public void shouldThrowOnNullCustomClaimName() {
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage("The Custom Claim's name can't be null.");
-        JWTVerifier.init(Algorithm.HMAC256("secret"))
+        JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"))
                 .withClaim(null, "value");
     }
 
@@ -334,7 +335,7 @@ public class JWTVerifierTest {
     public void shouldThrowWhenExpectedArrayClaimIsMissing() {
         MissingClaimException e = assertThrows(null, MissingClaimException.class, () -> {
             String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcnJheSI6WzEsMiwzXX0.wKNFBcMdwIpdF9rXRxvexrzSM6umgSFqRO1WZj992YM";
-            JWTVerifier.init(Algorithm.HMAC256("secret"))
+            JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"))
                     .withArrayClaim("missing", 1, 2, 3)
                     .build()
                     .verify(token);
@@ -347,7 +348,7 @@ public class JWTVerifierTest {
     public void shouldThrowWhenExpectedClaimIsMissing() {
         MissingClaimException e = assertThrows(null, MissingClaimException.class, () -> {
             String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGFpbSI6InRleHQifQ.aZ27Ze35VvTqxpaSIK5ZcnYHr4SrvANlUbDR8fw9qsQ";
-            JWTVerifier.init(Algorithm.HMAC256("secret"))
+            JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"))
                     .withClaim("missing", "text")
                     .build()
                     .verify(token);
@@ -360,7 +361,7 @@ public class JWTVerifierTest {
     public void shouldThrowOnInvalidCustomClaimValueOfTypeString() {
         IncorrectClaimException e = assertThrows(null, IncorrectClaimException.class, () -> {
             String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjpbInNvbWV0aGluZyJdfQ.3ENLez6tU_fG0SVFrGmISltZPiXLSHaz_dyn-XFTEGQ";
-            JWTVerifier.init(Algorithm.HMAC256("secret"))
+            JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"))
                     .withClaim("name", "value")
                     .build()
                     .verify(token);
@@ -374,7 +375,7 @@ public class JWTVerifierTest {
     public void shouldThrowOnInvalidCustomClaimValueOfTypeInteger() {
         IncorrectClaimException e = assertThrows(null, IncorrectClaimException.class, () -> {
             String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjpbInNvbWV0aGluZyJdfQ.3ENLez6tU_fG0SVFrGmISltZPiXLSHaz_dyn-XFTEGQ";
-            JWTVerifier.init(Algorithm.HMAC256("secret"))
+            JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"))
                     .withClaim("name", 123)
                     .build()
                     .verify(token);
@@ -388,7 +389,7 @@ public class JWTVerifierTest {
     public void shouldThrowOnInvalidCustomClaimValueOfTypeDouble() {
         IncorrectClaimException e = assertThrows(null, IncorrectClaimException.class, () -> {
             String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjpbInNvbWV0aGluZyJdfQ.3ENLez6tU_fG0SVFrGmISltZPiXLSHaz_dyn-XFTEGQ";
-            JWTVerifier.init(Algorithm.HMAC256("secret"))
+            JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"))
                     .withClaim("name", 23.45)
                     .build()
                     .verify(token);
@@ -402,7 +403,7 @@ public class JWTVerifierTest {
     public void shouldThrowOnInvalidCustomClaimValueOfTypeBoolean() {
         IncorrectClaimException e = assertThrows(null, IncorrectClaimException.class, () -> {
             String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjpbInNvbWV0aGluZyJdfQ.3ENLez6tU_fG0SVFrGmISltZPiXLSHaz_dyn-XFTEGQ";
-            JWTVerifier.init(Algorithm.HMAC256("secret"))
+            JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"))
                     .withClaim("name", true)
                     .build()
                     .verify(token);
@@ -417,7 +418,7 @@ public class JWTVerifierTest {
     public void shouldThrowOnInvalidCustomClaimValueOfTypeDate() {
         IncorrectClaimException e = assertThrows(null, IncorrectClaimException.class, () -> {
             String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjpbInNvbWV0aGluZyJdfQ.3ENLez6tU_fG0SVFrGmISltZPiXLSHaz_dyn-XFTEGQ";
-            JWTVerifier.init(Algorithm.HMAC256("secret"))
+            JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"))
                     .withClaim("name", new Date())
                     .build()
                     .verify(token);
@@ -431,7 +432,7 @@ public class JWTVerifierTest {
     public void shouldThrowOnInvalidCustomClaimValue() {
         IncorrectClaimException e = assertThrows(null, IncorrectClaimException.class, () -> {
             String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjpbInNvbWV0aGluZyJdfQ.3ENLez6tU_fG0SVFrGmISltZPiXLSHaz_dyn-XFTEGQ";
-            JWTVerifier.init(Algorithm.HMAC256("secret"))
+            JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"))
                     .withClaim("name", "check")
                     .build()
                     .verify(token);
@@ -444,7 +445,7 @@ public class JWTVerifierTest {
     @Test
     public void shouldValidateCustomClaimOfTypeString() {
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoidmFsdWUifQ.Jki8pvw6KGbxpMinufrgo6RDL1cu7AtNMJYVh6t-_cE";
-        DecodedJWT jwt = JWTVerifier.init(Algorithm.HMAC256("secret"))
+        DecodedJWT jwt = JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"))
                 .withClaim("name", "value")
                 .build()
                 .verify(token);
@@ -455,7 +456,7 @@ public class JWTVerifierTest {
     @Test
     public void shouldValidateCustomClaimOfTypeInteger() {
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoxMjN9.XZAudnA7h3_Al5kJydzLjw6RzZC3Q6OvnLEYlhNW7HA";
-        DecodedJWT jwt = JWTVerifier.init(Algorithm.HMAC256("secret"))
+        DecodedJWT jwt = JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"))
                 .withClaim("name", 123)
                 .build()
                 .verify(token);
@@ -466,7 +467,7 @@ public class JWTVerifierTest {
     @Test
     public void shouldValidateCustomClaimOfTypeLong() {
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjo5MjIzMzcyMDM2ODU0Nzc2MDB9.km-IwQ5IDnTZFmuJzhSgvjTzGkn_Z5X29g4nAuVC56I";
-        DecodedJWT jwt = JWTVerifier.init(Algorithm.HMAC256("secret"))
+        DecodedJWT jwt = JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"))
                 .withClaim("name", 922337203685477600L)
                 .build()
                 .verify(token);
@@ -477,7 +478,7 @@ public class JWTVerifierTest {
     @Test
     public void shouldValidateCustomClaimOfTypeDouble() {
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoyMy40NX0.7pyX2OmEGaU9q15T8bGFqRm-d3RVTYnqmZNZtxMKSlA";
-        DecodedJWT jwt = JWTVerifier.init(Algorithm.HMAC256("secret"))
+        DecodedJWT jwt = JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"))
                 .withClaim("name", 23.45)
                 .build()
                 .verify(token);
@@ -488,7 +489,7 @@ public class JWTVerifierTest {
     @Test
     public void shouldValidateCustomClaimOfTypeBoolean() {
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjp0cnVlfQ.FwQ8VfsZNRqBa9PXMinSIQplfLU4-rkCLfIlTLg_MV0";
-        DecodedJWT jwt = JWTVerifier.init(Algorithm.HMAC256("secret"))
+        DecodedJWT jwt = JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"))
                 .withClaim("name", true)
                 .build()
                 .verify(token);
@@ -500,7 +501,7 @@ public class JWTVerifierTest {
     public void shouldValidateCustomClaimOfTypeDate() {
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoxNDc4ODkxNTIxfQ.mhioumeok8fghQEhTKF3QtQAksSvZ_9wIhJmgZLhJ6c";
         Date date = new Date(1478891521123L);
-        DecodedJWT jwt = JWTVerifier.init(Algorithm.HMAC256("secret"))
+        DecodedJWT jwt = JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"))
                 .withClaim("name", date)
                 .build()
                 .verify(token);
@@ -510,7 +511,7 @@ public class JWTVerifierTest {
 
     @Test
     public void shouldNotRemoveCustomClaimOfTypeDateWhenNull() {
-        JWTVerifier verifier = JWTVerifier.init(Algorithm.HMAC256("secret"))
+        JWTVerifier verifier = JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"))
                 .withClaim("name", new Date())
                 .withClaim("name", (Date) null)
                 .build();
@@ -522,7 +523,7 @@ public class JWTVerifierTest {
     @Test
     public void shouldValidateCustomArrayClaimOfTypeString() {
         String token = "eyJhbGciOiJIUzI1NiJ9.eyJuYW1lIjpbInRleHQiLCIxMjMiLCJ0cnVlIl19.lxM8EcmK1uSZRAPd0HUhXGZJdauRmZmLjoeqz4J9yAA";
-        DecodedJWT jwt = JWTVerifier.init(Algorithm.HMAC256("secret"))
+        DecodedJWT jwt = JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"))
                 .withArrayClaim("name", "text", "123", "true")
                 .build()
                 .verify(token);
@@ -533,7 +534,7 @@ public class JWTVerifierTest {
     @Test
     public void shouldValidateCustomArrayClaimOfTypeInteger() {
         String token = "eyJhbGciOiJIUzI1NiJ9.eyJuYW1lIjpbMSwyLDNdfQ.UEuMKRQYrzKAiPpPLhIVawWkKWA1zj0_GderrWUIyFE";
-        DecodedJWT jwt = JWTVerifier.init(Algorithm.HMAC256("secret"))
+        DecodedJWT jwt = JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"))
                 .withArrayClaim("name", 1, 2, 3)
                 .build()
                 .verify(token);
@@ -544,7 +545,7 @@ public class JWTVerifierTest {
     @Test
     public void shouldValidateCustomArrayClaimOfTypeLong() {
         String token = "eyJhbGciOiJIUzI1NiJ9.eyJuYW1lIjpbNTAwMDAwMDAwMDAxLDUwMDAwMDAwMDAwMiw1MDAwMDAwMDAwMDNdfQ.vzV7S0gbV9ZAVxChuIt4XZuSVTxMH536rFmoHzxmayM";
-        DecodedJWT jwt = JWTVerifier.init(Algorithm.HMAC256("secret"))
+        DecodedJWT jwt = JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"))
                 .withArrayClaim("name", 500000000001L, 500000000002L, 500000000003L)
                 .build()
                 .verify(token);
@@ -555,7 +556,7 @@ public class JWTVerifierTest {
     @Test
     public void shouldValidateCustomArrayClaimOfTypeLongWhenValueIsInteger() {
         String token = "eyJhbGciOiJIUzI1NiJ9.eyJuYW1lIjpbMSwyLDNdfQ.UEuMKRQYrzKAiPpPLhIVawWkKWA1zj0_GderrWUIyFE";
-        DecodedJWT jwt = JWTVerifier.init(Algorithm.HMAC256("secret"))
+        DecodedJWT jwt = JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"))
                 .withArrayClaim("name", 1L, 2L, 3L)
                 .build()
                 .verify(token);
@@ -566,7 +567,7 @@ public class JWTVerifierTest {
     @Test
     public void shouldValidateCustomArrayClaimOfTypeLongWhenValueIsIntegerAndLong() {
         String token = "eyJhbGciOiJIUzI1NiJ9.eyJuYW1lIjpbMSw1MDAwMDAwMDAwMDIsNTAwMDAwMDAwMDAzXX0.PQjb2rPPpYjM2sItZEzZcjS2YbfPCp6xksTSPjpjTQA";
-        DecodedJWT jwt = JWTVerifier.init(Algorithm.HMAC256("secret"))
+        DecodedJWT jwt = JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"))
                 .withArrayClaim("name", 1L, 500000000002L, 500000000003L)
                 .build()
                 .verify(token);
@@ -661,7 +662,7 @@ public class JWTVerifierTest {
     @Test
     public void shouldValidateExpiresAtWithLeeway() {
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE0Nzc1OTJ9.isvT0Pqx0yjnZk53mUFSeYFJLDs-Ls9IsNAm86gIdZo";
-        JWTVerifier.BaseVerification verification = (JWTVerifier.BaseVerification) JWTVerifier.init(Algorithm.HMAC256("secret"))
+        JWTVerifier.BaseVerification verification = (JWTVerifier.BaseVerification) JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"))
                 .acceptExpiresAt(2);
         DecodedJWT jwt = verification
                 .build(mockOneSecondLater)
@@ -673,7 +674,7 @@ public class JWTVerifierTest {
     @Test
     public void shouldValidateExpiresAtIfPresent() {
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE0Nzc1OTJ9.isvT0Pqx0yjnZk53mUFSeYFJLDs-Ls9IsNAm86gIdZo";
-        JWTVerifier.BaseVerification verification = (JWTVerifier.BaseVerification) JWTVerifier.init(Algorithm.HMAC256("secret"));
+        JWTVerifier.BaseVerification verification = (JWTVerifier.BaseVerification) JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"));
         DecodedJWT jwt = verification
                 .build(mockOneSecondEarlier)
                 .verify(token);
@@ -686,7 +687,7 @@ public class JWTVerifierTest {
         // exp must be > now
         TokenExpiredException e = assertThrows(null, TokenExpiredException.class, () -> {
             String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE0Nzc1OTJ9.isvT0Pqx0yjnZk53mUFSeYFJLDs-Ls9IsNAm86gIdZo";
-            JWTVerifier.BaseVerification verification = (JWTVerifier.BaseVerification) JWTVerifier.init(Algorithm.HMAC256("secret"));
+            JWTVerifier.BaseVerification verification = (JWTVerifier.BaseVerification) JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"));
             verification
                     .build(mockNow)
                     .verify(token);
@@ -699,7 +700,7 @@ public class JWTVerifierTest {
     public void shouldThrowOnInvalidExpiresAtIfPresent() {
         TokenExpiredException e = assertThrows(null, TokenExpiredException.class, () -> {
             String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE0Nzc1OTJ9.isvT0Pqx0yjnZk53mUFSeYFJLDs-Ls9IsNAm86gIdZo";
-            JWTVerifier.BaseVerification verification = (JWTVerifier.BaseVerification) JWTVerifier.init(Algorithm.HMAC256("secret"));
+            JWTVerifier.BaseVerification verification = (JWTVerifier.BaseVerification) JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"));
             verification
                     .build(mockOneSecondLater)
                     .verify(token);
@@ -721,7 +722,7 @@ public class JWTVerifierTest {
     @Test
     public void shouldValidateNotBeforeWithLeeway() {
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYmYiOjE0Nzc1OTJ9.wq4ZmnSF2VOxcQBxPLfeh1J2Ozy1Tj5iUaERm3FKaw8";
-        JWTVerifier.BaseVerification verification = (JWTVerifier.BaseVerification) JWTVerifier.init(Algorithm.HMAC256("secret"))
+        JWTVerifier.BaseVerification verification = (JWTVerifier.BaseVerification) JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"))
                 .acceptNotBefore(2);
         DecodedJWT jwt = verification
                 .build(mockOneSecondEarlier)
@@ -734,7 +735,7 @@ public class JWTVerifierTest {
     public void shouldThrowOnInvalidNotBeforeIfPresent() {
         IncorrectClaimException e = assertThrows(null, IncorrectClaimException.class, () -> {
             String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYmYiOjE0Nzc1OTJ9.wq4ZmnSF2VOxcQBxPLfeh1J2Ozy1Tj5iUaERm3FKaw8";
-            JWTVerifier.BaseVerification verification = (JWTVerifier.BaseVerification) JWTVerifier.init(Algorithm.HMAC256("secret"));
+            JWTVerifier.BaseVerification verification = (JWTVerifier.BaseVerification) JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"));
             verification
                     .build(mockOneSecondEarlier)
                     .verify(token);
@@ -747,7 +748,7 @@ public class JWTVerifierTest {
     @Test
     public void shouldValidateNotBeforeIfPresent() {
         String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYmYiOjE0Nzc1OTN9.f4zVV0TbbTG5xxDjSoGZ320JIMchGoQCWrnT5MyQdT0";
-        JWTVerifier.BaseVerification verification = (JWTVerifier.BaseVerification) JWTVerifier.init(Algorithm.HMAC256("secret"));
+        JWTVerifier.BaseVerification verification = (JWTVerifier.BaseVerification) JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"));
         DecodedJWT jwt = verification
                 .build(mockOneSecondLater)
                 .verify(token);
@@ -758,7 +759,7 @@ public class JWTVerifierTest {
     @Test
     public void shouldAcceptNotBeforeEqualToNow() {
         String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYmYiOjE0Nzc1OTJ9.71XBtRmkAa4iKnyhbS4NPW-Xr26eAVAdHZgmupS7a5o";
-        JWTVerifier.BaseVerification verification = (JWTVerifier.BaseVerification) JWTVerifier.init(Algorithm.HMAC256("secret"));
+        JWTVerifier.BaseVerification verification = (JWTVerifier.BaseVerification) JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"));
         DecodedJWT jwt = verification
                 .build(mockNow)
                 .verify(token);
@@ -780,7 +781,7 @@ public class JWTVerifierTest {
     public void shouldThrowOnFutureIssuedAt() {
         IncorrectClaimException e = assertThrows(null, IncorrectClaimException.class, () -> {
             String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE0Nzc1OTJ9.CWq-6pUXl1bFg81vqOUZbZrheO2kUBd2Xr3FUZmvudE";
-            JWTVerifier.BaseVerification verification = (JWTVerifier.BaseVerification) JWTVerifier.init(Algorithm.HMAC256("secret"));
+            JWTVerifier.BaseVerification verification = (JWTVerifier.BaseVerification) JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"));
 
             DecodedJWT jwt = verification.build(mockOneSecondEarlier).verify(token);
             assertThat(jwt, is(notNullValue()));
@@ -794,7 +795,7 @@ public class JWTVerifierTest {
     @Test
     public void shouldSkipIssuedAtVerificationWhenFlagIsPassed() {
         String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE0Nzc1OTJ9.CWq-6pUXl1bFg81vqOUZbZrheO2kUBd2Xr3FUZmvudE";
-        JWTVerifier.BaseVerification verification = (JWTVerifier.BaseVerification) JWTVerifier.init(Algorithm.HMAC256("secret"));
+        JWTVerifier.BaseVerification verification = (JWTVerifier.BaseVerification) JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"));
         verification.ignoreIssuedAt();
 
         DecodedJWT jwt = verification.build(mockOneSecondEarlier).verify(token);
@@ -805,7 +806,7 @@ public class JWTVerifierTest {
     public void shouldThrowOnInvalidIssuedAtIfPresent() {
         IncorrectClaimException e = assertThrows(null, IncorrectClaimException.class, () -> {
             String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE0Nzc1OTJ9.0WJky9eLN7kuxLyZlmbcXRL3Wy8hLoNCEk5CCl2M4lo";
-            JWTVerifier.BaseVerification verification = (JWTVerifier.BaseVerification) JWTVerifier.init(Algorithm.HMAC256("secret"));
+            JWTVerifier.BaseVerification verification = (JWTVerifier.BaseVerification) JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"));
             verification
                     .build(mockOneSecondEarlier)
                     .verify(token);
@@ -818,7 +819,7 @@ public class JWTVerifierTest {
     @Test
     public void shouldOverrideAcceptIssuedAtWhenIgnoreIssuedAtFlagPassedAndSkipTheVerification() {
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE0Nzc1OTJ9.0WJky9eLN7kuxLyZlmbcXRL3Wy8hLoNCEk5CCl2M4lo";
-        JWTVerifier.BaseVerification verification = (JWTVerifier.BaseVerification) JWTVerifier.init(Algorithm.HMAC256("secret"))
+        JWTVerifier.BaseVerification verification = (JWTVerifier.BaseVerification) JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"))
                 .acceptIssuedAt(1)
                 .ignoreIssuedAt();
         DecodedJWT jwt = verification
@@ -831,7 +832,7 @@ public class JWTVerifierTest {
     @Test
     public void shouldValidateIssuedAtIfPresent() {
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE0Nzc1OTJ9.0WJky9eLN7kuxLyZlmbcXRL3Wy8hLoNCEk5CCl2M4lo";
-        JWTVerifier.BaseVerification verification = (JWTVerifier.BaseVerification) JWTVerifier.init(Algorithm.HMAC256("secret"));
+        JWTVerifier.BaseVerification verification = (JWTVerifier.BaseVerification) JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"));
         DecodedJWT jwt = verification
                 .build(mockNow)
                 .verify(token);
@@ -851,7 +852,7 @@ public class JWTVerifierTest {
     @Test
     public void shouldValidateJWTId() {
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJqd3RfaWRfMTIzIn0.0kegfXUvwOYioP8PDaLMY1IlV8HOAzSVz3EGL7-jWF4";
-        DecodedJWT jwt = JWTVerifier.init(Algorithm.HMAC256("secret"))
+        DecodedJWT jwt = JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"))
                 .withJWTId("jwt_id_123")
                 .build()
                 .verify(token);
@@ -863,7 +864,7 @@ public class JWTVerifierTest {
     public void shouldThrowOnInvalidJWTId() {
         IncorrectClaimException e = assertThrows(null, IncorrectClaimException.class, () -> {
             String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJqd3RfaWRfMTIzIn0.0kegfXUvwOYioP8PDaLMY1IlV8HOAzSVz3EGL7-jWF4";
-            JWTVerifier.init(Algorithm.HMAC256("secret"))
+            JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"))
                     .withJWTId("invalid")
                     .build()
                     .verify(token);
@@ -928,7 +929,7 @@ public class JWTVerifierTest {
     @Test
     public void shouldSkipClaimValidationsIfNoClaimsRequired() {
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.e30.t-IDcSemACt8x4iTMCda8Yhe3iZaWbvV5XKSTbuAn0M";
-        DecodedJWT jwt = JWTVerifier.init(Algorithm.HMAC256("secret"))
+        DecodedJWT jwt = JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"))
                 .build()
                 .verify(token);
 
@@ -940,9 +941,9 @@ public class JWTVerifierTest {
         MissingClaimException e = assertThrows(null, MissingClaimException.class, () -> {
             String jwt = JWTCreator.init()
                     .withClaim("custom", "")
-                    .sign(Algorithm.HMAC256("secret"));
+                    .sign(AlgorithmImplementation.HMAC256("secret"));
 
-            JWTVerifier verifier = JWTVerifier.init(Algorithm.HMAC256("secret"))
+            JWTVerifier verifier = JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"))
                     .withClaimPresence("missing")
                     .build();
 
@@ -959,9 +960,9 @@ public class JWTVerifierTest {
 
         JWTCreator.init()
                 .withClaim("custom", "value")
-                .sign(Algorithm.HMAC256("secret"));
+                .sign(AlgorithmImplementation.HMAC256("secret"));
 
-        JWTVerifier.init(Algorithm.HMAC256("secret"))
+        JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"))
                 .withClaimPresence(null);
     }
 
@@ -969,9 +970,9 @@ public class JWTVerifierTest {
     public void shouldVerifyStringClaimPresence() {
         String jwt = JWTCreator.init()
                 .withClaim("custom", "")
-                .sign(Algorithm.HMAC256("secret"));
+                .sign(AlgorithmImplementation.HMAC256("secret"));
 
-        JWTVerifier verifier = JWTVerifier.init(Algorithm.HMAC256("secret"))
+        JWTVerifier verifier = JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"))
                 .withClaimPresence("custom")
                 .build();
 
@@ -983,9 +984,9 @@ public class JWTVerifierTest {
     public void shouldVerifyBooleanClaimPresence() {
         String jwt = JWTCreator.init()
                 .withClaim("custom", true)
-                .sign(Algorithm.HMAC256("secret"));
+                .sign(AlgorithmImplementation.HMAC256("secret"));
 
-        JWTVerifier verifier = JWTVerifier.init(Algorithm.HMAC256("secret"))
+        JWTVerifier verifier = JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"))
                 .withClaimPresence("custom")
                 .build();
 
@@ -997,9 +998,9 @@ public class JWTVerifierTest {
     public void shouldVerifyIntegerClaimPresence() {
         String jwt = JWTCreator.init()
                 .withClaim("custom", 123)
-                .sign(Algorithm.HMAC256("secret"));
+                .sign(AlgorithmImplementation.HMAC256("secret"));
 
-        JWTVerifier verifier = JWTVerifier.init(Algorithm.HMAC256("secret"))
+        JWTVerifier verifier = JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"))
                 .withClaimPresence("custom")
                 .build();
 
@@ -1011,9 +1012,9 @@ public class JWTVerifierTest {
     public void shouldVerifyLongClaimPresence() {
         String jwt = JWTCreator.init()
                 .withClaim("custom", 922337203685477600L)
-                .sign(Algorithm.HMAC256("secret"));
+                .sign(AlgorithmImplementation.HMAC256("secret"));
 
-        JWTVerifier verifier = JWTVerifier.init(Algorithm.HMAC256("secret"))
+        JWTVerifier verifier = JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"))
                 .withClaimPresence("custom")
                 .build();
 
@@ -1025,9 +1026,9 @@ public class JWTVerifierTest {
     public void shouldVerifyDoubleClaimPresence() {
         String jwt = JWTCreator.init()
                 .withClaim("custom", 12.34)
-                .sign(Algorithm.HMAC256("secret"));
+                .sign(AlgorithmImplementation.HMAC256("secret"));
 
-        JWTVerifier verifier = JWTVerifier.init(Algorithm.HMAC256("secret"))
+        JWTVerifier verifier = JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"))
                 .withClaimPresence("custom")
                 .build();
 
@@ -1039,9 +1040,9 @@ public class JWTVerifierTest {
     public void shouldVerifyListClaimPresence() {
         String jwt = JWTCreator.init()
                 .withClaim("custom", Collections.singletonList("item"))
-                .sign(Algorithm.HMAC256("secret"));
+                .sign(AlgorithmImplementation.HMAC256("secret"));
 
-        JWTVerifier verifier = JWTVerifier.init(Algorithm.HMAC256("secret"))
+        JWTVerifier verifier = JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"))
                 .withClaimPresence("custom")
                 .build();
 
@@ -1053,9 +1054,9 @@ public class JWTVerifierTest {
     public void shouldVerifyMapClaimPresence() {
         String jwt = JWTCreator.init()
                 .withClaim("custom", Collections.singletonMap("key", "value"))
-                .sign(Algorithm.HMAC256("secret"));
+                .sign(AlgorithmImplementation.HMAC256("secret"));
 
-        JWTVerifier verifier = JWTVerifier.init(Algorithm.HMAC256("secret"))
+        JWTVerifier verifier = JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"))
                 .withClaimPresence("custom")
                 .build();
 
@@ -1067,9 +1068,9 @@ public class JWTVerifierTest {
     public void shouldVerifyStandardClaimPresence() {
         String jwt = JWTCreator.init()
                 .withClaim("aud", "any value")
-                .sign(Algorithm.HMAC256("secret"));
+                .sign(AlgorithmImplementation.HMAC256("secret"));
 
-        JWTVerifier verifier = JWTVerifier.init(Algorithm.HMAC256("secret"))
+        JWTVerifier verifier = JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"))
                 .withClaimPresence("aud")
                 .build();
 
@@ -1081,9 +1082,9 @@ public class JWTVerifierTest {
     public void shouldSuccessfullyVerifyClaimWithPredicate() {
         String jwt = JWTCreator.init()
                 .withClaim("claimName", "claimValue")
-                .sign(Algorithm.HMAC256("secret"));
+                .sign(AlgorithmImplementation.HMAC256("secret"));
 
-        JWTVerifier verifier = JWTVerifier.init(Algorithm.HMAC256("secret"))
+        JWTVerifier verifier = JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"))
                 .withClaim("claimName", (claim, decodedJWT) -> "claimValue".equals(claim.asString()))
                 .build();
 
@@ -1096,9 +1097,9 @@ public class JWTVerifierTest {
         IncorrectClaimException e = assertThrows(null, IncorrectClaimException.class, () -> {
             String jwt = JWTCreator.init()
                     .withClaim("claimName", "claimValue")
-                    .sign(Algorithm.HMAC256("secret"));
+                    .sign(AlgorithmImplementation.HMAC256("secret"));
 
-            JWTVerifier.init(Algorithm.HMAC256("secret"))
+            JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"))
                     .withClaim("claimName", (claim, decodedJWT) -> "nope".equals(claim.asString()))
                     .build()
                     .verify(jwt);
@@ -1110,7 +1111,7 @@ public class JWTVerifierTest {
 
     @Test
     public void shouldNotRemovePredicateCheckForNull() {
-        JWTVerifier verifier = JWTVerifier.init(Algorithm.HMAC256("secret"))
+        JWTVerifier verifier = JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"))
                 .withClaim("claimName", (claim, decodedJWT) -> "nope".equals(claim.asString()))
                 .withClaim("claimName", (BiPredicate<Claim, DecodedJWT>) null)
                 .build();
@@ -1123,9 +1124,9 @@ public class JWTVerifierTest {
     public void shouldSuccessfullyVerifyClaimWithNull() {
         String jwt = JWTCreator.init()
                 .withNullClaim("claimName")
-                .sign(Algorithm.HMAC256("secret"));
+                .sign(AlgorithmImplementation.HMAC256("secret"));
 
-        JWTVerifier verifier = JWTVerifier.init(Algorithm.HMAC256("secret"))
+        JWTVerifier verifier = JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"))
                 .withNullClaim("claimName")
                 .build();
 
@@ -1138,9 +1139,9 @@ public class JWTVerifierTest {
         IncorrectClaimException e = assertThrows(null, IncorrectClaimException.class, () -> {
             String jwt = JWTCreator.init()
                     .withClaim("claimName", "value")
-                    .sign(Algorithm.HMAC256("secret"));
+                    .sign(AlgorithmImplementation.HMAC256("secret"));
 
-            JWTVerifier.init(Algorithm.HMAC256("secret"))
+            JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"))
                     .withNullClaim("claimName")
                     .build()
                     .verify(jwt);
@@ -1155,9 +1156,9 @@ public class JWTVerifierTest {
         MissingClaimException e = assertThrows(null, MissingClaimException.class, () -> {
             String jwt = JWTCreator.init()
                     .withClaim("claimName", "value")
-                    .sign(Algorithm.HMAC256("secret"));
+                    .sign(AlgorithmImplementation.HMAC256("secret"));
 
-            JWTVerifier.init(Algorithm.HMAC256("secret"))
+            JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"))
                     .withNullClaim("anotherClaimName")
                     .build()
                     .verify(jwt);
@@ -1170,7 +1171,7 @@ public class JWTVerifierTest {
     public void shouldCheckForNullValuesForSubject() {
         // sub = null
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOm51bGx9.y5brmQQ05OYwVvlTg83njUrz6tfpdyWNh17LHU6DxmI";
-        DecodedJWT jwt = JWTVerifier.init(Algorithm.HMAC256("secret"))
+        DecodedJWT jwt = JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"))
                 .withSubject(null)
                 .build()
                 .verify(token);
@@ -1181,7 +1182,7 @@ public class JWTVerifierTest {
     public void shouldCheckForNullValuesInIssuer() {
         // iss = null
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOm51bGx9.OoiCLipSfflWxkFX2rytvtwEiJ8eAL0opkdXY_ap0qA";
-        DecodedJWT jwt = JWTVerifier.init(Algorithm.HMAC256("secret"))
+        DecodedJWT jwt = JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"))
                 .withIssuer((String) null)
                 .withIssuer((String[]) null)
                 .withIssuer()
@@ -1194,7 +1195,7 @@ public class JWTVerifierTest {
     public void shouldCheckForNullValuesInJwtId() {
         // jti = null
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOm51bGx9.z_MDyl8uPGH0q0jeB54wbYt3bwKXamU_3MO8LofGvZs";
-        DecodedJWT jwt = JWTVerifier.init(Algorithm.HMAC256("secret"))
+        DecodedJWT jwt = JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"))
                 .withJWTId(null)
                 .build()
                 .verify(token);
@@ -1205,7 +1206,7 @@ public class JWTVerifierTest {
     public void shouldCheckForNullValuesInCustomClaims() {
         // jti = null
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjdXN0b20iOm51bGx9.inAuN3Q9UZ6WgbB63O43B1ero2MTqnfzzumr_5qYIls";
-        DecodedJWT jwt = JWTVerifier.init(Algorithm.HMAC256("secret"))
+        DecodedJWT jwt = JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"))
                 .withClaim("custom", (Boolean) null)
                 .withClaim("custom", (Integer) null)
                 .withClaim("custom", (Long) null)
@@ -1227,7 +1228,7 @@ public class JWTVerifierTest {
     public void shouldCheckForNullValuesForAudience() {
         // aud = null
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiYXVkIjpudWxsfQ.bpPyquk3b8KepErKgTidjJ1ZwiOGuoTxam2_x7cElKI";
-        DecodedJWT jwt = JWTVerifier.init(Algorithm.HMAC256("secret"))
+        DecodedJWT jwt = JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"))
                 .withAudience((String[]) null)
                 .withAudience((String) null)
                 .withAudience()
@@ -1243,7 +1244,7 @@ public class JWTVerifierTest {
     public void shouldCheckForClaimPresenceEvenForNormalClaimChecks() {
         MissingClaimException e = assertThrows(null, MissingClaimException.class, () -> {
             String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiYXVkIjpudWxsfQ.bpPyquk3b8KepErKgTidjJ1ZwiOGuoTxam2_x7cElKI";
-            JWTVerifier.init(Algorithm.HMAC256("secret"))
+            JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"))
                     .withClaim("custom", true)
                     .build()
                     .verify(token);
@@ -1255,7 +1256,7 @@ public class JWTVerifierTest {
     public void shouldCheckForWrongLongClaim() {
         IncorrectClaimException e = assertThrows(null, IncorrectClaimException.class, () -> {
             String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjdXN0b20iOjF9.00btiK0sv8pQ2T-hOr9GC5x2osi7--Bsk4pS5cTikqQ";
-            JWTVerifier.init(Algorithm.HMAC256("secret"))
+            JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"))
                     .withClaim("custom", 2L)
                     .build()
                     .verify(token);
@@ -1268,7 +1269,7 @@ public class JWTVerifierTest {
     public void shouldCheckForWrongLongArrayClaim() {
         IncorrectClaimException e = assertThrows(null, IncorrectClaimException.class, () -> {
             String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjdXN0b20iOlsxXX0.R9ZSmgtJng062rcEc59u4VKCq89Yk5VlkN9BuMTMvr0";
-            JWTVerifier.init(Algorithm.HMAC256("secret"))
+            JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"))
                     .withArrayClaim("custom", 2L)
                     .build()
                     .verify(token);
@@ -1280,7 +1281,7 @@ public class JWTVerifierTest {
     public void shouldCheckForWrongStringArrayClaim() {
         IncorrectClaimException e = assertThrows(null, IncorrectClaimException.class, () -> {
             String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjdXN0b20iOlsxXX0.R9ZSmgtJng062rcEc59u4VKCq89Yk5VlkN9BuMTMvr0";
-            JWTVerifier.init(Algorithm.HMAC256("secret"))
+            JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"))
                     .withArrayClaim("custom", "2L")
                     .build()
                     .verify(token);
@@ -1292,7 +1293,7 @@ public class JWTVerifierTest {
     public void shouldCheckForWrongIntegerArrayClaim() {
         IncorrectClaimException e = assertThrows(null, IncorrectClaimException.class, () -> {
             String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjdXN0b20iOlsxXX0.R9ZSmgtJng062rcEc59u4VKCq89Yk5VlkN9BuMTMvr0";
-            JWTVerifier.init(Algorithm.HMAC256("secret"))
+            JWTVerifier.init(AlgorithmImplementation.HMAC256("secret"))
                     .withArrayClaim("custom", 2)
                     .build()
                     .verify(token);

@@ -81,7 +81,7 @@ public class ECDSABouncyCastleProviderTests {
     public void shouldPassECDSA256VerificationWithJOSESignature() throws Exception {
         String jwt = "eyJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJhdXRoMCJ9.4iVk3-Y0v4RT4_9IaQlp-8dZ_4fsTzIylgrPTDLrEvTHBTyVS3tgPbr2_IZfLETtiKRqCg0aQ5sh9eIsTTwB1g";
         ECKey key = (ECKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC");
-        Algorithm algorithm = Algorithm.ECDSA256(key);
+        Algorithm algorithm = AlgorithmImplementation.ECDSA256(key);
         algorithm.verify(JWT.decode(jwt));
     }
 
@@ -94,14 +94,14 @@ public class ECDSABouncyCastleProviderTests {
 
         String jwt = "eyJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJhdXRoMCJ9.MEYCIQDiJWTf5jShFPj0hpCWn7x1nhxPMjKWCs9MMusS9AIhAMcFPJVLe2A9uvb8hl8sRO2IpGoKDRpDmyH14ixNPAHW";
         ECKey key = (ECKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC");
-        Algorithm algorithm = Algorithm.ECDSA256(key);
+        Algorithm algorithm = AlgorithmImplementation.ECDSA256(key);
         algorithm.verify(JWT.decode(jwt));
     }
 
     @Test
     public void shouldPassECDSA256VerificationWithJOSESignatureWithBothKeys() throws Exception {
         String jwt = "eyJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJhdXRoMCJ9.4iVk3-Y0v4RT4_9IaQlp-8dZ_4fsTzIylgrPTDLrEvTHBTyVS3tgPbr2_IZfLETtiKRqCg0aQ5sh9eIsTTwB1g";
-        Algorithm algorithm = Algorithm.ECDSA256((ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC"), (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_256, "EC"));
+        Algorithm algorithm = AlgorithmImplementation.ECDSA256((ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC"), (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_256, "EC"));
         algorithm.verify(JWT.decode(jwt));
     }
 
@@ -113,7 +113,7 @@ public class ECDSABouncyCastleProviderTests {
         exception.expectCause(hasMessage(is("Invalid JOSE signature format.")));
 
         String jwt = "eyJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJhdXRoMCJ9.MEYCIQDiJWTf5jShFPj0hpCWn7x1nhxPMjKWCs9MMusS9AIhAMcFPJVLe2A9uvb8hl8sRO2IpGoKDRpDmyH14ixNPAHW";
-        Algorithm algorithm = Algorithm.ECDSA256((ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC"), (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_256, "EC"));
+        Algorithm algorithm = AlgorithmImplementation.ECDSA256((ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC"), (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_256, "EC"));
         algorithm.verify(JWT.decode(jwt));
     }
 
@@ -123,7 +123,7 @@ public class ECDSABouncyCastleProviderTests {
         PublicKey publicKey = readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC");
         when(provider.getPublicKeyById("my-key-id")).thenReturn((ECPublicKey) publicKey);
         String jwt = "eyJhbGciOiJFUzI1NiIsImtpZCI6Im15LWtleS1pZCJ9.eyJpc3MiOiJhdXRoMCJ9.D_oU4CB0ZEsxHOjcWnmS3ZJvlTzm6WcGFx-HASxnvcB2Xu2WjI-axqXH9xKq45aPBDs330JpRhJmqBSc2K8MXQ";
-        Algorithm algorithm = Algorithm.ECDSA256(provider);
+        Algorithm algorithm = AlgorithmImplementation.ECDSA256(provider);
         algorithm.verify(JWT.decode(jwt));
     }
 
@@ -136,7 +136,7 @@ public class ECDSABouncyCastleProviderTests {
         ECDSAKeyProvider provider = mock(ECDSAKeyProvider.class);
         when(provider.getPublicKeyById("my-key-id")).thenReturn(null);
         String jwt = "eyJhbGciOiJFUzI1NiIsImtpZCI6Im15LWtleS1pZCJ9.eyJpc3MiOiJhdXRoMCJ9.D_oU4CB0ZEsxHOjcWnmS3ZJvlTzm6WcGFx-HASxnvcB2Xu2WjI-axqXH9xKq45aPBDs330JpRhJmqBSc2K8MXQ";
-        Algorithm algorithm = Algorithm.ECDSA256(provider);
+        Algorithm algorithm = AlgorithmImplementation.ECDSA256(provider);
         algorithm.verify(JWT.decode(jwt));
     }
 
@@ -145,7 +145,7 @@ public class ECDSABouncyCastleProviderTests {
         exception.expect(SignatureVerificationException.class);
         exception.expectMessage("The Token's Signature resulted invalid when verified using the Algorithm: SHA256withECDSA");
         String jwt = "eyJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJhdXRoMCJ9.W9qfN1b80B9hnMo49WL8THrOsf1vEjOhapeFemPMGySzxTcgfyudS5esgeBTO908X5SLdAr5jMwPUPBs9b6nNg";
-        Algorithm algorithm = Algorithm.ECDSA256((ECKey) readPublicKeyFromFile(INVALID_PUBLIC_KEY_FILE_256, "EC"));
+        Algorithm algorithm = AlgorithmImplementation.ECDSA256((ECKey) readPublicKeyFromFile(INVALID_PUBLIC_KEY_FILE_256, "EC"));
         algorithm.verify(JWT.decode(jwt));
     }
 
@@ -156,7 +156,7 @@ public class ECDSABouncyCastleProviderTests {
         exception.expectCause(isA(IllegalStateException.class));
         exception.expectCause(hasMessage(is("The given Public Key is null.")));
         String jwt = "eyJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJhdXRoMCJ9.W9qfN1b80B9hnMo49WL8THrOsf1vEjOhapeFemPMGySzxTcgfyudS5esgeBTO908X5SLdAr5jMwPUPBs9b6nNg";
-        Algorithm algorithm = Algorithm.ECDSA256((ECKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_256, "EC"));
+        Algorithm algorithm = AlgorithmImplementation.ECDSA256((ECKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_256, "EC"));
         algorithm.verify(JWT.decode(jwt));
     }
 
@@ -171,7 +171,7 @@ public class ECDSABouncyCastleProviderTests {
         new SecureRandom().nextBytes(bytes);
         String signature = Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
         String jwt = "eyJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJhdXRoMCJ9." + signature;
-        Algorithm algorithm = Algorithm.ECDSA256((ECKey) readPublicKeyFromFile(INVALID_PUBLIC_KEY_FILE_256, "EC"));
+        Algorithm algorithm = AlgorithmImplementation.ECDSA256((ECKey) readPublicKeyFromFile(INVALID_PUBLIC_KEY_FILE_256, "EC"));
         algorithm.verify(JWT.decode(jwt));
     }
 
@@ -184,7 +184,7 @@ public class ECDSABouncyCastleProviderTests {
         new SecureRandom().nextBytes(bytes);
         String signature = Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
         String jwt = "eyJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJhdXRoMCJ9." + signature;
-        Algorithm algorithm = Algorithm.ECDSA256((ECKey) readPublicKeyFromFile(INVALID_PUBLIC_KEY_FILE_256, "EC"));
+        Algorithm algorithm = AlgorithmImplementation.ECDSA256((ECKey) readPublicKeyFromFile(INVALID_PUBLIC_KEY_FILE_256, "EC"));
         algorithm.verify(JWT.decode(jwt));
     }
 
@@ -198,7 +198,7 @@ public class ECDSABouncyCastleProviderTests {
         new SecureRandom().nextBytes(bytes);
         String signature = Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
         String jwt = "eyJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJhdXRoMCJ9." + signature;
-        Algorithm algorithm = Algorithm.ECDSA256((ECKey) readPublicKeyFromFile(INVALID_PUBLIC_KEY_FILE_256, "EC"));
+        Algorithm algorithm = AlgorithmImplementation.ECDSA256((ECKey) readPublicKeyFromFile(INVALID_PUBLIC_KEY_FILE_256, "EC"));
         algorithm.verify(JWT.decode(jwt));
     }
 
@@ -206,7 +206,7 @@ public class ECDSABouncyCastleProviderTests {
     public void shouldPassECDSA384VerificationWithJOSESignature() throws Exception {
         String jwt = "eyJhbGciOiJFUzM4NCJ9.eyJpc3MiOiJhdXRoMCJ9.50UU5VKNdF1wfykY8jQBKpvuHZoe6IZBJm5NvoB8bR-hnRg6ti-CHbmvoRtlLfnHfwITa_8cJMy6TenMC2g63GQHytc8rYoXqbwtS4R0Ko_AXbLFUmfxnGnMC6v4MS_z";
         ECKey key = (ECKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_384, "EC");
-        Algorithm algorithm = Algorithm.ECDSA384(key);
+        Algorithm algorithm = AlgorithmImplementation.ECDSA384(key);
         algorithm.verify(JWT.decode(jwt));
     }
 
@@ -219,14 +219,14 @@ public class ECDSABouncyCastleProviderTests {
 
         String jwt = "eyJhbGciOiJFUzM4NCJ9.eyJpc3MiOiJhdXRoMCJ9.MGUCMQDnRRTlUo10XXBKRjyNAEqm4dmh7ohkEmbk2gHxtH6GdGDq2L4IduahG2UtccCMH8CE2vHCTMuk3pzAtoOtxkB8rXPK2KF6m8LUuEdCqPwF2yxVJn8ZxpzAurDEv8w";
         ECKey key = (ECKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_384, "EC");
-        Algorithm algorithm = Algorithm.ECDSA384(key);
+        Algorithm algorithm = AlgorithmImplementation.ECDSA384(key);
         algorithm.verify(JWT.decode(jwt));
     }
 
     @Test
     public void shouldPassECDSA384VerificationWithJOSESignatureWithBothKeys() throws Exception {
         String jwt = "eyJhbGciOiJFUzM4NCJ9.eyJpc3MiOiJhdXRoMCJ9.50UU5VKNdF1wfykY8jQBKpvuHZoe6IZBJm5NvoB8bR-hnRg6ti-CHbmvoRtlLfnHfwITa_8cJMy6TenMC2g63GQHytc8rYoXqbwtS4R0Ko_AXbLFUmfxnGnMC6v4MS_z";
-        Algorithm algorithm = Algorithm.ECDSA384((ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_384, "EC"), (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_384, "EC"));
+        Algorithm algorithm = AlgorithmImplementation.ECDSA384((ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_384, "EC"), (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_384, "EC"));
         algorithm.verify(JWT.decode(jwt));
     }
 
@@ -238,7 +238,7 @@ public class ECDSABouncyCastleProviderTests {
         exception.expectCause(hasMessage(is("Invalid JOSE signature format.")));
 
         String jwt = "eyJhbGciOiJFUzM4NCJ9.eyJpc3MiOiJhdXRoMCJ9.MGUCMQDnRRTlUo10XXBKRjyNAEqm4dmh7ohkEmbk2gHxtH6GdGDq2L4IduahG2UtccCMH8CE2vHCTMuk3pzAtoOtxkB8rXPK2KF6m8LUuEdCqPwF2yxVJn8ZxpzAurDEv8w";
-        Algorithm algorithm = Algorithm.ECDSA384((ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_384, "EC"), (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_384, "EC"));
+        Algorithm algorithm = AlgorithmImplementation.ECDSA384((ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_384, "EC"), (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_384, "EC"));
         algorithm.verify(JWT.decode(jwt));
     }
 
@@ -248,7 +248,7 @@ public class ECDSABouncyCastleProviderTests {
         PublicKey publicKey = readPublicKeyFromFile(PUBLIC_KEY_FILE_384, "EC");
         when(provider.getPublicKeyById("my-key-id")).thenReturn((ECPublicKey) publicKey);
         String jwt = "eyJhbGciOiJFUzM4NCIsImtpZCI6Im15LWtleS1pZCJ9.eyJpc3MiOiJhdXRoMCJ9.9kjGuFTPx3ylfpqL0eY9H7TGmPepjQOBKI8UPoEvby6N7dDLF5HxLohosNxxFymNT7LzpeSgOPAB0wJEwG2Nl2ukgdUOpZOf492wog_i5ZcZmAykd3g1QH7onrzd69GU";
-        Algorithm algorithm = Algorithm.ECDSA384(provider);
+        Algorithm algorithm = AlgorithmImplementation.ECDSA384(provider);
         algorithm.verify(JWT.decode(jwt));
     }
 
@@ -261,7 +261,7 @@ public class ECDSABouncyCastleProviderTests {
         ECDSAKeyProvider provider = mock(ECDSAKeyProvider.class);
         when(provider.getPublicKeyById("my-key-id")).thenReturn(null);
         String jwt = "eyJhbGciOiJFUzM4NCIsImtpZCI6Im15LWtleS1pZCJ9.eyJpc3MiOiJhdXRoMCJ9.9kjGuFTPx3ylfpqL0eY9H7TGmPepjQOBKI8UPoEvby6N7dDLF5HxLohosNxxFymNT7LzpeSgOPAB0wJEwG2Nl2ukgdUOpZOf492wog_i5ZcZmAykd3g1QH7onrzd69GU";
-        Algorithm algorithm = Algorithm.ECDSA384(provider);
+        Algorithm algorithm = AlgorithmImplementation.ECDSA384(provider);
         algorithm.verify(JWT.decode(jwt));
     }
 
@@ -270,7 +270,7 @@ public class ECDSABouncyCastleProviderTests {
         exception.expect(SignatureVerificationException.class);
         exception.expectMessage("The Token's Signature resulted invalid when verified using the Algorithm: SHA384withECDSA");
         String jwt = "eyJhbGciOiJFUzM4NCJ9.eyJpc3MiOiJhdXRoMCJ9._k5h1KyO-NE0R2_HAw0-XEc0bGT5atv29SxHhOGC9JDqUHeUdptfCK_ljQ01nLVt2OQWT2SwGs-TuyHDFmhPmPGFZ9wboxvq_ieopmYqhQilNAu-WF-frioiRz9733fU";
-        Algorithm algorithm = Algorithm.ECDSA384((ECKey) readPublicKeyFromFile(INVALID_PUBLIC_KEY_FILE_384, "EC"));
+        Algorithm algorithm = AlgorithmImplementation.ECDSA384((ECKey) readPublicKeyFromFile(INVALID_PUBLIC_KEY_FILE_384, "EC"));
         algorithm.verify(JWT.decode(jwt));
     }
 
@@ -281,7 +281,7 @@ public class ECDSABouncyCastleProviderTests {
         exception.expectCause(isA(IllegalStateException.class));
         exception.expectCause(hasMessage(is("The given Public Key is null.")));
         String jwt = "eyJhbGciOiJFUzM4NCJ9.eyJpc3MiOiJhdXRoMCJ9._k5h1KyO-NE0R2_HAw0-XEc0bGT5atv29SxHhOGC9JDqUHeUdptfCK_ljQ01nLVt2OQWT2SwGs-TuyHDFmhPmPGFZ9wboxvq_ieopmYqhQilNAu-WF-frioiRz9733fU";
-        Algorithm algorithm = Algorithm.ECDSA384((ECKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_384, "EC"));
+        Algorithm algorithm = AlgorithmImplementation.ECDSA384((ECKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_384, "EC"));
         algorithm.verify(JWT.decode(jwt));
     }
 
@@ -296,7 +296,7 @@ public class ECDSABouncyCastleProviderTests {
         new SecureRandom().nextBytes(bytes);
         String signature = Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
         String jwt = "eyJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJhdXRoMCJ9." + signature;
-        Algorithm algorithm = Algorithm.ECDSA384((ECKey) readPublicKeyFromFile(INVALID_PUBLIC_KEY_FILE_384, "EC"));
+        Algorithm algorithm = AlgorithmImplementation.ECDSA384((ECKey) readPublicKeyFromFile(INVALID_PUBLIC_KEY_FILE_384, "EC"));
         algorithm.verify(JWT.decode(jwt));
     }
 
@@ -309,7 +309,7 @@ public class ECDSABouncyCastleProviderTests {
         new SecureRandom().nextBytes(bytes);
         String signature = Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
         String jwt = "eyJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJhdXRoMCJ9." + signature;
-        Algorithm algorithm = Algorithm.ECDSA384((ECKey) readPublicKeyFromFile(INVALID_PUBLIC_KEY_FILE_384, "EC"));
+        Algorithm algorithm = AlgorithmImplementation.ECDSA384((ECKey) readPublicKeyFromFile(INVALID_PUBLIC_KEY_FILE_384, "EC"));
         algorithm.verify(JWT.decode(jwt));
     }
 
@@ -323,7 +323,7 @@ public class ECDSABouncyCastleProviderTests {
         bytes[0] = 0x30;
         String signature = Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
         String jwt = "eyJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJhdXRoMCJ9." + signature;
-        Algorithm algorithm = Algorithm.ECDSA384((ECKey) readPublicKeyFromFile(INVALID_PUBLIC_KEY_FILE_384, "EC"));
+        Algorithm algorithm = AlgorithmImplementation.ECDSA384((ECKey) readPublicKeyFromFile(INVALID_PUBLIC_KEY_FILE_384, "EC"));
         algorithm.verify(JWT.decode(jwt));
     }
 
@@ -331,7 +331,7 @@ public class ECDSABouncyCastleProviderTests {
     public void shouldPassECDSA512VerificationWithJOSESignature() throws Exception {
         String jwt = "eyJhbGciOiJFUzUxMiJ9.eyJpc3MiOiJhdXRoMCJ9.AeCJPDIsSHhwRSGZCY6rspi8zekOw0K9qYMNridP1Fu9uhrA1QrG-EUxXlE06yvmh2R7Rz0aE7kxBwrnq8L8aOBCAYAsqhzPeUvyp8fXjjgs0Eto5I0mndE2QHlgcMSFASyjHbU8wD2Rq7ZNzGQ5b2MZfpv030WGUajT-aZYWFUJHVg2";
         ECKey key = (ECKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_512, "EC");
-        Algorithm algorithm = Algorithm.ECDSA512(key);
+        Algorithm algorithm = AlgorithmImplementation.ECDSA512(key);
         algorithm.verify(JWT.decode(jwt));
     }
 
@@ -344,14 +344,14 @@ public class ECDSABouncyCastleProviderTests {
 
         String jwt = "eyJhbGciOiJFUzUxMiJ9.eyJpc3MiOiJhdXRoMCJ9.MIGIAkIB4Ik8MixIeHBFIZkJjquymLzN6Q7DQr2pgw2uJ0UW726GsDVCsb4RTFeUTTrKaHZHtHPRoTuTEHCuerwvxo4EICQgGALKocz3lL8qfH1444LNBLaOSNJp3RNkB5YHDEhQEsox21PMA9kau2TcxkOW9jGX6b9N9FhlGo0mmWFhVCR1YNg";
         ECKey key = (ECKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_512, "EC");
-        Algorithm algorithm = Algorithm.ECDSA512(key);
+        Algorithm algorithm = AlgorithmImplementation.ECDSA512(key);
         algorithm.verify(JWT.decode(jwt));
     }
 
     @Test
     public void shouldPassECDSA512VerificationWithJOSESignatureWithBothKeys() throws Exception {
         String jwt = "eyJhbGciOiJFUzUxMiJ9.eyJpc3MiOiJhdXRoMCJ9.AeCJPDIsSHhwRSGZCY6rspi8zekOw0K9qYMNridP1Fu9uhrA1QrG-EUxXlE06yvmh2R7Rz0aE7kxBwrnq8L8aOBCAYAsqhzPeUvyp8fXjjgs0Eto5I0mndE2QHlgcMSFASyjHbU8wD2Rq7ZNzGQ5b2MZfpv030WGUajT-aZYWFUJHVg2";
-        Algorithm algorithm = Algorithm.ECDSA512((ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_512, "EC"), (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_512, "EC"));
+        Algorithm algorithm = AlgorithmImplementation.ECDSA512((ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_512, "EC"), (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_512, "EC"));
         algorithm.verify(JWT.decode(jwt));
     }
 
@@ -363,7 +363,7 @@ public class ECDSABouncyCastleProviderTests {
         exception.expectCause(hasMessage(is("Invalid JOSE signature format.")));
 
         String jwt = "eyJhbGciOiJFUzUxMiJ9.eyJpc3MiOiJhdXRoMCJ9.MIGIAkIB4Ik8MixIeHBFIZkJjquymLzN6Q7DQr2pgw2uJ0UW726GsDVCsb4RTFeUTTrKaHZHtHPRoTuTEHCuerwvxo4EICQgGALKocz3lL8qfH1444LNBLaOSNJp3RNkB5YHDEhQEsox21PMA9kau2TcxkOW9jGX6b9N9FhlGo0mmWFhVCR1YNg";
-        Algorithm algorithm = Algorithm.ECDSA512((ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_512, "EC"), (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_512, "EC"));
+        Algorithm algorithm = AlgorithmImplementation.ECDSA512((ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_512, "EC"), (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_512, "EC"));
         algorithm.verify(JWT.decode(jwt));
     }
 
@@ -373,7 +373,7 @@ public class ECDSABouncyCastleProviderTests {
         PublicKey publicKey = readPublicKeyFromFile(PUBLIC_KEY_FILE_512, "EC");
         when(provider.getPublicKeyById("my-key-id")).thenReturn((ECPublicKey) publicKey);
         String jwt = "eyJhbGciOiJFUzUxMiIsImtpZCI6Im15LWtleS1pZCJ9.eyJpc3MiOiJhdXRoMCJ9.AGxEwbsYa2bQ7Y7DAcTQnVD8PmLSlhJ20jg2OfdyPnqdXI8SgBaG6lGciq3_pofFhs1HEoFoJ33Jcluha24oMHIvAfwu8qbv_Wq3L2eI9Q0L0p6ul8Pd_BS8adRa2PgLc36xXGcRc7ID5YH-CYaQfsTp5YIaF0Po3h0QyCoQ6ZiYQkqm";
-        Algorithm algorithm = Algorithm.ECDSA512(provider);
+        Algorithm algorithm = AlgorithmImplementation.ECDSA512(provider);
         algorithm.verify(JWT.decode(jwt));
     }
 
@@ -386,7 +386,7 @@ public class ECDSABouncyCastleProviderTests {
         ECDSAKeyProvider provider = mock(ECDSAKeyProvider.class);
         when(provider.getPublicKeyById("my-key-id")).thenReturn(null);
         String jwt = "eyJhbGciOiJFUzUxMiIsImtpZCI6Im15LWtleS1pZCJ9.eyJpc3MiOiJhdXRoMCJ9.AGxEwbsYa2bQ7Y7DAcTQnVD8PmLSlhJ20jg2OfdyPnqdXI8SgBaG6lGciq3_pofFhs1HEoFoJ33Jcluha24oMHIvAfwu8qbv_Wq3L2eI9Q0L0p6ul8Pd_BS8adRa2PgLc36xXGcRc7ID5YH-CYaQfsTp5YIaF0Po3h0QyCoQ6ZiYQkqm";
-        Algorithm algorithm = Algorithm.ECDSA512(provider);
+        Algorithm algorithm = AlgorithmImplementation.ECDSA512(provider);
         algorithm.verify(JWT.decode(jwt));
     }
 
@@ -395,7 +395,7 @@ public class ECDSABouncyCastleProviderTests {
         exception.expect(SignatureVerificationException.class);
         exception.expectMessage("The Token's Signature resulted invalid when verified using the Algorithm: SHA512withECDSA");
         String jwt = "eyJhbGciOiJFUzUxMiJ9.eyJpc3MiOiJhdXRoMCJ9.AZgdopFFsN0amCSs2kOucXdpylD31DEm5ChK1PG0_gq5Mf47MrvVph8zHSVuvcrXzcE1U3VxeCg89mYW1H33Y-8iAF0QFkdfTUQIWKNObH543WNMYYssv3OtOj0znPv8atDbaF8DMYAtcT1qdmaSJRhx-egRE9HGZkinPh9CfLLLt58X";
-        Algorithm algorithm = Algorithm.ECDSA512((ECKey) readPublicKeyFromFile(INVALID_PUBLIC_KEY_FILE_512, "EC"));
+        Algorithm algorithm = AlgorithmImplementation.ECDSA512((ECKey) readPublicKeyFromFile(INVALID_PUBLIC_KEY_FILE_512, "EC"));
         algorithm.verify(JWT.decode(jwt));
     }
 
@@ -406,7 +406,7 @@ public class ECDSABouncyCastleProviderTests {
         exception.expectCause(isA(IllegalStateException.class));
         exception.expectCause(hasMessage(is("The given Public Key is null.")));
         String jwt = "eyJhbGciOiJFUzUxMiJ9.eyJpc3MiOiJhdXRoMCJ9.AZgdopFFsN0amCSs2kOucXdpylD31DEm5ChK1PG0_gq5Mf47MrvVph8zHSVuvcrXzcE1U3VxeCg89mYW1H33Y-8iAF0QFkdfTUQIWKNObH543WNMYYssv3OtOj0znPv8atDbaF8DMYAtcT1qdmaSJRhx-egRE9HGZkinPh9CfLLLt58X";
-        Algorithm algorithm = Algorithm.ECDSA512((ECKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_512, "EC"));
+        Algorithm algorithm = AlgorithmImplementation.ECDSA512((ECKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_512, "EC"));
         algorithm.verify(JWT.decode(jwt));
     }
 
@@ -421,7 +421,7 @@ public class ECDSABouncyCastleProviderTests {
         new SecureRandom().nextBytes(bytes);
         String signature = Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
         String jwt = "eyJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJhdXRoMCJ9." + signature;
-        Algorithm algorithm = Algorithm.ECDSA512((ECKey) readPublicKeyFromFile(INVALID_PUBLIC_KEY_FILE_512, "EC"));
+        Algorithm algorithm = AlgorithmImplementation.ECDSA512((ECKey) readPublicKeyFromFile(INVALID_PUBLIC_KEY_FILE_512, "EC"));
         algorithm.verify(JWT.decode(jwt));
     }
 
@@ -434,7 +434,7 @@ public class ECDSABouncyCastleProviderTests {
         new SecureRandom().nextBytes(bytes);
         String signature = Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
         String jwt = "eyJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJhdXRoMCJ9." + signature;
-        Algorithm algorithm = Algorithm.ECDSA512((ECKey) readPublicKeyFromFile(INVALID_PUBLIC_KEY_FILE_512, "EC"));
+        Algorithm algorithm = AlgorithmImplementation.ECDSA512((ECKey) readPublicKeyFromFile(INVALID_PUBLIC_KEY_FILE_512, "EC"));
         algorithm.verify(JWT.decode(jwt));
     }
 
@@ -448,7 +448,7 @@ public class ECDSABouncyCastleProviderTests {
         bytes[0] = 0x30;
         String signature = Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
         String jwt = "eyJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJhdXRoMCJ9." + signature;
-        Algorithm algorithm = Algorithm.ECDSA512((ECKey) readPublicKeyFromFile(INVALID_PUBLIC_KEY_FILE_512, "EC"));
+        Algorithm algorithm = AlgorithmImplementation.ECDSA512((ECKey) readPublicKeyFromFile(INVALID_PUBLIC_KEY_FILE_512, "EC"));
         algorithm.verify(JWT.decode(jwt));
     }
 
@@ -545,8 +545,8 @@ public class ECDSABouncyCastleProviderTests {
 
     @Test
     public void shouldDoECDSA256Signing() throws Exception {
-        Algorithm algorithmSign = Algorithm.ECDSA256((ECKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_256, "EC"));
-        Algorithm algorithmVerify = Algorithm.ECDSA256((ECKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC"));
+        Algorithm algorithmSign = AlgorithmImplementation.ECDSA256((ECKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_256, "EC"));
+        Algorithm algorithmVerify = AlgorithmImplementation.ECDSA256((ECKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC"));
         String jwt = asJWT(algorithmSign, ES256Header, auth0IssPayload);
 
         assertSignaturePresent(jwt);
@@ -555,7 +555,7 @@ public class ECDSABouncyCastleProviderTests {
 
     @Test
     public void shouldDoECDSA256SigningWithBothKeys() throws Exception {
-        Algorithm algorithm = Algorithm.ECDSA256((ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC"), (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_256, "EC"));
+        Algorithm algorithm = AlgorithmImplementation.ECDSA256((ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC"), (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_256, "EC"));
         String jwt = asJWT(algorithm, ES256Header, auth0IssPayload);
 
         assertSignaturePresent(jwt);
@@ -569,7 +569,7 @@ public class ECDSABouncyCastleProviderTests {
         PublicKey publicKey = readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC");
         when(provider.getPrivateKey()).thenReturn((ECPrivateKey) privateKey);
         when(provider.getPublicKeyById(null)).thenReturn((ECPublicKey) publicKey);
-        Algorithm algorithm = Algorithm.ECDSA256(provider);
+        Algorithm algorithm = AlgorithmImplementation.ECDSA256(provider);
         
         String jwt = asJWT(algorithm, ES256Header, auth0IssPayload);
 
@@ -586,7 +586,7 @@ public class ECDSABouncyCastleProviderTests {
 
         ECDSAKeyProvider provider = mock(ECDSAKeyProvider.class);
         when(provider.getPrivateKey()).thenReturn(null);
-        Algorithm algorithm = Algorithm.ECDSA256(provider);
+        Algorithm algorithm = AlgorithmImplementation.ECDSA256(provider);
         algorithm.sign(new byte[0], new byte[0]);
     }
 
@@ -597,14 +597,14 @@ public class ECDSABouncyCastleProviderTests {
         exception.expectCause(isA(IllegalStateException.class));
         exception.expectCause(hasMessage(is("The given Private Key is null.")));
 
-        Algorithm algorithm = Algorithm.ECDSA256((ECKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC"));
+        Algorithm algorithm = AlgorithmImplementation.ECDSA256((ECKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC"));
         algorithm.sign(new byte[0], new byte[0]);
     }
 
     @Test
     public void shouldDoECDSA384Signing() throws Exception {
-        Algorithm algorithmSign = Algorithm.ECDSA384((ECKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_384, "EC"));
-        Algorithm algorithmVerify = Algorithm.ECDSA384((ECKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_384, "EC"));
+        Algorithm algorithmSign = AlgorithmImplementation.ECDSA384((ECKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_384, "EC"));
+        Algorithm algorithmVerify = AlgorithmImplementation.ECDSA384((ECKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_384, "EC"));
         String jwt = asJWT(algorithmSign, ES384Header, auth0IssPayload);
 
         assertSignaturePresent(jwt);
@@ -613,7 +613,7 @@ public class ECDSABouncyCastleProviderTests {
 
     @Test
     public void shouldDoECDSA384SigningWithBothKeys() throws Exception {
-        Algorithm algorithm = Algorithm.ECDSA384((ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_384, "EC"), (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_384, "EC"));
+        Algorithm algorithm = AlgorithmImplementation.ECDSA384((ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_384, "EC"), (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_384, "EC"));
         String jwt = asJWT(algorithm, ES384Header, auth0IssPayload);
 
         assertSignaturePresent(jwt);
@@ -627,7 +627,7 @@ public class ECDSABouncyCastleProviderTests {
         PublicKey publicKey = readPublicKeyFromFile(PUBLIC_KEY_FILE_384, "EC");
         when(provider.getPrivateKey()).thenReturn((ECPrivateKey) privateKey);
         when(provider.getPublicKeyById(null)).thenReturn((ECPublicKey) publicKey);
-        Algorithm algorithm = Algorithm.ECDSA384(provider);
+        Algorithm algorithm = AlgorithmImplementation.ECDSA384(provider);
         
         String jwt = asJWT(algorithm, ES384Header, auth0IssPayload);
 
@@ -644,7 +644,7 @@ public class ECDSABouncyCastleProviderTests {
 
         ECDSAKeyProvider provider = mock(ECDSAKeyProvider.class);
         when(provider.getPrivateKey()).thenReturn(null);
-        Algorithm algorithm = Algorithm.ECDSA384(provider);
+        Algorithm algorithm = AlgorithmImplementation.ECDSA384(provider);
         algorithm.sign(new byte[0], new byte[0]);
     }
 
@@ -655,14 +655,14 @@ public class ECDSABouncyCastleProviderTests {
         exception.expectCause(isA(IllegalStateException.class));
         exception.expectCause(hasMessage(is("The given Private Key is null.")));
 
-        Algorithm algorithm = Algorithm.ECDSA384((ECKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_384, "EC"));
+        Algorithm algorithm = AlgorithmImplementation.ECDSA384((ECKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_384, "EC"));
         algorithm.sign(new byte[0], new byte[0]);
     }
 
     @Test
     public void shouldDoECDSA512Signing() throws Exception {
-        Algorithm algorithmSign = Algorithm.ECDSA512((ECKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_512, "EC"));
-        Algorithm algorithmVerify = Algorithm.ECDSA512((ECKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_512, "EC"));
+        Algorithm algorithmSign = AlgorithmImplementation.ECDSA512((ECKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_512, "EC"));
+        Algorithm algorithmVerify = AlgorithmImplementation.ECDSA512((ECKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_512, "EC"));
         
         String jwt = asJWT(algorithmSign, ES512Header, auth0IssPayload);
 
@@ -672,7 +672,7 @@ public class ECDSABouncyCastleProviderTests {
 
     @Test
     public void shouldDoECDSA512SigningWithBothKeys() throws Exception {
-        Algorithm algorithm = Algorithm.ECDSA512((ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_512, "EC"), (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_512, "EC"));
+        Algorithm algorithm = AlgorithmImplementation.ECDSA512((ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_512, "EC"), (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_512, "EC"));
         String jwt = asJWT(algorithm, ES512Header, auth0IssPayload);
 
         assertSignaturePresent(jwt);
@@ -687,7 +687,7 @@ public class ECDSABouncyCastleProviderTests {
         PublicKey publicKey = readPublicKeyFromFile(PUBLIC_KEY_FILE_512, "EC");
         when(provider.getPrivateKey()).thenReturn((ECPrivateKey) privateKey);
         when(provider.getPublicKeyById(null)).thenReturn((ECPublicKey) publicKey);
-        Algorithm algorithm = Algorithm.ECDSA512(provider);
+        Algorithm algorithm = AlgorithmImplementation.ECDSA512(provider);
         String jwt = asJWT(algorithm, ES512Header, auth0IssPayload);
 
         assertSignaturePresent(jwt);
@@ -703,7 +703,7 @@ public class ECDSABouncyCastleProviderTests {
 
         ECDSAKeyProvider provider = mock(ECDSAKeyProvider.class);
         when(provider.getPrivateKey()).thenReturn(null);
-        Algorithm algorithm = Algorithm.ECDSA512(provider);
+        Algorithm algorithm = AlgorithmImplementation.ECDSA512(provider);
         algorithm.sign(new byte[0], new byte[0]);
     }
 
@@ -714,7 +714,7 @@ public class ECDSABouncyCastleProviderTests {
         exception.expectCause(isA(IllegalStateException.class));
         exception.expectCause(hasMessage(is("The given Private Key is null.")));
 
-        Algorithm algorithm = Algorithm.ECDSA512((ECKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_512, "EC"));
+        Algorithm algorithm = AlgorithmImplementation.ECDSA512((ECKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_512, "EC"));
         algorithm.sign(new byte[0], new byte[0]);
     }
 
@@ -793,7 +793,7 @@ public class ECDSABouncyCastleProviderTests {
         exception.expect(SignatureException.class);
         exception.expectMessage("Invalid DER signature format.");
 
-        ECDSAAlgorithm algorithm256 = (ECDSAAlgorithm) Algorithm.ECDSA256((ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC"), (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_256, "EC"));
+        ECDSAAlgorithm algorithm256 = (ECDSAAlgorithm) AlgorithmImplementation.ECDSA256((ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC"), (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_256, "EC"));
         String content256 = "eyJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJhdXRoMCJ9";
 
         byte[] signature = algorithm256.sign(content256.getBytes(), new byte[0]);
@@ -803,7 +803,7 @@ public class ECDSABouncyCastleProviderTests {
 
     @Test
     public void shouldThrowOnDERSignatureConversionIfDoesNotHaveExpectedLength() throws Exception {
-        ECDSAAlgorithm algorithm256 = (ECDSAAlgorithm) Algorithm.ECDSA256((ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC"), (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_256, "EC"));
+        ECDSAAlgorithm algorithm256 = (ECDSAAlgorithm) AlgorithmImplementation.ECDSA256((ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC"), (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_256, "EC"));
         byte[] derSignature = createDERSignature(32, false, false);
         int received = (int) derSignature[1];
         received--;
@@ -816,7 +816,7 @@ public class ECDSABouncyCastleProviderTests {
 
     @Test
     public void shouldThrowOnDERSignatureConversionIfRNumberDoesNotHaveExpectedLength() throws Exception {
-        ECDSAAlgorithm algorithm256 = (ECDSAAlgorithm) Algorithm.ECDSA256((ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC"), (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_256, "EC"));
+        ECDSAAlgorithm algorithm256 = (ECDSAAlgorithm) AlgorithmImplementation.ECDSA256((ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC"), (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_256, "EC"));
         byte[] derSignature = createDERSignature(32, false, false);
         derSignature[3] = (byte) 34;
         exception.expect(SignatureException.class);
@@ -827,7 +827,7 @@ public class ECDSABouncyCastleProviderTests {
 
     @Test
     public void shouldThrowOnDERSignatureConversionIfSNumberDoesNotHaveExpectedLength() throws Exception {
-        ECDSAAlgorithm algorithm256 = (ECDSAAlgorithm) Algorithm.ECDSA256((ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC"), (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_256, "EC"));
+        ECDSAAlgorithm algorithm256 = (ECDSAAlgorithm) AlgorithmImplementation.ECDSA256((ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC"), (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_256, "EC"));
         byte[] derSignature = createDERSignature(32, false, false);
         derSignature[4 + 32 + 1] = (byte) 34;
         exception.expect(SignatureException.class);
@@ -839,7 +839,7 @@ public class ECDSABouncyCastleProviderTests {
     @Test
     public void shouldThrowOnJOSESignatureConversionIfDoesNotHaveExpectedLength() throws Exception {
         ECPublicKey publicKey = (ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC");
-        ECDSAAlgorithm algorithm256 = (ECDSAAlgorithm) Algorithm.ECDSA256(publicKey, (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_256, "EC"));
+        ECDSAAlgorithm algorithm256 = (ECDSAAlgorithm) AlgorithmImplementation.ECDSA256(publicKey, (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_256, "EC"));
         byte[] joseSignature = new byte[32 * 2 - 1];
         exception.expect(SignatureException.class);
         exception.expectMessage("Invalid JOSE signature format.");
@@ -849,7 +849,7 @@ public class ECDSABouncyCastleProviderTests {
 
     @Test
     public void shouldSignAndVerifyWithECDSA256() throws Exception {
-        ECDSAAlgorithm algorithm256 = (ECDSAAlgorithm) Algorithm.ECDSA256((ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC"), (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_256, "EC"));
+        ECDSAAlgorithm algorithm256 = (ECDSAAlgorithm) AlgorithmImplementation.ECDSA256((ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC"), (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_256, "EC"));
         String header256 = "eyJhbGciOiJFUzI1NiJ9";
         String body = "eyJpc3MiOiJhdXRoMCJ9";
 
@@ -861,7 +861,7 @@ public class ECDSABouncyCastleProviderTests {
 
     @Test
     public void shouldSignAndVerifyWithECDSA384() throws Exception {
-        ECDSAAlgorithm algorithm384 = (ECDSAAlgorithm) Algorithm.ECDSA384((ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_384, "EC"), (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_384, "EC"));
+        ECDSAAlgorithm algorithm384 = (ECDSAAlgorithm) AlgorithmImplementation.ECDSA384((ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_384, "EC"), (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_384, "EC"));
         String header384 = "eyJhbGciOiJFUzM4NCJ9";
         String body = "eyJpc3MiOiJhdXRoMCJ9";
 
@@ -873,7 +873,7 @@ public class ECDSABouncyCastleProviderTests {
 
     @Test
     public void shouldSignAndVerifyWithECDSA512() throws Exception {
-        ECDSAAlgorithm algorithm512 = (ECDSAAlgorithm) Algorithm.ECDSA512((ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_512, "EC"), (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_512, "EC"));
+        ECDSAAlgorithm algorithm512 = (ECDSAAlgorithm) AlgorithmImplementation.ECDSA512((ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_512, "EC"), (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_512, "EC"));
         String header512 = "eyJhbGciOiJFUzUxMiJ9";
         String body = "eyJpc3MiOiJhdXRoMCJ9";
 
@@ -885,7 +885,7 @@ public class ECDSABouncyCastleProviderTests {
 
     @Test
     public void shouldDecodeECDSA256JOSE() throws Exception {
-        ECDSAAlgorithm algorithm256 = (ECDSAAlgorithm) Algorithm.ECDSA256((ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC"), (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_256, "EC"));
+        ECDSAAlgorithm algorithm256 = (ECDSAAlgorithm) AlgorithmImplementation.ECDSA256((ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC"), (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_256, "EC"));
 
         //Without padding
         byte[] joseSignature = createJOSESignature(32, false, false);
@@ -910,7 +910,7 @@ public class ECDSABouncyCastleProviderTests {
 
     @Test
     public void shouldDecodeECDSA256DER() throws Exception {
-        ECDSAAlgorithm algorithm256 = (ECDSAAlgorithm) Algorithm.ECDSA256((ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC"), (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_256, "EC"));
+        ECDSAAlgorithm algorithm256 = (ECDSAAlgorithm) AlgorithmImplementation.ECDSA256((ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC"), (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_256, "EC"));
 
         //Without padding
         byte[] derSignature = createDERSignature(32, false, false);
@@ -935,7 +935,7 @@ public class ECDSABouncyCastleProviderTests {
 
     @Test
     public void shouldDecodeECDSA384JOSE() throws Exception {
-        ECDSAAlgorithm algorithm384 = (ECDSAAlgorithm) Algorithm.ECDSA384((ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_384, "EC"), (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_384, "EC"));
+        ECDSAAlgorithm algorithm384 = (ECDSAAlgorithm) AlgorithmImplementation.ECDSA384((ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_384, "EC"), (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_384, "EC"));
 
         //Without padding
         byte[] joseSignature = createJOSESignature(48, false, false);
@@ -960,7 +960,7 @@ public class ECDSABouncyCastleProviderTests {
 
     @Test
     public void shouldDecodeECDSA384DER() throws Exception {
-        ECDSAAlgorithm algorithm384 = (ECDSAAlgorithm) Algorithm.ECDSA384((ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_384, "EC"), (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_384, "EC"));
+        ECDSAAlgorithm algorithm384 = (ECDSAAlgorithm) AlgorithmImplementation.ECDSA384((ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_384, "EC"), (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_384, "EC"));
 
         //Without padding
         byte[] derSignature = createDERSignature(48, false, false);
@@ -985,7 +985,7 @@ public class ECDSABouncyCastleProviderTests {
 
     @Test
     public void shouldDecodeECDSA512JOSE() throws Exception {
-        ECDSAAlgorithm algorithm512 = (ECDSAAlgorithm) Algorithm.ECDSA512((ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_512, "EC"), (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_512, "EC"));
+        ECDSAAlgorithm algorithm512 = (ECDSAAlgorithm) AlgorithmImplementation.ECDSA512((ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_512, "EC"), (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_512, "EC"));
 
         //Without padding
         byte[] joseSignature = createJOSESignature(66, false, false);
@@ -1010,7 +1010,7 @@ public class ECDSABouncyCastleProviderTests {
 
     @Test
     public void shouldDecodeECDSA512DER() throws Exception {
-        ECDSAAlgorithm algorithm512 = (ECDSAAlgorithm) Algorithm.ECDSA512((ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_512, "EC"), (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_512, "EC"));
+        ECDSAAlgorithm algorithm512 = (ECDSAAlgorithm) AlgorithmImplementation.ECDSA512((ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_512, "EC"), (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_512, "EC"));
 
         //Without padding
         byte[] derSignature = createDERSignature(66, false, false);
