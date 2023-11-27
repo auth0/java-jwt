@@ -33,10 +33,10 @@ class HeaderDeserializer extends StdDeserializer<Header> {
             throw new JWTDecodeException("Parsing the Header's JSON resulted on a Null map");
         }
 
-        String algorithm = getString(tree, HeaderParams.ALGORITHM);
-        String type = getString(tree, HeaderParams.TYPE);
-        String contentType = getString(tree, HeaderParams.CONTENT_TYPE);
-        String keyId = getString(tree, HeaderParams.KEY_ID);
+        String algorithm = getString(tree, HeaderParams.ALGORITHM.getValue());
+        String type = getString(tree, HeaderParams.TYPE.getValue());
+        String contentType = getString(tree, HeaderParams.CONTENT_TYPE.getValue());
+        String keyId = getString(tree, HeaderParams.KEY_ID.getValue());
         return new BasicHeader(algorithm, type, contentType, keyId, tree, p.getCodec());
     }
 

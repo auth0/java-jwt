@@ -129,7 +129,7 @@ public class JWTCreatorTest {
     @Test
     public void shouldOverwriteExistingHeaderIfHeaderMapContainsTheSameKey() {
         Map<String, Object> header = new HashMap<>();
-        header.put(HeaderParams.KEY_ID, "xyz");
+        header.put(HeaderParams.KEY_ID.getValue(), "xyz");
 
         String signed = JWTCreator.init()
                 .withKeyId("abc")
@@ -139,14 +139,14 @@ public class JWTCreatorTest {
         assertThat(signed, is(notNullValue()));
         String[] parts = signed.split("\\.");
         String headerJson = new String(Base64.getUrlDecoder().decode(parts[0]), StandardCharsets.UTF_8);
-        assertThat(headerJson, JsonMatcher.hasEntry(HeaderParams.KEY_ID, "xyz"));
+        assertThat(headerJson, JsonMatcher.hasEntry(HeaderParams.KEY_ID.getValue(), "xyz"));
     }
 
 
     @Test
     public void shouldOverwriteExistingHeadersWhenSettingSameHeaderKey() {
         Map<String, Object> header = new HashMap<>();
-        header.put(HeaderParams.KEY_ID, "xyz");
+        header.put(HeaderParams.KEY_ID.getValue(), "xyz");
 
         String signed = JWTCreator.init()
                 .withHeader(header)
@@ -156,13 +156,13 @@ public class JWTCreatorTest {
         assertThat(signed, is(notNullValue()));
         String[] parts = signed.split("\\.");
         String headerJson = new String(Base64.getUrlDecoder().decode(parts[0]), StandardCharsets.UTF_8);
-        assertThat(headerJson, JsonMatcher.hasEntry(HeaderParams.KEY_ID, "abc"));
+        assertThat(headerJson, JsonMatcher.hasEntry(HeaderParams.KEY_ID.getValue(), "abc"));
     }
 
     @Test
     public void shouldRemoveHeaderIfTheValueIsNull() {
         Map<String, Object> header = new HashMap<>();
-        header.put(HeaderParams.KEY_ID, null);
+        header.put(HeaderParams.KEY_ID.getValue(), null);
         header.put("test2", "isSet");
 
         String signed = JWTCreator.init()
@@ -173,7 +173,7 @@ public class JWTCreatorTest {
         assertThat(signed, is(notNullValue()));
         String[] parts = signed.split("\\.");
         String headerJson = new String(Base64.getUrlDecoder().decode(parts[0]), StandardCharsets.UTF_8);
-        assertThat(headerJson, JsonMatcher.isNotPresent(HeaderParams.KEY_ID));
+        assertThat(headerJson, JsonMatcher.isNotPresent(HeaderParams.KEY_ID.getValue()));
         assertThat(headerJson, JsonMatcher.hasEntry("test2", "isSet"));
     }
 
@@ -769,7 +769,7 @@ public class JWTCreatorTest {
     @Test
     public void withPayloadShouldOverwriteExistingClaimIfPayloadMapContainsTheSameKey() {
         Map<String, Object> payload = new HashMap<>();
-        payload.put(HeaderParams.KEY_ID, "xyz");
+        payload.put(HeaderParams.KEY_ID.getValue(), "xyz");
 
         String jwt = JWTCreator.init()
                 .withKeyId("abc")
@@ -779,7 +779,7 @@ public class JWTCreatorTest {
         assertThat(jwt, is(notNullValue()));
         String[] parts = jwt.split("\\.");
         String payloadJson = new String(Base64.getUrlDecoder().decode(parts[1]), StandardCharsets.UTF_8);
-        assertThat(payloadJson, JsonMatcher.hasEntry(HeaderParams.KEY_ID, "xyz"));
+        assertThat(payloadJson, JsonMatcher.hasEntry(HeaderParams.KEY_ID.getValue(), "xyz"));
     }
 
     @Test

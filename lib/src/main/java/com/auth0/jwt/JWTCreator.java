@@ -128,7 +128,7 @@ public final class JWTCreator {
          * @return this same Builder instance.
          */
         public Builder withKeyId(String keyId) {
-            this.headerClaims.put(HeaderParams.KEY_ID, keyId);
+            this.headerClaims.put(HeaderParams.KEY_ID.getValue(), keyId);
             return this;
         }
 
@@ -594,9 +594,9 @@ public final class JWTCreator {
             if (algorithm == null) {
                 throw new IllegalArgumentException("The Algorithm cannot be null.");
             }
-            headerClaims.put(HeaderParams.ALGORITHM, algorithm.getName());
-            if (!headerClaims.containsKey(HeaderParams.TYPE)) {
-                headerClaims.put(HeaderParams.TYPE, "JWT");
+            headerClaims.put(HeaderParams.ALGORITHM.getValue(), algorithm.getName());
+            if (!headerClaims.containsKey(HeaderParams.TYPE.getValue())) {
+                headerClaims.put(HeaderParams.TYPE.getValue(), "JWT");
             }
             String signingKeyId = algorithm.getSigningKeyId();
             if (signingKeyId != null) {
