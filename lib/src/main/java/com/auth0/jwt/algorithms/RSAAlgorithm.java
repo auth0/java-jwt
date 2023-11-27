@@ -103,10 +103,7 @@ class RSAAlgorithm extends Algorithm {
                 return privateKey;
             }
 
-            @Override
-            public String getPrivateKeyId() {
-                return null;
-            }
+
         };
     }
 }

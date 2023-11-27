@@ -34,5 +34,10 @@ interface KeyProvider<U extends PublicKey, R extends PrivateKey> {
      *
      * @return the Key Id that identifies the Private Key or null if it's not specified.
      */
-    String getPrivateKeyId();
+
+    /* Pulled the method inside interface to avoid duplication of code */
+    default String getPrivateKeyId() {
+        return null;
+    }
+
 }
