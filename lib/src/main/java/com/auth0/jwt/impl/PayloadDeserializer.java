@@ -51,13 +51,23 @@ class PayloadDeserializer extends StdDeserializer<Payload> {
     List<String> getStringOrArray(ObjectCodec codec, Map<String, JsonNode> tree, String claimName)
             throws JWTDecodeException {
         JsonNode node = tree.get(claimName);
-        if (node == null || node.isNull() || !(node.isArray() || node.isTextual())) {
-            return null;
-        }
-        if (node.isTextual()) {
-            return Collections.singletonList(node.asText());
-        }
 
+        /* Refactored the code to solve complex condition smell using decompose condition method */
+        if (isValidNode(node)) {
+            if (node.isTextual()) {
+                return Collections.singletonList(node.asText());
+            } else {
+                return processArrayNode(codec, node);
+            }
+        }
+        return null;
+    }
+
+    private boolean isValidNode(JsonNode node) {
+        return node != null && !node.isNull() && (node.isArray() || node.isTextual());
+    }
+
+    private List<String> processArrayNode(ObjectCodec codec, JsonNode node) throws JWTDecodeException {
         List<String> list = new ArrayList<>(node.size());
         for (int i = 0; i < node.size(); i++) {
             try {

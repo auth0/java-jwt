@@ -81,6 +81,8 @@ public class ClaimsSerializer<T extends ClaimsHolder> extends StdSerializer<T> {
     }
 
     private static long dateToSeconds(Date date) {
-        return date.getTime() / 1000;
+        long millisecondsPerSecond = 1000;
+        long dateInMillisecond = date.getTime();
+        return dateInMillisecond / millisecondsPerSecond;
     }
 }

@@ -156,54 +156,55 @@ class ECDSAAlgorithm extends Algorithm {
      * @throws SignatureException if the signature's structure is not as per expectation
      */
     // Visible for testing
+
+    /* Remove Duplicate code by extracting method */
     void validateSignatureStructure(byte[] joseSignature, ECPublicKey publicKey) throws SignatureException {
-        // check signature length, moved this check from JOSEToDER method
+        // Check signature length
         if (joseSignature.length != ecNumberSize * 2) {
             throw new SignatureException("Invalid JOSE signature format.");
         }
 
+        // Check for all zeros
         if (isAllZeros(joseSignature)) {
             throw new SignatureException("Invalid signature format.");
         }
 
-        // get R
-        byte[] rBytes = new byte[ecNumberSize];
-        System.arraycopy(joseSignature, 0, rBytes, 0, ecNumberSize);
-        if (isAllZeros(rBytes)) {
+        // Extract R and S components
+        byte[] rBytes = extractSignatureComponent(joseSignature, 0);
+        byte[] sBytes = extractSignatureComponent(joseSignature, ecNumberSize);
+
+        // Check R and S components for all zeros
+        if (isAllZeros(rBytes) || isAllZeros(sBytes)) {
             throw new SignatureException("Invalid signature format.");
         }
 
-        // get S
-        byte[] sBytes = new byte[ecNumberSize];
-        System.arraycopy(joseSignature, ecNumberSize, sBytes, 0, ecNumberSize);
-        if (isAllZeros(sBytes)) {
-            throw new SignatureException("Invalid signature format.");
-        }
+        // Calculate R and S component lengths
+        int rLength = ecNumberSize - countPadding(joseSignature, 0, ecNumberSize);
+        int sLength = ecNumberSize - countPadding(joseSignature, ecNumberSize, joseSignature.length);
 
-        //moved this check from JOSEToDER method
-        int rPadding = countPadding(joseSignature, 0, ecNumberSize);
-        int sPadding = countPadding(joseSignature, ecNumberSize, joseSignature.length);
-        int rLength = ecNumberSize - rPadding;
-        int sLength = ecNumberSize - sPadding;
-
-        int length = 2 + rLength + 2 + sLength;
-        if (length > 255) {
+        // Check total signature length
+        if (2 + rLength + 2 + sLength > 255) {
             throw new SignatureException("Invalid JOSE signature format.");
         }
 
-        BigInteger order = publicKey.getParams().getOrder();
-        BigInteger r = new BigInteger(1, rBytes);
-        BigInteger s = new BigInteger(1, sBytes);
+        // Check R and S components against order
+        validateComponentAgainstOrder(new BigInteger(1, rBytes), publicKey.getParams().getOrder(), "R");
+        validateComponentAgainstOrder(new BigInteger(1, sBytes), publicKey.getParams().getOrder(), "S");
+    }
 
-        // R and S must be less than N
-        if (order.compareTo(r) < 1) {
-            throw new SignatureException("Invalid signature format.");
-        }
-
-        if (order.compareTo(s) < 1) {
+    private void validateComponentAgainstOrder(BigInteger component, BigInteger order, String componentName)
+            throws SignatureException {
+        if (order.compareTo(component) < 1) {
             throw new SignatureException("Invalid signature format.");
         }
     }
+
+    private byte[] extractSignatureComponent(byte[] joseSignature, int offset) {
+        byte[] component = new byte[ecNumberSize];
+        System.arraycopy(joseSignature, offset, component, 0, ecNumberSize);
+        return component;
+    }
+
 
     //Visible for testing
     byte[] JOSEToDER(byte[] joseSignature) throws SignatureException {
