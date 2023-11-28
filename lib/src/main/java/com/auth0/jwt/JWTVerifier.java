@@ -364,12 +364,17 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
         }
 
         private boolean assertValidAudienceClaim(
-                List<String> audience,
-                List<String> values,
+                List<String> actualAudience,
+                List<String> expectedAudience,
                 boolean shouldContainAll
         ) {
-            return !(audience == null || (shouldContainAll && !audience.containsAll(values))
-                    || (!shouldContainAll && Collections.disjoint(audience, values)));
+            if (actualAudience == null) {
+                return false;
+            } else if (shouldContainAll) {
+                return actualAudience.containsAll(expectedAudience);
+            } else {
+                return !Collections.disjoint(actualAudience, expectedAudience);
+            }
         }
 
         private void assertPositive(long leeway) {
