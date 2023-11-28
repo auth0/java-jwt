@@ -311,6 +311,21 @@ public class JWTVerifierTest {
     }
 
     @Test
+    public void shouldThrowWhenExpectedEmptyList() {
+        IncorrectClaimException e = assertThrows(null, IncorrectClaimException.class, () -> {
+            // Token 'aud': 'wide audience'
+            String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJ3aWRlIGF1ZGllbmNlIn0.c9anq03XepcuEKWEVsPk9cck0sIIfrT6hHbBsCar49o";
+            JWTVerifier.init(Algorithm.HMAC256("secret"))
+                    .withAnyOfAudience(new String[0])
+                    .build()
+                    .verify(token);
+        });
+        assertThat(e.getMessage(), is("The Claim 'aud' value doesn't contain the required audience."));
+        assertThat(e.getClaimName(), is(RegisteredClaims.AUDIENCE));
+        assertThat(e.getClaimValue().asString(), is("wide audience"));
+    }
+
+    @Test
     public void shouldNotReplaceWhenMultipleChecksAreAdded() {
         JWTVerifier verifier = JWTVerifier.init(Algorithm.HMAC256("secret"))
                 .withAudience((String[]) null)
