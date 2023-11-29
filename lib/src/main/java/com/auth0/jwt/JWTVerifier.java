@@ -368,10 +368,11 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
                 List<String> expectedAudience,
                 boolean shouldContainAll
         ) {
-            // normalize to lists if null
-            actualAudience = actualAudience == null ? Collections.emptyList() : actualAudience;
-            expectedAudience = expectedAudience == null ? Collections.emptyList() : expectedAudience;
-
+            if(actualAudience == null && expectedAudience == null) {
+                return true;
+            } else if (actualAudience == null || expectedAudience == null) {
+                return false;
+            }
             if (shouldContainAll) {
                 // containsAll([]) always returns true
                 if (expectedAudience.isEmpty() && !actualAudience.isEmpty()) {
