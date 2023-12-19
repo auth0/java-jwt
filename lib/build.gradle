@@ -31,12 +31,16 @@ tasks.named("checkstyleJmh").configure({
 
 logger.lifecycle("Using version ${version} for ${group}.${name}")
 
+def signingKey = findProperty('signingKey')
+def signingKeyPwd = findProperty('signingPassword')
+
 oss {
     name "java jwt"
     repository "java-jwt"
     organization "auth0"
     description "Java implementation of JSON Web Token (JWT)"
     baselineCompareVersion "4.1.0"
+    skipAssertSigningConfiguration true
 
     developers {
         auth0 {
@@ -52,6 +56,10 @@ oss {
             email = "hernan@auth0.com"
         }
     }
+}
+
+signing {
+    useInMemoryPgpKeys(signingKey, signingKeyPwd)
 }
 
 java {
@@ -157,14 +165,6 @@ jar {
 
 compileModuleInfoJava.dependsOn compileJava
 classes.dependsOn compileModuleInfoJava
-
-// Creates a version.txt file containing the current version of the SDK.
-// This file is picked up and parsed by our Ship Orb to determine the version.
-task exportVersion()  {
-    doLast {
-        new File(rootDir, "version.txt").text = "$version"
-    }
-}
 
 // you can pass any arguments JMH accepts via Gradle args.
 // Example: ./gradlew runJMH --args="-lrf"
