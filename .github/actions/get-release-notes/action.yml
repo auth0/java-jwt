@@ -1,0 +1,42 @@
+name: Return the release notes extracted from the body of the PR associated with the release.
+
+#
+# Returns the release notes from the content of a pull request linked to a release branch. It expects the branch name to be in the format release/vX.Y.Z, release/X.Y.Z, release/vX.Y.Z-beta.N. etc.
+#
+# TODO: Remove once the common repo is public.
+#
+inputs:
+  version:
+    required: true
+  repo_name:
+    required: false
+  repo_owner:
+    required: true
+  token:
+    required: true
+
+outputs:
+  release-notes:
+    value: ${{ steps.get_release_notes.outputs.RELEASE_NOTES }}
+
+runs:
+  using: composite
+
+  steps:
+    - uses: actions/github-script@v7
+      id: get_release_notes
+      with:
+        result-encoding: string
+        script: |
+          const { data: pulls } = await github.rest.pulls.list({
+            owner: process.env.REPO_OWNER,
+            repo: process.env.REPO_NAME,
+            state: 'all',
+            head: `${process.env.REPO_OWNER}:release/${process.env.VERSION}`,
+          });
+          core.setOutput('RELEASE_NOTES', pulls[0].body);
+      env:
+        GITHUB_TOKEN: ${{ inputs.token }}
+        REPO_OWNER: ${{ inputs.repo_owner }}
+        REPO_NAME: ${{ inputs.repo_name }}
+        VERSION: ${{ inputs.version }}
