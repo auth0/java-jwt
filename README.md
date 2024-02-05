@@ -89,7 +89,7 @@ DecodedJWT decodedJWT;
 try {
     Algorithm algorithm = Algorithm.RSA256(rsaPublicKey, rsaPrivateKey);
     JWTVerifier verifier = JWT.require(algorithm)
-        // specify an specific claim validations
+        // specify any specific claim validations
         .withIssuer("auth0")
         // reusable verifier instance
         .build();
