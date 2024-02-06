@@ -1,0 +1,47 @@
+name: Create a GitHub release
+
+#
+# Creates a GitHub release with the given version.
+#
+# TODO: Remove once the common repo is public.
+#
+
+inputs:
+  token:
+    required: true
+  files:
+    required: false
+  name:
+    required: true
+  body:
+    required: true
+  tag:
+    required: true
+  commit:
+    required: true
+  draft:
+    default: false
+    required: false
+  prerelease:
+    default: false
+    required: false
+  fail_on_unmatched_files:
+    default: true
+    required: false
+
+runs:
+  using: composite
+
+  steps:
+    - uses: softprops/action-gh-release@de2c0eb89ae2a093876385947365aca7b0e5f844
+      with:
+        body: ${{ inputs.body }}
+        name: ${{ inputs.name }}
+        tag_name: ${{ inputs.tag }}
+        target_commitish: ${{ inputs.commit }}
+        draft: ${{ inputs.draft }}
+        prerelease: ${{ inputs.prerelease }}
+        fail_on_unmatched_files: ${{ inputs.fail_on_unmatched_files }}
+        files: ${{ inputs.files }}
+      env:
+        GITHUB_TOKEN: ${{ inputs.token }}

@@ -1,0 +1,44 @@
+name: Publish release to Java
+
+inputs:
+  ossr-username:
+    required: true
+  ossr-password:
+    required: true
+  signing-key:
+    required: true
+  signing-password:
+    required: true
+  java-version:
+    required: true
+  is-android:
+    required: true
+  version:
+    required: true
+
+runs:
+  using: composite
+
+  steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Java
+      shell: bash
+      run: |
+        curl -s "https://get.sdkman.io" | bash
+        source "/home/runner/.sdkman/bin/sdkman-init.sh"
+        sdk list java
+        sdk install java ${{ inputs.java-version }} && sdk default java ${{ inputs.java-version }}
+
+    - uses: gradle/wrapper-validation-action@56b90f209b02bf6d1deae490e9ef18b21a389cd4 # pin@1.1.0
+
+    - name: Publish Java
+      shell: bash
+      if: inputs.is-android == 'false'
+      run: ./gradlew clean assemble sign publishMavenJavaPublicationToMavenRepository -PisSnapshot=false -Pversion="${{ inputs.version }}" -PossrhUsername="${{ inputs.ossr-username }}" -PossrhPassword="${{ inputs.ossr-password }}" -PsigningKey="${{ inputs.signing-key }}" -PsigningPassword="${{ inputs.signing-password }}"
+
+    - name: Publish Android
+      shell: bash
+      if: inputs.is-android == 'true'
+      run: ./gradlew clean assemble sign publishAndroidLibraryPublicationToMavenRepository -PisSnapshot=false -Pversion="${{ inputs.version }}" -PossrhUsername="${{ inputs.ossr-username }}" -PossrhPassword="${{ inputs.ossr-password }}" -PsigningKey="${{ inputs.signing-key }}" -PsigningPassword="${{ inputs.signing-password }}"
