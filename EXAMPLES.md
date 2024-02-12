@@ -99,6 +99,10 @@ See the [JavaDoc](https://javadoc.io/doc/com.auth0/java-jwt/latest/com/auth0/jwt
 A `KeyProvider` can be used to obtain the keys needed for signing and verifying a JWT. How these keys are constructed are beyond the scope of this library, but the [jwks-rsa-java](https://github.com/auth0/jwks-rsa-java) library provides the ability to obtain the public key from a JWK.
 The example below demonstrates this for the RSA algorithm (`ECDSAKeyProvider` can be used for ECDSA).
 
+When using RSA or ECDSA algorithms and you just need to **sign** JWTs you can avoid specifying a Public Key by returning a `null` value in `getPublicKeyById` in `KeyProvider` implementation.
+
+The same can be done with the Private Key when you just need to **verify** JWTs by returning a `null` value in `getPrivateKey` and `getPrivateKeyId` in `KeyProvider` implementation.
+
 ```java
 JwkProvider provider = new JwkProviderBuilder("https://samples.auth0.com/")
         .cached(10, 24, TimeUnit.HOURS)
@@ -110,17 +114,19 @@ final String privateKeyId = // private key ID
 RSAKeyProvider keyProvider = new RSAKeyProvider() {
     @Override
     public RSAPublicKey getPublicKeyById(String kid) {
-        return (RSAPublicKey) jwkProvider.get(kid).getPublicKey();
+        // return null if key is used only for signing.
+        return (RSAPublicKey) provider.get(kid).getPublicKey();
     }
 
     @Override
     public RSAPrivateKey getPrivateKey() {
-        // return the private key used 
+        // return the private key used or null if key is used only for verification.
         return rsaPrivateKey;
     }
 
     @Override
     public String getPrivateKeyId() {
+        // return id of the private key used or null if key is used only for verification.
         return rsaPrivateKeyId;
     }
 };
