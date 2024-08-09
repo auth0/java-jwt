@@ -1,0 +1,30 @@
+name: Return a boolean indicating if the version contains prerelease identifiers
+
+#
+# Returns a simple true/false boolean indicating whether the version indicates it's a prerelease or not.
+#
+# TODO: Remove once the common repo is public.
+#
+
+inputs:
+  version:
+    required: true
+
+outputs:
+  prerelease:
+    value: ${{ steps.get_prerelease.outputs.PRERELEASE }}
+
+runs:
+  using: composite
+
+  steps:
+    - id: get_prerelease
+      shell: bash
+      run: |
+        if [[ "${VERSION}" == *"beta"* || "${VERSION}" == *"alpha"* ]]; then
+          echo "PRERELEASE=true" >> $GITHUB_OUTPUT
+        else
+          echo "PRERELEASE=false" >> $GITHUB_OUTPUT
+        fi
+      env:
+        VERSION: ${{ inputs.version }}
