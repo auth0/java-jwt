@@ -1,0 +1,67 @@
+name: 🐞 Report a bug
+description: Have you found a bug or issue? Create a bug report for this library
+labels: ["bug"]
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Please do not report security vulnerabilities here**. The [Responsible Disclosure Program](https://auth0.com/responsible-disclosure-policy) details the procedure for disclosing security issues.
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: I have looked into the [Readme](https://github.com/auth0/java-jwt#readme) and [Examples](https://github.com/auth0/java-jwt/blob/master/EXAMPLES.md), and have not found a suitable solution or answer.
+          required: true
+        - label: I have looked into the [API documentation](https://javadoc.io/doc/com.auth0/java-jwt/latest/index.html) and have not found a suitable solution or answer.
+          required: true
+        - label: I have searched the [issues](https://github.com/auth0/java-jwt/issues) and have not found a suitable solution or answer.
+          required: true
+        - label: I have searched the [Auth0 Community](https://community.auth0.com) forums and have not found a suitable solution or answer.
+          required: true
+        - label: I agree to the terms within the [Auth0 Code of Conduct](https://github.com/auth0/open-source-template/blob/master/CODE-OF-CONDUCT.md).
+          required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Provide a clear and concise description of the issue, including what you expected to happen.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: Detail the steps taken to reproduce this error, and whether this issue can be reproduced consistently or if it is intermittent.
+      placeholder: |
+        1. Step 1...
+        2. Step 2...
+        3. ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional context
+      description: Other libraries that might be involved, or any other relevant information you think would be useful.
+    validations:
+      required: false
+
+  - type: input
+    id: environment-version
+    attributes:
+      label: java-jwt version
+    validations:
+      required: true
+
+  - type: input
+    id: environment-java-version
+    attributes:
+      label: Java version
+    validations:
+      required: true

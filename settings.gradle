@@ -1,2 +1,11 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+    }
+    plugins {
+        id 'com.auth0.gradle.oss-library.java' version '0.17.2'
+    }
+}
+
 include ':java-jwt'
 project(':java-jwt').projectDir = new File(rootProject.projectDir, '/lib')

@@ -33,12 +33,12 @@ public class ConcurrentVerifyTest {
     private static ExecutorService executor;
 
     @BeforeClass
-    public static void beforeAll() throws Exception {
+    public static void beforeAll() {
         executor = Executors.newFixedThreadPool(THREAD_COUNT);
     }
 
     @AfterClass
-    public static void afterAll() throws Exception {
+    public static void afterAll() {
         executor.shutdown();
     }
 
@@ -63,7 +63,7 @@ public class ConcurrentVerifyTest {
         }
 
         @Override
-        public DecodedJWT call() throws Exception {
+        public DecodedJWT call() {
             DecodedJWT jwt = null;
             try {
                 jwt = verifier.verify(token);
@@ -84,7 +84,7 @@ public class ConcurrentVerifyTest {
 
         concurrentVerify(verifier, token);
     }
-
+    
     @Test
     public void shouldPassHMAC384Verification() throws Exception {
         String token = "eyJhbGciOiJIUzM4NCIsImN0eSI6IkpXVCJ9.eyJpc3MiOiJhdXRoMCJ9.uztpK_wUMYJhrRv8SV-1LU4aPnwl-EM1q-wJnqgyb5DHoDteP6lN_gE1xnZJH5vw";
@@ -139,17 +139,7 @@ public class ConcurrentVerifyTest {
 
         concurrentVerify(verifier, token);
     }
-
-    @Test
-    public void shouldPassECDSA256VerificationWithDERSignature() throws Exception {
-        String token = "eyJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJhdXRoMCJ9.MEYCIQDiJWTf5jS/hFPj/0hpCWn7x1n/h+xPMjKWCs9MMusS9AIhAMcFPJVLe2A9uvb8hl8sRO2IpGoKDRpDmyH14ixNPAHW";
-        ECKey key = (ECKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC");
-        Algorithm algorithm = Algorithm.ECDSA256(key);
-        JWTVerifier verifier = JWTVerifier.init(algorithm).withIssuer("auth0").build();
-
-        concurrentVerify(verifier, token);
-    }
-
+    
     @Test
     public void shouldPassECDSA384VerificationWithJOSESignature() throws Exception {
         String token = "eyJhbGciOiJFUzM4NCJ9.eyJpc3MiOiJhdXRoMCJ9.50UU5VKNdF1wfykY8jQBKpvuHZoe6IZBJm5NvoB8bR-hnRg6ti-CHbmvoRtlLfnHfwITa_8cJMy6TenMC2g63GQHytc8rYoXqbwtS4R0Ko_AXbLFUmfxnGnMC6v4MS_z";
@@ -161,28 +151,8 @@ public class ConcurrentVerifyTest {
     }
 
     @Test
-    public void shouldPassECDSA384VerificationWithDERSignature() throws Exception {
-        String token = "eyJhbGciOiJFUzM4NCJ9.eyJpc3MiOiJhdXRoMCJ9.MGUCMQDnRRTlUo10XXB/KRjyNAEqm+4dmh7ohkEmbk2+gHxtH6GdGDq2L4Idua+hG2Ut+ccCMH8CE2v/HCTMuk3pzAtoOtxkB8rXPK2KF6m8LUuEdCqPwF2yxVJn8ZxpzAur+DEv8w==";
-        ECKey key = (ECKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_384, "EC");
-        Algorithm algorithm = Algorithm.ECDSA384(key);
-        JWTVerifier verifier = JWTVerifier.init(algorithm).withIssuer("auth0").build();
-
-        concurrentVerify(verifier, token);
-    }
-
-    @Test
     public void shouldPassECDSA512VerificationWithJOSESignature() throws Exception {
         String token = "eyJhbGciOiJFUzUxMiJ9.eyJpc3MiOiJhdXRoMCJ9.AeCJPDIsSHhwRSGZCY6rspi8zekOw0K9qYMNridP1Fu9uhrA1QrG-EUxXlE06yvmh2R7Rz0aE7kxBwrnq8L8aOBCAYAsqhzPeUvyp8fXjjgs0Eto5I0mndE2QHlgcMSFASyjHbU8wD2Rq7ZNzGQ5b2MZfpv030WGUajT-aZYWFUJHVg2";
-        ECKey key = (ECKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_512, "EC");
-        Algorithm algorithm = Algorithm.ECDSA512(key);
-        JWTVerifier verifier = JWTVerifier.init(algorithm).withIssuer("auth0").build();
-
-        concurrentVerify(verifier, token);
-    }
-
-    @Test
-    public void shouldPassECDSA512VerificationWithDERSignature() throws Exception {
-        String token = "eyJhbGciOiJFUzUxMiJ9.eyJpc3MiOiJhdXRoMCJ9.MIGIAkIB4Ik8MixIeHBFIZkJjquymLzN6Q7DQr2pgw2uJ0/UW726GsDVCsb4RTFeUTTrK+aHZHtHPRoTuTEHCuerwvxo4EICQgGALKocz3lL8qfH1444LNBLaOSNJp3RNkB5YHDEhQEsox21PMA9kau2TcxkOW9jGX6b9N9FhlGo0/mmWFhVCR1YNg==";
         ECKey key = (ECKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_512, "EC");
         Algorithm algorithm = Algorithm.ECDSA512(key);
         JWTVerifier verifier = JWTVerifier.init(algorithm).withIssuer("auth0").build();

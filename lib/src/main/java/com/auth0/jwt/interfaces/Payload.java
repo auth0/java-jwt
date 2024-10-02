@@ -1,11 +1,12 @@
 package com.auth0.jwt.interfaces;
 
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 /**
- * The Payload class represents the 2nd part of the JWT, where the Payload value is hold.
+ * The Payload class represents the 2nd part of the JWT, where the Payload value is held.
  */
 public interface Payload {
 
@@ -38,11 +39,29 @@ public interface Payload {
     Date getExpiresAt();
 
     /**
+     * Get the value of the "exp" claim as an {@linkplain Instant}, or null if it's not available.
+     *
+     * @return the Expiration Time value or null.
+     */
+    default Instant getExpiresAtAsInstant() {
+        return getExpiresAt() != null ? getExpiresAt().toInstant() : null;
+    }
+
+    /**
      * Get the value of the "nbf" claim, or null if it's not available.
      *
      * @return the Not Before value or null.
      */
     Date getNotBefore();
+
+    /**
+     * Get the value of the "nbf" claim as an {@linkplain Instant}, or null if it's not available.
+     *
+     * @return the Not Before value or null.
+     */
+    default Instant getNotBeforeAsInstant() {
+        return getNotBefore() != null ? getNotBefore().toInstant() : null;
+    }
 
     /**
      * Get the value of the "iat" claim, or null if it's not available.
@@ -52,6 +71,15 @@ public interface Payload {
     Date getIssuedAt();
 
     /**
+     * Get the value of the "iat" claim as an {@linkplain Instant}, or null if it's not available.
+     *
+     * @return the Issued At value or null.
+     */
+    default Instant getIssuedAtAsInstant() {
+        return getIssuedAt() != null ? getIssuedAt().toInstant() : null;
+    }
+
+    /**
      * Get the value of the "jti" claim, or null if it's not available.
      *
      * @return the JWT ID value or null.
@@ -59,7 +87,8 @@ public interface Payload {
     String getId();
 
     /**
-     * Get a Claim given it's name. If the Claim wasn't specified in the Payload, a NullClaim will be returned.
+     * Get a Claim given its name. If the Claim wasn't specified in the Payload, a 'null claim'
+     * will be returned. All the methods of that claim will return {@code null}.
      *
      * @param name the name of the Claim to retrieve.
      * @return a non-null Claim.

@@ -41,7 +41,9 @@ Temporary Items
 ## Plugin-specific files:
 
 # IntelliJ
+bin/
 /out/
+/lib/out/
 
 # mpeltonen/sbt-idea plugin
 .idea_modules/
@@ -54,6 +56,11 @@ com_crashlytics_export_strings.xml
 crashlytics.properties
 crashlytics-build.properties
 fabric.properties
+
+# Eclipse IDE
+.classpath
+.project
+.settings/
 
 ### Java template
 *.class
@@ -74,6 +81,7 @@ hs_err_pid*
 build/
 target/
 dependency-reduced-pom.xml
+local.properties
 
 # Ignore Gradle GUI config
 gradle-app.setting

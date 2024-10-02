@@ -1,60 +1,66 @@
 package com.auth0.jwt.impl;
 
+import com.auth0.jwt.RegisteredClaims;
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 
 import java.io.IOException;
-import java.util.Date;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
-public class PayloadSerializer extends StdSerializer<ClaimsHolder> {
-
+/**
+ * Jackson serializer implementation for converting into JWT Payload parts.
+ * <p>
+ * This class is thread-safe.
+ *
+ * @see com.auth0.jwt.JWTCreator
+ */
+public class PayloadSerializer extends ClaimsSerializer<PayloadClaimsHolder> {
     public PayloadSerializer() {
-        this(null);
-    }
-
-    private PayloadSerializer(Class<ClaimsHolder> t) {
-        super(t);
+        super(PayloadClaimsHolder.class);
     }
 
     @Override
-    public void serialize(ClaimsHolder holder, JsonGenerator gen, SerializerProvider provider) throws IOException {
-        HashMap<Object, Object> safePayload = new HashMap<>();
-        for (Map.Entry<String, Object> e : holder.getClaims().entrySet()) {
-            switch (e.getKey()) {
-                case PublicClaims.AUDIENCE:
-                    if (e.getValue() instanceof String) {
-                        safePayload.put(e.getKey(), e.getValue());
-                        break;
-                    }
-                    String[] audArray = (String[]) e.getValue();
-                    if (audArray.length == 1) {
-                        safePayload.put(e.getKey(), audArray[0]);
-                    } else if (audArray.length > 1) {
-                        safePayload.put(e.getKey(), audArray);
-                    }
-                    break;
-                case PublicClaims.EXPIRES_AT:
-                case PublicClaims.ISSUED_AT:
-                case PublicClaims.NOT_BEFORE:
-                    safePayload.put(e.getKey(), dateToSeconds((Date) e.getValue()));
-                    break;
-                default:
-                    if (e.getValue() instanceof Date) {
-                        safePayload.put(e.getKey(), dateToSeconds((Date) e.getValue()));
-                    } else {
-                        safePayload.put(e.getKey(), e.getValue());
-                    }
-                    break;
-            }
+    protected void writeClaim(Map.Entry<String, Object> entry, JsonGenerator gen) throws IOException {
+        if (RegisteredClaims.AUDIENCE.equals(entry.getKey())) {
+            writeAudience(gen, entry);
+        } else {
+            super.writeClaim(entry, gen);
         }
-
-        gen.writeObject(safePayload);
     }
 
-    private long dateToSeconds(Date date) {
-        return date.getTime() / 1000;
+    /**
+     * Audience may be a list of strings or a single string. This is needed to properly handle the aud claim when
+     * added with the {@linkplain com.auth0.jwt.JWTCreator.Builder#withPayload(Map)} method.
+     */
+    private void writeAudience(JsonGenerator gen, Map.Entry<String, Object> e) throws IOException {
+        if (e.getValue() instanceof String) {
+            gen.writeFieldName(e.getKey());
+            gen.writeString((String) e.getValue());
+        } else {
+            List<String> audArray = new ArrayList<>();
+            if (e.getValue() instanceof String[]) {
+                audArray = Arrays.asList((String[]) e.getValue());
+            } else if (e.getValue() instanceof List) {
+                List<?> audList = (List<?>) e.getValue();
+                for (Object aud : audList) {
+                    if (aud instanceof String) {
+                        audArray.add((String) aud);
+                    }
+                }
+            }
+            if (audArray.size() == 1) {
+                gen.writeFieldName(e.getKey());
+                gen.writeString(audArray.get(0));
+            } else if (audArray.size() > 1) {
+                gen.writeFieldName(e.getKey());
+                gen.writeStartArray();
+                for (String aud : audArray) {
+                    gen.writeString(aud);
+                }
+                gen.writeEndArray();
+            }
+        }
     }
 }

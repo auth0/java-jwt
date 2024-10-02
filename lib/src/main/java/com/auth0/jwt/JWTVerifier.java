@@ -1,40 +1,44 @@
 package com.auth0.jwt;
 
 import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.exceptions.AlgorithmMismatchException;
-import com.auth0.jwt.exceptions.InvalidClaimException;
-import com.auth0.jwt.exceptions.JWTVerificationException;
-import com.auth0.jwt.exceptions.SignatureVerificationException;
-import com.auth0.jwt.impl.PublicClaims;
+import com.auth0.jwt.exceptions.*;
+import com.auth0.jwt.impl.JWTParser;
 import com.auth0.jwt.interfaces.Claim;
-import com.auth0.jwt.interfaces.Clock;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.auth0.jwt.impl.ExpectedCheckHolder;
 import com.auth0.jwt.interfaces.Verification;
-import org.apache.commons.codec.binary.Base64;
 
-import java.nio.charset.StandardCharsets;
+import java.time.Clock;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.function.BiPredicate;
 
 /**
- * The JWTVerifier class holds the verify method to assert that a given Token has not only a proper JWT format, but also it's signature matches.
+ * The JWTVerifier class holds the verify method to assert that a given Token has not only a proper JWT format,
+ * but also its signature matches.
+ * <p>
+ * This class is thread-safe.
+ *
+ * @see com.auth0.jwt.interfaces.JWTVerifier
  */
-@SuppressWarnings("WeakerAccess")
-public final class JWTVerifier {
+public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
     private final Algorithm algorithm;
-    final Map<String, Object> claims;
-    private final Clock clock;
+    final List<ExpectedCheckHolder> expectedChecks;
+    private final JWTParser parser;
 
-    JWTVerifier(Algorithm algorithm, Map<String, Object> claims, Clock clock) {
+    JWTVerifier(Algorithm algorithm, List<ExpectedCheckHolder> expectedChecks) {
         this.algorithm = algorithm;
-        this.claims = Collections.unmodifiableMap(claims);
-        this.clock = clock;
+        this.expectedChecks = Collections.unmodifiableList(expectedChecks);
+        this.parser = new JWTParser();
     }
 
     /**
-     * Initialize a JWTVerifier instance using the given Algorithm.
+     * Initialize a {@link Verification} instance using the given Algorithm.
      *
      * @param algorithm the Algorithm to use on the JWT verification.
-     * @return a JWTVerifier.Verification instance to configure.
+     * @return a {@link Verification} instance to configure.
      * @throws IllegalArgumentException if the provided algorithm is null.
      */
     static Verification init(Algorithm algorithm) throws IllegalArgumentException {
@@ -42,12 +46,19 @@ public final class JWTVerifier {
     }
 
     /**
-     * The Verification class holds the Claims required by a JWT to be valid.
+     * {@link Verification} implementation that accepts all the expected Claim values for verification, and
+     * builds a {@link com.auth0.jwt.interfaces.JWTVerifier} used to verify a JWT's signature and expected claims.
+     *
+     * Note that this class is <strong>not</strong> thread-safe. Calling {@link #build()} returns an instance of
+     * {@link com.auth0.jwt.interfaces.JWTVerifier} which can be reused.
      */
     public static class BaseVerification implements Verification {
         private final Algorithm algorithm;
-        private final Map<String, Object> claims;
+        private final List<ExpectedCheckHolder> expectedChecks;
         private long defaultLeeway;
+        private final Map<String, Long> customLeeways;
+        private boolean ignoreIssuedAt;
+        private Clock clock;
 
         BaseVerification(Algorithm algorithm) throws IllegalArgumentException {
             if (algorithm == null) {
@@ -55,54 +66,66 @@ public final class JWTVerifier {
             }
 
             this.algorithm = algorithm;
-            this.claims = new HashMap<>();
+            this.expectedChecks = new ArrayList<>();
+            this.customLeeways = new HashMap<>();
             this.defaultLeeway = 0;
         }
 
-        /**
-         * Require a specific Issuer ("iss") claim.
-         *
-         * @param issuer the required Issuer value
-         * @return this same Verification instance.
-         */
         @Override
-        public Verification withIssuer(String issuer) {
-            requireClaim(PublicClaims.ISSUER, issuer);
+        public Verification withIssuer(String... issuer) {
+            List<String> value = isNullOrEmpty(issuer) ? null : Arrays.asList(issuer);
+            addCheck(RegisteredClaims.ISSUER, ((claim, decodedJWT) -> {
+                if (verifyNull(claim, value)) {
+                    return true;
+                }
+                if (value == null || !value.contains(claim.asString())) {
+                    throw new IncorrectClaimException(
+                            "The Claim 'iss' value doesn't match the required issuer.", RegisteredClaims.ISSUER, claim);
+                }
+                return true;
+            }));
             return this;
         }
 
-        /**
-         * Require a specific Subject ("sub") claim.
-         *
-         * @param subject the required Subject value
-         * @return this same Verification instance.
-         */
         @Override
         public Verification withSubject(String subject) {
-            requireClaim(PublicClaims.SUBJECT, subject);
+            addCheck(RegisteredClaims.SUBJECT, (claim, decodedJWT) ->
+                    verifyNull(claim, subject) || subject.equals(claim.asString()));
             return this;
         }
 
-        /**
-         * Require a specific Audience ("aud") claim.
-         *
-         * @param audience the required Audience value
-         * @return this same Verification instance.
-         */
         @Override
         public Verification withAudience(String... audience) {
-            requireClaim(PublicClaims.AUDIENCE, Arrays.asList(audience));
+            List<String> value = isNullOrEmpty(audience) ? null : Arrays.asList(audience);
+            addCheck(RegisteredClaims.AUDIENCE, ((claim, decodedJWT) -> {
+                if (verifyNull(claim, value)) {
+                    return true;
+                }
+                if (!assertValidAudienceClaim(decodedJWT.getAudience(), value, true)) {
+                    throw new IncorrectClaimException("The Claim 'aud' value doesn't contain the required audience.",
+                            RegisteredClaims.AUDIENCE, claim);
+                }
+                return true;
+            }));
             return this;
         }
 
-        /**
-         * Define the default window in seconds in which the Not Before, Issued At and Expires At Claims will still be valid.
-         * Setting a specific leeway value on a given Claim will override this value for that Claim.
-         *
-         * @param leeway the window in seconds in which the Not Before, Issued At and Expires At Claims will still be valid.
-         * @return this same Verification instance.
-         * @throws IllegalArgumentException if leeway is negative.
-         */
+        @Override
+        public Verification withAnyOfAudience(String... audience) {
+            List<String> value = isNullOrEmpty(audience) ? null : Arrays.asList(audience);
+            addCheck(RegisteredClaims.AUDIENCE, ((claim, decodedJWT) -> {
+                if (verifyNull(claim, value)) {
+                    return true;
+                }
+                if (!assertValidAudienceClaim(decodedJWT.getAudience(), value, false)) {
+                    throw new IncorrectClaimException("The Claim 'aud' value doesn't contain the required audience.",
+                            RegisteredClaims.AUDIENCE, claim);
+                }
+                return true;
+            }));
+            return this;
+        }
+
         @Override
         public Verification acceptLeeway(long leeway) throws IllegalArgumentException {
             assertPositive(leeway);
@@ -110,176 +133,147 @@ public final class JWTVerifier {
             return this;
         }
 
-        /**
-         * Set a specific leeway window in seconds in which the Expires At ("exp") Claim will still be valid.
-         * Expiration Date is always verified when the value is present. This method overrides the value set with acceptLeeway
-         *
-         * @param leeway the window in seconds in which the Expires At Claim will still be valid.
-         * @return this same Verification instance.
-         * @throws IllegalArgumentException if leeway is negative.
-         */
         @Override
         public Verification acceptExpiresAt(long leeway) throws IllegalArgumentException {
             assertPositive(leeway);
-            requireClaim(PublicClaims.EXPIRES_AT, leeway);
+            customLeeways.put(RegisteredClaims.EXPIRES_AT, leeway);
             return this;
         }
 
-        /**
-         * Set a specific leeway window in seconds in which the Not Before ("nbf") Claim will still be valid.
-         * Not Before Date is always verified when the value is present. This method overrides the value set with acceptLeeway
-         *
-         * @param leeway the window in seconds in which the Not Before Claim will still be valid.
-         * @return this same Verification instance.
-         * @throws IllegalArgumentException if leeway is negative.
-         */
         @Override
         public Verification acceptNotBefore(long leeway) throws IllegalArgumentException {
             assertPositive(leeway);
-            requireClaim(PublicClaims.NOT_BEFORE, leeway);
+            customLeeways.put(RegisteredClaims.NOT_BEFORE, leeway);
             return this;
         }
 
-        /**
-         * Set a specific leeway window in seconds in which the Issued At ("iat") Claim will still be valid.
-         * Issued At Date is always verified when the value is present. This method overrides the value set with acceptLeeway
-         *
-         * @param leeway the window in seconds in which the Issued At Claim will still be valid.
-         * @return this same Verification instance.
-         * @throws IllegalArgumentException if leeway is negative.
-         */
         @Override
         public Verification acceptIssuedAt(long leeway) throws IllegalArgumentException {
             assertPositive(leeway);
-            requireClaim(PublicClaims.ISSUED_AT, leeway);
+            customLeeways.put(RegisteredClaims.ISSUED_AT, leeway);
             return this;
         }
 
-        /**
-         * Require a specific JWT Id ("jti") claim.
-         *
-         * @param jwtId the required Id value
-         * @return this same Verification instance.
-         */
+        @Override
+        public Verification ignoreIssuedAt() {
+            this.ignoreIssuedAt = true;
+            return this;
+        }
+
         @Override
         public Verification withJWTId(String jwtId) {
-            requireClaim(PublicClaims.JWT_ID, jwtId);
+            addCheck(RegisteredClaims.JWT_ID, ((claim, decodedJWT) ->
+                    verifyNull(claim, jwtId) || jwtId.equals(claim.asString())));
             return this;
         }
 
-        /**
-         * Require a specific Claim value.
-         *
-         * @param name  the Claim's name.
-         * @param value the Claim's value.
-         * @return this same Verification instance.
-         * @throws IllegalArgumentException if the name is null.
-         */
+        @Override
+        public Verification withClaimPresence(String name) throws IllegalArgumentException {
+            assertNonNull(name);
+            //since addCheck already checks presence, we just return true
+            withClaim(name, ((claim, decodedJWT) -> true));
+            return this;
+        }
+
+        @Override
+        public Verification withNullClaim(String name) throws IllegalArgumentException {
+            assertNonNull(name);
+            withClaim(name, ((claim, decodedJWT) -> claim.isNull()));
+            return this;
+        }
+
         @Override
         public Verification withClaim(String name, Boolean value) throws IllegalArgumentException {
             assertNonNull(name);
-            requireClaim(name, value);
+            addCheck(name, ((claim, decodedJWT) -> verifyNull(claim, value)
+                    || value.equals(claim.asBoolean())));
             return this;
         }
 
-        /**
-         * Require a specific Claim value.
-         *
-         * @param name  the Claim's name.
-         * @param value the Claim's value.
-         * @return this same Verification instance.
-         * @throws IllegalArgumentException if the name is null.
-         */
         @Override
         public Verification withClaim(String name, Integer value) throws IllegalArgumentException {
             assertNonNull(name);
-            requireClaim(name, value);
+            addCheck(name, ((claim, decodedJWT) -> verifyNull(claim, value)
+                    || value.equals(claim.asInt())));
             return this;
         }
 
-        /**
-         * Require a specific Claim value.
-         *
-         * @param name  the Claim's name.
-         * @param value the Claim's value.
-         * @return this same Verification instance.
-         * @throws IllegalArgumentException if the name is null.
-         */
+        @Override
+        public Verification withClaim(String name, Long value) throws IllegalArgumentException {
+            assertNonNull(name);
+            addCheck(name, ((claim, decodedJWT) -> verifyNull(claim, value)
+                    || value.equals(claim.asLong())));
+            return this;
+        }
+
         @Override
         public Verification withClaim(String name, Double value) throws IllegalArgumentException {
             assertNonNull(name);
-            requireClaim(name, value);
+            addCheck(name, ((claim, decodedJWT) -> verifyNull(claim, value)
+                    || value.equals(claim.asDouble())));
             return this;
         }
 
-        /**
-         * Require a specific Claim value.
-         *
-         * @param name  the Claim's name.
-         * @param value the Claim's value.
-         * @return this same Verification instance.
-         * @throws IllegalArgumentException if the name is null.
-         */
         @Override
         public Verification withClaim(String name, String value) throws IllegalArgumentException {
             assertNonNull(name);
-            requireClaim(name, value);
+            addCheck(name, ((claim, decodedJWT) -> verifyNull(claim, value)
+                    || value.equals(claim.asString())));
             return this;
         }
 
-        /**
-         * Require a specific Claim value.
-         *
-         * @param name  the Claim's name.
-         * @param value the Claim's value.
-         * @return this same Verification instance.
-         * @throws IllegalArgumentException if the name is null.
-         */
         @Override
         public Verification withClaim(String name, Date value) throws IllegalArgumentException {
+            return withClaim(name, value != null ? value.toInstant() : null);
+        }
+
+        @Override
+        public Verification withClaim(String name, Instant value) throws IllegalArgumentException {
             assertNonNull(name);
-            requireClaim(name, value);
+            // Since date-time claims are serialized as epoch seconds,
+            // we need to compare them with only seconds-granularity
+            addCheck(name,
+                    ((claim, decodedJWT) -> verifyNull(claim, value)
+                            || value.truncatedTo(ChronoUnit.SECONDS).equals(claim.asInstant())));
             return this;
         }
 
-        /**
-         * Require a specific Array Claim to contain at least the given items.
-         *
-         * @param name  the Claim's name.
-         * @param items the items the Claim must contain.
-         * @return this same Verification instance.
-         * @throws IllegalArgumentException if the name is null.
-         */
+        @Override
+        public Verification withClaim(String name, BiPredicate<Claim, DecodedJWT> predicate)
+                throws IllegalArgumentException {
+            assertNonNull(name);
+            addCheck(name, ((claim, decodedJWT) -> verifyNull(claim, predicate)
+                    || predicate.test(claim, decodedJWT)));
+            return this;
+        }
+
         @Override
         public Verification withArrayClaim(String name, String... items) throws IllegalArgumentException {
             assertNonNull(name);
-            requireClaim(name, items);
+            addCheck(name, ((claim, decodedJWT) -> verifyNull(claim, items)
+                    || assertValidCollectionClaim(claim, items)));
             return this;
         }
 
-        /**
-         * Require a specific Array Claim to contain at least the given items.
-         *
-         * @param name  the Claim's name.
-         * @param items the items the Claim must contain.
-         * @return this same Verification instance.
-         * @throws IllegalArgumentException if the name is null.
-         */
         @Override
         public Verification withArrayClaim(String name, Integer... items) throws IllegalArgumentException {
             assertNonNull(name);
-            requireClaim(name, items);
+            addCheck(name, ((claim, decodedJWT) -> verifyNull(claim, items)
+                    || assertValidCollectionClaim(claim, items)));
             return this;
         }
 
-        /**
-         * Creates a new and reusable instance of the JWTVerifier with the configuration already provided.
-         *
-         * @return a new JWTVerifier instance.
-         */
+        @Override
+        public Verification withArrayClaim(String name, Long... items) throws IllegalArgumentException {
+            assertNonNull(name);
+            addCheck(name, ((claim, decodedJWT) -> verifyNull(claim, items)
+                    || assertValidCollectionClaim(claim, items)));
+            return this;
+        }
+
         @Override
         public JWTVerifier build() {
-            return this.build(new ClockImpl());
+            return this.build(Clock.systemUTC());
         }
 
         /**
@@ -287,11 +281,102 @@ public final class JWTVerifier {
          * ONLY FOR TEST PURPOSES.
          *
          * @param clock the instance that will handle the current time.
-         * @return a new JWTVerifier instance with a custom Clock.
+         * @return a new JWTVerifier instance with a custom {@link java.time.Clock}
          */
         public JWTVerifier build(Clock clock) {
-            addLeewayToDateClaims();
-            return new JWTVerifier(algorithm, claims, clock);
+            this.clock = clock;
+            addMandatoryClaimChecks();
+            return new JWTVerifier(algorithm, expectedChecks);
+        }
+
+        /**
+         * Fetches the Leeway set for claim or returns the {@link BaseVerification#defaultLeeway}.
+         *
+         * @param name Claim for which leeway is fetched
+         * @return Leeway value set for the claim
+         */
+        public long getLeewayFor(String name) {
+            return customLeeways.getOrDefault(name, defaultLeeway);
+        }
+
+        private void addMandatoryClaimChecks() {
+            long expiresAtLeeway = getLeewayFor(RegisteredClaims.EXPIRES_AT);
+            long notBeforeLeeway = getLeewayFor(RegisteredClaims.NOT_BEFORE);
+            long issuedAtLeeway = getLeewayFor(RegisteredClaims.ISSUED_AT);
+
+            expectedChecks.add(constructExpectedCheck(RegisteredClaims.EXPIRES_AT, (claim, decodedJWT) ->
+                    assertValidInstantClaim(RegisteredClaims.EXPIRES_AT, claim, expiresAtLeeway, true)));
+            expectedChecks.add(constructExpectedCheck(RegisteredClaims.NOT_BEFORE, (claim, decodedJWT) ->
+                    assertValidInstantClaim(RegisteredClaims.NOT_BEFORE, claim, notBeforeLeeway, false)));
+            if (!ignoreIssuedAt) {
+                expectedChecks.add(constructExpectedCheck(RegisteredClaims.ISSUED_AT, (claim, decodedJWT) ->
+                        assertValidInstantClaim(RegisteredClaims.ISSUED_AT, claim, issuedAtLeeway, false)));
+            }
+        }
+
+        private boolean assertValidCollectionClaim(Claim claim, Object[] expectedClaimValue) {
+            List<Object> claimArr;
+            Object[] claimAsObject = claim.as(Object[].class);
+
+            // Jackson uses 'natural' mapping which uses Integer if value fits in 32 bits.
+            if (expectedClaimValue instanceof Long[]) {
+                // convert Integers to Longs for comparison with equals
+                claimArr = new ArrayList<>(claimAsObject.length);
+                for (Object cao : claimAsObject) {
+                    if (cao instanceof Integer) {
+                        claimArr.add(((Integer) cao).longValue());
+                    } else {
+                        claimArr.add(cao);
+                    }
+                }
+            } else {
+                claimArr = Arrays.asList(claim.as(Object[].class));
+            }
+            List<Object> valueArr = Arrays.asList(expectedClaimValue);
+            return claimArr.containsAll(valueArr);
+        }
+
+        private boolean assertValidInstantClaim(String claimName, Claim claim, long leeway, boolean shouldBeFuture) {
+            Instant claimVal = claim.asInstant();
+            Instant now = clock.instant().truncatedTo(ChronoUnit.SECONDS);
+            boolean isValid;
+            if (shouldBeFuture) {
+                isValid = assertInstantIsFuture(claimVal, leeway, now);
+                if (!isValid) {
+                    throw new TokenExpiredException(String.format("The Token has expired on %s.", claimVal), claimVal);
+                }
+            } else {
+                isValid = assertInstantIsLessThanOrEqualToNow(claimVal, leeway, now);
+                if (!isValid) {
+                    throw new IncorrectClaimException(
+                            String.format("The Token can't be used before %s.", claimVal), claimName, claim);
+                }
+            }
+            return true;
+        }
+
+        private boolean assertInstantIsFuture(Instant claimVal, long leeway, Instant now) {
+            return claimVal == null || now.minus(Duration.ofSeconds(leeway)).isBefore(claimVal);
+        }
+
+        private boolean assertInstantIsLessThanOrEqualToNow(Instant claimVal, long leeway, Instant now) {
+            return !(claimVal != null && now.plus(Duration.ofSeconds(leeway)).isBefore(claimVal));
+        }
+
+        private boolean assertValidAudienceClaim(
+                List<String> actualAudience,
+                List<String> expectedAudience,
+                boolean shouldContainAll
+        ) {
+            if (actualAudience == null || expectedAudience == null) {
+                return false;
+            }
+
+            if (shouldContainAll) {
+                return actualAudience.containsAll(expectedAudience);
+            } else {
+                return !Collections.disjoint(actualAudience, expectedAudience);
+            }
         }
 
         private void assertPositive(long leeway) {
@@ -306,24 +391,45 @@ public final class JWTVerifier {
             }
         }
 
-        private void addLeewayToDateClaims() {
-            if (!claims.containsKey(PublicClaims.EXPIRES_AT)) {
-                claims.put(PublicClaims.EXPIRES_AT, defaultLeeway);
-            }
-            if (!claims.containsKey(PublicClaims.NOT_BEFORE)) {
-                claims.put(PublicClaims.NOT_BEFORE, defaultLeeway);
-            }
-            if (!claims.containsKey(PublicClaims.ISSUED_AT)) {
-                claims.put(PublicClaims.ISSUED_AT, defaultLeeway);
-            }
+        private void addCheck(String name, BiPredicate<Claim, DecodedJWT> predicate) {
+            expectedChecks.add(constructExpectedCheck(name, (claim, decodedJWT) -> {
+                if (claim.isMissing()) {
+                    throw new MissingClaimException(name);
+                }
+                return predicate.test(claim, decodedJWT);
+            }));
         }
 
-        private void requireClaim(String name, Object value) {
-            if (value == null) {
-                claims.remove(name);
-                return;
+        private ExpectedCheckHolder constructExpectedCheck(String claimName, BiPredicate<Claim, DecodedJWT> check) {
+            return new ExpectedCheckHolder() {
+                @Override
+                public String getClaimName() {
+                    return claimName;
+                }
+
+                @Override
+                public boolean verify(Claim claim, DecodedJWT decodedJWT) {
+                    return check.test(claim, decodedJWT);
+                }
+            };
+        }
+
+        private boolean verifyNull(Claim claim, Object value) {
+            return value == null && claim.isNull();
+        }
+
+        private boolean isNullOrEmpty(String[] args) {
+            if (args == null || args.length == 0) {
+                return true;
             }
-            claims.put(name, value);
+            boolean isAllNull = true;
+            for (String arg : args) {
+                if (arg != null) {
+                    isAllNull = false;
+                    break;
+                }
+            }
+            return isAllNull;
         }
     }
 
@@ -333,111 +439,62 @@ public final class JWTVerifier {
      *
      * @param token to verify.
      * @return a verified and decoded JWT.
-     * @throws JWTVerificationException if any of the required contents inside the JWT is invalid.
+     * @throws AlgorithmMismatchException     if the algorithm stated in the token's header is not equal to
+     *                                        the one defined in the {@link JWTVerifier}.
+     * @throws SignatureVerificationException if the signature is invalid.
+     * @throws TokenExpiredException          if the token has expired.
+     * @throws MissingClaimException          if a claim to be verified is missing.
+     * @throws IncorrectClaimException        if a claim contained a different value than the expected one.
      */
+    @Override
     public DecodedJWT verify(String token) throws JWTVerificationException {
-        DecodedJWT jwt = JWTDecoder.decode(token);
-        verifyAlgorithm(jwt, algorithm);
-        verifySignature(TokenUtils.splitToken(token));
-        verifyClaims(jwt, claims);
-        return jwt;
+        DecodedJWT jwt = new JWTDecoder(parser, token);
+        return verify(jwt);
     }
 
-    private void verifySignature(String[] parts) throws SignatureVerificationException {
-        byte[] content = String.format("%s.%s", parts[0], parts[1]).getBytes(StandardCharsets.UTF_8);
-        byte[] signature = Base64.decodeBase64(parts[2]);
-        algorithm.verify(content, signature);
+    /**
+     * Perform the verification against the given decoded JWT, using any previous configured options.
+     *
+     * @param jwt to verify.
+     * @return a verified and decoded JWT.
+     * @throws AlgorithmMismatchException     if the algorithm stated in the token's header is not equal to
+     *                                        the one defined in the {@link JWTVerifier}.
+     * @throws SignatureVerificationException if the signature is invalid.
+     * @throws TokenExpiredException          if the token has expired.
+     * @throws MissingClaimException          if a claim to be verified is missing.
+     * @throws IncorrectClaimException        if a claim contained a different value than the expected one.
+     */
+    @Override
+    public DecodedJWT verify(DecodedJWT jwt) throws JWTVerificationException {
+        verifyAlgorithm(jwt, algorithm);
+        algorithm.verify(jwt);
+        verifyClaims(jwt, expectedChecks);
+        return jwt;
     }
 
     private void verifyAlgorithm(DecodedJWT jwt, Algorithm expectedAlgorithm) throws AlgorithmMismatchException {
         if (!expectedAlgorithm.getName().equals(jwt.getAlgorithm())) {
-            throw new AlgorithmMismatchException("The provided Algorithm doesn't match the one defined in the JWT's Header.");
+            throw new AlgorithmMismatchException(
+                    "The provided Algorithm doesn't match the one defined in the JWT's Header.");
         }
     }
 
-    private void verifyClaims(DecodedJWT jwt, Map<String, Object> claims) {
-        for (Map.Entry<String, Object> entry : claims.entrySet()) {
-            switch (entry.getKey()) {
-                case PublicClaims.AUDIENCE:
-                    //noinspection unchecked
-                    assertValidAudienceClaim(jwt.getAudience(), (List<String>) entry.getValue());
-                    break;
-                case PublicClaims.EXPIRES_AT:
-                    assertValidDateClaim(jwt.getExpiresAt(), (Long) entry.getValue(), true);
-                    break;
-                case PublicClaims.ISSUED_AT:
-                    assertValidDateClaim(jwt.getIssuedAt(), (Long) entry.getValue(), false);
-                    break;
-                case PublicClaims.NOT_BEFORE:
-                    assertValidDateClaim(jwt.getNotBefore(), (Long) entry.getValue(), false);
-                    break;
-                case PublicClaims.ISSUER:
-                    assertValidStringClaim(entry.getKey(), jwt.getIssuer(), (String) entry.getValue());
-                    break;
-                case PublicClaims.JWT_ID:
-                    assertValidStringClaim(entry.getKey(), jwt.getId(), (String) entry.getValue());
-                    break;
-                case PublicClaims.SUBJECT:
-                    assertValidStringClaim(entry.getKey(), jwt.getSubject(), (String) entry.getValue());
-                    break;
-                default:
-                    assertValidClaim(jwt.getClaim(entry.getKey()), entry.getKey(), entry.getValue());
-                    break;
+    private void verifyClaims(DecodedJWT jwt, List<ExpectedCheckHolder> expectedChecks)
+            throws TokenExpiredException, InvalidClaimException {
+        for (ExpectedCheckHolder expectedCheck : expectedChecks) {
+            boolean isValid;
+            String claimName = expectedCheck.getClaimName();
+            Claim claim = jwt.getClaim(claimName);
+
+            isValid = expectedCheck.verify(claim, jwt);
+
+            if (!isValid) {
+                throw new IncorrectClaimException(
+                        String.format("The Claim '%s' value doesn't match the required one.", claimName),
+                        claimName,
+                        claim
+                );
             }
-        }
-    }
-
-    private void assertValidClaim(Claim claim, String claimName, Object value) {
-        boolean isValid = false;
-        if (value instanceof String) {
-            isValid = value.equals(claim.asString());
-        } else if (value instanceof Integer) {
-            isValid = value.equals(claim.asInt());
-        } else if (value instanceof Boolean) {
-            isValid = value.equals(claim.asBoolean());
-        } else if (value instanceof Double) {
-            isValid = value.equals(claim.asDouble());
-        } else if (value instanceof Date) {
-            isValid = value.equals(claim.asDate());
-        } else if (value instanceof Object[]) {
-            List<Object> claimArr = Arrays.asList(claim.as(Object[].class));
-            List<Object> valueArr = Arrays.asList((Object[]) value);
-            isValid = claimArr.containsAll(valueArr);
-        }
-
-        if (!isValid) {
-            throw new InvalidClaimException(String.format("The Claim '%s' value doesn't match the required one.", claimName));
-        }
-    }
-
-    private void assertValidStringClaim(String claimName, String value, String expectedValue) {
-        if (!expectedValue.equals(value)) {
-            throw new InvalidClaimException(String.format("The Claim '%s' value doesn't match the required one.", claimName));
-        }
-    }
-
-    private void assertValidDateClaim(Date date, long leeway, boolean shouldBeFuture) {
-        Date today = clock.getToday();
-        today.setTime((long) Math.floor((today.getTime() / 1000) * 1000)); //truncate millis
-        boolean isValid;
-        String errMessage;
-        if (shouldBeFuture) {
-            today.setTime(today.getTime() - leeway * 1000);
-            isValid = date == null || !today.after(date);
-            errMessage = String.format("The Token has expired on %s.", date);
-        } else {
-            today.setTime(today.getTime() + leeway * 1000);
-            isValid = date == null || !today.before(date);
-            errMessage = String.format("The Token can't be used before %s.", date);
-        }
-        if (!isValid) {
-            throw new InvalidClaimException(errMessage);
-        }
-    }
-
-    private void assertValidAudienceClaim(List<String> audience, List<String> value) {
-        if (audience == null || !audience.containsAll(value)) {
-            throw new InvalidClaimException("The Claim 'aud' value doesn't contain the required audience.");
         }
     }
 }

@@ -12,17 +12,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.*;
 import org.hamcrest.collection.IsCollectionWithSize;
 import org.hamcrest.collection.IsEmptyCollection;
-import org.hamcrest.core.IsCollectionContaining;
+import org.hamcrest.core.IsIterableContaining;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import java.io.StringReader;
+import java.time.Instant;
 import java.util.*;
 
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -34,8 +35,11 @@ public class PayloadDeserializerTest {
     public ExpectedException exception = ExpectedException.none();
     private PayloadDeserializer deserializer;
 
+    private ObjectMapper objectMapper;
+
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
+        objectMapper = new ObjectMapper();
         deserializer = new PayloadDeserializer();
     }
 
@@ -67,7 +71,7 @@ public class PayloadDeserializerTest {
         ArrayNode arrNode = new ArrayNode(JsonNodeFactory.instance, subNodes);
         tree.put("key", arrNode);
 
-        deserializer.getStringOrArray(tree, "key");
+        deserializer.getStringOrArray(objectMapper, tree, "key");
     }
 
     @Test
@@ -92,10 +96,13 @@ public class PayloadDeserializerTest {
         assertThat(payload, is(notNullValue()));
         assertThat(payload.getIssuer(), is("auth0"));
         assertThat(payload.getSubject(), is("emails"));
-        assertThat(payload.getAudience(), is(IsCollectionContaining.hasItem("users")));
+        assertThat(payload.getAudience(), is(IsIterableContaining.hasItem("users")));
         assertThat(payload.getIssuedAt().getTime(), is(10101010L * 1000));
         assertThat(payload.getExpiresAt().getTime(), is(11111111L * 1000));
         assertThat(payload.getNotBefore().getTime(), is(10101011L * 1000));
+        assertThat(payload.getIssuedAtAsInstant().getEpochSecond(), is(10101010L));
+        assertThat(payload.getExpiresAtAsInstant().getEpochSecond(), is(11111111L));
+        assertThat(payload.getNotBeforeAsInstant().getEpochSecond(), is(10101011L));
         assertThat(payload.getId(), is("idid"));
 
         assertThat(payload.getClaim("roles").asString(), is("admin"));
@@ -109,7 +116,7 @@ public class PayloadDeserializerTest {
     }
 
     @Test
-    public void shouldGetStringArrayWhenParsingArrayNode() throws Exception {
+    public void shouldGetStringArrayWhenParsingArrayNode() {
         Map<String, JsonNode> tree = new HashMap<>();
         List<JsonNode> subNodes = new ArrayList<>();
         TextNode textNode1 = new TextNode("one");
@@ -119,121 +126,123 @@ public class PayloadDeserializerTest {
         ArrayNode arrNode = new ArrayNode(JsonNodeFactory.instance, subNodes);
         tree.put("key", arrNode);
 
-        List<String> values = deserializer.getStringOrArray(tree, "key");
+        List<String> values = deserializer.getStringOrArray(objectMapper, tree, "key");
         assertThat(values, is(notNullValue()));
         assertThat(values, is(IsCollectionWithSize.hasSize(2)));
-        assertThat(values, is(IsCollectionContaining.hasItems("one", "two")));
+        assertThat(values, is(IsIterableContaining.hasItems("one", "two")));
     }
 
     @Test
-    public void shouldGetStringArrayWhenParsingTextNode() throws Exception {
+    public void shouldGetStringArrayWhenParsingTextNode() {
         Map<String, JsonNode> tree = new HashMap<>();
         TextNode textNode = new TextNode("something");
         tree.put("key", textNode);
 
-        List<String> values = deserializer.getStringOrArray(tree, "key");
+        List<String> values = deserializer.getStringOrArray(objectMapper, tree, "key");
         assertThat(values, is(notNullValue()));
         assertThat(values, is(IsCollectionWithSize.hasSize(1)));
-        assertThat(values, is(IsCollectionContaining.hasItems("something")));
+        assertThat(values, is(IsIterableContaining.hasItems("something")));
     }
 
     @Test
-    public void shouldGetEmptyStringArrayWhenParsingEmptyTextNode() throws Exception {
+    public void shouldGetEmptyStringInArrayWhenParsingEmptyTextNode() {
         Map<String, JsonNode> tree = new HashMap<>();
         TextNode textNode = new TextNode("");
         tree.put("key", textNode);
 
-        List<String> values = deserializer.getStringOrArray(tree, "key");
+        List<String> values = deserializer.getStringOrArray(objectMapper, tree, "key");
         assertThat(values, is(notNullValue()));
-        assertThat(values, is(IsEmptyCollection.empty()));
+        assertThat(values, is(IsIterableContaining.hasItem("")));
     }
 
     @Test
-    public void shouldGetNullArrayWhenParsingNullNode() throws Exception {
+    public void shouldGetNullArrayWhenParsingNullNode() {
         Map<String, JsonNode> tree = new HashMap<>();
         NullNode node = NullNode.getInstance();
         tree.put("key", node);
 
-        List<String> values = deserializer.getStringOrArray(tree, "key");
+        List<String> values = deserializer.getStringOrArray(objectMapper, tree, "key");
         assertThat(values, is(nullValue()));
     }
 
     @Test
-    public void shouldGetNullArrayWhenParsingNullNodeValue() throws Exception {
+    public void shouldGetNullArrayWhenParsingNullNodeValue() {
         Map<String, JsonNode> tree = new HashMap<>();
         tree.put("key", null);
 
-        List<String> values = deserializer.getStringOrArray(tree, "key");
+        List<String> values = deserializer.getStringOrArray(objectMapper, tree, "key");
         assertThat(values, is(nullValue()));
     }
 
     @Test
-    public void shouldGetNullArrayWhenParsingNonArrayOrTextNode() throws Exception {
+    public void shouldGetNullArrayWhenParsingNonArrayOrTextNode() {
         Map<String, JsonNode> tree = new HashMap<>();
         IntNode node = new IntNode(456789);
         tree.put("key", node);
 
-        List<String> values = deserializer.getStringOrArray(tree, "key");
+        List<String> values = deserializer.getStringOrArray(objectMapper, tree, "key");
         assertThat(values, is(nullValue()));
     }
 
-
     @Test
-    public void shouldGetNullDateWhenParsingNullNode() throws Exception {
+    public void shouldGetNullInstantWhenParsingNullNode() {
         Map<String, JsonNode> tree = new HashMap<>();
         NullNode node = NullNode.getInstance();
         tree.put("key", node);
 
-        Date date = deserializer.getDateFromSeconds(tree, "key");
-        assertThat(date, is(nullValue()));
+        Instant instant = deserializer.getInstantFromSeconds(tree, "key");
+        assertThat(instant, is(nullValue()));
     }
 
     @Test
-    public void shouldGetNullDateWhenParsingNull() throws Exception {
+    public void shouldGetNullInstantWhenParsingNull() {
         Map<String, JsonNode> tree = new HashMap<>();
         tree.put("key", null);
 
-        Date date = deserializer.getDateFromSeconds(tree, "key");
-        assertThat(date, is(nullValue()));
+        Instant instant  = deserializer.getInstantFromSeconds(tree, "key");
+        assertThat(instant, is(nullValue()));
     }
 
     @Test
-    public void shouldGetNullDateWhenParsingNonNumericNode() throws Exception {
+    public void shouldThrowWhenParsingNonNumericNode() {
+        exception.expect(JWTDecodeException.class);
+        exception.expectMessage("The claim 'key' contained a non-numeric date value.");
+
         Map<String, JsonNode> tree = new HashMap<>();
         TextNode node = new TextNode("123456789");
         tree.put("key", node);
 
-        Date date = deserializer.getDateFromSeconds(tree, "key");
-        assertThat(date, is(nullValue()));
+        deserializer.getInstantFromSeconds(tree, "key");
     }
 
     @Test
-    public void shouldGetDateWhenParsingNumericNode() throws Exception {
+    public void shouldGetInstantWhenParsingNumericNode() {
         Map<String, JsonNode> tree = new HashMap<>();
         long seconds = 1478627949 / 1000;
         LongNode node = new LongNode(seconds);
         tree.put("key", node);
 
-        Date date = deserializer.getDateFromSeconds(tree, "key");
-        assertThat(date, is(notNullValue()));
-        assertThat(date.getTime(), is(seconds * 1000));
+        Instant instant = deserializer.getInstantFromSeconds(tree, "key");
+        assertThat(instant, is(notNullValue()));
+        assertThat(instant.toEpochMilli(), is(seconds * 1000));
     }
 
+
     @Test
-    public void shouldGetLargeDateWhenParsingNumericNode() throws Exception {
+    public void shouldGetLargeInstantWhenParsingNumericNode() {
         Map<String, JsonNode> tree = new HashMap<>();
         long seconds = Integer.MAX_VALUE + 10000L;
         LongNode node = new LongNode(seconds);
         tree.put("key", node);
 
-        Date date = deserializer.getDateFromSeconds(tree, "key");
-        assertThat(date, is(notNullValue()));
-        assertThat(date.getTime(), is(seconds * 1000));
-        assertThat(date.getTime(), is(2147493647L * 1000));
+        Instant instant = deserializer.getInstantFromSeconds(tree, "key");
+        assertThat(instant, is(notNullValue()));
+        assertThat(instant.toEpochMilli(), is(seconds * 1000));
+        assertThat(instant.toEpochMilli(), is(2147493647L * 1000));
     }
 
     @Test
-    public void shouldGetNullStringWhenParsingNullNode() throws Exception {
+    public void shouldGetNullStringWhenParsingNullNode() {
         Map<String, JsonNode> tree = new HashMap<>();
         NullNode node = NullNode.getInstance();
         tree.put("key", node);
@@ -243,7 +252,7 @@ public class PayloadDeserializerTest {
     }
 
     @Test
-    public void shouldGetNullStringWhenParsingNull() throws Exception {
+    public void shouldGetNullStringWhenParsingNull() {
         Map<String, JsonNode> tree = new HashMap<>();
         tree.put("key", null);
 
@@ -252,7 +261,7 @@ public class PayloadDeserializerTest {
     }
 
     @Test
-    public void shouldGetStringWhenParsingTextNode() throws Exception {
+    public void shouldGetStringWhenParsingTextNode() {
         Map<String, JsonNode> tree = new HashMap<>();
         TextNode node = new TextNode("something here");
         tree.put("key", node);

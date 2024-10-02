@@ -1,46 +1,92 @@
-apply plugin: 'jacoco'
-apply plugin: 'java'
-apply from: '../scripts/release.gradle'
-apply from: '../scripts/maven.gradle'
-apply from: '../scripts/bintray.gradle'
+
+plugins {
+    id 'java'
+    id 'jacoco'
+    id 'com.auth0.gradle.oss-library.java'
+    id 'checkstyle'
+}
+
+sourceSets {
+    jmh {
+
+    }
+}
+
+configurations {
+    jmhImplementation {
+        extendsFrom implementation
+    }
+}
+
+checkstyle {
+    toolVersion '10.0'
+}
+//We are disabling lint checks for tests
+tasks.named("checkstyleTest").configure({
+    enabled = false
+})
+tasks.named("checkstyleJmh").configure({
+    enabled = false
+})
 
 logger.lifecycle("Using version ${version} for ${group}.${name}")
 
-auth0 {
+oss {
     name "java jwt"
-    repo "java-jwt"
+    repository "java-jwt"
+    organization "auth0"
     description "Java implementation of JSON Web Token (JWT)"
-    url  'http://www.jwt.io'
-    developer {
-        id = "auth0"
-        name = "Auth0"
-        email = "oss@auth0.com"
+    baselineCompareVersion "4.1.0"
+
+    developers {
+        auth0 {
+            displayName = "Auth0"
+            email = "oss@auth0.com"
+        }
+        lbalmaceda {
+            displayName = "Luciano Balmaceda"
+            email = "luciano.balmaceda@auth0.com"
+        }
+        hzalaz {
+            displayName = "Hernan Zalazar"
+            email = "hernan@auth0.com"
+        }
     }
-    developer {
-        id = "lbalmaceda"
-        name = "Luciano Balmaceda"
-        email = "luciano.balmaceda@auth0.com"
-    }
-    developer {
-        id = "hzalaz"
-        name = "Hernan Zalazar"
-        email = "hernan@auth0.com"
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(11)
     }
 }
 
 compileJava {
-    sourceCompatibility '1.7'
-    targetCompatibility '1.7'
+    exclude 'module-info.java'
+    // Required to be compatible with JDK 8+
+    options.release = 8
+}
+
+javadoc {
+    // Exclude internal implementation package from javadoc
+    excludes = ['com/auth0/jwt/impl', 'module-info.java']
 }
 
 dependencies {
-    compile 'com.fasterxml.jackson.core:jackson-databind:2.8.4'
-    compile 'commons-codec:commons-codec:1.10'
-    compile 'org.bouncycastle:bcprov-jdk15on:1.55'
-    testCompile 'junit:junit:4.12'
-    testCompile 'net.jodah:concurrentunit:0.4.2'
-    testCompile 'org.hamcrest:hamcrest-library:1.3'
-    testCompile 'org.mockito:mockito-core:2.2.8'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.14.2'
+
+    testImplementation 'org.bouncycastle:bcprov-jdk15on:1.70'
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'net.jodah:concurrentunit:0.4.6'
+    testImplementation 'org.hamcrest:hamcrest:2.2'
+    testImplementation 'org.mockito:mockito-core:4.4.0'
+
+    jmhImplementation sourceSets.main.output
+    jmhImplementation 'org.openjdk.jmh:jmh-core:1.35'
+    jmhAnnotationProcessor 'org.openjdk.jmh:jmh-generator-annprocess:1.35'
+}
+
+jacoco {
+    toolVersion = "0.8.7"
 }
 
 jacocoTestReport {
@@ -57,7 +103,87 @@ test {
     }
 }
 
-task clean(type: Delete) {
-    delete rootProject.buildDir
-    delete 'CHANGELOG.md.release'
+task compileModuleInfoJava(type: JavaCompile) {
+    classpath = files()
+    source = 'src/main/java/module-info.java'
+    destinationDir = compileJava.destinationDir
+    doLast {
+        def descriptor = new File(compileJava.destinationDir, 'module-info.class')
+        def dest = new File(compileJava.destinationDir, 'META-INF/versions/9')
+        ant.move file: descriptor, todir: dest
+    }
+
+    doFirst {
+        options.compilerArgs = [
+                '--release', '9',
+                '--module-path', compileJava.classpath.asPath
+        ]
+    }
 }
+
+compileTestJava {
+    options.release = 8
+    options.compilerArgs = ["-Xlint:deprecation"]
+}
+
+def testJava8 = tasks.register('testJava8', Test) {
+    description = 'Runs unit tests on Java 8.'
+    group = 'verification'
+
+    javaLauncher.set(javaToolchains.launcherFor {
+        languageVersion = JavaLanguageVersion.of(8)
+    })
+    shouldRunAfter(tasks.named('test'))
+}
+
+def testJava17 = tasks.register('testJava17', Test) {
+    description = 'Runs unit tests on Java 17.'
+    group = 'verification'
+
+    javaLauncher.set(javaToolchains.launcherFor {
+        languageVersion = JavaLanguageVersion.of(17)
+    })
+    shouldRunAfter(tasks.named('test'))
+}
+
+tasks.named('check') {
+    dependsOn(testJava8)
+    dependsOn(testJava17)
+}
+
+jar {
+    manifest.attributes('Multi-Release': 'true')
+}
+
+compileModuleInfoJava.dependsOn compileJava
+classes.dependsOn compileModuleInfoJava
+
+// Creates a version.txt file containing the current version of the SDK.
+// This file is picked up and parsed by our Ship Orb to determine the version.
+task exportVersion()  {
+    doLast {
+        new File(rootDir, "version.txt").text = "$version"
+    }
+}
+
+// you can pass any arguments JMH accepts via Gradle args.
+// Example: ./gradlew runJMH --args="-lrf"
+tasks.register('runJMH', JavaExec) {
+    description 'Run JMH benchmarks.'
+    group 'verification'
+
+    main 'org.openjdk.jmh.Main'
+    classpath sourceSets.jmh.runtimeClasspath
+
+    args project.hasProperty("args") ? project.property("args").split() : ""
+}
+tasks.register('jmhHelp', JavaExec) {
+    description 'Prints the available command line options for JMH.'
+    group 'help'
+
+    main 'org.openjdk.jmh.Main'
+    classpath sourceSets.jmh.runtimeClasspath
+
+    args '-h'
+}
+

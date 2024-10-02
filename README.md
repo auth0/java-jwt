@@ -1,36 +1,31 @@
+> **Note**
+> As part of our ongoing commitment to best security practices, we have rotated the signing keys used to sign previous releases of this SDK. As a result, new patch builds have been released using the new signing key. Please upgrade at your earliest convenience.
+>
+> While this change won't affect most developers, if you have implemented a dependency signature validation step in your build process, you may notice a warning that past releases can't be verified. This is expected, and a result of the key rotation process. Updating to the latest version will resolve this for you.
 
+![A Java implementation of JSON Web Token (JWT) - RFC 7519.](https://cdn.auth0.com/website/sdks/banners/java-jwt-banner.png)
 
-# Java JWT
+![Build Status](https://img.shields.io/github/checks-status/auth0/java-jwt/master)
+[![Coverage Status](https://img.shields.io/codecov/c/github/auth0/java-jwt.svg?style=flat-square)](https://codecov.io/github/auth0/java-jwt)
+[![License](http://img.shields.io/:license-mit-blue.svg?style=flat)](https://doge.mit-license.org/)
+[![Maven Central](https://img.shields.io/maven-central/v/com.auth0/java-jwt.svg?style=flat-square)](https://mvnrepository.com/artifact/com.auth0/java-jwt)
+[![javadoc](https://javadoc.io/badge2/com.auth0/auth0/javadoc.svg)](https://javadoc.io/doc/com.auth0/java-jwt)
 
-[![Build Status](https://travis-ci.org/auth0/java-jwt.svg?branch=v3)](https://travis-ci.org/auth0/java-jwt)
-[![Coverage Status](https://img.shields.io/codecov/c/github/auth0/java-jwt/v3.svg?style=flat-square)](https://codecov.io/github/auth0/java-jwt)
-[![License](http://img.shields.io/:license-mit-blue.svg?style=flat)](http://doge.mit-license.org)
+:books: [Documentation](#documentation) - :rocket: [Getting Started](#getting-started) - :computer: [API Reference](#api-reference) :speech_balloon: [Feedback](#feedback)
 
-A Java implementation of [JSON Web Tokens (draft-ietf-oauth-json-web-token-08)](http://self-issued.info/docs/draft-ietf-oauth-json-web-token.html).
+## Documentation
+- [Examples](./EXAMPLES.md) - code samples for common java-jwt scenarios.
+- [Docs site](https://www.auth0.com/docs) - explore our docs site and learn more about Auth0.
 
-If you're looking for an *Android* version of the JWT Decoder take a look at our [JWTDecode.Android](https://github.com/auth0/JWTDecode.Android) library.
+## Getting Started
 
-## Installation
+### Requirements
 
-### Maven
+This library is supported for Java LTS versions 8, 11, and 17. For issues on non-LTS versions above 8, consideration will be given on a case-by-case basis.
 
-```xml
-<dependency>
-    <groupId>com.auth0</groupId>
-    <artifactId>java-jwt</artifactId>
-    <version>3.1.0</version>
-</dependency>
-```
+> `java-jwt` is intended for server-side JVM applications. Android applications should use [JWTDecode.Android](https://github.com/auth0/JWTDecode.Android).
 
-### Gradle
-
-```gradle
-compile 'com.auth0:java-jwt:3.1.0'
-```
-
-## Available Algorithms
-
-The library implements JWT Verification and Signing using the following algorithms:
+`java-jwt` supports the following algorithms for both signing and verification:
 
 | JWS | Algorithm | Description |
 | :-------------: | :-------------: | :----- |
@@ -44,321 +39,99 @@ The library implements JWT Verification and Signing using the following algorith
 | ES384 | ECDSA384 | ECDSA with curve P-384 and SHA-384 |
 | ES512 | ECDSA512 | ECDSA with curve P-521 and SHA-512 |
 
-## Usage
+> Note - Support for ECDSA with curve secp256k1 and SHA-256 (ES256K) has been dropped since it has been [disabled in Java 15](https://www.oracle.com/java/technologies/javase/15-relnote-issues.html#JDK-8237219)
 
-### Create and Sign a Token
+> :warning:  **Important security note:** JVM has a critical vulnerability for ECDSA Algorithms - [CVE-2022-21449](https://nvd.nist.gov/vuln/detail/CVE-2022-21449). Please review the details of the vulnerability and update your environment.
+### Installation
 
-You'll first need to create a `JWTCreator` instance by calling `JWT.create()`. Use the builder to define the custom Claims your token needs to have. Finally to get the String token call `sign()` and pass the Algorithm instance.
+Add the dependency via Maven:
 
-* Example using `HS256`
+```xml
+<dependency>
+  <groupId>com.auth0</groupId>
+  <artifactId>java-jwt</artifactId>
+  <version>4.4.0</version>
+</dependency>
+```
+
+or Gradle:
+
+```gradle
+implementation 'com.auth0:java-jwt:4.4.0'
+```
+
+### Create a JWT
+
+Use `JWT.create()`, configure the claims, and then call `sign(algorithm)` to sign the JWT.
+
+The example below demonstrates this using the `RS256` signing algorithm:
 
 ```java
 try {
+    Algorithm algorithm = Algorithm.RSA256(rsaPublicKey, rsaPrivateKey);
     String token = JWT.create()
         .withIssuer("auth0")
-        .sign(Algorithm.HMAC256("secret"));
+        .sign(algorithm);
 } catch (JWTCreationException exception){
-    //Invalid Signing configuration / Couldn't convert Claims.
+    // Invalid Signing configuration / Couldn't convert Claims.
 }
 ```
 
-* Example using `RS256`
+### Verify a JWT
 
-```java
-PrivateKey key = //Get the key instance
-try {
-    String token = JWT.create()
-        .withIssuer("auth0")
-        .sign(Algorithm.RSA256(key));
-} catch (JWTCreationException exception){
-    //Invalid Signing configuration / Couldn't convert Claims.
-}
-```
+Create a `JWTVerifier` passing the `Algorithm`, and specify any required claim values.
 
-If a Claim couldn't be converted to JSON or the Key used in the signing process was invalid a `JWTCreationException` will raise.
-
-
-### Verify a Token
-
-You'll first need to create a `JWTVerifier` instance by calling `JWT.require()` and passing the Algorithm instance. If you require the token to have specific Claim values, use the builder to define them. The instance returned by the method `build()` is reusable, so you can define it once and use it to verify different tokens. Finally call `verifier.verify()` passing the token.
-
-* Example using `HS256`
+The following example uses `RS256` to verify the JWT.
 
 ```java
 String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXUyJ9.eyJpc3MiOiJhdXRoMCJ9.AbIJTDMFc7yUa5MhvcP03nJPyCPzZtQcGEp-zWfOkEE";
+DecodedJWT decodedJWT;
 try {
-    JWTVerifier verifier = JWT.require(Algorithm.HMAC256("secret"))
+    Algorithm algorithm = Algorithm.RSA256(rsaPublicKey, rsaPrivateKey);
+    JWTVerifier verifier = JWT.require(algorithm)
+        // specify any specific claim validations
         .withIssuer("auth0")
-        .build(); //Reusable verifier instance
-    JWT jwt = verifier.verify(token);
+        // reusable verifier instance
+        .build();
+        
+    decodedJWT = verifier.verify(token);
 } catch (JWTVerificationException exception){
-    //Invalid signature/claims
+    // Invalid signature/claims
 }
 ```
 
-* Example using `RS256`
+If the token has an invalid signature or the Claim requirement is not met, a `JWTVerificationException` will be thrown.
 
-```java
-String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXUyJ9.eyJpc3MiOiJhdXRoMCJ9.AbIJTDMFc7yUa5MhvcP03nJPyCPzZtQcGEp-zWfOkEE";
-PublicKey key = //Get the key instance
-try {
-    JWTVerifier verifier = JWT.require(Algorithm.RSA256(key))
-        .withIssuer("auth0")
-        .build(); //Reusable verifier instance
-    JWT jwt = verifier.verify(token);
-} catch (JWTVerificationException exception){
-    //Invalid signature/claims
-}
-```
+See the [examples](./EXAMPLES.md) and [JavaDocs](https://javadoc.io/doc/com.auth0/java-jwt/latest) for additional documentation.
 
-If the token has an invalid signature or the Claim requirement is not met, a `JWTVerificationException` will raise.
+## API Reference
 
+- [java-jwt JavaDocs](https://javadoc.io/doc/com.auth0/java-jwt/latest)
 
-#### Time Validation
+## Feedback
 
-The JWT token may include DateNumber fields that can be used to validate that:
-* The token was issued in a past date `"iat" < TODAY`
-* The token hasn't expired yet `"exp" > TODAY` and
-* The token can already be used. `"nbf" > TODAY`
+### Contributing
 
-When verifying a token the time validation occurs automatically, resulting in a `JWTVerificationException` being throw when the values are invalid. If any of the previous fields are missing they won't be considered in this validation.
+We appreciate feedback and contribution to this repo! Before you get started, please see the following:
 
-To specify a **leeway window** in which the Token should still be considered valid, use the `acceptLeeway()` method in the `JWTVerifier` builder and pass a positive seconds value. This applies to every item listed above.
+- [Auth0's general contribution guidelines](https://github.com/auth0/open-source-template/blob/master/GENERAL-CONTRIBUTING.md)
+- [Auth0's code of conduct guidelines]((https://github.com/auth0/open-source-template/blob/master/CODE-OF-CONDUCT.md))
 
-```java
-JWTVerifier verifier = JWT.require(Algorithm.RSA256(key))
-    .acceptLeeway(1) // 1 sec for nbf, iat and exp
-    .build();
-```
+### Raise an issue
+To provide feedback or report a bug, [please raise an issue on our issue tracker](https://github.com/auth0/java-jwt/issues).
 
-You can also specify a custom value for a given Date claim and override the default one for only that claim.
+### Vulnerability Reporting
+Please do not report security vulnerabilities on the public Github issue tracker. The [Responsible Disclosure Program](https://auth0.com/whitehat) details the procedure for disclosing security issues.
 
-```java
-JWTVerifier verifier = JWT.require(Algorithm.RSA256(key))
-    .acceptLeeway(1)   //1 sec for nbf and iat
-    .acceptExpiresAt(5)   //5 secs for exp
-    .build();
-```
+---
 
-If you need to test this behaviour in your lib/app cast the `Verification` instance to a `BaseVerification` to gain visibility of the `verification.build()` method that accepts a custom `Clock`. e.g.:
-
-```java
-BaseVerification verification = (BaseVerification) JWT.require(Algorithm.RSA256(key))
-    .acceptLeeway(1)
-    .acceptExpiresAt(5);
-Clock clock = new CustomClock(); //Must implement Clock interface
-JWTVerifier verifier = verification.build(clock);
-```
-
-### Decode a Token
-
-```java
-String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXUyJ9.eyJpc3MiOiJhdXRoMCJ9.AbIJTDMFc7yUa5MhvcP03nJPyCPzZtQcGEp-zWfOkEE";
-try {
-    JWT jwt = JWT.decode(token);
-} catch (JWTDecodeException exception){
-    //Invalid token
-}
-```
-
-If the token has an invalid syntax or the header or payload are not JSONs, a `JWTDecodeException` will raise.
-
-
-### Header Claims
-
-#### Algorithm ("alg")
-
-Returns the Algorithm value or null if it's not defined in the Header.
-
-```java
-String algorithm = jwt.getAlgorithm();
-```
-
-#### Type ("typ")
-
-Returns the Type value or null if it's not defined in the Header.
-
-```java
-String type = jwt.getType();
-```
-
-#### Content Type ("cty")
-
-Returns the Content Type value or null if it's not defined in the Header.
-
-```java
-String contentType = jwt.getContentType();
-```
-
-#### Key Id ("kid")
-
-Returns the Key Id value or null if it's not defined in the Header.
-
-```java
-String keyId = jwt.getKeyId();
-```
-
-#### Private Claims
-
-Additional Claims defined in the token's Header can be obtained by calling `getHeaderClaim()` and passing the Claim name. A Claim will always be returned, even if it can't be found. You can check if a Claim's value is null by calling `claim.isNull()`.
-
-```java
-Claim claim = jwt.getHeaderClaim("owner");
-```
-
-When creating a Token with the `JWT.create()` you can specify header Claims by calling `withHeader()` and passing both the map of claims. 
-
-```java
-Map<String, Object> headerClaims = new HashMap();
-headerclaims.put("owner", "auth0");
-JWT.create()
-    .withHeader(headerClaims)
-    .sign(Algorithm.HMAC256("secret"));
-```
-
-> The `alg` and `typ` values will always be included in the Header after the signing process.
-
-
-### Payload Claims
-
-#### Issuer ("iss")
-
-Returns the Issuer value or null if it's not defined in the Payload.
-
-```java
-String issuer = jwt.getIssuer();
-```
-
-#### Subject ("sub")
-
-Returns the Subject value or null if it's not defined in the Payload.
-
-```java
-String subject = jwt.getSubject();
-```
-
-#### Audience ("aud")
-
-Returns the Audience value or null if it's not defined in the Payload.
-
-```java
-List<String> audience = jwt.getAudience();
-```
-
-#### Expiration Time ("exp")
-
-Returns the Expiration Time value or null if it's not defined in the Payload.
-
-```java
-Date expiresAt = jwt.getExpiresAt();
-```
-
-#### Not Before ("nbf")
-
-Returns the Not Before value or null if it's not defined in the Payload.
-
-```java
-Date notBefore = jwt.getNotBefore();
-```
-
-#### Issued At ("iat")
-
-Returns the Issued At value or null if it's not defined in the Payload.
-
-```java
-Date issuedAt = jwt.getIssuedAt();
-```
-
-#### JWT ID ("jti")
-
-Returns the JWT ID value or null if it's not defined in the Payload.
-
-```java
-String id = jwt.getId();
-```
-
-#### Private Claims
-
-Additional Claims defined in the token's Payload can be obtained by calling `getClaims()` or `getClaim()` and passing the Claim name. A Claim will always be returned, even if it can't be found. You can check if a Claim's value is null by calling `claim.isNull()`.
-
-```java
-Map<String, Claim> claims = jwt.getClaims();    //Key is the Claim name
-Claim claim = claims.get("isAdmin");
-```
-
-or
-
-```java
-Claim claim = jwt.getClaim("isAdmin");
-```
-
-When creating a Token with the `JWT.create()` you can specify a custom Claim by calling `withClaim()` and passing both the name and the value. 
-
-```java
-JWT.create()
-    .withClaim("name", 123)
-    .withArrayClaim("array", new Integer[]{1, 2, 3})
-    .sign(Algorithm.HMAC256("secret"));
-```
-
-You can also verify custom Claims on the `JWT.require()` by calling `withClaim()` and passing both the name and the required value.
-
-```java
-JWT.require(Algorithm.HMAC256("secret"))
-    .withClaim("name", 123)
-    .withArrayClaim("array", 1, 2, 3)
-    .build()
-    .verify("my.jwt.token");
-```
-
-> Currently supported classes for custom JWT Claim creation and verification are: Boolean, Integer, Double, String, Date and Arrays of type String and Integer.
-
-
-### Claim Class
-The Claim class is a wrapper for the Claim values. It allows you to get the Claim as different class types. The available helpers are:
-
-#### Primitives
-* **asBoolean()**: Returns the Boolean value or null if it can't be converted.
-* **asInt()**: Returns the Integer value or null if it can't be converted.
-* **asDouble()**: Returns the Double value or null if it can't be converted.
-* **asString()**: Returns the String value or null if it can't be converted.
-* **asDate()**: Returns the Date value or null if it can't be converted. This must be a NumericDate (Unix Epoch/Timestamp). Note that the [JWT Standard](https://tools.ietf.org/html/rfc7519#section-2) specified that all the *NumericDate* values must be in seconds.
-
-#### Custom Classes and Collections
-To obtain a Claim as a Collection you'll need to provide the **Class Type** of the contents to convert from.
-
-* **as(class)**: Returns the value parsed as **Class Type**. For collections you should use the `asArray` and `asList` methods.
-* **asArray(class)**: Returns the value parsed as an Array of elements of type **Class Type**, or null if the value isn't a JSON Array.
-* **asList(class)**: Returns the value parsed as a List of elements of type **Class Type**, or null if the value isn't a JSON Array.
-
-If the values can't be converted to the given **Class Type** a `JWTDecodeException` will raise.
-
-
-
-## What is Auth0?
-
-Auth0 helps you to:
-
-* Add authentication with [multiple authentication sources](https://docs.auth0.com/identityproviders), either social like **Google, Facebook, Microsoft Account, LinkedIn, GitHub, Twitter, Box, Salesforce, among others**, or enterprise identity systems like **Windows Azure AD, Google Apps, Active Directory, ADFS or any SAML Identity Provider**.
-* Add authentication through more traditional **[username/password databases](https://docs.auth0.com/mysql-connection-tutorial)**.
-* Add support for **[linking different user accounts](https://docs.auth0.com/link-accounts)** with the same user.
-* Support for generating signed [Json Web Tokens](https://docs.auth0.com/jwt) to call your APIs and **flow the user identity** securely.
-* Analytics of how, when and where users are logging in.
-* Pull data from other sources and add it to the user profile, through [JavaScript rules](https://docs.auth0.com/rules).
-
-## Create a free account in Auth0
-
-1. Go to [Auth0](https://auth0.com) and click Sign Up.
-2. Use Google, GitHub or Microsoft Account to login.
-
-## Issue Reporting
-
-If you have found a bug or if you have a feature request, please report them at this repository issues section. Please do not report security vulnerabilities on the public GitHub issue tracker. The [Responsible Disclosure Program](https://auth0.com/whitehat) details the procedure for disclosing security issues.
-
-## Author
-
-[Auth0](https://auth0.com/)
-
-## License
-
-This project is licensed under the MIT license. See the [LICENSE](LICENSE) file for more info.
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: light)" srcset="https://cdn.auth0.com/website/sdks/logos/auth0_light_mode.png"   width="150">
+    <source media="(prefers-color-scheme: dark)" srcset="https://cdn.auth0.com/website/sdks/logos/auth0_dark_mode.png" width="150">
+    <img alt="Auth0 Logo" src="./auth0_light_mode.png" width="150">
+  </picture>
+</p>
+<p align="center">Auth0 is an easy to implement, adaptable authentication and authorization platform. To learn more checkout <a href="https://auth0.com/why-auth0">Why Auth0?</a></p>
+<p align="center">
+This project is licensed under the MIT license. See the <a href="./LICENSE"> LICENSE</a> file for more info.</p>

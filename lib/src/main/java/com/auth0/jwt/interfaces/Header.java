@@ -1,7 +1,7 @@
 package com.auth0.jwt.interfaces;
 
 /**
- * The Header class represents the 1st part of the JWT, where the Header value is hold.
+ * The Header class represents the 1st part of the JWT, where the Header value is held.
  */
 public interface Header {
 
@@ -26,7 +26,6 @@ public interface Header {
      */
     String getContentType();
 
-
     /**
      * Get the value of the "kid" claim, or null if it's not available.
      *
@@ -35,7 +34,8 @@ public interface Header {
     String getKeyId();
 
     /**
-     * Get a Private Claim given it's name. If the Claim wasn't specified in the Header, a NullClaim will be returned.
+     * Get a Private Claim given it's name. If the Claim wasn't specified in the Header, a 'null claim' will be
+     * returned. All the methods of that claim will return {@code null}.
      *
      * @param name the name of the Claim to retrieve.
      * @return a non-null Claim.

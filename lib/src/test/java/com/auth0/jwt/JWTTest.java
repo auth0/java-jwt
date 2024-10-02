@@ -1,11 +1,9 @@
 package com.auth0.jwt;
 
 import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.interfaces.Clock;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import org.apache.commons.codec.binary.Base64;
 import org.hamcrest.collection.IsCollectionWithSize;
-import org.hamcrest.core.IsCollectionContaining;
+import org.hamcrest.core.IsIterableContaining;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -13,12 +11,15 @@ import org.junit.rules.ExpectedException;
 import java.nio.charset.StandardCharsets;
 import java.security.interfaces.ECKey;
 import java.security.interfaces.RSAKey;
+import java.time.Clock;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.util.Base64;
 import java.util.Date;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class JWTTest {
 
@@ -32,34 +33,63 @@ public class JWTTest {
     private static final String PRIVATE_KEY_FILE_EC_384 = "src/test/resources/ec384-key-private.pem";
     private static final String PRIVATE_KEY_FILE_EC_512 = "src/test/resources/ec512-key-private.pem";
 
-
     @Rule
     public ExpectedException exception = ExpectedException.none();
 
     // Decode
 
     @Test
-    public void shouldDecodeAStringToken() throws Exception {
+    public void shouldDecodeAStringToken() {
         String token = "eyJhbGciOiJIUzI1NiIsImN0eSI6IkpXVCJ9.eyJpc3MiOiJhdXRoMCJ9.mZ0m_N1J4PgeqWmi903JuUoDRZDBPB7HwkS4nVyWH1M";
         DecodedJWT jwt = JWT.decode(token);
 
         assertThat(jwt, is(notNullValue()));
     }
 
+    @Test
+    public void shouldDecodeAStringTokenUsingInstance() {
+        String token = "eyJhbGciOiJIUzI1NiIsImN0eSI6IkpXVCJ9.eyJpc3MiOiJhdXRoMCJ9.mZ0m_N1J4PgeqWmi903JuUoDRZDBPB7HwkS4nVyWH1M";
+        JWT jwt = new JWT();
+        DecodedJWT decodedJWT = jwt.decodeJwt(token);
+
+        assertThat(decodedJWT, is(notNullValue()));
+    }
+
     // getToken
     @Test
-    public void shouldGetStringToken() throws Exception {
+    public void shouldGetStringToken() {
         DecodedJWT jwt = JWT.decode("eyJhbGciOiJIUzI1NiJ9.e30.XmNK3GpH3Ys_7wsYBfq4C3M6goz71I7dTgUkuIa5lyQ");
         assertThat(jwt, is(notNullValue()));
         assertThat(jwt.getToken(), is(notNullValue()));
         assertThat(jwt.getToken(), is("eyJhbGciOiJIUzI1NiJ9.e30.XmNK3GpH3Ys_7wsYBfq4C3M6goz71I7dTgUkuIa5lyQ"));
     }
 
+    // getToken
+    @Test
+    public void shouldGetStringTokenUsingInstance() {
+        JWT jwt = new JWT();
+        DecodedJWT decodedJWT = jwt.decodeJwt("eyJhbGciOiJIUzI1NiJ9.e30.XmNK3GpH3Ys_7wsYBfq4C3M6goz71I7dTgUkuIa5lyQ");
+        assertThat(decodedJWT, is(notNullValue()));
+        assertThat(decodedJWT.getToken(), is(notNullValue()));
+        assertThat(decodedJWT.getToken(), is("eyJhbGciOiJIUzI1NiJ9.e30.XmNK3GpH3Ys_7wsYBfq4C3M6goz71I7dTgUkuIa5lyQ"));
+    }
 
     // Verify
 
     @Test
-    public void shouldAcceptNoneAlgorithm() throws Exception {
+    public void shouldVerifyDecodedToken() throws Exception {
+        String token = "eyJhbGciOiJSUzUxMiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhdXRoMCJ9.mvL5LoMyIrWYjk5umEXZTmbyIrkbbcVPUkvdGZbu0qFBxGOf0nXP5PZBvPcOu084lvpwVox5n3VaD4iqzW-PsJyvKFgi5TnwmsbKchAp7JexQEsQOnTSGcfRqeUUiBZqRQdYsho71oAB3T4FnalDdFEpM-fztcZY9XqKyayqZLreTeBjqJm4jfOWH7KfGBHgZExQhe96NLq1UA9eUyQwdOA1Z0SgXe4Ja5PxZ6Fm37KnVDtDlNnY4JAAGFo6y74aGNnp_BKgpaVJCGFu1f1S5xCQ1HSvs8ZSdVWs5NgawW3wRd0kRt_GJ_Y3mIwiF4qUyHWGtsSHu_qjVdCTtbFyow";
+        DecodedJWT decodedJWT = JWT.decode(token);
+        RSAKey key = (RSAKey) PemUtils.readPublicKeyFromFile(PUBLIC_KEY_FILE_RSA, "RSA");
+        DecodedJWT jwt = JWT.require(Algorithm.RSA512(key))
+                .build()
+                .verify(decodedJWT);
+
+        assertThat(jwt, is(notNullValue()));
+    }
+
+    @Test
+    public void shouldAcceptNoneAlgorithm() {
         String token = "eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJpc3MiOiJhdXRoMCJ9.";
         DecodedJWT jwt = JWT.require(Algorithm.none())
                 .build()
@@ -69,7 +99,7 @@ public class JWTTest {
     }
 
     @Test
-    public void shouldAcceptHMAC256Algorithm() throws Exception {
+    public void shouldAcceptHMAC256Algorithm() {
         String token = "eyJhbGciOiJIUzI1NiIsImN0eSI6IkpXVCJ9.eyJpc3MiOiJhdXRoMCJ9.mZ0m_N1J4PgeqWmi903JuUoDRZDBPB7HwkS4nVyWH1M";
         DecodedJWT jwt = JWT.require(Algorithm.HMAC256("secret"))
                 .build()
@@ -79,7 +109,7 @@ public class JWTTest {
     }
 
     @Test
-    public void shouldAcceptHMAC384Algorithm() throws Exception {
+    public void shouldAcceptHMAC384Algorithm() {
         String token = "eyJhbGciOiJIUzM4NCIsImN0eSI6IkpXVCJ9.eyJpc3MiOiJhdXRoMCJ9.uztpK_wUMYJhrRv8SV-1LU4aPnwl-EM1q-wJnqgyb5DHoDteP6lN_gE1xnZJH5vw";
         DecodedJWT jwt = JWT.require(Algorithm.HMAC384("secret"))
                 .build()
@@ -89,7 +119,7 @@ public class JWTTest {
     }
 
     @Test
-    public void shouldAcceptHMAC512Algorithm() throws Exception {
+    public void shouldAcceptHMAC512Algorithm() {
         String token = "eyJhbGciOiJIUzUxMiIsImN0eSI6IkpXVCJ9.eyJpc3MiOiJhdXRoMCJ9.VUo2Z9SWDV-XcOc_Hr6Lff3vl7L9e5Vb8ThXpmGDFjHxe3Dr1ZBmUChYF-xVA7cAdX1P_D4ZCUcsv3IefpVaJw";
         DecodedJWT jwt = JWT.require(Algorithm.HMAC512("secret"))
                 .build()
@@ -168,10 +198,10 @@ public class JWTTest {
     }
 
 
-    // Public Claims
+    // Standard Claims
 
     @Test
-    public void shouldGetAlgorithm() throws Exception {
+    public void shouldGetAlgorithm() {
         String token = "eyJhbGciOiJIUzI1NiJ9.e30.XmNK3GpH3Ys_7wsYBfq4C3M6goz71I7dTgUkuIa5lyQ";
         DecodedJWT jwt = JWT.require(Algorithm.HMAC256("secret"))
                 .build()
@@ -182,7 +212,7 @@ public class JWTTest {
     }
 
     @Test
-    public void shouldGetSignature() throws Exception {
+    public void shouldGetSignature() {
         String token = "eyJhbGciOiJIUzI1NiJ9.e30.XmNK3GpH3Ys_7wsYBfq4C3M6goz71I7dTgUkuIa5lyQ";
         DecodedJWT jwt = JWT.require(Algorithm.HMAC256("secret"))
                 .build()
@@ -193,7 +223,7 @@ public class JWTTest {
     }
 
     @Test
-    public void shouldGetIssuer() throws Exception {
+    public void shouldGetIssuer() {
         String token = "eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJKb2huIERvZSJ9.SgXosfRR_IwCgHq5lF3tlM-JHtpucWCRSaVuoHTbWbQ";
         DecodedJWT jwt = JWT.require(Algorithm.HMAC256("secret"))
                 .build()
@@ -204,7 +234,7 @@ public class JWTTest {
     }
 
     @Test
-    public void shouldGetSubject() throws Exception {
+    public void shouldGetSubject() {
         String token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJUb2szbnMifQ.RudAxkslimoOY3BLl2Ghny3BrUKu9I1ZrXzCZGDJtNs";
         DecodedJWT jwt = JWT.require(Algorithm.HMAC256("secret"))
                 .build()
@@ -215,7 +245,7 @@ public class JWTTest {
     }
 
     @Test
-    public void shouldGetArrayAudience() throws Exception {
+    public void shouldGetArrayAudience() {
         String token = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOlsiSG9wZSIsIlRyYXZpcyIsIlNvbG9tb24iXX0.Tm4W8WnfPjlmHSmKFakdij0on2rWPETpoM7Sh0u6-S4";
         DecodedJWT jwt = JWT.require(Algorithm.HMAC256("secret"))
                 .build()
@@ -223,11 +253,11 @@ public class JWTTest {
 
         assertThat(jwt, is(notNullValue()));
         assertThat(jwt.getAudience(), is(IsCollectionWithSize.hasSize(3)));
-        assertThat(jwt.getAudience(), is(IsCollectionContaining.hasItems("Hope", "Travis", "Solomon")));
+        assertThat(jwt.getAudience(), is(IsIterableContaining.hasItems("Hope", "Travis", "Solomon")));
     }
 
     @Test
-    public void shouldGetStringAudience() throws Exception {
+    public void shouldGetStringAudience() {
         String token = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJKYWNrIFJleWVzIn0.a4I9BBhPt1OB1GW67g2P1bEHgi6zgOjGUL4LvhE9Dgc";
         DecodedJWT jwt = JWT.require(Algorithm.HMAC256("secret"))
                 .build()
@@ -235,32 +265,30 @@ public class JWTTest {
 
         assertThat(jwt, is(notNullValue()));
         assertThat(jwt.getAudience(), is(IsCollectionWithSize.hasSize(1)));
-        assertThat(jwt.getAudience(), is(IsCollectionContaining.hasItems("Jack Reyes")));
+        assertThat(jwt.getAudience(), is(IsIterableContaining.hasItems("Jack Reyes")));
     }
 
     @Test
-    public void shouldGetExpirationTime() throws Exception {
-        Date expectedDate = new Date(1477592 * 1000);
-        Clock clock = mock(Clock.class);
-        when(clock.getToday()).thenReturn(expectedDate);
+    public void shouldGetExpirationTime() {
+        long seconds = 1477592L;
+        Clock mockNow = Clock.fixed(Instant.ofEpochSecond(seconds - 1), ZoneId.of("UTC"));
 
         String token = "eyJhbGciOiJIUzI1NiJ9.eyJleHAiOjE0Nzc1OTJ9.x_ZjkPkKYUV5tdvc0l8go6D_z2kez1MQcOxokXrDc3k";
         JWTVerifier.BaseVerification verification = (JWTVerifier.BaseVerification) JWT.require(Algorithm.HMAC256("secret"));
         DecodedJWT jwt = verification
-                .build(clock)
+                .build(mockNow)
                 .verify(token);
 
         assertThat(jwt, is(notNullValue()));
-        assertThat(jwt.getExpiresAt(), is(instanceOf(Date.class)));
-        assertThat(jwt.getExpiresAt(), is(notNullValue()));
-        assertThat(jwt.getExpiresAt(), is(equalTo(expectedDate)));
+        assertThat(jwt.getExpiresAt(), is(equalTo(new Date(seconds * 1000))));
+        assertThat(jwt.getExpiresAtAsInstant(), is(equalTo(Instant.ofEpochSecond(seconds))));
+
     }
 
     @Test
-    public void shouldGetNotBefore() throws Exception {
-        Date expectedDate = new Date(1477592 * 1000);
-        Clock clock = mock(Clock.class);
-        when(clock.getToday()).thenReturn(expectedDate);
+    public void shouldGetNotBefore() {
+        long seconds = 1477592;
+        Clock clock = Clock.fixed(Instant.ofEpochSecond(seconds), ZoneId.of("UTC"));
 
         String token = "eyJhbGciOiJIUzI1NiJ9.eyJuYmYiOjE0Nzc1OTJ9.mWYSOPoNXstjKbZkKrqgkwPOQWEx3F3gMm6PMcfuJd8";
         JWTVerifier.BaseVerification verification = (JWTVerifier.BaseVerification) JWT.require(Algorithm.HMAC256("secret"));
@@ -269,16 +297,14 @@ public class JWTTest {
                 .verify(token);
 
         assertThat(jwt, is(notNullValue()));
-        assertThat(jwt.getNotBefore(), is(instanceOf(Date.class)));
-        assertThat(jwt.getNotBefore(), is(notNullValue()));
-        assertThat(jwt.getNotBefore(), is(equalTo(expectedDate)));
+        assertThat(jwt.getNotBefore(), is(equalTo(new Date(seconds * 1000))));
+        assertThat(jwt.getNotBeforeAsInstant(), is(equalTo(Instant.ofEpochSecond(seconds))));
     }
 
     @Test
-    public void shouldGetIssuedAt() throws Exception {
-        Date expectedDate = new Date(1477592 * 1000);
-        Clock clock = mock(Clock.class);
-        when(clock.getToday()).thenReturn(expectedDate);
+    public void shouldGetIssuedAt() {
+        long seconds = 1477592;
+        Clock clock = Clock.fixed(Instant.ofEpochSecond(seconds), ZoneId.of("UTC"));
 
         String token = "eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE0Nzc1OTJ9.5o1CKlLFjKKcddZzoarQ37pq7qZqNPav3sdZ_bsZaD4";
         JWTVerifier.BaseVerification verification = (JWTVerifier.BaseVerification) JWT.require(Algorithm.HMAC256("secret"));
@@ -287,13 +313,12 @@ public class JWTTest {
                 .verify(token);
 
         assertThat(jwt, is(notNullValue()));
-        assertThat(jwt.getIssuedAt(), is(instanceOf(Date.class)));
-        assertThat(jwt.getIssuedAt(), is(notNullValue()));
-        assertThat(jwt.getIssuedAt(), is(equalTo(expectedDate)));
+        assertThat(jwt.getIssuedAt(), is(equalTo(new Date(seconds * 1000))));
+        assertThat(jwt.getIssuedAtAsInstant(), is(equalTo(Instant.ofEpochSecond(seconds))));
     }
 
     @Test
-    public void shouldGetId() throws Exception {
+    public void shouldGetId() {
         String token = "eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiIxMjM0NTY3ODkwIn0.m3zgEfVUFOd-CvL3xG5BuOWLzb0zMQZCqiVNQQOPOvA";
         JWTVerifier.BaseVerification verification = (JWTVerifier.BaseVerification) JWT.require(Algorithm.HMAC256("secret"));
         DecodedJWT jwt = verification
@@ -305,7 +330,7 @@ public class JWTTest {
     }
 
     @Test
-    public void shouldGetContentType() throws Exception {
+    public void shouldGetContentType() {
         String token = "eyJhbGciOiJIUzI1NiIsImN0eSI6ImF3ZXNvbWUifQ.e30.AIm-pJDOaAyct9qKMlN-lQieqNDqc3d4erqUZc5SHAs";
         DecodedJWT jwt = JWT.require(Algorithm.HMAC256("secret"))
                 .build()
@@ -316,7 +341,7 @@ public class JWTTest {
     }
 
     @Test
-    public void shouldGetType() throws Exception {
+    public void shouldGetType() {
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXUyJ9.e30.WdFmrzx8b9v_a-r6EHC2PTAaWywgm_8LiP8RBRhYwkI";
         DecodedJWT jwt = JWT.require(Algorithm.HMAC256("secret"))
                 .build()
@@ -327,7 +352,7 @@ public class JWTTest {
     }
 
     @Test
-    public void shouldGetKeyId() throws Exception {
+    public void shouldGetKeyId() {
         String token = "eyJhbGciOiJIUzI1NiIsImtpZCI6ImtleSJ9.e30.von1Vt9tq9cn5ZYdX1f4cf2EE7fUvb5BCBlKOTm9YWs";
         DecodedJWT jwt = JWT.require(Algorithm.HMAC256("secret"))
                 .build()
@@ -338,7 +363,7 @@ public class JWTTest {
     }
 
     @Test
-    public void shouldGetCustomClaims() throws Exception {
+    public void shouldGetCustomClaims() {
         String token = "eyJhbGciOiJIUzI1NiIsImlzQWRtaW4iOnRydWV9.eyJpc0FkbWluIjoibm9wZSJ9.YDKBAgUDbh0PkhioDcLNzdQ8c2Gdf_yS6zdEtJQS3F0";
         DecodedJWT jwt = JWT.require(Algorithm.HMAC256("secret"))
                 .build()
@@ -354,12 +379,12 @@ public class JWTTest {
     // Sign
 
     @Test
-    public void shouldCreateAnEmptyHMAC256SignedToken() throws Exception {
+    public void shouldCreateAnEmptyHMAC256SignedToken() {
         String signed = JWT.create().sign(Algorithm.HMAC256("secret"));
         assertThat(signed, is(notNullValue()));
 
         String[] parts = signed.split("\\.");
-        String headerJson = new String(Base64.decodeBase64(parts[0]), StandardCharsets.UTF_8);
+        String headerJson = new String(Base64.getUrlDecoder().decode(parts[0]), StandardCharsets.UTF_8);
         assertThat(headerJson, JsonMatcher.hasEntry("alg", "HS256"));
         assertThat(headerJson, JsonMatcher.hasEntry("typ", "JWT"));
         assertThat(parts[1], is("e30"));
@@ -370,12 +395,12 @@ public class JWTTest {
     }
 
     @Test
-    public void shouldCreateAnEmptyHMAC384SignedToken() throws Exception {
+    public void shouldCreateAnEmptyHMAC384SignedToken() {
         String signed = JWT.create().sign(Algorithm.HMAC384("secret"));
         assertThat(signed, is(notNullValue()));
 
         String[] parts = signed.split("\\.");
-        String headerJson = new String(Base64.decodeBase64(parts[0]), StandardCharsets.UTF_8);
+        String headerJson = new String(Base64.getUrlDecoder().decode(parts[0]), StandardCharsets.UTF_8);
         assertThat(headerJson, JsonMatcher.hasEntry("alg", "HS384"));
         assertThat(headerJson, JsonMatcher.hasEntry("typ", "JWT"));
         assertThat(parts[1], is("e30"));
@@ -386,12 +411,12 @@ public class JWTTest {
     }
 
     @Test
-    public void shouldCreateAnEmptyHMAC512SignedToken() throws Exception {
+    public void shouldCreateAnEmptyHMAC512SignedToken() {
         String signed = JWT.create().sign(Algorithm.HMAC512("secret"));
         assertThat(signed, is(notNullValue()));
 
         String[] parts = signed.split("\\.");
-        String headerJson = new String(Base64.decodeBase64(parts[0]), StandardCharsets.UTF_8);
+        String headerJson = new String(Base64.getUrlDecoder().decode(parts[0]), StandardCharsets.UTF_8);
         assertThat(headerJson, JsonMatcher.hasEntry("alg", "HS512"));
         assertThat(headerJson, JsonMatcher.hasEntry("typ", "JWT"));
         assertThat(parts[1], is("e30"));
@@ -407,7 +432,7 @@ public class JWTTest {
         assertThat(signed, is(notNullValue()));
 
         String[] parts = signed.split("\\.");
-        String headerJson = new String(Base64.decodeBase64(parts[0]), StandardCharsets.UTF_8);
+        String headerJson = new String(Base64.getUrlDecoder().decode(parts[0]), StandardCharsets.UTF_8);
         assertThat(headerJson, JsonMatcher.hasEntry("alg", "RS256"));
         assertThat(headerJson, JsonMatcher.hasEntry("typ", "JWT"));
         assertThat(parts[1], is("e30"));
@@ -423,7 +448,7 @@ public class JWTTest {
         assertThat(signed, is(notNullValue()));
 
         String[] parts = signed.split("\\.");
-        String headerJson = new String(Base64.decodeBase64(parts[0]), StandardCharsets.UTF_8);
+        String headerJson = new String(Base64.getUrlDecoder().decode(parts[0]), StandardCharsets.UTF_8);
         assertThat(headerJson, JsonMatcher.hasEntry("alg", "RS384"));
         assertThat(headerJson, JsonMatcher.hasEntry("typ", "JWT"));
         assertThat(parts[1], is("e30"));
@@ -439,7 +464,7 @@ public class JWTTest {
         assertThat(signed, is(notNullValue()));
 
         String[] parts = signed.split("\\.");
-        String headerJson = new String(Base64.decodeBase64(parts[0]), StandardCharsets.UTF_8);
+        String headerJson = new String(Base64.getUrlDecoder().decode(parts[0]), StandardCharsets.UTF_8);
         assertThat(headerJson, JsonMatcher.hasEntry("alg", "RS512"));
         assertThat(headerJson, JsonMatcher.hasEntry("typ", "JWT"));
         assertThat(parts[1], is("e30"));
@@ -455,7 +480,7 @@ public class JWTTest {
         assertThat(signed, is(notNullValue()));
 
         String[] parts = signed.split("\\.");
-        String headerJson = new String(Base64.decodeBase64(parts[0]), StandardCharsets.UTF_8);
+        String headerJson = new String(Base64.getUrlDecoder().decode(parts[0]), StandardCharsets.UTF_8);
         assertThat(headerJson, JsonMatcher.hasEntry("alg", "ES256"));
         assertThat(headerJson, JsonMatcher.hasEntry("typ", "JWT"));
         assertThat(parts[1], is("e30"));
@@ -471,7 +496,7 @@ public class JWTTest {
         assertThat(signed, is(notNullValue()));
 
         String[] parts = signed.split("\\.");
-        String headerJson = new String(Base64.decodeBase64(parts[0]), StandardCharsets.UTF_8);
+        String headerJson = new String(Base64.getUrlDecoder().decode(parts[0]), StandardCharsets.UTF_8);
         assertThat(headerJson, JsonMatcher.hasEntry("alg", "ES384"));
         assertThat(headerJson, JsonMatcher.hasEntry("typ", "JWT"));
         assertThat(parts[1], is("e30"));
@@ -487,7 +512,7 @@ public class JWTTest {
         assertThat(signed, is(notNullValue()));
 
         String[] parts = signed.split("\\.");
-        String headerJson = new String(Base64.decodeBase64(parts[0]), StandardCharsets.UTF_8);
+        String headerJson = new String(Base64.getUrlDecoder().decode(parts[0]), StandardCharsets.UTF_8);
         assertThat(headerJson, JsonMatcher.hasEntry("alg", "ES512"));
         assertThat(headerJson, JsonMatcher.hasEntry("typ", "JWT"));
         assertThat(parts[1], is("e30"));

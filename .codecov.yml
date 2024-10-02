@@ -5,10 +5,12 @@ coverage:
   status:
     patch:
       default:
-        if_no_uploads: error
+        if_no_uploads: success
+        if_ci_failed: error
     changes: true
     project:
       default:
         target: auto
+        threshold: 1%
         if_no_uploads: error
 comment: false
