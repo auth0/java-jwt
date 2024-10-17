@@ -1,0 +1,85 @@
+name: RL-Secure Workflow
+run-name: rl-scanner-only
+
+on:
+  merge_group:
+  workflow_dispatch:
+  push:
+    branches: ["master"]
+  pull_request:
+    types:
+      - opened
+      - synchronize
+
+jobs:
+  checkout-build-scan-only:
+    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'pull_request')
+    runs-on: ubuntu-latest
+
+    environment: security
+
+    permissions:
+      pull-requests: write
+      id-token: write # This is required for requesting the JWT
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 11
+
+      - name: Build with Gradle
+        uses: gradle/gradle-build-action@a4cf152f482c7ca97ef56ead29bf08bcd953284c
+        with:
+          arguments: assemble apiDiff check jacocoTestReport --continue --console=plain
+
+      - name: Get Artifact Version
+        id: get_version
+        run: echo "::set-output name=version::$(cat .version)"
+
+      - name: List build/libs contents
+        run: ls -la build/libs
+
+      - name: Output build artifact
+        id: output_build_artifact
+        run: |
+          echo "scanfile=$(pwd)/build/libs/auth0-${{ steps.get_version.outputs.version }}.jar" >> $GITHUB_OUTPUT
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Install Python dependencies
+        run: |
+          pip install --upgrade pip
+          pip install boto3 requests
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: ${{ secrets.PRODSEC_TOOLS_ARN }}
+          aws-region: us-east-1
+          mask-aws-account-id: true
+
+      - name: Run Reversing Labs Wrapper Scanner
+        env:
+          RLSECURE_LICENSE: ${{ secrets.RLSECURE_LICENSE }}
+          RLSECURE_SITE_KEY: ${{ secrets.RLSECURE_SITE_KEY }}
+          SIGNAL_HANDLER_TOKEN: ${{ secrets.SIGNAL_HANDLER_TOKEN }}
+          WRAPPER_INDEX_URL: "https://${{ secrets.PRODSEC_TOOLS_USER }}:${{ secrets.PRODSEC_TOOLS_TOKEN }}@a0us.jfrog.io/artifactory/api/pypi/python-local/simple"
+          PYTHONUNBUFFERED: 1
+        run: |
+          pip install rl-wrapper --index-url "$WRAPPER_INDEX_URL" && \
+          rl-wrapper \
+            --artifact "${{ steps.output_build_artifact.outputs.scanfile }}" \
+            --version "${{ steps.get_version.outputs.version }}" \
+            --name "${{ github.event.repository.name }}" \
+            --repository "${{ github.repository }}" \
+            --commit "${{ github.sha }}" \
+            --build-env "github_actions" \
+            --suppress_output
