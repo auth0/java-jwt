@@ -6,13 +6,11 @@ on:
       java-version:
         required: true
         type: string
-      is-android:
-        required: true
-        type: string
+
     secrets:
       ossr-username:
         required: true
-      ossr-password:
+      ossr-token:
         required: true
       signing-key:
         required: true
@@ -70,10 +68,8 @@ jobs:
       - uses: ./.github/actions/maven-publish
         with:
           java-version: ${{ inputs.java-version }}
-          is-android: ${{ inputs.is-android }}
-          version: ${{ steps.get_version.outputs.version }}
           ossr-username: ${{ secrets.ossr-username }}
-          ossr-password: ${{ secrets.ossr-password }}
+          ossr-token: ${{ secrets.ossr-token }}
           signing-key: ${{ secrets.signing-key }}
           signing-password: ${{ secrets.signing-password }}
 
