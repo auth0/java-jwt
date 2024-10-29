@@ -1,0 +1,77 @@
+name: RL-Secure Workflow
+
+on:
+  workflow_call:
+    inputs:
+      java-version:
+        required: true
+        type: string
+      artifact-name:
+        required: true
+        type: string
+    secrets:
+      RLSECURE_LICENSE:
+        required: true
+      RLSECURE_SITE_KEY:
+        required: true
+      SIGNAL_HANDLER_TOKEN:
+        required: true
+      PRODSEC_TOOLS_USER:
+        required: true
+      PRODSEC_TOOLS_TOKEN:
+        required: true
+      PRODSEC_TOOLS_ARN:
+        required: true
+
+jobs:
+  rl-scanner:
+    name: Run Reversing Labs Scanner
+    ### if: github.event_name == 'workflow_dispatch' || (github.event_name == 'pull_request' && github.event.pull_request.merged && startsWith(github.event.pull_request.head.ref, 'release/'))
+    runs-on: ubuntu-latest
+    outputs:
+      scan-status: ${{ steps.rl-scan-conclusion.outcome }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Build with Gradle
+        uses: gradle/gradle-build-action@a4cf152f482c7ca97ef56ead29bf08bcd953284c
+        with:
+          arguments: assemble apiDiff check jacocoTestReport --continue --console=plain
+
+      - name: Get Artifact Version
+        id: get_version
+        run: echo "::set-output name=version::$(cat .version)"
+
+      - name: List build/libs contents
+        run: ls -la build/libs
+
+      - name: Output build artifact
+        id: output_build_artifact
+        run: |
+          echo "scanfile=$(pwd)/build/libs/java-jwt-${{ steps.get_version.outputs.version }}.jar" >> $GITHUB_OUTPUT
+      - name: Use scanfile
+        run: echo "The scanfile is ${{ steps.output_build_artifact.outputs.scanfile }}"
+
+      - name: Echo version
+        run: echo "The version is ${{ steps.get_version.outputs.version }}"
+
+      - name: Run RL Scanner
+        id: rl-scan-conclusion
+        uses: ./.github/actions/rl-scanner
+        with:
+          artifact-path: "$(pwd)/build/libs/java-jwt-${{ steps.get_version.outputs.version }}-SNAPSHOT.jar"
+          version: "${{ steps.get_version.outputs.version }}"
+        env:
+          RLSECURE_LICENSE: ${{ secrets.RLSECURE_LICENSE }}
+          RLSECURE_SITE_KEY: ${{ secrets.RLSECURE_SITE_KEY }}
+          SIGNAL_HANDLER_TOKEN: ${{ secrets.SIGNAL_HANDLER_TOKEN }}
+          PRODSEC_TOOLS_USER: ${{ secrets.PRODSEC_TOOLS_USER }}
+          PRODSEC_TOOLS_TOKEN: ${{ secrets.PRODSEC_TOOLS_TOKEN }}
+          PRODSEC_TOOLS_ARN: ${{ secrets.PRODSEC_TOOLS_ARN }}
+
+      - name: Output scan result
+        run: echo "scan-status=${{ steps.rl-scan-conclusion.outcome }}" >> $GITHUB_ENV

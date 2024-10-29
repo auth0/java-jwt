@@ -5,6 +5,9 @@ on:
     types:
       - closed
   workflow_dispatch:
+  push:
+    branches:
+      - 'add-reversing-lab'
 
 permissions:
   contents: write
@@ -14,10 +17,22 @@ permissions:
 ### TODO: Also remove `java-release` workflow from this repo's .github/workflows folder once the repo is public.
 
 jobs:
+  rl-scanner:
+    uses: ./.github/workflows/rl-secure.yml
+    with:
+      java-version: 8.0.382-tem
+      artifact-name: 'java-jwt.jar'
+    secrets:
+      RLSECURE_LICENSE: ${{ secrets.RLSECURE_LICENSE }}
+      RLSECURE_SITE_KEY: ${{ secrets.RLSECURE_SITE_KEY }}
+      SIGNAL_HANDLER_TOKEN: ${{ secrets.SIGNAL_HANDLER_TOKEN }}
+      PRODSEC_TOOLS_USER: ${{ secrets.PRODSEC_TOOLS_USER }}
+      PRODSEC_TOOLS_TOKEN: ${{ secrets.PRODSEC_TOOLS_TOKEN }}
+      PRODSEC_TOOLS_ARN: ${{ secrets.PRODSEC_TOOLS_ARN }}
   release:
     uses: ./.github/workflows/java-release.yml
     with:
-      java-version: 11.0.21-tem
+      java-version: 8.0.382-tem
     secrets:
       ossr-username: ${{ secrets.OSSR_USERNAME }}
       ossr-token: ${{ secrets.OSSR_TOKEN }}
