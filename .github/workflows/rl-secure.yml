@@ -24,8 +24,7 @@ on:
         required: true
 
 jobs:
-  rl-scanner:
-    name: Run Reversing Labs Scanner
+  checkout-build-scan-only:
     ### if: github.event_name == 'workflow_dispatch' || (github.event_name == 'pull_request' && github.event.pull_request.merged && startsWith(github.event.pull_request.head.ref, 'release/'))
     runs-on: ubuntu-latest
     outputs:
@@ -37,6 +36,12 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ inputs.java-version }}
+
       - name: Build with Gradle
         uses: gradle/gradle-build-action@a4cf152f482c7ca97ef56ead29bf08bcd953284c
         with:
@@ -44,26 +49,17 @@ jobs:
 
       - name: Get Artifact Version
         id: get_version
-        run: echo "::set-output name=version::$(cat .version)"
+        uses: ./.github/actions/get-version
 
-      - name: List build/libs contents
-        run: ls -la build/libs
-
-      - name: Output build artifact
-        id: output_build_artifact
+      - name: Create tgz build artifact
         run: |
-          echo "scanfile=$(pwd)/build/libs/java-jwt-${{ steps.get_version.outputs.version }}.jar" >> $GITHUB_OUTPUT
-      - name: Use scanfile
-        run: echo "The scanfile is ${{ steps.output_build_artifact.outputs.scanfile }}"
-
-      - name: Echo version
-        run: echo "The version is ${{ steps.get_version.outputs.version }}"
+          tar -czvf ${{ inputs.artifact-name }} *
 
       - name: Run RL Scanner
         id: rl-scan-conclusion
         uses: ./.github/actions/rl-scanner
         with:
-          artifact-path: "$(pwd)/build/libs/java-jwt-${{ steps.get_version.outputs.version }}-SNAPSHOT.jar"
+          artifact-path: "$(pwd)/${{ inputs.artifact-name }}"
           version: "${{ steps.get_version.outputs.version }}"
         env:
           RLSECURE_LICENSE: ${{ secrets.RLSECURE_LICENSE }}

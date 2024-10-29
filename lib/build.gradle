@@ -35,7 +35,7 @@ def signingKey = findProperty('signingKey')
 def signingKeyPwd = findProperty('signingPassword')
 
 oss {
-    name "java jwt"
+    name "java-jwt"
     repository "java-jwt"
     organization "auth0"
     description "Java implementation of JSON Web Token (JWT)"
@@ -64,7 +64,7 @@ signing {
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(11)
+        languageVersion = JavaLanguageVersion.of(8)
     }
 }
 
