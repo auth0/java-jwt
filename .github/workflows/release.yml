@@ -33,7 +33,7 @@ jobs:
   release:
     uses: ./.github/workflows/java-release.yml
     with:
-      java-version: 8.0.382-tem
+      java-version: 11.0.21-tem
     secrets:
       ossr-username: ${{ secrets.OSSR_USERNAME }}
       ossr-token: ${{ secrets.OSSR_TOKEN }}
