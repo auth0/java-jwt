@@ -64,14 +64,14 @@ signing {
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(8)
+        languageVersion = JavaLanguageVersion.of(11)
     }
 }
 
 compileJava {
     exclude 'module-info.java'
     // Required to be compatible with JDK 8+
-    options.release = 8
+    options.release = 11
 }
 
 javadoc {
@@ -130,7 +130,7 @@ task compileModuleInfoJava(type: JavaCompile) {
 }
 
 compileTestJava {
-    options.release = 8
+    options.release = 11
     options.compilerArgs = ["-Xlint:deprecation"]
 }
 
