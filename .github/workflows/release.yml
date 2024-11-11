@@ -34,9 +34,10 @@ jobs:
     uses: ./.github/workflows/java-release.yml
     with:
       java-version: 11.0.21-tem
+      is-android: false
     secrets:
       ossr-username: ${{ secrets.OSSR_USERNAME }}
-      ossr-token: ${{ secrets.OSSR_TOKEN }}
+      ossr-password: ${{ secrets.OSSR_PASSWORD }}
       signing-key: ${{ secrets.SIGNING_KEY }}
       signing-password: ${{ secrets.SIGNING_PASSWORD }}
       github-token: ${{ secrets.GITHUB_TOKEN }}
