@@ -1,0 +1,36 @@
+name: Return a boolean indicating if a tag already exists for the repository
+
+#
+# Returns a simple true/false boolean indicating whether the tag exists or not.
+#
+# TODO: Remove once the common repo is public.
+#
+
+inputs:
+  token:
+    required: true
+  tag:
+    required: true
+
+outputs:
+  exists:
+    description: 'Whether the tag exists or not'
+    value: ${{ steps.tag-exists.outputs.EXISTS }}
+
+runs:
+  using: composite
+
+  steps:
+    - id: tag-exists
+      shell: bash
+      run: |
+        GET_API_URL="https://api.github.com/repos/${GITHUB_REPOSITORY}/git/ref/tags/${TAG_NAME}"
+        http_status_code=$(curl -LI $GET_API_URL -o /dev/null -w '%{http_code}\n' -s -H "Authorization: token ${GITHUB_TOKEN}")
+        if [ "$http_status_code" -ne "404" ] ; then
+          echo "EXISTS=true" >> $GITHUB_OUTPUT
+        else
+          echo "EXISTS=false" >> $GITHUB_OUTPUT
+        fi
+      env:
+        TAG_NAME: ${{ inputs.tag }}
+        GITHUB_TOKEN: ${{ inputs.token }}

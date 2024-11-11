@@ -1,0 +1,42 @@
+name: Create GitHub Release
+
+on:
+  pull_request:
+    types:
+      - closed
+  workflow_dispatch:
+  push:
+    branches:
+      - 'add-reversing-lab-scanner'
+
+permissions:
+  contents: write
+  id-token: write # This is required for requesting the JWT
+
+### TODO: Replace instances of './.github/workflows/' w/ `auth0/dx-sdk-actions/workflows/` and append `@latest` after the common `dx-sdk-actions` repo is made public.
+### TODO: Also remove `get-prerelease`, `get-release-notes`, `get-version`, `maven-publish`, `release-create`, and `tag-exists` actions from this repo's .github/actions folder once the repo is public.
+### TODO: Also remove `java-release` workflow from this repo's .github/workflows folder once the repo is public.
+
+jobs:
+  rl-scanner:
+    uses: ./.github/workflows/rl-secure.yml
+    with:
+      java-version: 11
+      artifact-name: 'java-jwt.tgz'
+    secrets:
+      RLSECURE_LICENSE: ${{ secrets.RLSECURE_LICENSE }}
+      RLSECURE_SITE_KEY: ${{ secrets.RLSECURE_SITE_KEY }}
+      SIGNAL_HANDLER_TOKEN: ${{ secrets.SIGNAL_HANDLER_TOKEN }}
+      PRODSEC_TOOLS_USER: ${{ secrets.PRODSEC_TOOLS_USER }}
+      PRODSEC_TOOLS_TOKEN: ${{ secrets.PRODSEC_TOOLS_TOKEN }}
+      PRODSEC_TOOLS_ARN: ${{ secrets.PRODSEC_TOOLS_ARN }}
+  release:
+    uses: ./.github/workflows/java-release.yml
+    with:
+      java-version: 11.0.21-tem
+    secrets:
+      ossr-username: ${{ secrets.OSSR_USERNAME }}
+      ossr-token: ${{ secrets.OSSR_TOKEN }}
+      signing-key: ${{ secrets.SIGNING_KEY }}
+      signing-password: ${{ secrets.SIGNING_PASSWORD }}
+      github-token: ${{ secrets.GITHUB_TOKEN }}
