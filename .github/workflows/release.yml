@@ -5,9 +5,6 @@ on:
     types:
       - closed
   workflow_dispatch:
-  push:
-    branches:
-      - 'add-reversing-lab-scanner'
 
 permissions:
   contents: write
@@ -32,6 +29,7 @@ jobs:
       PRODSEC_TOOLS_ARN: ${{ secrets.PRODSEC_TOOLS_ARN }}
   release:
     uses: ./.github/workflows/java-release.yml
+    needs: rl-scanner
     with:
       java-version: 11.0.21-tem
       is-android: false
