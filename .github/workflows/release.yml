@@ -1,0 +1,27 @@
+name: Create GitHub Release
+
+on:
+  pull_request:
+    types:
+      - closed
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+### TODO: Replace instances of './.github/workflows/' w/ `auth0/dx-sdk-actions/workflows/` and append `@latest` after the common `dx-sdk-actions` repo is made public.
+### TODO: Also remove `get-prerelease`, `get-release-notes`, `get-version`, `maven-publish`, `release-create`, and `tag-exists` actions from this repo's .github/actions folder once the repo is public.
+### TODO: Also remove `java-release` workflow from this repo's .github/workflows folder once the repo is public.
+
+jobs:
+  release:
+    uses: ./.github/workflows/java-release.yml
+    with:
+      java-version: 11.0.21-tem
+      is-android: false
+    secrets:
+      ossr-username: ${{ secrets.OSSR_USERNAME }}
+      ossr-password: ${{ secrets.OSSR_PASSWORD }}
+      signing-key: ${{ secrets.SIGNING_KEY }}
+      signing-password: ${{ secrets.SIGNING_PASSWORD }}
+      github-token: ${{ secrets.GITHUB_TOKEN }}

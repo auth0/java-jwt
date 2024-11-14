@@ -1,0 +1,88 @@
+name: Create Java and GitHub Release
+
+on:
+  workflow_call:
+    inputs:
+      java-version:
+        required: true
+        type: string
+      is-android:
+        required: true
+        type: string
+    secrets:
+      ossr-username:
+        required: true
+      ossr-password:
+        required: true
+      signing-key:
+        required: true
+      signing-password:
+        required: true
+      github-token:
+        required: true
+
+### TODO: Replace instances of './.github/actions/' w/ `auth0/dx-sdk-actions/` and append `@latest` after the common `dx-sdk-actions` repo is made public.
+### TODO: Also remove `get-prerelease`, `get-version`, `release-create`, `tag-create` and `tag-exists` actions from this repo's .github/actions folder once the repo is public.
+
+jobs:
+  release:
+    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'pull_request' && github.event.pull_request.merged && startsWith(github.event.pull_request.head.ref, 'release/'))
+    runs-on: ubuntu-latest
+    environment: release
+
+    steps:
+      # Checkout the code
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Get the version from the branch name
+      - id: get_version
+        uses: ./.github/actions/get-version
+
+      # Get the prerelease flag from the branch name
+      - id: get_prerelease
+        uses: ./.github/actions/get-prerelease
+        with:
+          version: ${{ steps.get_version.outputs.version }}
+
+      # Get the release notes
+      - id: get_release_notes
+        uses: ./.github/actions/get-release-notes
+        with:
+          token: ${{ secrets.github-token }}
+          version: ${{ steps.get_version.outputs.version }}
+          repo_owner: ${{ github.repository_owner }}
+          repo_name: ${{ github.event.repository.name }}
+
+      # Check if the tag already exists
+      - id: tag_exists
+        uses: ./.github/actions/tag-exists
+        with:
+          tag: ${{ steps.get_version.outputs.version }}
+          token: ${{ secrets.github-token }}
+
+      # If the tag already exists, exit with an error
+      - if: steps.tag_exists.outputs.exists == 'true'
+        run: exit 1
+
+      # Publish the release to Maven
+      - uses: ./.github/actions/maven-publish
+        with:
+          java-version: ${{ inputs.java-version }}
+          is-android: ${{ inputs.is-android }}
+          version: ${{ steps.get_version.outputs.version }}
+          ossr-username: ${{ secrets.ossr-username }}
+          ossr-password: ${{ secrets.ossr-password }}
+          signing-key: ${{ secrets.signing-key }}
+          signing-password: ${{ secrets.signing-password }}
+
+      # Create a release for the tag
+      - uses: ./.github/actions/release-create
+        with:
+          token: ${{ secrets.github-token }}
+          name: ${{ steps.get_version.outputs.version }}
+          body: ${{ steps.get_release_notes.outputs.release-notes }}
+          tag: ${{ steps.get_version.outputs.version }}
+          commit: ${{ github.sha }}
+          prerelease: ${{ steps.get_prerelease.outputs.prerelease }}
