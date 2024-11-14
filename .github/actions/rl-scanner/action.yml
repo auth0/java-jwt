@@ -1,0 +1,66 @@
+name: 'Reversing Labs Scanner'
+description: 'Runs the Reversing Labs scanner on a specified artifact.'
+inputs:
+  artifact-path:
+    description: 'Path to the artifact to be scanned.'
+    required: true
+  version:
+    description: 'Version of the artifact.'
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+
+    - name: Install Python dependencies
+      shell: bash
+      run: |
+        pip install boto3 requests
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        role-to-assume: ${{ env.PRODSEC_TOOLS_ARN }}
+        aws-region: us-east-1
+        mask-aws-account-id: true
+
+    - name: Install RL Wrapper
+      shell: bash
+      run: |
+        pip install rl-wrapper>=1.0.0 --index-url "https://${{ env.PRODSEC_TOOLS_USER }}:${{ env.PRODSEC_TOOLS_TOKEN }}@a0us.jfrog.io/artifactory/api/pypi/python-local/simple"
+    - name: Run RL Scanner
+      shell: bash
+      env:
+        RLSECURE_LICENSE: ${{ env.RLSECURE_LICENSE }}
+        RLSECURE_SITE_KEY: ${{ env.RLSECURE_SITE_KEY }}
+        SIGNAL_HANDLER_TOKEN: ${{ env.SIGNAL_HANDLER_TOKEN }}
+        PYTHONUNBUFFERED: 1
+      run: |
+        if [ ! -f "${{ inputs.artifact-path }}" ]; then
+          echo "Artifact not found: ${{ inputs.artifact-path }}"
+          exit 1
+        fi
+        rl-wrapper \
+          --artifact "${{ inputs.artifact-path }}" \
+          --name "${{ github.event.repository.name }}" \
+          --version "${{ inputs.version }}" \
+          --repository "${{ github.repository }}" \
+          --commit "${{ github.sha }}" \
+          --build-env "github_actions" \
+          --suppress_output
+        # Check the outcome of the scanner
+        if [ $? -ne 0 ]; then
+          echo "RL Scanner failed."
+          echo "scan-status=failed" >> $GITHUB_ENV
+          exit 1
+        else
+          echo "RL Scanner passed."
+          echo "scan-status=success" >> $GITHUB_ENV
+        fi
+outputs:
+  scan-status:
+    description: 'The outcome of the scan process.'
+    value: ${{ env.scan-status }}
