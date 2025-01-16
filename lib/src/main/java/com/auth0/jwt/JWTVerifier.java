@@ -343,7 +343,7 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
             if (shouldBeFuture) {
                 isValid = assertInstantIsFuture(claimVal, leeway, now);
                 if (!isValid) {
-                    throw new TokenExpiredException(String.format("The Token has expired on %s.", claimVal), claimVal);
+                    throw new TokenExpiredException(String.format("The Token has expired on %s.", claimVal), claim);
                 }
             } else {
                 isValid = assertInstantIsLessThanOrEqualToNow(claimVal, leeway, now);
