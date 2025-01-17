@@ -154,9 +154,20 @@ def testJava17 = tasks.register('testJava17', Test) {
     shouldRunAfter(tasks.named('test'))
 }
 
+def testJava21 = tasks.register('testJava21', Test) {
+    description = 'Runs unit tests on Java 21.'
+    group = 'verification'
+
+    javaLauncher.set(javaToolchains.launcherFor {
+        languageVersion = JavaLanguageVersion.of(21)
+    })
+    shouldRunAfter(tasks.named('test'))
+}
+
 tasks.named('check') {
     dependsOn(testJava8)
     dependsOn(testJava17)
+    dependsOn(testJava21)
 }
 
 jar {
