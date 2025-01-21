@@ -80,7 +80,7 @@ javadoc {
 }
 
 dependencies {
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.14.2'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.4'
 
     testImplementation 'org.bouncycastle:bcprov-jdk15on:1.70'
     testImplementation 'junit:junit:4.13.2'
