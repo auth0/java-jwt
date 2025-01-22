@@ -1,9 +1,19 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        // https://github.com/melix/japicmp-gradle-plugin/issues/36
+        classpath 'com.google.guava:guava:31.1-jre'
+    }
+}
 
 plugins {
     id 'java'
     id 'jacoco'
-    id 'com.auth0.gradle.oss-library.java'
     id 'checkstyle'
+    id 'me.champeau.gradle.japicmp' version '0.2.9'
 }
 
 sourceSets {
@@ -29,37 +39,69 @@ tasks.named("checkstyleJmh").configure({
     enabled = false
 })
 
-logger.lifecycle("Using version ${version} for ${group}.${name}")
+apply from: rootProject.file('gradle/versioning.gradle')
 
-def signingKey = findProperty('signingKey')
-def signingKeyPwd = findProperty('signingPassword')
+version = getVersionFromFile()
+group = GROUP
+logger.lifecycle("Using version ${version} for ${name} group $group")
 
-oss {
-    name "java jwt"
-    repository "java-jwt"
-    organization "auth0"
-    description "Java implementation of JSON Web Token (JWT)"
-    baselineCompareVersion "4.1.0"
-    skipAssertSigningConfiguration true
+import me.champeau.gradle.japicmp.JapicmpTask
 
-    developers {
-        auth0 {
-            displayName = "Auth0"
-            email = "oss@auth0.com"
+project.afterEvaluate {
+
+    def versions = project.ext.testInJavaVersions
+    for (pluginJavaTestVersion in versions) {
+        def taskName = "testInJava-${pluginJavaTestVersion}"
+        tasks.register(taskName, Test) {
+            def versionToUse = taskName.split("-").getAt(1) as Integer
+            description = "Runs unit tests on Java version ${versionToUse}."
+            project.logger.quiet("Test will be running in ${versionToUse}")
+            group = 'verification'
+            javaLauncher.set(javaToolchains.launcherFor {
+                languageVersion = JavaLanguageVersion.of(versionToUse)
+            })
+            shouldRunAfter(tasks.named('test'))
         }
-        lbalmaceda {
-            displayName = "Luciano Balmaceda"
-            email = "luciano.balmaceda@auth0.com"
+        tasks.named('check') {
+            dependsOn(taskName)
         }
-        hzalaz {
-            displayName = "Hernan Zalazar"
-            email = "hernan@auth0.com"
+    }
+
+    project.configure(project) {
+        def baselineVersion = project.ext.baselineCompareVersion
+        task('apiDiff', type: JapicmpTask, dependsOn: 'jar') {
+            oldClasspath = files(getBaselineJar(project, baselineVersion))
+            newClasspath = files(jar.archiveFile)
+            onlyModified = true
+            failOnModification = true
+            ignoreMissingClasses = true
+            htmlOutputFile = file("$buildDir/reports/apiDiff/apiDiff.html")
+            txtOutputFile = file("$buildDir/reports/apiDiff/apiDiff.txt")
+            doLast {
+                project.logger.quiet("Comparing against baseline version ${baselineVersion}")
+            }
         }
     }
 }
 
-signing {
-    useInMemoryPgpKeys(signingKey, signingKeyPwd)
+private static File getBaselineJar(Project project, String baselineVersion) {
+    // Use detached configuration: https://github.com/square/okhttp/blob/master/build.gradle#L270
+    def group = project.group
+    try {
+        def baseline = "${project.group}:${project.name}:$baselineVersion"
+        project.group = 'virtual_group_for_japicmp'
+        def dependency = project.dependencies.create(baseline + "@jar")
+        return project.configurations.detachedConfiguration(dependency).files.find {
+            it.name == "${project.name}-${baselineVersion}.jar"
+        }
+    } finally {
+        project.group = group
+    }
+}
+
+ext {
+    baselineCompareVersion = '4.1.0'
+    testInJavaVersions = [8, 11, 17, 21]
 }
 
 java {
@@ -198,3 +240,4 @@ tasks.register('jmhHelp', JavaExec) {
     args '-h'
 }
 
+apply from: rootProject.file('gradle/maven-publish.gradle')
