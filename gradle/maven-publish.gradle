@@ -19,7 +19,7 @@ tasks.withType(Javadoc).configureEach {
 
 javadoc {
     // Specify the Java version that the project will use
-    options.addStringOption('-release', "8")
+    options.addStringOption('-release', "11")
 }
 artifacts {
     archives sourcesJar, javadocJar
