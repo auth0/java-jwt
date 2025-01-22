@@ -1,5 +1,19 @@
 # Change Log
 
+## [4.5.0](https://github.com/auth0/java-jwt/tree/4.5.0) (2025-01-22)
+[Full Changelog](https://github.com/auth0/java-jwt/compare/4.4.0...4.5.0)
+
+**Added**
+- Fix jackson vuln [\#705](https://github.com/auth0/java-jwt/pull/705) ([tanya732](https://github.com/tanya732))
+- Fix typo in example code [\#682](https://github.com/auth0/java-jwt/pull/682) ([kasperkarlsson](https://github.com/kasperkarlsson))
+- Remove dead README links [\#676](https://github.com/auth0/java-jwt/pull/676) ([jimmyjames](https://github.com/jimmyjames))
+- Fix typo on a comment in JWTCreator.java [\#672](https://github.com/auth0/java-jwt/pull/672) ([sgc109](https://github.com/sgc109))
+- Remove CircleCI [\#670](https://github.com/auth0/java-jwt/pull/670) ([jimmyjames](https://github.com/jimmyjames))
+- Empty string audience claim should be deserialized as empty string [\#663](https://github.com/auth0/java-jwt/pull/663) ([jimmyjames](https://github.com/jimmyjames))
+
+**Fixed**
+- empty expected audience array should throw InvalidClaimException [\#679](https://github.com/auth0/java-jwt/pull/679) ([jimmyjames](https://github.com/jimmyjames))
+
 ## [4.4.0](https://github.com/auth0/java-jwt/tree/4.4.0) (2023-03-31)
 [Full Changelog](https://github.com/auth0/java-jwt/compare/4.3.0...4.4.0)
 
