@@ -13,7 +13,7 @@ plugins {
     id 'java'
     id 'jacoco'
     id 'checkstyle'
-    id 'me.champeau.gradle.japicmp' version '0.2.9'
+    id 'me.champeau.gradle.japicmp' version '0.4.1'
 }
 
 sourceSets {
@@ -70,8 +70,8 @@ project.afterEvaluate {
     project.configure(project) {
         def baselineVersion = project.ext.baselineCompareVersion
         task('apiDiff', type: JapicmpTask, dependsOn: 'jar') {
-            oldClasspath = files(getBaselineJar(project, baselineVersion))
-            newClasspath = files(jar.archiveFile)
+            oldClasspath.from(files(getBaselineJar(project, baselineVersion)))
+            newClasspath.from(files(jar.archiveFile))
             onlyModified = true
             failOnModification = true
             ignoreMissingClasses = true
@@ -122,6 +122,7 @@ javadoc {
 }
 
 dependencies {
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.15.4'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.4'
 
     testImplementation 'org.bouncycastle:bcprov-jdk15on:1.70'
