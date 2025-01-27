@@ -113,7 +113,7 @@ java {
 compileJava {
     exclude 'module-info.java'
     // Required to be compatible with JDK 8+
-    options.release = 8
+    options.release = 11
 }
 
 javadoc {
