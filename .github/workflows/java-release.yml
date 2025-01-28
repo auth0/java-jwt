@@ -63,6 +63,12 @@ jobs:
       - if: steps.tag_exists.outputs.exists == 'true'
         run: exit 1
 
+      # Set JAVA_HOME here and pass it to subsequent steps
+      - name: Set JAVA_HOME for Gradle
+        run: echo "JAVA_HOME=/home/runner/.sdkman/candidates/java/current" >> $GITHUB_ENV  # This ensures JAVA_HOME is set globally
+        env:
+         SDKMAN_DIR: /home/runner/.sdkman
+
       # Publish the release to Maven
       - uses: ./.github/actions/maven-publish
         with:
@@ -71,6 +77,8 @@ jobs:
           ossr-token: ${{ secrets.ossr-token }}
           signing-key: ${{ secrets.signing-key }}
           signing-password: ${{ secrets.signing-password }}
+        env:
+          JAVA_HOME: ${{ env.JAVA_HOME }}
 
       # Create a release for the tag
       - uses: ./.github/actions/release-create
