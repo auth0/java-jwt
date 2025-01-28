@@ -26,6 +26,8 @@ runs:
         source "/home/runner/.sdkman/bin/sdkman-init.sh"
         sdk list java
         sdk install java ${{ inputs.java-version }} && sdk default java ${{ inputs.java-version }}
+        export JAVA_HOME=${SDKMAN_DIR}/candidates/java/current
+        echo "JAVA_HOME is set to $JAVA_HOME"
 
     - uses: gradle/wrapper-validation-action@56b90f209b02bf6d1deae490e9ef18b21a389cd4 # pin@1.1.0
 
