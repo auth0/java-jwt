@@ -30,11 +30,14 @@ runs:
         echo "JAVA_HOME is set to $JAVA_HOME"
 
     - uses: gradle/wrapper-validation-action@56b90f209b02bf6d1deae490e9ef18b21a389cd4 # pin@1.1.0
+      env:
+        JAVA_HOME: ${{ env.JAVA_HOME }}
 
     - name: Publish Android/Java Packages to Maven
       shell: bash
       run: ./gradlew publish -PisSnapshot=false --stacktrace
       env:
+        JAVA_HOME: ${{ env.JAVA_HOME }}
         MAVEN_USERNAME: ${{ inputs.ossr-username }}
         MAVEN_PASSWORD: ${{ inputs.ossr-token }}
         SIGNING_KEY: ${{ inputs.signing-key}}
