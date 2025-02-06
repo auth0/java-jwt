@@ -1,0 +1,17 @@
+def getVersionFromFile() {
+    def versionFile = rootProject.file('.version')
+    return versionFile.text.readLines().first().trim()
+}
+
+def isSnapshot() {
+    return hasProperty('isSnapshot') ? isSnapshot.toBoolean() : true
+}
+
+def getVersionName() {
+    return isSnapshot() ? project.version+"-SNAPSHOT" : project.version
+}
+
+ext {
+    getVersionName = this.&getVersionName
+    getVersionFromFile = this.&getVersionFromFile
+}
