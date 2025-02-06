@@ -351,10 +351,10 @@ public final class JWTCreator {
         /**
          * Add a custom Map Claim with the given items.
          * <p>
-         * Accepted nested types are {@linkplain Map} and {@linkplain List} with basic types
+         * Accepted nested types are {@linkplain Map} and {@linkplain Collection} with basic types
          * {@linkplain Boolean}, {@linkplain Integer}, {@linkplain Long}, {@linkplain Double},
          * {@linkplain String} and {@linkplain Date}. {@linkplain Map}s cannot contain null keys or values.
-         * {@linkplain List}s can contain null elements.
+         * {@linkplain Collection}s can contain null elements.
          *
          * @param name the Claim's name.
          * @param map  the Claim's key-values.
@@ -365,34 +365,34 @@ public final class JWTCreator {
             assertNonNull(name);
             // validate map contents
             if (map != null && !validateClaim(map)) {
-                throw new IllegalArgumentException("Expected map containing Map, List, Boolean, Integer, "
-                        + "Long, Double, String and Date");
+                throw new IllegalArgumentException("Expected map containing Map, Collection (List, Set, Queue), "
+                        + "Boolean, Integer, Long, Double, String and Date");
             }
             addClaim(name, map);
             return this;
         }
 
         /**
-         * Add a custom List Claim with the given items.
+         * Add a custom Collection (can be a List, a Set or a Queue) Claim with the given items.
          * <p>
-         * Accepted nested types are {@linkplain Map} and {@linkplain List} with basic types
+         * Accepted nested types are {@linkplain Map} and {@linkplain Collection} with basic types
          * {@linkplain Boolean}, {@linkplain Integer}, {@linkplain Long}, {@linkplain Double},
          * {@linkplain String} and {@linkplain Date}. {@linkplain Map}s cannot contain null keys or values.
-         * {@linkplain List}s can contain null elements.
+         * {@linkplain Collection}s can contain null elements.
          *
          * @param name the Claim's name.
-         * @param list the Claim's list of values.
+         * @param collection the Claim's collection of values.
          * @return this same Builder instance.
-         * @throws IllegalArgumentException if the name is null, or if the list contents does not validate.
+         * @throws IllegalArgumentException if the name is null, or if the collection contents does not validate.
          */
-        public Builder withClaim(String name, List<?> list) throws IllegalArgumentException {
+        public Builder withClaim(String name, Collection<?> collection) throws IllegalArgumentException {
             assertNonNull(name);
-            // validate list contents
-            if (list != null && !validateClaim(list)) {
-                throw new IllegalArgumentException("Expected list containing Map, List, Boolean, Integer, "
-                        + "Long, Double, String and Date");
+            // validate collection contents
+            if (collection != null && !validateClaim(collection)) {
+                throw new IllegalArgumentException("Expected Collection containing Map, Collection (List, Set, Queue), "
+                        + "Boolean, Integer, Long, Double, String and Date");
             }
-            addClaim(name, list);
+            addClaim(name, collection);
             return this;
         }
 
@@ -455,10 +455,10 @@ public final class JWTCreator {
          * Add specific Claims to set as the Payload. If the provided map is null then
          * nothing is changed.
          * <p>
-         * Accepted types are {@linkplain Map} and {@linkplain List} with basic types
+         * Accepted types are {@linkplain Map} and {@linkplain Collection} with basic types
          * {@linkplain Boolean}, {@linkplain Integer}, {@linkplain Long}, {@linkplain Double},
          * {@linkplain String} and {@linkplain Date}.
-         * {@linkplain Map}s and {@linkplain List}s can contain null elements.
+         * {@linkplain Map}s and {@linkplain Collection}s can contain null elements.
          * </p>
          *
          * <p>
@@ -476,8 +476,8 @@ public final class JWTCreator {
             }
 
             if (!validatePayload(payloadClaims)) {
-                throw new IllegalArgumentException("Claim values must only be of types Map, List, Boolean, Integer, "
-                        + "Long, Double, String, Date, Instant, and Null");
+                throw new IllegalArgumentException("Claim values must only be of types Map, Collection "
+                        + "(List, Set, Queue), Boolean, Integer, Long, Double, String, Date, Instant, and Null");
             }
 
             // add claims only after validating all claims so as not to corrupt the claims map of this builder
@@ -521,11 +521,15 @@ public final class JWTCreator {
                 assertNonNull(key);
 
                 Object value = entry.getValue();
-                if (value instanceof List && !validateClaim((List<?>) value)) {
+                if (value instanceof Collection && !validateClaim((Collection<?>) value)) {
                     return false;
-                } else if (value instanceof Map && !validateClaim((Map<?, ?>) value)) {
+                }
+
+                if (value instanceof Map && !validateClaim((Map<?, ?>) value)) {
                     return false;
-                } else if (!isSupportedType(value)) {
+                }
+
+                if (!isSupportedType(value)) {
                     return false;
                 }
             }
@@ -547,9 +551,9 @@ public final class JWTCreator {
             return true;
         }
 
-        private static boolean validateClaim(List<?> list) {
-            // accept null values in list
-            for (Object object : list) {
+        private static boolean validateClaim(Collection<?> collection) {
+            // accept null values in collection
+            for (Object object : collection) {
                 if (!isSupportedType(object)) {
                     return false;
                 }
@@ -558,8 +562,8 @@ public final class JWTCreator {
         }
 
         private static boolean isSupportedType(Object value) {
-            if (value instanceof List) {
-                return validateClaim((List<?>) value);
+            if (value instanceof Collection) {
+                return validateClaim((Collection<?>) value);
             } else if (value instanceof Map) {
                 return validateClaim((Map<?, ?>) value);
             } else {
