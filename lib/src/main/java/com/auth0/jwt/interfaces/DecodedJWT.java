@@ -1,5 +1,8 @@
 package com.auth0.jwt.interfaces;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+
 /**
  * Class that represents a Json Web Token that was decoded from it's string representation.
  */
@@ -34,4 +37,22 @@ public interface DecodedJWT extends Payload, Header {
      * @return the Signature of the JWT.
      */
     String getSignature();
+
+    /**
+     * Getter for the Header contained in the JWT as a decoded JSON string.
+     *
+     * @return the decoded Header JSON.
+     */
+    default String getHeaderJson() {
+        return new String(Base64.getUrlDecoder().decode(getHeader()), StandardCharsets.UTF_8);
+    }
+
+    /**
+     * Getter for the Payload contained in the JWT as a decoded JSON string.
+     *
+     * @return the decoded Payload JSON.
+     */
+    default String getPayloadJson() {
+        return new String(Base64.getUrlDecoder().decode(getPayload()), StandardCharsets.UTF_8);
+    }
 }
