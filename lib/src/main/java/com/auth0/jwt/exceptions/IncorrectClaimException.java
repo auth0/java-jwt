@@ -6,7 +6,6 @@ import com.auth0.jwt.interfaces.Claim;
  * This exception is thrown when the expected value is not found while verifying the Claims.
  */
 public class IncorrectClaimException extends InvalidClaimException {
-    private final String claimName;
 
     private final Claim claimValue;
 
@@ -19,18 +18,8 @@ public class IncorrectClaimException extends InvalidClaimException {
      * @param claim The Claim value for which verification failed
      */
     public IncorrectClaimException(String message, String claimName, Claim claim) {
-        super(message);
-        this.claimName = claimName;
+        super(message, claimName);
         this.claimValue = claim;
-    }
-
-    /**
-     * This method can be used to fetch the name for which the Claim verification failed.
-     *
-     * @return The claim name for which the verification failed.
-     */
-    public String getClaimName() {
-        return claimName;
     }
 
     /**
