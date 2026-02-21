@@ -2,13 +2,12 @@ package com.auth0.jwt.impl;
 
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.interfaces.Claim;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.ObjectCodec;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 
-import java.io.IOException;
 import java.lang.reflect.Array;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -16,17 +15,20 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import static com.auth0.jwt.impl.JWTParser.getDefaultObjectMapper;
+
 /**
  * The JsonNodeClaim retrieves a claim value from a JsonNode object.
  */
 class JsonNodeClaim implements Claim {
 
-    private final ObjectCodec codec;
+    private final DeserializationContext context;
     private final JsonNode data;
+    private final ObjectMapper mapper = getDefaultObjectMapper();
 
-    private JsonNodeClaim(JsonNode node, ObjectCodec codec) {
+    private JsonNodeClaim(JsonNode node, DeserializationContext context) {
         this.data = node;
-        this.codec = codec;
+        this.context = context;
     }
 
     @Override
@@ -51,7 +53,7 @@ class JsonNodeClaim implements Claim {
 
     @Override
     public String asString() {
-        return isMissing() || isNull() || !data.isTextual() ? null : data.asText();
+        return isMissing() || isNull() || !data.isString() ? null : data.asString();
     }
 
     @Override
@@ -82,8 +84,8 @@ class JsonNodeClaim implements Claim {
         T[] arr = (T[]) Array.newInstance(clazz, data.size());
         for (int i = 0; i < data.size(); i++) {
             try {
-                arr[i] = codec.treeToValue(data.get(i), clazz);
-            } catch (JsonProcessingException e) {
+                arr[i] = context.readTreeAsValue(data.get(i), clazz);
+            } catch (JacksonException e) {
                 throw new JWTDecodeException("Couldn't map the Claim's array contents to " + clazz.getSimpleName(), e);
             }
         }
@@ -99,8 +101,8 @@ class JsonNodeClaim implements Claim {
         List<T> list = new ArrayList<>();
         for (int i = 0; i < data.size(); i++) {
             try {
-                list.add(codec.treeToValue(data.get(i), clazz));
-            } catch (JsonProcessingException e) {
+                list.add(context.readTreeAsValue(data.get(i), clazz));
+            } catch (JacksonException e) {
                 throw new JWTDecodeException("Couldn't map the Claim's array contents to " + clazz.getSimpleName(), e);
             }
         }
@@ -113,12 +115,9 @@ class JsonNodeClaim implements Claim {
             return null;
         }
 
-        TypeReference<Map<String, Object>> mapType = new TypeReference<Map<String, Object>>() {
-        };
-
-        try (JsonParser parser = codec.treeAsTokens(data)) {
-            return parser.readValueAs(mapType);
-        } catch (IOException e) {
+        try {
+            return mapper.convertValue(data, new TypeReference<>() {});
+        } catch (Exception e) {
             throw new JWTDecodeException("Couldn't map the Claim value to Map", e);
         }
     }
@@ -129,8 +128,9 @@ class JsonNodeClaim implements Claim {
             if (isMissing() || isNull()) {
                 return null;
             }
-            return codec.treeToValue(data, clazz);
-        } catch (JsonProcessingException e) {
+
+            return mapper.convertValue(data, clazz);
+        } catch (JacksonException e) {
             throw new JWTDecodeException("Couldn't map the Claim value to " + clazz.getSimpleName(), e);
         }
     }
@@ -160,23 +160,23 @@ class JsonNodeClaim implements Claim {
      *
      * @param claimName the Claim to search for.
      * @param tree      the JsonNode tree to search the Claim in.
-     * @param objectCodec the object codec in use for deserialization
+     * @param context the context in use for deserialization
      * @return a valid non-null Claim.
      */
-    static Claim extractClaim(String claimName, Map<String, JsonNode> tree, ObjectCodec objectCodec) {
+    static Claim extractClaim(String claimName, Map<String, JsonNode> tree, DeserializationContext context) {
         JsonNode node = tree.get(claimName);
-        return claimFromNode(node, objectCodec);
+        return claimFromNode(node, context);
     }
 
     /**
      * Helper method to create a Claim representation from the given JsonNode.
      *
      * @param node the JsonNode to convert into a Claim.
-     * @param objectCodec the object codec in use for deserialization
+     * @param context the context in use for deserialization
      * @return a valid Claim instance. If the node is null or missing, a NullClaim will be returned.
      */
-    static Claim claimFromNode(JsonNode node, ObjectCodec objectCodec) {
-        return new JsonNodeClaim(node, objectCodec);
+    static Claim claimFromNode(JsonNode node, DeserializationContext context) {
+        return new JsonNodeClaim(node, context);
     }
 
 }

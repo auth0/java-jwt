@@ -3,20 +3,23 @@ package com.auth0.jwt.impl;
 import com.auth0.jwt.UserPojo;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.interfaces.Claim;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.JsonNodeType;
-import com.fasterxml.jackson.databind.node.MissingNode;
-import com.fasterxml.jackson.databind.node.NullNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.JsonParser;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.deser.DeserializationContextExt;
+import tools.jackson.databind.node.JsonNodeType;
+import tools.jackson.databind.node.MissingNode;
+import tools.jackson.databind.node.NullNode;
+import tools.jackson.databind.node.ObjectNode;
 import org.hamcrest.collection.IsMapContaining;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.ArgumentMatchers;
+import tools.jackson.databind.ser.SerializationContextExt;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -44,19 +47,22 @@ import static org.mockito.Mockito.when;
 
 public class JsonNodeClaimTest {
 
-    private ObjectMapper mapper;
+    private DeserializationContextExt context;
+    private SerializationContextExt writeContext;
 
     @Rule
     public ExpectedException exception = ExpectedException.none();
 
     @Before
     public void setUp() {
-        mapper = getDefaultObjectMapper();
+        ObjectMapper objectMapper = getDefaultObjectMapper();
+        context = objectMapper._deserializationContext();
+        writeContext = objectMapper._serializationContext();
     }
 
     @Test
     public void shouldGetBooleanValue() {
-        JsonNode value = mapper.valueToTree(true);
+        JsonNode value = writeContext.valueToTree(true);
         Claim claim = claimFromNode(value);
 
         assertThat(claim.asBoolean(), is(notNullValue()));
@@ -64,20 +70,20 @@ public class JsonNodeClaimTest {
     }
 
     private Claim claimFromNode(JsonNode value) {
-        return JsonNodeClaim.claimFromNode(value, mapper);
+        return JsonNodeClaim.claimFromNode(value, context);
     }
 
     @Test
     public void shouldGetNullBooleanIfNotBooleanValue() {
-        JsonNode objectValue = mapper.valueToTree(new Object());
+        JsonNode objectValue = writeContext.valueToTree(new Object());
         assertThat(claimFromNode(objectValue).asBoolean(), is(nullValue()));
-        JsonNode stringValue = mapper.valueToTree("boolean");
+        JsonNode stringValue = writeContext.valueToTree("boolean");
         assertThat(claimFromNode(stringValue).asBoolean(), is(nullValue()));
     }
 
     @Test
     public void shouldGetIntValue() {
-        JsonNode value = mapper.valueToTree(123);
+        JsonNode value = writeContext.valueToTree(123);
         Claim claim = claimFromNode(value);
 
         assertThat(claim.asInt(), is(notNullValue()));
@@ -86,15 +92,15 @@ public class JsonNodeClaimTest {
 
     @Test
     public void shouldGetNullIntIfNotIntValue() {
-        JsonNode objectValue = mapper.valueToTree(new Object());
+        JsonNode objectValue = writeContext.valueToTree(new Object());
         assertThat(claimFromNode(objectValue).asInt(), is(nullValue()));
-        JsonNode stringValue = mapper.valueToTree("123");
+        JsonNode stringValue = writeContext.valueToTree("123");
         assertThat(claimFromNode(stringValue).asInt(), is(nullValue()));
     }
 
     @Test
     public void shouldGetLongValue() {
-        JsonNode value = mapper.valueToTree(Long.MAX_VALUE);
+        JsonNode value = writeContext.valueToTree(Long.MAX_VALUE);
         Claim claim = claimFromNode(value);
 
         assertThat(claim.asLong(), is(notNullValue()));
@@ -103,15 +109,15 @@ public class JsonNodeClaimTest {
 
     @Test
     public void shouldGetNullLongIfNotIntValue() {
-        JsonNode objectValue = mapper.valueToTree(new Object());
+        JsonNode objectValue = writeContext.valueToTree(new Object());
         assertThat(claimFromNode(objectValue).asLong(), is(nullValue()));
-        JsonNode stringValue = mapper.valueToTree("" + Long.MAX_VALUE);
+        JsonNode stringValue = writeContext.valueToTree("" + Long.MAX_VALUE);
         assertThat(claimFromNode(stringValue).asLong(), is(nullValue()));
     }
 
     @Test
     public void shouldGetDoubleValue() {
-        JsonNode value = mapper.valueToTree(1.5);
+        JsonNode value = writeContext.valueToTree(1.5);
         Claim claim = claimFromNode(value);
 
         assertThat(claim.asDouble(), is(notNullValue()));
@@ -120,16 +126,16 @@ public class JsonNodeClaimTest {
 
     @Test
     public void shouldGetNullDoubleIfNotDoubleValue() {
-        JsonNode objectValue = mapper.valueToTree(new Object());
+        JsonNode objectValue = writeContext.valueToTree(new Object());
         assertThat(claimFromNode(objectValue).asDouble(), is(nullValue()));
-        JsonNode stringValue = mapper.valueToTree("123.23");
+        JsonNode stringValue = writeContext.valueToTree("123.23");
         assertThat(claimFromNode(stringValue).asDouble(), is(nullValue()));
     }
 
     @Test
     public void shouldGetNumericDateValue() {
         long seconds = 1476824844L;
-        JsonNode value = mapper.valueToTree(seconds);
+        JsonNode value = writeContext.valueToTree(seconds);
         Claim claim = claimFromNode(value);
 
         assertThat(claim.asDate(), is(new Date(seconds * 1000)));
@@ -138,17 +144,17 @@ public class JsonNodeClaimTest {
 
     @Test
     public void shouldGetNullIfNotNumericDateValue() {
-        JsonNode objectValue = mapper.valueToTree(new Object());
+        JsonNode objectValue = writeContext.valueToTree(new Object());
         assertThat(claimFromNode(objectValue).asDate(), is(nullValue()));
         assertThat(claimFromNode(objectValue).asInstant(), is(nullValue()));
-        JsonNode stringValue = mapper.valueToTree("1476824844");
+        JsonNode stringValue = writeContext.valueToTree("1476824844");
         assertThat(claimFromNode(stringValue).asDate(), is(nullValue()));
         assertThat(claimFromNode(stringValue).asInstant(), is(nullValue()));
     }
 
     @Test
     public void shouldGetStringValue() {
-        JsonNode value = mapper.valueToTree("string");
+        JsonNode value = writeContext.valueToTree("string");
         Claim claim = claimFromNode(value);
 
         assertThat(claim.asString(), is(notNullValue()));
@@ -157,15 +163,15 @@ public class JsonNodeClaimTest {
 
     @Test
     public void shouldGetNullStringIfNotStringValue() {
-        JsonNode objectValue = mapper.valueToTree(new Object());
+        JsonNode objectValue = writeContext.valueToTree(new Object());
         assertThat(claimFromNode(objectValue).asString(), is(nullValue()));
-        JsonNode intValue = mapper.valueToTree(12345);
+        JsonNode intValue = writeContext.valueToTree(12345);
         assertThat(claimFromNode(intValue).asString(), is(nullValue()));
     }
 
     @Test
     public void shouldGetArrayValueOfCustomClass() {
-        JsonNode value = mapper.valueToTree(new UserPojo[]{new UserPojo("George", 1), new UserPojo("Mark", 2)});
+        JsonNode value = writeContext.valueToTree(new UserPojo[]{new UserPojo("George", 1), new UserPojo("Mark", 2)});
         Claim claim = claimFromNode(value);
 
         assertThat(claim.asArray(UserPojo.class), is(notNullValue()));
@@ -174,7 +180,7 @@ public class JsonNodeClaimTest {
 
     @Test
     public void shouldGetArrayValue() {
-        JsonNode value = mapper.valueToTree(new String[]{"string1", "string2"});
+        JsonNode value = writeContext.valueToTree(new String[]{"string1", "string2"});
         Claim claim = claimFromNode(value);
 
         assertThat(claim.asArray(String.class), is(notNullValue()));
@@ -183,7 +189,7 @@ public class JsonNodeClaimTest {
 
     @Test
     public void shouldGetNullArrayIfNullValue() {
-        JsonNode value = mapper.valueToTree(null);
+        JsonNode value = writeContext.valueToTree(null);
         Claim claim = claimFromNode(value);
 
         assertThat(claim.asArray(String.class), is(nullValue()));
@@ -191,7 +197,7 @@ public class JsonNodeClaimTest {
 
     @Test
     public void shouldGetNullArrayIfNonArrayValue() {
-        JsonNode value = mapper.valueToTree(1);
+        JsonNode value = writeContext.valueToTree(1);
         Claim claim = claimFromNode(value);
 
         assertThat(claim.asArray(String.class), is(nullValue()));
@@ -199,7 +205,7 @@ public class JsonNodeClaimTest {
 
     @Test
     public void shouldThrowIfArrayClassMismatch() {
-        JsonNode value = mapper.valueToTree(new String[]{"keys", "values"});
+        JsonNode value = writeContext.valueToTree(new String[]{"keys", "values"});
         Claim claim = claimFromNode(value);
 
         exception.expect(JWTDecodeException.class);
@@ -208,7 +214,7 @@ public class JsonNodeClaimTest {
 
     @Test
     public void shouldGetListValueOfCustomClass() {
-        JsonNode value = mapper.valueToTree(Arrays.asList(new UserPojo("George", 1), new UserPojo("Mark", 2)));
+        JsonNode value = writeContext.valueToTree(Arrays.asList(new UserPojo("George", 1), new UserPojo("Mark", 2)));
         Claim claim = claimFromNode(value);
 
         assertThat(claim.asList(UserPojo.class), is(notNullValue()));
@@ -217,7 +223,7 @@ public class JsonNodeClaimTest {
 
     @Test
     public void shouldGetListValue() {
-        JsonNode value = mapper.valueToTree(Arrays.asList("string1", "string2"));
+        JsonNode value = writeContext.valueToTree(Arrays.asList("string1", "string2"));
         Claim claim = claimFromNode(value);
 
         assertThat(claim.asList(String.class), is(notNullValue()));
@@ -226,7 +232,7 @@ public class JsonNodeClaimTest {
 
     @Test
     public void shouldGetNullListIfNullValue() {
-        JsonNode value = mapper.valueToTree(null);
+        JsonNode value = writeContext.valueToTree(null);
         Claim claim = claimFromNode(value);
 
         assertThat(claim.asList(String.class), is(nullValue()));
@@ -234,7 +240,7 @@ public class JsonNodeClaimTest {
 
     @Test
     public void shouldGetNullListIfNonArrayValue() {
-        JsonNode value = mapper.valueToTree(1);
+        JsonNode value = writeContext.valueToTree(1);
         Claim claim = claimFromNode(value);
 
         assertThat(claim.asList(String.class), is(nullValue()));
@@ -242,7 +248,7 @@ public class JsonNodeClaimTest {
 
     @Test
     public void shouldThrowIfListClassMismatch() {
-        JsonNode value = mapper.valueToTree(new String[]{"keys", "values"});
+        JsonNode value = writeContext.valueToTree(new String[]{"keys", "values"});
         Claim claim = claimFromNode(value);
 
         exception.expect(JWTDecodeException.class);
@@ -251,7 +257,7 @@ public class JsonNodeClaimTest {
 
     @Test
     public void shouldGetNullMapIfNullValue() {
-        JsonNode value = mapper.valueToTree(null);
+        JsonNode value = writeContext.valueToTree(null);
         Claim claim = claimFromNode(value);
 
         assertThat(claim.asMap(), is(nullValue()));
@@ -259,7 +265,7 @@ public class JsonNodeClaimTest {
 
     @Test
     public void shouldGetNullMapIfNonArrayValue() {
-        JsonNode value = mapper.valueToTree(1);
+        JsonNode value = writeContext.valueToTree(1);
         Claim claim = claimFromNode(value);
 
         assertThat(claim.asMap(), is(nullValue()));
@@ -273,17 +279,17 @@ public class JsonNodeClaimTest {
         map.put("boolean", true);
         map.put("object", Collections.singletonMap("something", "else"));
 
-        JsonNode value = mapper.valueToTree(map);
+        JsonNode value = writeContext.valueToTree(map);
         Claim claim = claimFromNode(value);
 
         assertThat(claim, is(notNullValue()));
         Map<String, Object> backMap = claim.asMap();
         assertThat(backMap, is(notNullValue()));
-        assertThat(backMap, hasEntry("text", (Object) "extraValue"));
-        assertThat(backMap, hasEntry("number", (Object) 12));
-        assertThat(backMap, hasEntry("boolean", (Object) true));
+        assertThat(backMap, hasEntry("text", "extraValue"));
+        assertThat(backMap, hasEntry("number", 12));
+        assertThat(backMap, hasEntry("boolean", true));
         assertThat(backMap, hasKey("object"));
-        assertThat((Map<String, Object>) backMap.get("object"), IsMapContaining.hasEntry("something", (Object) "else"));
+        assertThat((Map<String, Object>) backMap.get("object"), IsMapContaining.hasEntry("something", "else"));
     }
 
     @Test
@@ -291,14 +297,14 @@ public class JsonNodeClaimTest {
         JsonNode value = mock(ObjectNode.class);
         when(value.getNodeType()).thenReturn(JsonNodeType.OBJECT);
 
-        ObjectMapper mockedMapper = mock(ObjectMapper.class);
+        DeserializationContextExt mockedMapper = mock(DeserializationContextExt.class);
 
         JsonNodeClaim claim = (JsonNodeClaim) JsonNodeClaim.claimFromNode(value, mockedMapper);
         JsonNodeClaim spiedClaim = spy(claim);
         
         JsonParser mockedParser = mock(JsonParser.class);
         when(mockedMapper.treeAsTokens(value)).thenReturn(mockedParser);
-        when(mockedParser.readValueAs(ArgumentMatchers.any(TypeReference.class))).thenThrow(IOException.class);
+        when(mockedParser.readValueAs(ArgumentMatchers.any(TypeReference.class))).thenThrow(JacksonException.class);
 
         exception.expect(JWTDecodeException.class);
         spiedClaim.asMap();
@@ -306,7 +312,7 @@ public class JsonNodeClaimTest {
 
     @Test
     public void shouldGetCustomClassValue() {
-        JsonNode value = mapper.valueToTree(new UserPojo("john", 123));
+        JsonNode value = writeContext.valueToTree(new UserPojo("john", 123));
         Claim claim = claimFromNode(value);
 
         assertThat(claim, is(notNullValue()));
@@ -316,7 +322,7 @@ public class JsonNodeClaimTest {
 
     @Test
     public void shouldThrowIfCustomClassMismatch() {
-        JsonNode value = mapper.valueToTree(new UserPojo("john", 123));
+        JsonNode value = writeContext.valueToTree(new UserPojo("john", 123));
         Claim claim = claimFromNode(value);
 
         exception.expect(JWTDecodeException.class);
@@ -341,7 +347,7 @@ public class JsonNodeClaimTest {
         assertNull(missingClaim.asList(String.class));
         assertNull(missingClaim.asArray(String.class));
 
-        JsonNode nullValue = mapper.valueToTree(null);
+        JsonNode nullValue = writeContext.valueToTree(null);
         Claim nullClaim = claimFromNode(nullValue);
         assertThat(nullClaim.isMissing(), is(false));
         assertThat(nullClaim.isNull(), is(true));
@@ -360,7 +366,7 @@ public class JsonNodeClaimTest {
 
     @Test
     public void shouldReturnNullForInvalidArrayValue() {
-        JsonNode value = mapper.valueToTree(new UserPojo("john", 123));
+        JsonNode value = writeContext.valueToTree(new UserPojo("john", 123));
         Claim claim = claimFromNode(value);
         assertNull(claim.asArray(String.class));
     }
@@ -368,7 +374,7 @@ public class JsonNodeClaimTest {
     @SuppressWarnings({"unchecked", "RedundantCast"})
     @Test
     public void shouldGetAsMapValue() {
-        JsonNode value = mapper.valueToTree(Collections.singletonMap("key", new UserPojo("john", 123)));
+        JsonNode value = writeContext.valueToTree(Collections.singletonMap("key", new UserPojo("john", 123)));
         Claim claim = claimFromNode(value);
 
         assertThat(claim, is(notNullValue()));
@@ -399,7 +405,7 @@ public class JsonNodeClaimTest {
 
     @Test
     public void shouldReturnBaseClaimWhenParsingNullValue() {
-        JsonNode value = mapper.valueToTree(null);
+        JsonNode value = writeContext.valueToTree(null);
         Claim claim = claimFromNode(value);
 
         assertThat(claim, is(notNullValue()));
@@ -409,7 +415,7 @@ public class JsonNodeClaimTest {
 
     @Test
     public void shouldReturnNonNullClaimWhenParsingObject() {
-        JsonNode value = mapper.valueToTree(new Object());
+        JsonNode value = writeContext.valueToTree(new Object());
         Claim claim = claimFromNode(value);
 
         assertThat(claim, is(notNullValue()));
@@ -420,7 +426,7 @@ public class JsonNodeClaimTest {
 
     @Test
     public void shouldReturnNonNullClaimWhenParsingArray() {
-        JsonNode value = mapper.valueToTree(new String[]{});
+        JsonNode value = writeContext.valueToTree(new String[]{});
         Claim claim = claimFromNode(value);
 
         assertThat(claim, is(notNullValue()));
@@ -431,7 +437,7 @@ public class JsonNodeClaimTest {
 
     @Test
     public void shouldReturnNonNullClaimWhenParsingList() {
-        JsonNode value = mapper.valueToTree(new ArrayList<String>());
+        JsonNode value = writeContext.valueToTree(new ArrayList<String>());
         Claim claim = claimFromNode(value);
 
         assertThat(claim, is(notNullValue()));
@@ -442,7 +448,7 @@ public class JsonNodeClaimTest {
 
     @Test
     public void shouldReturnNonNullClaimWhenParsingStringValue() {
-        JsonNode value = mapper.valueToTree("");
+        JsonNode value = writeContext.valueToTree("");
         Claim claim = claimFromNode(value);
 
         assertThat(claim, is(notNullValue()));
@@ -453,7 +459,7 @@ public class JsonNodeClaimTest {
 
     @Test
     public void shouldReturnNonNullClaimWhenParsingIntValue() {
-        JsonNode value = mapper.valueToTree(Integer.MAX_VALUE);
+        JsonNode value = writeContext.valueToTree(Integer.MAX_VALUE);
         Claim claim = claimFromNode(value);
 
         assertThat(claim, is(notNullValue()));
@@ -464,7 +470,7 @@ public class JsonNodeClaimTest {
 
     @Test
     public void shouldReturnNonNullClaimWhenParsingDoubleValue() {
-        JsonNode value = mapper.valueToTree(Double.MAX_VALUE);
+        JsonNode value = writeContext.valueToTree(Double.MAX_VALUE);
         Claim claim = claimFromNode(value);
 
         assertThat(claim, is(notNullValue()));
@@ -475,7 +481,7 @@ public class JsonNodeClaimTest {
 
     @Test
     public void shouldReturnNonNullClaimWhenParsingDateValue() {
-        JsonNode value = mapper.valueToTree(new Date());
+        JsonNode value = writeContext.valueToTree(new Date());
         Claim claim = claimFromNode(value);
 
         assertThat(claim, is(notNullValue()));
@@ -486,7 +492,7 @@ public class JsonNodeClaimTest {
 
     @Test
     public void shouldReturnNonNullClaimWhenParsingBooleanValue() {
-        JsonNode value = mapper.valueToTree(Boolean.TRUE);
+        JsonNode value = writeContext.valueToTree(Boolean.TRUE);
         Claim claim = claimFromNode(value);
 
         assertThat(claim, is(notNullValue()));
@@ -497,7 +503,7 @@ public class JsonNodeClaimTest {
 
     @Test
     public void shouldReturnNullIsTrue() {
-        JsonNode value = mapper.valueToTree(null);
+        JsonNode value = writeContext.valueToTree(null);
         Claim claim = claimFromNode(value);
 
         assertThat(claim, is(notNullValue()));
@@ -508,22 +514,22 @@ public class JsonNodeClaimTest {
 
     @Test
     public void shouldDelegateToJsonNodeToString() {
-        JsonNode value = mapper.valueToTree(new UserPojo("john", 123));
+        JsonNode value = writeContext.valueToTree(new UserPojo("john", 123));
         Claim claim = claimFromNode(value);
         assertThat(claim.toString(), is(value.toString()));
     }
 
     @Test
     public void shouldConvertToString() {
-        JsonNode value = mapper.valueToTree(new UserPojo("john", 123));
-        JsonNode nullValue = mapper.valueToTree(null);
+        JsonNode value = writeContext.valueToTree(new UserPojo("john", 123));
+        JsonNode nullValue = writeContext.valueToTree(null);
         JsonNode missingValue = MissingNode.getInstance();
 
         Claim claim = claimFromNode(value);
         Claim nullClaim = claimFromNode(nullValue);
         Claim missingClaim = claimFromNode(missingValue);
 
-        assertThat(claim.toString(), is("{\"name\":\"john\",\"id\":123}"));
+        assertThat(claim.toString(), is("{\"id\":123,\"name\":\"john\"}"));
         assertThat(nullClaim.isNull(), is(true));
         assertThat(nullClaim.toString(), is("Null claim"));
         assertThat(missingClaim.isMissing(), is(true));

@@ -1,10 +1,10 @@
 package com.auth0.jwt.impl;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.databind.ser.std.StdSerializer;
+import tools.jackson.databind.SerializationContext;
 
-import java.io.IOException;
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
@@ -22,7 +22,7 @@ public class ClaimsSerializer<T extends ClaimsHolder> extends StdSerializer<T> {
     }
 
     @Override
-    public void serialize(T holder, JsonGenerator gen, SerializerProvider provider) throws IOException {
+    public void serialize(T holder, JsonGenerator gen, SerializationContext provider) throws JacksonException {
         gen.writeStartObject();
         for (Map.Entry<String, Object> entry : holder.getClaims().entrySet()) {
             writeClaim(entry, gen);
@@ -37,14 +37,14 @@ public class ClaimsSerializer<T extends ClaimsHolder> extends StdSerializer<T> {
      *
      * @param entry The entry that corresponds to the JSON field to write
      * @param gen The {@code JsonGenerator} to use
-     * @throws IOException if there is either an underlying I/O problem or encoding issue at format layer
+     * @throws JacksonException if there is either an underlying I/O problem or encoding issue at format layer
      */
-    protected void writeClaim(Map.Entry<String, Object> entry, JsonGenerator gen) throws IOException {
-        gen.writeFieldName(entry.getKey());
+    protected void writeClaim(Map.Entry<String, Object> entry, JsonGenerator gen) throws JacksonException {
+        gen.writeName(entry.getKey());
         handleSerialization(entry.getValue(), gen);
     }
 
-    private static void handleSerialization(Object value, JsonGenerator gen) throws IOException {
+    private static void handleSerialization(Object value, JsonGenerator gen) throws JacksonException {
         if (value instanceof Date) {
             gen.writeNumber(dateToSeconds((Date) value));
         } else if (value instanceof Instant) { // EXPIRES_AT, ISSUED_AT, NOT_BEFORE, custom Instant claims
@@ -54,21 +54,21 @@ public class ClaimsSerializer<T extends ClaimsHolder> extends StdSerializer<T> {
         } else if (value instanceof List) {
             serializeList((List<?>) value, gen);
         } else {
-            gen.writeObject(value);
+            gen.writePOJO(value);
         }
     }
 
-    private static void serializeMap(Map<?, ?> map, JsonGenerator gen) throws IOException {
+    private static void serializeMap(Map<?, ?> map, JsonGenerator gen) throws JacksonException {
         gen.writeStartObject();
         for (Map.Entry<?, ?> entry : map.entrySet()) {
-            gen.writeFieldName((String) entry.getKey());
+            gen.writeName((String) entry.getKey());
             Object value = entry.getValue();
             handleSerialization(value, gen);
         }
         gen.writeEndObject();
     }
 
-    private static void serializeList(List<?> list, JsonGenerator gen) throws IOException {
+    private static void serializeList(List<?> list, JsonGenerator gen) throws JacksonException {
         gen.writeStartArray();
         for (Object entry : list) {
             handleSerialization(entry, gen);

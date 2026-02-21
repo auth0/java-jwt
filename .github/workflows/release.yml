@@ -18,7 +18,7 @@ jobs:
   rl-scanner:
     uses: ./.github/workflows/rl-secure.yml
     with:
-      java-version: 11
+      java-version: 17
       artifact-name: 'java-jwt.tgz'
     secrets:
       RLSECURE_LICENSE: ${{ secrets.RLSECURE_LICENSE }}
@@ -31,7 +31,7 @@ jobs:
     uses: ./.github/workflows/java-release.yml
     needs: rl-scanner
     with:
-      java-version: 11.0.21-tem
+      java-version: 17.0.12-tem
     secrets:
       ossr-username: ${{ secrets.OSSR_USERNAME }}
       ossr-token: ${{ secrets.OSSR_TOKEN }}
