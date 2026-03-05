@@ -112,8 +112,8 @@ javadoc {
 }
 
 dependencies {
-    implementation 'tools.jackson.core:jackson-core:3.0.4'
-    implementation 'tools.jackson.core:jackson-databind:3.0.4'
+    implementation 'tools.jackson.core:jackson-core:3.1.0'
+    implementation 'tools.jackson.core:jackson-databind:3.1.0'
 
     testImplementation 'org.bouncycastle:bcprov-jdk15on:1.70'
     testImplementation 'junit:junit:4.13.2'
