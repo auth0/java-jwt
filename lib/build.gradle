@@ -13,7 +13,7 @@ plugins {
     id 'java'
     id 'jacoco'
     id 'checkstyle'
-    id 'me.champeau.gradle.japicmp' version '0.4.1'
+    id 'me.champeau.gradle.japicmp' version '0.4.6'
     id 'maven-publish'
 }
 
