@@ -133,8 +133,8 @@ dependencies {
     testImplementation 'org.mockito:mockito-core:4.11.0'
 
     jmhImplementation sourceSets.main.output
-    jmhImplementation 'org.openjdk.jmh:jmh-core:1.35'
-    jmhAnnotationProcessor 'org.openjdk.jmh:jmh-generator-annprocess:1.35'
+    jmhImplementation 'org.openjdk.jmh:jmh-core:1.37'
+    jmhAnnotationProcessor 'org.openjdk.jmh:jmh-generator-annprocess:1.37'
 }
 
 jacoco {
