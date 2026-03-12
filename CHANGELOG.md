@@ -1,5 +1,11 @@
 # Change Log
 
+## [4.5.1](https://github.com/auth0/java-jwt/tree/4.5.1) (2026-02-10)
+[Full Changelog](https://github.com/auth0/java-jwt/compare/4.5.0...4.5.1)
+
+**Added**
+- Update jackson dependency [\#732](https://github.com/auth0/java-jwt/pull/732) ([tanya732](https://github.com/tanya732))
+
 ## [4.5.0](https://github.com/auth0/java-jwt/tree/4.5.0) (2025-01-29)
 [Full Changelog](https://github.com/auth0/java-jwt/compare/4.4.0...4.5.0)
 

@@ -15,13 +15,17 @@ jobs:
         with:
           distribution: temurin
           java-version: 11
-      - uses: gradle/gradle-build-action@a4cf152f482c7ca97ef56ead29bf08bcd953284c
-        with:
-          arguments: assemble apiDiff check jacocoTestReport --continue --console=plain
-      - uses: codecov/codecov-action@eaaf4bedf32dbdc6b720b63067d99c4d77d6047d
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@06832c7b30a0129d7fb559bcc6e43d26f6374244 # v4.3.1
+
+      - name: Test and Assemble and ApiDiff with Gradle
+        run: ./gradlew assemble apiDiff check jacocoTestReport --continue --console=plain
+
+      - uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de
         with:
           flags: unittests
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         with:
           name: Reports
           path: lib/build/reports
