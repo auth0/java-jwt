@@ -356,11 +356,13 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
         }
 
         private boolean assertInstantIsFuture(Instant claimVal, long leeway, Instant now) {
-            return claimVal == null || now.minus(Duration.ofSeconds(leeway)).isBefore(claimVal);
+            long safeLeeway = Math.min(leeway, now.getEpochSecond() - Instant.MIN.getEpochSecond());
+            return claimVal == null || now.minus(Duration.ofSeconds(safeLeeway)).isBefore(claimVal);
         }
 
         private boolean assertInstantIsLessThanOrEqualToNow(Instant claimVal, long leeway, Instant now) {
-            return !(claimVal != null && now.plus(Duration.ofSeconds(leeway)).isBefore(claimVal));
+            long safeLeeway = Math.min(leeway, Instant.MAX.getEpochSecond() - now.getEpochSecond());
+            return !(claimVal != null && now.plus(Duration.ofSeconds(safeLeeway)).isBefore(claimVal));
         }
 
         private boolean assertValidAudienceClaim(
