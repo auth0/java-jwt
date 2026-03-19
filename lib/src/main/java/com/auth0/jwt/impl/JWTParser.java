@@ -5,11 +5,12 @@ import com.auth0.jwt.interfaces.Header;
 import com.auth0.jwt.interfaces.JWTPartsParser;
 import com.auth0.jwt.interfaces.Payload;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.module.SimpleModule;
-import java.io.IOException;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectReader;
+import tools.jackson.databind.SerializationFeature;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.module.SimpleModule;
 
 /**
  * This class helps in decoding the Header and Payload of the JWT using
@@ -29,8 +30,6 @@ public class JWTParser implements JWTPartsParser {
     }
 
     JWTParser(ObjectMapper mapper) {
-        addDeserializers(mapper);
-
         this.payloadReader = mapper.readerFor(Payload.class);
         this.headerReader = mapper.readerFor(Header.class);
     }
@@ -43,7 +42,7 @@ public class JWTParser implements JWTPartsParser {
 
         try {
             return payloadReader.readValue(json);
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             throw decodeException(json);
         }
     }
@@ -56,16 +55,16 @@ public class JWTParser implements JWTPartsParser {
 
         try {
             return headerReader.readValue(json);
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             throw decodeException(json);
         }
     }
 
-    static void addDeserializers(ObjectMapper mapper) {
+    static void addDeserializers(JsonMapper.Builder builder) {
         SimpleModule module = new SimpleModule();
         module.addDeserializer(Payload.class, new PayloadDeserializer());
         module.addDeserializer(Header.class, new HeaderDeserializer());
-        mapper.registerModule(module);
+        builder.addModule(module);
     }
 
     static ObjectMapper getDefaultObjectMapper() {
@@ -73,13 +72,13 @@ public class JWTParser implements JWTPartsParser {
     }
 
     private static ObjectMapper createDefaultObjectMapper() {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
-        mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
+        JsonMapper.Builder builder = JsonMapper.builder()
+                .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
+                .changeDefaultPropertyInclusion(incl -> incl.withValueInclusion(JsonInclude.Include.NON_EMPTY));
 
-        addDeserializers(mapper);
+        addDeserializers(builder);
 
-        return mapper;
+        return builder.build();
     }
 
     private static JWTDecodeException decodeException() {

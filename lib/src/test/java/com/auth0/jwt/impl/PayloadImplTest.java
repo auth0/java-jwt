@@ -1,16 +1,16 @@
 package com.auth0.jwt.impl;
 
 import com.auth0.jwt.interfaces.Claim;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
-import com.fasterxml.jackson.databind.node.TextNode;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 import org.hamcrest.collection.IsCollectionWithSize;
 import org.hamcrest.core.IsIterableContaining;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import tools.jackson.databind.node.StringNode;
 
 import java.time.Instant;
 import java.util.*;
@@ -29,28 +29,29 @@ public class PayloadImplTest {
     private final Instant notBefore = Instant.now();
     private final Instant issuedAt = Instant.now();
 
-    private ObjectMapper objectMapper;
+    private DeserializationContext context;
 
     @Before
     public void setUp() {
-        objectMapper = getDefaultObjectMapper();
+        ObjectMapper mapper = getDefaultObjectMapper();
+        context = mapper._deserializationContext();
 
         Map<String, JsonNode> tree = new HashMap<>();
-        tree.put("extraClaim", new TextNode("extraValue"));
-        payload = new PayloadImpl("issuer", "subject", Collections.singletonList("audience"), expiresAt, notBefore, issuedAt, "jwtId", tree, objectMapper);
+        tree.put("extraClaim", new StringNode("extraValue"));
+        payload = new PayloadImpl("issuer", "subject", Collections.singletonList("audience"), expiresAt, notBefore, issuedAt, "jwtId", tree, context);
     }
 
     @Test
     public void shouldHaveUnmodifiableTree() {
         exception.expect(UnsupportedOperationException.class);
-        PayloadImpl payload = new PayloadImpl(null, null, null, null, null, null, null, new HashMap<>(), objectMapper);
+        PayloadImpl payload = new PayloadImpl(null, null, null, null, null, null, null, new HashMap<>(), context);
         payload.getTree().put("something", null);
     }
 
     @Test
     public void shouldHaveUnmodifiableAudience() {
         exception.expect(UnsupportedOperationException.class);
-        PayloadImpl payload = new PayloadImpl(null, null, new ArrayList<>(), null, null, null, null, null, objectMapper);
+        PayloadImpl payload = new PayloadImpl(null, null, new ArrayList<>(), null, null, null, null, null, context);
         payload.getAudience().add("something");
     }
 
@@ -62,7 +63,7 @@ public class PayloadImplTest {
 
     @Test
     public void shouldGetNullIssuerIfMissing() {
-        PayloadImpl payload = new PayloadImpl(null, null, null, null, null, null, null, null, objectMapper);
+        PayloadImpl payload = new PayloadImpl(null, null, null, null, null, null, null, null, context);
         assertThat(payload, is(notNullValue()));
         assertThat(payload.getIssuer(), is(nullValue()));
     }
@@ -75,7 +76,7 @@ public class PayloadImplTest {
 
     @Test
     public void shouldGetNullSubjectIfMissing() {
-        PayloadImpl payload = new PayloadImpl(null, null, null, null, null, null, null, null, objectMapper);
+        PayloadImpl payload = new PayloadImpl(null, null, null, null, null, null, null, null, context);
         assertThat(payload, is(notNullValue()));
         assertThat(payload.getSubject(), is(nullValue()));
     }
@@ -90,7 +91,7 @@ public class PayloadImplTest {
 
     @Test
     public void shouldGetNullAudienceIfMissing() {
-        PayloadImpl payload = new PayloadImpl(null, null, null, null, null, null, null, null, objectMapper);
+        PayloadImpl payload = new PayloadImpl(null, null, null, null, null, null, null, null, context);
         assertThat(payload, is(notNullValue()));
         assertThat(payload.getAudience(), is(nullValue()));
     }
@@ -104,7 +105,7 @@ public class PayloadImplTest {
 
     @Test
     public void shouldGetNullExpiresAtIfMissing() {
-        PayloadImpl payload = new PayloadImpl(null, null, null, null, null, null, null, null, objectMapper);
+        PayloadImpl payload = new PayloadImpl(null, null, null, null, null, null, null, null, context);
         assertThat(payload, is(notNullValue()));
         assertThat(payload.getExpiresAt(), is(nullValue()));
         assertThat(payload.getExpiresAtAsInstant(), is(nullValue()));
@@ -119,7 +120,7 @@ public class PayloadImplTest {
 
     @Test
     public void shouldGetNullNotBeforeIfMissing() {
-        PayloadImpl payload = new PayloadImpl(null, null, null, null, null, null, null, null, objectMapper);
+        PayloadImpl payload = new PayloadImpl(null, null, null, null, null, null, null, null, context);
         assertThat(payload, is(notNullValue()));
         assertThat(payload.getNotBefore(), is(nullValue()));
         assertThat(payload.getNotBeforeAsInstant(), is(nullValue()));
@@ -134,7 +135,7 @@ public class PayloadImplTest {
 
     @Test
     public void shouldGetNullIssuedAtIfMissing() {
-        PayloadImpl payload = new PayloadImpl(null, null, null, null, null, null, null, null, objectMapper);
+        PayloadImpl payload = new PayloadImpl(null, null, null, null, null, null, null, null, context);
         assertThat(payload, is(notNullValue()));
         assertThat(payload.getIssuedAt(), is(nullValue()));
         assertThat(payload.getIssuedAtAsInstant(), is(nullValue()));
@@ -148,7 +149,7 @@ public class PayloadImplTest {
 
     @Test
     public void shouldGetNullJWTIdIfMissing() {
-        PayloadImpl payload = new PayloadImpl(null, null, null, null, null, null, null, null, objectMapper);
+        PayloadImpl payload = new PayloadImpl(null, null, null, null, null, null, null, null, context);
         assertThat(payload, is(notNullValue()));
         assertThat(payload.getId(), is(nullValue()));
     }
@@ -162,7 +163,7 @@ public class PayloadImplTest {
 
     @Test
     public void shouldGetNotNullExtraClaimIfMissing() {
-        PayloadImpl payload = new PayloadImpl(null, null, null, null, null, null, null, null, objectMapper);
+        PayloadImpl payload = new PayloadImpl(null, null, null, null, null, null, null, null, context);
         assertThat(payload, is(notNullValue()));
         assertThat(payload.getClaim("missing"), is(notNullValue()));
         assertThat(payload.getClaim("missing").isMissing(), is(true));
@@ -172,9 +173,9 @@ public class PayloadImplTest {
     @Test
     public void shouldGetClaims() {
         Map<String, JsonNode> tree = new HashMap<>();
-        tree.put("extraClaim", new TextNode("extraValue"));
-        tree.put("sub", new TextNode("auth0"));
-        PayloadImpl payload = new PayloadImpl(null, null, null, null, null, null, null, tree, objectMapper);
+        tree.put("extraClaim", new StringNode("extraValue"));
+        tree.put("sub", new StringNode("auth0"));
+        PayloadImpl payload = new PayloadImpl(null, null, null, null, null, null, null, tree, context);
         assertThat(payload, is(notNullValue()));
         Map<String, Claim> claims = payload.getClaims();
         assertThat(claims, is(notNullValue()));

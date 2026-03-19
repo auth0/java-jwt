@@ -4,11 +4,11 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.SignatureGenerationException;
 import com.auth0.jwt.impl.*;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.MapperFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.json.JsonMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
+import tools.jackson.databind.MapperFeature;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.module.SimpleModule;
+import tools.jackson.core.JacksonException;
 
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
@@ -38,8 +38,8 @@ public final class JWTCreator {
 
         mapper = JsonMapper.builder()
                 .configure(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY, true)
-                .build()
-                .registerModule(module);
+                .addModule(module)
+                .build();
     }
 
     private JWTCreator(Algorithm algorithm, Map<String, Object> headerClaims, Map<String, Object> payloadClaims)
@@ -48,7 +48,7 @@ public final class JWTCreator {
         try {
             headerJson = mapper.writeValueAsString(new HeaderClaimsHolder(headerClaims));
             payloadJson = mapper.writeValueAsString(new PayloadClaimsHolder(payloadClaims));
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             throw new JWTCreationException("Some of the Claims couldn't be converted to a valid JSON format.", e);
         }
     }
@@ -114,7 +114,7 @@ public final class JWTCreator {
             try {
                 Map<String, Object> headerClaims = mapper.readValue(headerClaimsJson, LinkedHashMap.class);
                 return withHeader(headerClaims);
-            } catch (JsonProcessingException e) {
+            } catch (JacksonException e) {
                 throw new IllegalArgumentException("Invalid header JSON", e);
             }
         }
@@ -510,7 +510,7 @@ public final class JWTCreator {
             try {
                 Map<String, Object> payloadClaims =  mapper.readValue(payloadClaimsJson, LinkedHashMap.class);
                 return withPayload(payloadClaims);
-            } catch (JsonProcessingException e) {
+            } catch (JacksonException e) {
                 throw new IllegalArgumentException("Invalid payload JSON", e);
             }
         }

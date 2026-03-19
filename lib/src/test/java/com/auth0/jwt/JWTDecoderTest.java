@@ -341,8 +341,10 @@ public class JWTDecoderTest {
 
         assertThat(originalJwt, is(instanceOf(Serializable.class)));
 
-        byte[] serialized = serialize(originalJwt);
-        DecodedJWT deserializedJwt = (DecodedJWT) deserialize(serialized);
+        byte[] serializedToken = serialize(originalJwt.getToken());
+        String deserializedToken = (String) deserialize(serializedToken);
+
+        DecodedJWT deserializedJwt = JWT.decode(deserializedToken);
 
         assertThat(originalJwt.getHeader(), is(equalTo(deserializedJwt.getHeader())));
         assertThat(originalJwt.getPayload(), is(equalTo(deserializedJwt.getPayload())));

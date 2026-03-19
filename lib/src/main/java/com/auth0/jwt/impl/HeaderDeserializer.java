@@ -3,13 +3,13 @@ package com.auth0.jwt.impl;
 import com.auth0.jwt.HeaderParams;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.interfaces.Header;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.JsonParser;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.deser.std.StdDeserializer;
 
-import java.io.IOException;
 import java.util.Map;
 
 /**
@@ -26,8 +26,8 @@ class HeaderDeserializer extends StdDeserializer<Header> {
     }
 
     @Override
-    public Header deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
-        Map<String, JsonNode> tree = p.getCodec().readValue(p, new TypeReference<Map<String, JsonNode>>() {
+    public Header deserialize(JsonParser p, DeserializationContext ctxt) throws JacksonException {
+        Map<String, JsonNode> tree = ctxt.readValue(p, new TypeReference<>() {
         });
         if (tree == null) {
             throw new JWTDecodeException("Parsing the Header's JSON resulted on a Null map");
@@ -37,7 +37,7 @@ class HeaderDeserializer extends StdDeserializer<Header> {
         String type = getString(tree, HeaderParams.TYPE);
         String contentType = getString(tree, HeaderParams.CONTENT_TYPE);
         String keyId = getString(tree, HeaderParams.KEY_ID);
-        return new BasicHeader(algorithm, type, contentType, keyId, tree, p.getCodec());
+        return new BasicHeader(algorithm, type, contentType, keyId, tree, ctxt);
     }
 
     String getString(Map<String, JsonNode> tree, String claimName) {
@@ -45,6 +45,6 @@ class HeaderDeserializer extends StdDeserializer<Header> {
         if (node == null || node.isNull()) {
             return null;
         }
-        return node.asText(null);
+        return node.asString(null);
     }
 }

@@ -1,5 +1,6 @@
 module com.auth0.jwt {
-    requires com.fasterxml.jackson.databind;
+    requires tools.jackson.core;
+    requires tools.jackson.databind;
 
     exports com.auth0.jwt;
     exports com.auth0.jwt.algorithms;
