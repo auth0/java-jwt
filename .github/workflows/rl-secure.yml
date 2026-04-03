@@ -43,7 +43,7 @@ jobs:
           java-version: ${{ inputs.java-version }}
 
       - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@39e147cb9de83bb9910b8ef8bd7fff0ee20fcd6f # v6.0.1
+        uses: gradle/actions/setup-gradle@50e97c2cd7a37755bbfafc9c5b7cafaece252f6e # v6.1.0
 
       - name: Test and Assemble and ApiDiff with Gradle
         run: ./gradlew assemble apiDiff check jacocoTestReport --continue --console=plain
