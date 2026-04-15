@@ -10,6 +10,7 @@
 [![License](http://img.shields.io/:license-mit-blue.svg?style=flat)](https://doge.mit-license.org/)
 [![Maven Central](https://img.shields.io/maven-central/v/com.auth0/java-jwt.svg?style=flat-square)](https://mvnrepository.com/artifact/com.auth0/java-jwt)
 [![javadoc](https://javadoc.io/badge2/com.auth0/auth0/javadoc.svg)](https://javadoc.io/doc/com.auth0/java-jwt)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/auth0/java-jwt)
 
 :books: [Documentation](#documentation) - :rocket: [Getting Started](#getting-started) - :computer: [API Reference](#api-reference) :speech_balloon: [Feedback](#feedback)
 
@@ -50,14 +51,14 @@ Add the dependency via Maven:
 <dependency>
   <groupId>com.auth0</groupId>
   <artifactId>java-jwt</artifactId>
-  <version>4.5.0</version>
+  <version>4.5.1</version>
 </dependency>
 ```
 
 or Gradle:
 
 ```gradle
-implementation 'com.auth0:java-jwt:4.5.0'
+implementation 'com.auth0:java-jwt:4.5.1'
 ```
 
 ### Create a JWT

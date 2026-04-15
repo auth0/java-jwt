@@ -13,7 +13,8 @@ plugins {
     id 'java'
     id 'jacoco'
     id 'checkstyle'
-    id 'me.champeau.gradle.japicmp' version '0.4.1'
+    id 'me.champeau.gradle.japicmp' version '0.4.6'
+    id 'maven-publish'
 }
 
 sourceSets {
@@ -122,18 +123,18 @@ javadoc {
 }
 
 dependencies {
-    implementation 'com.fasterxml.jackson.core:jackson-core:2.21.0'
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.21.0'
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.21.2'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.21.2'
 
     testImplementation 'org.bouncycastle:bcprov-jdk15on:1.70'
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'net.jodah:concurrentunit:0.4.6'
     testImplementation 'org.hamcrest:hamcrest:2.2'
-    testImplementation 'org.mockito:mockito-core:4.4.0'
+    testImplementation 'org.mockito:mockito-core:4.11.0'
 
     jmhImplementation sourceSets.main.output
-    jmhImplementation 'org.openjdk.jmh:jmh-core:1.35'
-    jmhAnnotationProcessor 'org.openjdk.jmh:jmh-generator-annprocess:1.35'
+    jmhImplementation 'org.openjdk.jmh:jmh-core:1.37'
+    jmhAnnotationProcessor 'org.openjdk.jmh:jmh-generator-annprocess:1.37'
 }
 
 jacoco {
