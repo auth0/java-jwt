@@ -22,7 +22,7 @@
 
 ### Requirements
 
-This library is supported for Java LTS versions 8, 11, and 17. For issues on non-LTS versions above 8, consideration will be given on a case-by-case basis.
+This library is supported for Java LTS versions 8, 11, 17 and 21. For issues on non-LTS versions above 8, consideration will be given on a case-by-case basis.
 
 > `java-jwt` is intended for server-side JVM applications. Android applications should use [JWTDecode.Android](https://github.com/auth0/JWTDecode.Android).
 
