@@ -1,0 +1,15 @@
+name: SCA
+
+on:
+  push:
+    branches: ["master"]
+  pull_request:
+    branches: ["master"]
+
+jobs:
+  snyk-cli:
+    uses: auth0/devsecops-tooling/.github/workflows/sca-scan.yml@main
+    with:
+      additional-arguments: "--exclude=README.md"
+      java-version: "11"
+    secrets: inherit
