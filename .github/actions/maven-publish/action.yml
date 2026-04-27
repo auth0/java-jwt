@@ -17,7 +17,7 @@ runs:
 
   steps:
     - name: Checkout code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
 
     - name: Setup Java
       shell: bash
@@ -33,9 +33,9 @@ runs:
       env:
         JAVA_HOME: ${{ env.JAVA_HOME }}
 
-    - name: Publish Android/Java Packages to Maven
+    - name: Publish Java Packages to Maven
       shell: bash
-      run: ./gradlew publish -PisSnapshot=false --stacktrace
+      run: ./gradlew publishToSonatype closeSonatypeStagingRepository -PisSnapshot=false --stacktrace
       env:
         JAVA_HOME: ${{ env.JAVA_HOME }}
         MAVEN_USERNAME: ${{ inputs.ossr-username }}
