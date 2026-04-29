@@ -1,5 +1,12 @@
 # Change Log
 
+## [4.5.2](https://github.com/auth0/java-jwt/tree/4.5.2) (2026-04-29)
+[Full Changelog](https://github.com/auth0/java-jwt/compare/4.5.1...4.5.2)
+
+**Added**
+- Chore: Bump update commons-beanutils dependency [\#761](https://github.com/auth0/java-jwt/pull/761) ([tanya732](https://github.com/tanya732))
+- Chore: Update Readme with Java 21 [\#760](https://github.com/auth0/java-jwt/pull/760) ([tanya732](https://github.com/tanya732))
+
 ## [4.5.1](https://github.com/auth0/java-jwt/tree/4.5.1) (2026-02-10)
 [Full Changelog](https://github.com/auth0/java-jwt/compare/4.5.0...4.5.1)
 
