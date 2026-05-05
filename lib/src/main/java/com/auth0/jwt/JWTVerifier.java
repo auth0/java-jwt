@@ -52,7 +52,7 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
      * Note that this class is <strong>not</strong> thread-safe. Calling {@link #build()} returns an instance of
      * {@link com.auth0.jwt.interfaces.JWTVerifier} which can be reused.
      */
-    public static class BaseVerification implements Verification {
+    static class BaseVerification implements Verification {
         private final Algorithm algorithm;
         private final List<ExpectedCheckHolder> expectedChecks;
         private long defaultLeeway;
