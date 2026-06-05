@@ -241,6 +241,34 @@ public class PayloadDeserializerTest {
         assertThat(instant.toEpochMilli(), is(2147493647L * 1000));
     }
 
+    // https://github.com/auth0/java-jwt/issues/706 - a NumericDate may be written in scientific
+    // notation. An in-range value must still resolve to the right instant.
+    @Test
+    public void shouldGetInstantWhenParsingScientificNotationNode() {
+        Map<String, JsonNode> tree = new HashMap<>();
+        DoubleNode node = new DoubleNode(1.7e9);
+        tree.put("key", node);
+
+        Instant instant = deserializer.getInstantFromSeconds(tree, "key");
+        assertThat(instant, is(notNullValue()));
+        assertThat(instant, is(Instant.ofEpochSecond(1_700_000_000L)));
+    }
+
+    // A numeric value that does not fit a long (the exact value reported in issue #706) must be
+    // rejected as out of range, not mislabeled as non-numeric.
+    @Test
+    public void shouldThrowOutOfRangeWhenNumericDateExceedsLong() {
+        exception.expect(JWTDecodeException.class);
+        exception.expectMessage(
+                "The claim 'key' value (1.733162101E26) is out of the range representable as a NumericDate.");
+
+        Map<String, JsonNode> tree = new HashMap<>();
+        DoubleNode node = new DoubleNode(1.733162101e+26);
+        tree.put("key", node);
+
+        deserializer.getInstantFromSeconds(tree, "key");
+    }
+
     @Test
     public void shouldGetNullStringWhenParsingNullNode() {
         Map<String, JsonNode> tree = new HashMap<>();
