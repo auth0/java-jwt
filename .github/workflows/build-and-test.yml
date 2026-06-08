@@ -22,7 +22,7 @@ jobs:
       - name: Test and Assemble and ApiDiff with Gradle
         run: ./gradlew assemble apiDiff check jacocoTestReport --continue --console=plain
 
-      - uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de
+      - uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f
         with:
           flags: unittests
       - uses: actions/upload-artifact@v7
