@@ -74,9 +74,19 @@ class PayloadDeserializer extends StdDeserializer<Payload> {
         if (node == null || node.isNull()) {
             return null;
         }
-        if (!node.canConvertToLong()) {
+        // A NumericDate per RFC 7519 is a JSON number and may be written in scientific notation
+        // (for example 1.7e9). Split the two failure modes so the thrown error is accurate: a
+        // genuinely non-numeric value, versus a numeric value that is out of the range a long can
+        // hold (such as 1.733162101e+26). Previously both produced "non-numeric date value", which
+        // is wrong for the second case and made large/scientific values look unsupported.
+        if (!node.isNumber()) {
             throw new JWTDecodeException(
                     String.format("The claim '%s' contained a non-numeric date value.", claimName));
+        }
+        if (!node.canConvertToLong()) {
+            throw new JWTDecodeException(String.format(
+                    "The claim '%s' value (%s) is out of the range representable as a NumericDate.",
+                    claimName, node.asText()));
         }
         return Instant.ofEpochSecond(node.asLong());
     }
