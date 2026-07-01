@@ -16,11 +16,15 @@ on:
         required: true
       SIGNAL_HANDLER_TOKEN:
         required: true
+      SIGNAL_HANDLER_DOMAIN:
+        required: true
       PRODSEC_TOOLS_USER:
         required: true
       PRODSEC_TOOLS_TOKEN:
         required: true
       PRODSEC_TOOLS_ARN:
+        required: true
+      PRODSEC_PYTHON_TOOLS_REPO:
         required: true
 
 jobs:
@@ -58,17 +62,19 @@ jobs:
 
       - name: Run RL Scanner
         id: rl-scan-conclusion
-        uses: ./.github/actions/rl-scanner
+        uses: auth0/devsecops-tooling/.github/actions/rl-scan@main
         with:
-          artifact-path: "$(pwd)/${{ inputs.artifact-name }}"
-          version: "${{ steps.get_version.outputs.version }}"
-        env:
+          artifact-name: "${{ github.event.repository.name }}"
+          artifact-path: "${{ github.workspace }}/${{ inputs.artifact-name }}"
+          version: ${{ steps.get_version.outputs.version }}
           RLSECURE_LICENSE: ${{ secrets.RLSECURE_LICENSE }}
           RLSECURE_SITE_KEY: ${{ secrets.RLSECURE_SITE_KEY }}
           SIGNAL_HANDLER_TOKEN: ${{ secrets.SIGNAL_HANDLER_TOKEN }}
+          SIGNAL_HANDLER_DOMAIN: ${{ secrets.SIGNAL_HANDLER_DOMAIN }}
+          PRODSEC_TOOLS_ARN: ${{ secrets.PRODSEC_TOOLS_ARN }}
           PRODSEC_TOOLS_USER: ${{ secrets.PRODSEC_TOOLS_USER }}
           PRODSEC_TOOLS_TOKEN: ${{ secrets.PRODSEC_TOOLS_TOKEN }}
-          PRODSEC_TOOLS_ARN: ${{ secrets.PRODSEC_TOOLS_ARN }}
+          PRODSEC_PYTHON_TOOLS_REPO: ${{ secrets.PRODSEC_PYTHON_TOOLS_REPO }}
 
       - name: Output scan result
         run: echo "scan-status=${{ steps.rl-scan-conclusion.outcome }}" >> $GITHUB_ENV
