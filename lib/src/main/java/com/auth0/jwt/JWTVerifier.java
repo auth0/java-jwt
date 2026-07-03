@@ -30,7 +30,9 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
 
     JWTVerifier(Algorithm algorithm, List<ExpectedCheckHolder> expectedChecks) {
         this.algorithm = algorithm;
-        this.expectedChecks = Collections.unmodifiableList(expectedChecks);
+        // Defensive copy: never wrap the builder's live list, otherwise a reused builder would
+        // retroactively mutate an already-built (supposedly immutable, thread-safe) verifier.
+        this.expectedChecks = Collections.unmodifiableList(new ArrayList<>(expectedChecks));
         this.parser = new JWTParser();
     }
 
@@ -285,8 +287,11 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
          */
         public JWTVerifier build(Clock clock) {
             this.clock = clock;
-            addMandatoryClaimChecks();
-            return new JWTVerifier(algorithm, expectedChecks);
+            // Build the mandatory checks into a fresh list rather than mutating this builder's own
+            // field, so build() is idempotent and can be called repeatedly without duplicating them.
+            List<ExpectedCheckHolder> checks = new ArrayList<>(expectedChecks);
+            addMandatoryClaimChecks(checks);
+            return new JWTVerifier(algorithm, checks);
         }
 
         /**
@@ -299,17 +304,17 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
             return customLeeways.getOrDefault(name, defaultLeeway);
         }
 
-        private void addMandatoryClaimChecks() {
+        private void addMandatoryClaimChecks(List<ExpectedCheckHolder> checks) {
             long expiresAtLeeway = getLeewayFor(RegisteredClaims.EXPIRES_AT);
             long notBeforeLeeway = getLeewayFor(RegisteredClaims.NOT_BEFORE);
             long issuedAtLeeway = getLeewayFor(RegisteredClaims.ISSUED_AT);
 
-            expectedChecks.add(constructExpectedCheck(RegisteredClaims.EXPIRES_AT, (claim, decodedJWT) ->
+            checks.add(constructExpectedCheck(RegisteredClaims.EXPIRES_AT, (claim, decodedJWT) ->
                     assertValidInstantClaim(RegisteredClaims.EXPIRES_AT, claim, expiresAtLeeway, true)));
-            expectedChecks.add(constructExpectedCheck(RegisteredClaims.NOT_BEFORE, (claim, decodedJWT) ->
+            checks.add(constructExpectedCheck(RegisteredClaims.NOT_BEFORE, (claim, decodedJWT) ->
                     assertValidInstantClaim(RegisteredClaims.NOT_BEFORE, claim, notBeforeLeeway, false)));
             if (!ignoreIssuedAt) {
-                expectedChecks.add(constructExpectedCheck(RegisteredClaims.ISSUED_AT, (claim, decodedJWT) ->
+                checks.add(constructExpectedCheck(RegisteredClaims.ISSUED_AT, (claim, decodedJWT) ->
                         assertValidInstantClaim(RegisteredClaims.ISSUED_AT, claim, issuedAtLeeway, false)));
             }
         }

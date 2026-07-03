@@ -1325,4 +1325,18 @@ public class JWTVerifierTest {
                 JWTVerifier.init(Algorithm.HMAC256("secret")).withSubject(null).build().verify(token));
         assertThat(e.getClaimName(), is("sub"));
     }
+
+    @Test
+    public void shouldBuildReusableVerifierWithoutDuplicatingMandatoryChecks() {
+        // H3: building the same builder twice must not duplicate the mandatory exp/nbf/iat checks,
+        // nor retroactively mutate the first (supposedly immutable) verifier.
+        Verification verification = JWTVerifier.init(Algorithm.HMAC256("secret")).withIssuer("auth0");
+        JWTVerifier verifier1 = verification.build();
+        int sizeAfterFirstBuild = verifier1.expectedChecks.size(); // 1 issuer + 3 mandatory = 4
+        JWTVerifier verifier2 = verification.build();
+
+        assertThat(sizeAfterFirstBuild, is(4));
+        assertThat(verifier1.expectedChecks.size(), is(sizeAfterFirstBuild)); // first not retroactively mutated
+        assertThat(verifier2.expectedChecks.size(), is(4));                    // second not doubled to 7
+    }
 }
