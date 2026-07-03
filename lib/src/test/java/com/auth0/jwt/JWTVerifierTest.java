@@ -1314,4 +1314,15 @@ public class JWTVerifierTest {
         });
         assertThat(e.getClaimName(), is("custom"));
     }
+
+    @Test
+    public void shouldThrowIncorrectClaimNotNpeWhenNullSubjectExpectedButClaimPresent() {
+        // H4: registering a null expected value means "the claim must be JSON null"; when the token
+        // actually carries the claim, verification must fail with the documented IncorrectClaimException,
+        // not leak a raw NullPointerException out of verify().
+        String token = JWT.create().withSubject("actual").sign(Algorithm.HMAC256("secret"));
+        IncorrectClaimException e = assertThrows(null, IncorrectClaimException.class, () ->
+                JWTVerifier.init(Algorithm.HMAC256("secret")).withSubject(null).build().verify(token));
+        assertThat(e.getClaimName(), is("sub"));
+    }
 }

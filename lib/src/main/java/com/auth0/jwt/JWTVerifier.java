@@ -90,7 +90,7 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
         @Override
         public Verification withSubject(String subject) {
             addCheck(RegisteredClaims.SUBJECT, (claim, decodedJWT) ->
-                    verifyNull(claim, subject) || subject.equals(claim.asString()));
+                    verifyNull(claim, subject) || Objects.equals(subject, claim.asString()));
             return this;
         }
 
@@ -163,7 +163,7 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
         @Override
         public Verification withJWTId(String jwtId) {
             addCheck(RegisteredClaims.JWT_ID, ((claim, decodedJWT) ->
-                    verifyNull(claim, jwtId) || jwtId.equals(claim.asString())));
+                    verifyNull(claim, jwtId) || Objects.equals(jwtId, claim.asString())));
             return this;
         }
 
@@ -186,7 +186,7 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
         public Verification withClaim(String name, Boolean value) throws IllegalArgumentException {
             assertNonNull(name);
             addCheck(name, ((claim, decodedJWT) -> verifyNull(claim, value)
-                    || value.equals(claim.asBoolean())));
+                    || Objects.equals(value, claim.asBoolean())));
             return this;
         }
 
@@ -194,7 +194,7 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
         public Verification withClaim(String name, Integer value) throws IllegalArgumentException {
             assertNonNull(name);
             addCheck(name, ((claim, decodedJWT) -> verifyNull(claim, value)
-                    || value.equals(claim.asInt())));
+                    || Objects.equals(value, claim.asInt())));
             return this;
         }
 
@@ -202,7 +202,7 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
         public Verification withClaim(String name, Long value) throws IllegalArgumentException {
             assertNonNull(name);
             addCheck(name, ((claim, decodedJWT) -> verifyNull(claim, value)
-                    || value.equals(claim.asLong())));
+                    || Objects.equals(value, claim.asLong())));
             return this;
         }
 
@@ -210,7 +210,7 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
         public Verification withClaim(String name, Double value) throws IllegalArgumentException {
             assertNonNull(name);
             addCheck(name, ((claim, decodedJWT) -> verifyNull(claim, value)
-                    || value.equals(claim.asDouble())));
+                    || Objects.equals(value, claim.asDouble())));
             return this;
         }
 
@@ -218,7 +218,7 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
         public Verification withClaim(String name, String value) throws IllegalArgumentException {
             assertNonNull(name);
             addCheck(name, ((claim, decodedJWT) -> verifyNull(claim, value)
-                    || value.equals(claim.asString())));
+                    || Objects.equals(value, claim.asString())));
             return this;
         }
 
@@ -234,7 +234,7 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
             // we need to compare them with only seconds-granularity
             addCheck(name,
                     ((claim, decodedJWT) -> verifyNull(claim, value)
-                            || value.truncatedTo(ChronoUnit.SECONDS).equals(claim.asInstant())));
+                            || (value != null && value.truncatedTo(ChronoUnit.SECONDS).equals(claim.asInstant()))));
             return this;
         }
 
