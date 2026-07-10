@@ -7,6 +7,8 @@ import com.auth0.jwt.interfaces.ECDSAKeyProvider;
 import com.auth0.jwt.interfaces.RSAKeyProvider;
 
 import java.security.interfaces.*;
+import java.security.spec.MGF1ParameterSpec;
+import java.security.spec.PSSParameterSpec;
 
 /**
  * The Algorithm class represents an algorithm to be used in the Signing or Verification process of a Token.
@@ -125,6 +127,130 @@ public abstract class Algorithm {
         RSAPublicKey publicKey = key instanceof RSAPublicKey ? (RSAPublicKey) key : null;
         RSAPrivateKey privateKey = key instanceof RSAPrivateKey ? (RSAPrivateKey) key : null;
         return RSA512(publicKey, privateKey);
+    }
+
+    /**
+     * Creates a new Algorithm instance using RSASSA-PSS with SHA-256. Tokens specify this as "PS256".
+     * <p>
+     * On Java 8 runtimes the built-in providers do not implement RSASSA-PSS; a provider that supports it
+     * (such as BouncyCastle) must be registered on the classpath. Java 11 and above support it natively.
+     *
+     * @param keyProvider the provider of the Public Key and Private Key for the verify and signing instance.
+     * @return a valid RSASSA-PSS 256 Algorithm.
+     * @throws IllegalArgumentException if the Key Provider is null.
+     */
+    public static Algorithm RSA256PSS(RSAKeyProvider keyProvider) throws IllegalArgumentException {
+        return new RSAAlgorithm("PS256", "RSASSA-PSS", pssParams("SHA-256", MGF1ParameterSpec.SHA256, 32), keyProvider);
+    }
+
+    /**
+     * Creates a new Algorithm instance using RSASSA-PSS with SHA-256. Tokens specify this as "PS256".
+     *
+     * @param publicKey  the key to use in the verify instance.
+     * @param privateKey the key to use in the signing instance.
+     * @return a valid RSASSA-PSS 256 Algorithm.
+     * @throws IllegalArgumentException if both provided Keys are null.
+     */
+    public static Algorithm RSA256PSS(RSAPublicKey publicKey, RSAPrivateKey privateKey)
+            throws IllegalArgumentException {
+        return RSA256PSS(RSAAlgorithm.providerForKeys(publicKey, privateKey));
+    }
+
+    /**
+     * Creates a new Algorithm instance using RSASSA-PSS with SHA-256. Tokens specify this as "PS256".
+     *
+     * @param key the key to use in the verify or signing instance.
+     * @return a valid RSASSA-PSS 256 Algorithm.
+     * @throws IllegalArgumentException if the provided Key is null.
+     */
+    public static Algorithm RSA256PSS(RSAKey key) throws IllegalArgumentException {
+        RSAPublicKey publicKey = key instanceof RSAPublicKey ? (RSAPublicKey) key : null;
+        RSAPrivateKey privateKey = key instanceof RSAPrivateKey ? (RSAPrivateKey) key : null;
+        return RSA256PSS(publicKey, privateKey);
+    }
+
+    /**
+     * Creates a new Algorithm instance using RSASSA-PSS with SHA-384. Tokens specify this as "PS384".
+     * <p>
+     * On Java 8 runtimes the built-in providers do not implement RSASSA-PSS; a provider that supports it
+     * (such as BouncyCastle) must be registered on the classpath. Java 11 and above support it natively.
+     *
+     * @param keyProvider the provider of the Public Key and Private Key for the verify and signing instance.
+     * @return a valid RSASSA-PSS 384 Algorithm.
+     * @throws IllegalArgumentException if the Key Provider is null.
+     */
+    public static Algorithm RSA384PSS(RSAKeyProvider keyProvider) throws IllegalArgumentException {
+        return new RSAAlgorithm("PS384", "RSASSA-PSS", pssParams("SHA-384", MGF1ParameterSpec.SHA384, 48), keyProvider);
+    }
+
+    /**
+     * Creates a new Algorithm instance using RSASSA-PSS with SHA-384. Tokens specify this as "PS384".
+     *
+     * @param publicKey  the key to use in the verify instance.
+     * @param privateKey the key to use in the signing instance.
+     * @return a valid RSASSA-PSS 384 Algorithm.
+     * @throws IllegalArgumentException if both provided Keys are null.
+     */
+    public static Algorithm RSA384PSS(RSAPublicKey publicKey, RSAPrivateKey privateKey)
+            throws IllegalArgumentException {
+        return RSA384PSS(RSAAlgorithm.providerForKeys(publicKey, privateKey));
+    }
+
+    /**
+     * Creates a new Algorithm instance using RSASSA-PSS with SHA-384. Tokens specify this as "PS384".
+     *
+     * @param key the key to use in the verify or signing instance.
+     * @return a valid RSASSA-PSS 384 Algorithm.
+     * @throws IllegalArgumentException if the provided Key is null.
+     */
+    public static Algorithm RSA384PSS(RSAKey key) throws IllegalArgumentException {
+        RSAPublicKey publicKey = key instanceof RSAPublicKey ? (RSAPublicKey) key : null;
+        RSAPrivateKey privateKey = key instanceof RSAPrivateKey ? (RSAPrivateKey) key : null;
+        return RSA384PSS(publicKey, privateKey);
+    }
+
+    /**
+     * Creates a new Algorithm instance using RSASSA-PSS with SHA-512. Tokens specify this as "PS512".
+     * <p>
+     * On Java 8 runtimes the built-in providers do not implement RSASSA-PSS; a provider that supports it
+     * (such as BouncyCastle) must be registered on the classpath. Java 11 and above support it natively.
+     *
+     * @param keyProvider the provider of the Public Key and Private Key for the verify and signing instance.
+     * @return a valid RSASSA-PSS 512 Algorithm.
+     * @throws IllegalArgumentException if the Key Provider is null.
+     */
+    public static Algorithm RSA512PSS(RSAKeyProvider keyProvider) throws IllegalArgumentException {
+        return new RSAAlgorithm("PS512", "RSASSA-PSS", pssParams("SHA-512", MGF1ParameterSpec.SHA512, 64), keyProvider);
+    }
+
+    /**
+     * Creates a new Algorithm instance using RSASSA-PSS with SHA-512. Tokens specify this as "PS512".
+     *
+     * @param publicKey  the key to use in the verify instance.
+     * @param privateKey the key to use in the signing instance.
+     * @return a valid RSASSA-PSS 512 Algorithm.
+     * @throws IllegalArgumentException if both provided Keys are null.
+     */
+    public static Algorithm RSA512PSS(RSAPublicKey publicKey, RSAPrivateKey privateKey)
+            throws IllegalArgumentException {
+        return RSA512PSS(RSAAlgorithm.providerForKeys(publicKey, privateKey));
+    }
+
+    /**
+     * Creates a new Algorithm instance using RSASSA-PSS with SHA-512. Tokens specify this as "PS512".
+     *
+     * @param key the key to use in the verify or signing instance.
+     * @return a valid RSASSA-PSS 512 Algorithm.
+     * @throws IllegalArgumentException if the provided Key is null.
+     */
+    public static Algorithm RSA512PSS(RSAKey key) throws IllegalArgumentException {
+        RSAPublicKey publicKey = key instanceof RSAPublicKey ? (RSAPublicKey) key : null;
+        RSAPrivateKey privateKey = key instanceof RSAPrivateKey ? (RSAPrivateKey) key : null;
+        return RSA512PSS(publicKey, privateKey);
+    }
+
+    private static PSSParameterSpec pssParams(String hashAlgorithm, MGF1ParameterSpec mgf1Spec, int saltLength) {
+        return new PSSParameterSpec(hashAlgorithm, "MGF1", mgf1Spec, saltLength, 1);
     }
 
     /**

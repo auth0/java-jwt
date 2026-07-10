@@ -142,6 +142,75 @@ public class AlgorithmTest {
     }
 
     @Test
+    public void shouldThrowRSA256PSSInstanceWithNullKey() {
+        exception.expect(IllegalArgumentException.class);
+        exception.expectMessage("Both provided Keys cannot be null.");
+        RSAKey key = null;
+        Algorithm.RSA256PSS(key);
+    }
+
+    @Test
+    public void shouldThrowRSA256PSSInstanceWithNullKeys() {
+        exception.expect(IllegalArgumentException.class);
+        exception.expectMessage("Both provided Keys cannot be null.");
+        Algorithm.RSA256PSS(null, null);
+    }
+
+    @Test
+    public void shouldThrowRSA256PSSInstanceWithNullKeyProvider() {
+        exception.expect(IllegalArgumentException.class);
+        exception.expectMessage("The Key Provider cannot be null.");
+        RSAKeyProvider provider = null;
+        Algorithm.RSA256PSS(provider);
+    }
+
+    @Test
+    public void shouldThrowRSA384PSSInstanceWithNullKey() {
+        exception.expect(IllegalArgumentException.class);
+        exception.expectMessage("Both provided Keys cannot be null.");
+        RSAKey key = null;
+        Algorithm.RSA384PSS(key);
+    }
+
+    @Test
+    public void shouldThrowRSA384PSSInstanceWithNullKeys() {
+        exception.expect(IllegalArgumentException.class);
+        exception.expectMessage("Both provided Keys cannot be null.");
+        Algorithm.RSA384PSS(null, null);
+    }
+
+    @Test
+    public void shouldThrowRSA384PSSInstanceWithNullKeyProvider() {
+        exception.expect(IllegalArgumentException.class);
+        exception.expectMessage("The Key Provider cannot be null.");
+        RSAKeyProvider provider = null;
+        Algorithm.RSA384PSS(provider);
+    }
+
+    @Test
+    public void shouldThrowRSA512PSSInstanceWithNullKey() {
+        exception.expect(IllegalArgumentException.class);
+        exception.expectMessage("Both provided Keys cannot be null.");
+        RSAKey key = null;
+        Algorithm.RSA512PSS(key);
+    }
+
+    @Test
+    public void shouldThrowRSA512PSSInstanceWithNullKeys() {
+        exception.expect(IllegalArgumentException.class);
+        exception.expectMessage("Both provided Keys cannot be null.");
+        Algorithm.RSA512PSS(null, null);
+    }
+
+    @Test
+    public void shouldThrowRSA512PSSInstanceWithNullKeyProvider() {
+        exception.expect(IllegalArgumentException.class);
+        exception.expectMessage("The Key Provider cannot be null.");
+        RSAKeyProvider provider = null;
+        Algorithm.RSA512PSS(provider);
+    }
+
+    @Test
     public void shouldThrowECDSA256InstanceWithNullKey() {
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage("Both provided Keys cannot be null.");
@@ -403,6 +472,75 @@ public class AlgorithmTest {
         assertThat(algorithm, is(instanceOf(RSAAlgorithm.class)));
         assertThat(algorithm.getDescription(), is("SHA512withRSA"));
         assertThat(algorithm.getName(), is("RS512"));
+    }
+
+    @Test
+    public void shouldCreateRSA256PSSAlgorithmWithBothKeys() {
+        RSAPublicKey publicKey = mock(RSAPublicKey.class);
+        RSAPrivateKey privateKey = mock(RSAPrivateKey.class);
+        Algorithm algorithm = Algorithm.RSA256PSS(publicKey, privateKey);
+
+        assertThat(algorithm, is(notNullValue()));
+        assertThat(algorithm, is(instanceOf(RSAAlgorithm.class)));
+        assertThat(algorithm.getDescription(), is("RSASSA-PSS"));
+        assertThat(algorithm.getName(), is("PS256"));
+    }
+
+    @Test
+    public void shouldCreateRSA256PSSAlgorithmWithProvider() {
+        RSAKeyProvider provider = mock(RSAKeyProvider.class);
+        Algorithm algorithm = Algorithm.RSA256PSS(provider);
+
+        assertThat(algorithm, is(notNullValue()));
+        assertThat(algorithm, is(instanceOf(RSAAlgorithm.class)));
+        assertThat(algorithm.getDescription(), is("RSASSA-PSS"));
+        assertThat(algorithm.getName(), is("PS256"));
+    }
+
+    @Test
+    public void shouldCreateRSA384PSSAlgorithmWithBothKeys() {
+        RSAPublicKey publicKey = mock(RSAPublicKey.class);
+        RSAPrivateKey privateKey = mock(RSAPrivateKey.class);
+        Algorithm algorithm = Algorithm.RSA384PSS(publicKey, privateKey);
+
+        assertThat(algorithm, is(notNullValue()));
+        assertThat(algorithm, is(instanceOf(RSAAlgorithm.class)));
+        assertThat(algorithm.getDescription(), is("RSASSA-PSS"));
+        assertThat(algorithm.getName(), is("PS384"));
+    }
+
+    @Test
+    public void shouldCreateRSA384PSSAlgorithmWithProvider() {
+        RSAKeyProvider provider = mock(RSAKeyProvider.class);
+        Algorithm algorithm = Algorithm.RSA384PSS(provider);
+
+        assertThat(algorithm, is(notNullValue()));
+        assertThat(algorithm, is(instanceOf(RSAAlgorithm.class)));
+        assertThat(algorithm.getDescription(), is("RSASSA-PSS"));
+        assertThat(algorithm.getName(), is("PS384"));
+    }
+
+    @Test
+    public void shouldCreateRSA512PSSAlgorithmWithBothKeys() {
+        RSAPublicKey publicKey = mock(RSAPublicKey.class);
+        RSAPrivateKey privateKey = mock(RSAPrivateKey.class);
+        Algorithm algorithm = Algorithm.RSA512PSS(publicKey, privateKey);
+
+        assertThat(algorithm, is(notNullValue()));
+        assertThat(algorithm, is(instanceOf(RSAAlgorithm.class)));
+        assertThat(algorithm.getDescription(), is("RSASSA-PSS"));
+        assertThat(algorithm.getName(), is("PS512"));
+    }
+
+    @Test
+    public void shouldCreateRSA512PSSAlgorithmWithProvider() {
+        RSAKeyProvider provider = mock(RSAKeyProvider.class);
+        Algorithm algorithm = Algorithm.RSA512PSS(provider);
+
+        assertThat(algorithm, is(notNullValue()));
+        assertThat(algorithm, is(instanceOf(RSAAlgorithm.class)));
+        assertThat(algorithm.getDescription(), is("RSASSA-PSS"));
+        assertThat(algorithm.getName(), is("PS512"));
     }
 
     @Test
