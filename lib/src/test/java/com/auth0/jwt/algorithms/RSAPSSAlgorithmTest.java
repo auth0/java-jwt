@@ -4,6 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.AfterClass;
+import org.junit.Assume;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
@@ -127,5 +128,54 @@ public class RSAPSSAlgorithmTest {
 
         Algorithm verifier = Algorithm.RSA256PSS((RSAKey) readPublicKeyFromFile(INVALID_PUBLIC_KEY_FILE, "RSA"));
         verifier.verify(JWT.decode(jwt));
+    }
+
+    @Test
+    public void shouldRejectPS256TokenWhenVerifiedWithPS384() throws Exception {
+        exception.expect(SignatureVerificationException.class);
+        exception.expectMessage("The Token's Signature resulted invalid when verified using the Algorithm: RSASSA-PSS");
+
+        Algorithm signer = Algorithm.RSA256PSS((RSAKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE, "RSA"));
+        String jwt = asJWT(signer, PS256Header, auth0IssPayload);
+
+        Algorithm verifier = Algorithm.RSA384PSS((RSAKey) readPublicKeyFromFile(PUBLIC_KEY_FILE, "RSA"));
+        verifier.verify(JWT.decode(jwt));
+    }
+
+    @Test
+    public void shouldRejectPS256TokenWhenVerifiedWithPS512() throws Exception {
+        exception.expect(SignatureVerificationException.class);
+        exception.expectMessage("The Token's Signature resulted invalid when verified using the Algorithm: RSASSA-PSS");
+
+        Algorithm signer = Algorithm.RSA256PSS((RSAKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE, "RSA"));
+        String jwt = asJWT(signer, PS256Header, auth0IssPayload);
+
+        Algorithm verifier = Algorithm.RSA512PSS((RSAKey) readPublicKeyFromFile(PUBLIC_KEY_FILE, "RSA"));
+        verifier.verify(JWT.decode(jwt));
+    }
+
+    /**
+     * Exercises the JDK-native RSASSA-PSS implementation (SunRsaSign, Java 11+) rather than the
+     * BouncyCastle provider the rest of this class relies on. Skipped on Java 8, whose built-in
+     * providers do not implement RSASSA-PSS.
+     */
+    @Test
+    public void shouldSignAndVerifyPS256WithJdkNativeProvider() throws Exception {
+        Assume.assumeFalse("Requires JDK-native RSASSA-PSS (Java 11+)",
+                System.getProperty("java.specification.version").equals("1.8"));
+
+        Security.removeProvider(bcProvider.getName());
+        try {
+            Algorithm algorithm = Algorithm.RSA256PSS(
+                    (RSAPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE, "RSA"),
+                    (RSAPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE, "RSA"));
+
+            String jwt = asJWT(algorithm, PS256Header, auth0IssPayload);
+
+            assertSignaturePresent(jwt);
+            algorithm.verify(JWT.decode(jwt));
+        } finally {
+            Security.insertProviderAt(bcProvider, 1);
+        }
     }
 }

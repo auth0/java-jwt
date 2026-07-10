@@ -250,6 +250,8 @@ public abstract class Algorithm {
     }
 
     private static PSSParameterSpec pssParams(String hashAlgorithm, MGF1ParameterSpec mgf1Spec, int saltLength) {
+        // JWA (RFC 7518 §3.5) mandates MGF1 with the same hash as the digest and a salt length equal to
+        // the hash output size (32/48/64 bytes for SHA-256/384/512). Trailer field is the fixed value 1.
         return new PSSParameterSpec(hashAlgorithm, "MGF1", mgf1Spec, saltLength, 1);
     }
 

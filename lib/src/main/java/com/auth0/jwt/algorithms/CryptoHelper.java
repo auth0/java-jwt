@@ -312,6 +312,9 @@ class CryptoHelper {
             try {
                 s.setParameter(params);
             } catch (InvalidAlgorithmParameterException e) {
+                // Remapped to NoSuchAlgorithmException to keep the throws clause unchanged. The params
+                // are library-controlled (see Algorithm#pssParams), so this branch is effectively
+                // unreachable; it only fires if a provider rejects the fixed PSS spec entirely.
                 throw new NoSuchAlgorithmException(
                         "The algorithm parameters are invalid for the signature algorithm.", e);
             }
