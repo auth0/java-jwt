@@ -800,7 +800,7 @@ public class JWTCreatorTest {
     @Test
     public void withPayloadShouldNotAllowCustomType() {
         exception.expect(IllegalArgumentException.class);
-        exception.expectMessage("Claim values must only be of types Map, List, Boolean, Integer, Long, Double, String, Date, Instant, and Null");
+        exception.expectMessage("Claim values must only be of types Map, Collection (List, Set, Queue), Boolean, Integer, Long, Double, String, Date, Instant, and Null");
 
         Map<String, Object> payload = new HashMap<>();
         payload.put("entry", "value");
@@ -825,9 +825,78 @@ public class JWTCreatorTest {
     }
 
     @Test
+    public void withPayloadShouldAllowCollectionInGeneral() {
+        Map<String, Object> payload1 = new HashMap<>();
+        Map<String, Object> payload2 = new HashMap<>();
+        Map<String, Object> payload3 = new HashMap<>();
+        Map<String, Object> payload4 = new HashMap<>();
+
+        Set<String> set = new HashSet<>();
+
+        set.add("item1");
+        set.add("item2");
+
+        Queue<String> queue = new ArrayDeque<>();
+
+        queue.add("item3");
+        queue.add("item4");
+
+        Set<String> treeSet = new TreeSet<>();
+
+        treeSet.add("item6");
+        treeSet.add("item5");
+
+        List<String> linkedList = new LinkedList<>(); // Can be both a queue and a list
+
+        linkedList.add("item7");
+        linkedList.add("item8");
+
+        payload1.put("set", set);
+        payload2.put("queue", queue);
+        payload3.put("treeSet", treeSet);
+        payload4.put("linkedList", linkedList);
+
+        String jwt1 = JWTCreator.init()
+                .withPayload(payload1)
+                .sign(Algorithm.HMAC256("secret"));
+
+        String jwt2 = JWTCreator.init()
+                .withPayload(payload2)
+                .sign(Algorithm.HMAC256("secret"));
+
+        String jwt3 = JWTCreator.init()
+                .withPayload(payload3)
+                .sign(Algorithm.HMAC256("secret"));
+
+        String jwt4 = JWTCreator.init()
+                .withPayload(payload4)
+                .sign(Algorithm.HMAC256("secret"));
+
+        assertThat(jwt1, is(notNullValue()));
+        String[] parts1 = jwt1.split("\\.");
+        String payloadJson1 = new String(Base64.getUrlDecoder().decode(parts1[1]), StandardCharsets.UTF_8);
+        assertThat(payloadJson1, JsonMatcher.hasEntry("set", Arrays.asList("item2", "item1"))); // HashSet does not ensure inserting order
+
+        assertThat(jwt2, is(notNullValue()));
+        String[] parts2 = jwt2.split("\\.");
+        String payloadJson2 = new String(Base64.getUrlDecoder().decode(parts2[1]), StandardCharsets.UTF_8);
+        assertThat(payloadJson2, JsonMatcher.hasEntry("queue", Arrays.asList("item3", "item4")));
+
+        assertThat(jwt3, is(notNullValue()));
+        String[] parts3 = jwt3.split("\\.");
+        String payloadJson3 = new String(Base64.getUrlDecoder().decode(parts3[1]), StandardCharsets.UTF_8);
+        assertThat(payloadJson3, JsonMatcher.hasEntry("treeSet", Arrays.asList("item5", "item6")));
+
+        assertThat(jwt4, is(notNullValue()));
+        String[] parts4 = jwt4.split("\\.");
+        String payloadJson4 = new String(Base64.getUrlDecoder().decode(parts4[1]), StandardCharsets.UTF_8);
+        assertThat(payloadJson4, JsonMatcher.hasEntry("linkedList", Arrays.asList("item7", "item8")));
+    }
+
+    @Test
     public void withPayloadShouldNotAllowListWithCustomType() {
         exception.expect(IllegalArgumentException.class);
-        exception.expectMessage("Claim values must only be of types Map, List, Boolean, Integer, Long, Double, String, Date, Instant, and Null");
+        exception.expectMessage("Claim values must only be of types Map, Collection (List, Set, Queue), Boolean, Integer, Long, Double, String, Date, Instant, and Null");
 
         Map<String, Object> payload = new HashMap<>();
         payload.put("list", Arrays.asList("item1", new UserPojo("name", 42)));
@@ -839,7 +908,7 @@ public class JWTCreatorTest {
     @Test
     public void withPayloadShouldNotAllowMapWithCustomType() {
         exception.expect(IllegalArgumentException.class);
-        exception.expectMessage("Claim values must only be of types Map, List, Boolean, Integer, Long, Double, String, Date, Instant, and Null");
+        exception.expectMessage("Claim values must only be of types Map, Collection (List, Set, Queue), Boolean, Integer, Long, Double, String, Date, Instant, and Null");
 
         Map<String, Object> payload = new HashMap<>();
         payload.put("entry", "value");
