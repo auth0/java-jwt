@@ -36,11 +36,16 @@ This library is supported for Java LTS versions 8, 11, 17 and 21. For issues on 
 | RS256 | RSA256 | RSASSA-PKCS1-v1_5 with SHA-256 |
 | RS384 | RSA384 | RSASSA-PKCS1-v1_5 with SHA-384 |
 | RS512 | RSA512 | RSASSA-PKCS1-v1_5 with SHA-512 |
+| PS256 | RSA256PSS | RSASSA-PSS with SHA-256 |
+| PS384 | RSA384PSS | RSASSA-PSS with SHA-384 |
+| PS512 | RSA512PSS | RSASSA-PSS with SHA-512 |
 | ES256 | ECDSA256 | ECDSA with curve P-256 and SHA-256 |
 | ES384 | ECDSA384 | ECDSA with curve P-384 and SHA-384 |
 | ES512 | ECDSA512 | ECDSA with curve P-521 and SHA-512 |
 
 > Note - Support for ECDSA with curve secp256k1 and SHA-256 (ES256K) has been dropped since it has been [disabled in Java 15](https://www.oracle.com/java/technologies/javase/15-relnote-issues.html#JDK-8237219)
+
+> Note - The RSASSA-PSS algorithms (PS256, PS384, PS512) rely on the JVM for RSASSA-PSS support, which is available natively from Java 11 onwards via the `SunRsaSign` provider ([JDK-8146293](https://bugs.openjdk.org/browse/JDK-8146293)). On Java 8, a security provider that implements `RSASSA-PSS` (such as [BouncyCastle](https://www.bouncycastle.org/)) must be registered on the classpath; no additional provider is bundled by this library.
 
 > :warning:  **Important security note:** JVM has a critical vulnerability for ECDSA Algorithms - [CVE-2022-21449](https://nvd.nist.gov/vuln/detail/CVE-2022-21449). Please review the details of the vulnerability and update your environment.
 ### Installation

@@ -4,6 +4,7 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
+import java.security.spec.AlgorithmParameterSpec;
 
 /**
  * Class used to perform the signature hash calculations.
@@ -86,6 +87,31 @@ class CryptoHelper {
     }
 
     /**
+     * Verify signature for JWT header and payload using a public key and algorithm parameters.
+     *
+     * @param algorithm      algorithm name.
+     * @param publicKey      the public key to use for verification.
+     * @param params         the algorithm parameters, or null to use the algorithm defaults.
+     * @param header         JWT header.
+     * @param payload        JWT payload.
+     * @param signatureBytes JWT signature.
+     * @return true if signature is valid.
+     * @throws NoSuchAlgorithmException if the algorithm is not supported.
+     * @throws InvalidKeyException      if the given key is inappropriate for initializing the specified algorithm.
+     */
+    boolean verifySignatureFor(
+            String algorithm,
+            PublicKey publicKey,
+            AlgorithmParameterSpec params,
+            String header,
+            String payload,
+            byte[] signatureBytes
+    ) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+        return verifySignatureFor(algorithm, publicKey, params, header.getBytes(StandardCharsets.UTF_8),
+                payload.getBytes(StandardCharsets.UTF_8), signatureBytes);
+    }
+
+    /**
      * Verify signature for JWT header and payload using a public key.
      *
      * @param algorithm      algorithm name.
@@ -104,7 +130,32 @@ class CryptoHelper {
             byte[] payloadBytes,
             byte[] signatureBytes
     ) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+        return verifySignatureFor(algorithm, publicKey, null, headerBytes, payloadBytes, signatureBytes);
+    }
+
+    /**
+     * Verify signature for JWT header and payload using a public key and algorithm parameters.
+     *
+     * @param algorithm      algorithm name.
+     * @param publicKey      the public key to use for verification.
+     * @param params         the algorithm parameters, or null to use the algorithm defaults.
+     * @param headerBytes    JWT header.
+     * @param payloadBytes   JWT payload.
+     * @param signatureBytes JWT signature.
+     * @return true if signature is valid.
+     * @throws NoSuchAlgorithmException if the algorithm is not supported.
+     * @throws InvalidKeyException      if the given key is inappropriate for initializing the specified algorithm.
+     */
+    boolean verifySignatureFor(
+            String algorithm,
+            PublicKey publicKey,
+            AlgorithmParameterSpec params,
+            byte[] headerBytes,
+            byte[] payloadBytes,
+            byte[] signatureBytes
+    ) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
         final Signature s = Signature.getInstance(algorithm);
+        setParameterIfPresent(s, params);
         s.initVerify(publicKey);
         s.update(headerBytes);
         s.update(JWT_PART_SEPARATOR);
@@ -131,7 +182,32 @@ class CryptoHelper {
             byte[] headerBytes,
             byte[] payloadBytes
     ) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+        return createSignatureFor(algorithm, privateKey, null, headerBytes, payloadBytes);
+    }
+
+    /**
+     * Create signature for JWT header and payload using a private key and algorithm parameters.
+     *
+     * @param algorithm    algorithm name.
+     * @param privateKey   the private key to use for signing.
+     * @param params       the algorithm parameters, or null to use the algorithm defaults.
+     * @param headerBytes  JWT header.
+     * @param payloadBytes JWT payload.
+     * @return the signature bytes.
+     * @throws NoSuchAlgorithmException if the algorithm is not supported.
+     * @throws InvalidKeyException      if the given key is inappropriate for initializing the specified algorithm.
+     * @throws SignatureException       if this signature object is not initialized properly
+     *                                  or if this signature algorithm is unable to process the input data provided.
+     */
+    byte[] createSignatureFor(
+            String algorithm,
+            PrivateKey privateKey,
+            AlgorithmParameterSpec params,
+            byte[] headerBytes,
+            byte[] payloadBytes
+    ) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
         final Signature s = Signature.getInstance(algorithm);
+        setParameterIfPresent(s, params);
         s.initSign(privateKey);
         s.update(headerBytes);
         s.update(JWT_PART_SEPARATOR);
@@ -200,9 +276,48 @@ class CryptoHelper {
             PrivateKey privateKey,
             byte[] contentBytes
     ) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+        return createSignatureFor(algorithm, privateKey, (AlgorithmParameterSpec) null, contentBytes);
+    }
+
+    /**
+     * Create signature using a private key and algorithm parameters.
+     * To get the correct JWT Signature, ensure the content is in the format {HEADER}.{PAYLOAD}
+     *
+     * @param algorithm    algorithm name.
+     * @param privateKey   the private key to use for signing.
+     * @param params       the algorithm parameters, or null to use the algorithm defaults.
+     * @param contentBytes the content to be signed.
+     * @return the signature bytes.
+     * @throws NoSuchAlgorithmException if the algorithm is not supported.
+     * @throws InvalidKeyException      if the given key is inappropriate for initializing the specified algorithm.
+     * @throws SignatureException       if this signature object is not initialized properly
+     *                                  or if this signature algorithm is unable to process the input data provided.
+     */
+    byte[] createSignatureFor(
+            String algorithm,
+            PrivateKey privateKey,
+            AlgorithmParameterSpec params,
+            byte[] contentBytes
+    ) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
         final Signature s = Signature.getInstance(algorithm);
+        setParameterIfPresent(s, params);
         s.initSign(privateKey);
         s.update(contentBytes);
         return s.sign();
+    }
+
+    private static void setParameterIfPresent(Signature s, AlgorithmParameterSpec params)
+            throws NoSuchAlgorithmException {
+        if (params != null) {
+            try {
+                s.setParameter(params);
+            } catch (InvalidAlgorithmParameterException e) {
+                // Remapped to NoSuchAlgorithmException to keep the throws clause unchanged. The params
+                // are library-controlled (see Algorithm#pssParams), so this branch is effectively
+                // unreachable; it only fires if a provider rejects the fixed PSS spec entirely.
+                throw new NoSuchAlgorithmException(
+                        "The algorithm parameters are invalid for the signature algorithm.", e);
+            }
+        }
     }
 }
