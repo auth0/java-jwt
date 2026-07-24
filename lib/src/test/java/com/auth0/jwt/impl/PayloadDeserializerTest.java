@@ -270,6 +270,18 @@ public class PayloadDeserializerTest {
     }
 
     @Test
+    public void shouldThrowOutOfRangeWhenNumericDateExceedsInstantRange() {
+        exception.expect(JWTDecodeException.class);
+        exception.expectMessage(
+                "The claim 'key' value (9223372036854775807) is out of the range representable as a NumericDate.");
+
+        Map<String, JsonNode> tree = new HashMap<>();
+        tree.put("key", new LongNode(Long.MAX_VALUE));
+
+        deserializer.getInstantFromSeconds(tree, "key");
+    }
+
+    @Test
     public void shouldGetNullStringWhenParsingNullNode() {
         Map<String, JsonNode> tree = new HashMap<>();
         NullNode node = NullNode.getInstance();
