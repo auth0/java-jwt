@@ -13,7 +13,6 @@ import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 
 import java.io.IOException;
-import java.time.DateTimeException;
 import java.time.Instant;
 import java.util.*;
 
@@ -89,13 +88,13 @@ class PayloadDeserializer extends StdDeserializer<Payload> {
                     "The claim '%s' value (%s) is out of the range representable as a NumericDate.",
                     claimName, node.asText()));
         }
-        try {
-            return Instant.ofEpochSecond(node.asLong());
-        } catch (DateTimeException e) {
+        long seconds = node.asLong();
+        if (seconds < Instant.MIN.getEpochSecond() || seconds > Instant.MAX.getEpochSecond()) {
             throw new JWTDecodeException(String.format(
                     "The claim '%s' value (%s) is out of the range representable as a NumericDate.",
-                    claimName, node.asText()), e);
+                    claimName, node.asText()));
         }
+        return Instant.ofEpochSecond(seconds);
     }
 
     String getString(Map<String, JsonNode> tree, String claimName) {
