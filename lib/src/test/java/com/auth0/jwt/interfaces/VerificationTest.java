@@ -12,7 +12,6 @@ import java.util.function.BiPredicate;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.instanceOf;
-import static org.junit.Assert.assertThrows;
 
 /**
  * Tests for any default method implementations in the {@link Verification} interface.
