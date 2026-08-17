@@ -1,5 +1,12 @@
 # Change Log
 
+## [4.6.0](https://github.com/auth0/java-jwt/tree/4.6.0) (2026-07-13)
+[Full Changelog](https://github.com/auth0/java-jwt/compare/4.5.2...4.6.0)
+
+**Added**
+- feat: Add PS256 Support [\#788](https://github.com/auth0/java-jwt/pull/788) ([tanya732](https://github.com/tanya732))
+- Report out-of-range NumericDate claims distinctly from non-numeric ones [\#774](https://github.com/auth0/java-jwt/pull/774) ([arpitjain099](https://github.com/arpitjain099))
+
 ## [4.5.2](https://github.com/auth0/java-jwt/tree/4.5.2) (2026-04-29)
 [Full Changelog](https://github.com/auth0/java-jwt/compare/4.5.1...4.5.2)
 

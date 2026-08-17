@@ -10,6 +10,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
+import java.security.spec.AlgorithmParameterSpec;
 import java.util.Base64;
 
 /**
@@ -21,20 +22,33 @@ class RSAAlgorithm extends Algorithm {
 
     private final RSAKeyProvider keyProvider;
     private final CryptoHelper crypto;
+    private final AlgorithmParameterSpec params;
 
     //Visible for testing
-    RSAAlgorithm(CryptoHelper crypto, String id, String algorithm, RSAKeyProvider keyProvider)
-            throws IllegalArgumentException {
+    RSAAlgorithm(CryptoHelper crypto, String id, String algorithm, AlgorithmParameterSpec params,
+                 RSAKeyProvider keyProvider) throws IllegalArgumentException {
         super(id, algorithm);
         if (keyProvider == null) {
             throw new IllegalArgumentException("The Key Provider cannot be null.");
         }
         this.keyProvider = keyProvider;
         this.crypto = crypto;
+        this.params = params;
+    }
+
+    //Visible for testing
+    RSAAlgorithm(CryptoHelper crypto, String id, String algorithm, RSAKeyProvider keyProvider)
+            throws IllegalArgumentException {
+        this(crypto, id, algorithm, null, keyProvider);
+    }
+
+    RSAAlgorithm(String id, String algorithm, AlgorithmParameterSpec params, RSAKeyProvider keyProvider)
+            throws IllegalArgumentException {
+        this(new CryptoHelper(), id, algorithm, params, keyProvider);
     }
 
     RSAAlgorithm(String id, String algorithm, RSAKeyProvider keyProvider) throws IllegalArgumentException {
-        this(new CryptoHelper(), id, algorithm, keyProvider);
+        this(new CryptoHelper(), id, algorithm, null, keyProvider);
     }
 
     @Override
@@ -46,7 +60,7 @@ class RSAAlgorithm extends Algorithm {
                 throw new IllegalStateException("The given Public Key is null.");
             }
             boolean valid = crypto.verifySignatureFor(
-                    getDescription(), publicKey, jwt.getHeader(), jwt.getPayload(), signatureBytes);
+                    getDescription(), publicKey, params, jwt.getHeader(), jwt.getPayload(), signatureBytes);
             if (!valid) {
                 throw new SignatureVerificationException(this);
             }
@@ -63,7 +77,7 @@ class RSAAlgorithm extends Algorithm {
             if (privateKey == null) {
                 throw new IllegalStateException("The given Private Key is null.");
             }
-            return crypto.createSignatureFor(getDescription(), privateKey, headerBytes, payloadBytes);
+            return crypto.createSignatureFor(getDescription(), privateKey, params, headerBytes, payloadBytes);
         } catch (NoSuchAlgorithmException | SignatureException | InvalidKeyException | IllegalStateException e) {
             throw new SignatureGenerationException(this, e);
         }
@@ -76,7 +90,7 @@ class RSAAlgorithm extends Algorithm {
             if (privateKey == null) {
                 throw new IllegalStateException("The given Private Key is null.");
             }
-            return crypto.createSignatureFor(getDescription(), privateKey, contentBytes);
+            return crypto.createSignatureFor(getDescription(), privateKey, params, contentBytes);
         } catch (NoSuchAlgorithmException | SignatureException | InvalidKeyException | IllegalStateException e) {
             throw new SignatureGenerationException(this, e);
         }
