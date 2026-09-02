@@ -268,6 +268,33 @@ public class PayloadDeserializerTest {
         deserializer.getInstantFromSeconds(tree, "key");
     }
 
+    // Long.MAX_VALUE is a valid long but outside Instant's valid epoch-second range.
+    // Previously this threw DateTimeException (uncaught RuntimeException); it must now
+    // throw JWTDecodeException so callers' catch (JWTVerificationException) blocks handle it.
+    @Test
+    public void shouldThrowWhenInstantEpochSecondOutOfRange() {
+        exception.expect(JWTDecodeException.class);
+        exception.expectMessage("is outside the valid Instant epoch-second range");
+
+        Map<String, JsonNode> tree = new HashMap<>();
+        LongNode node = new LongNode(Long.MAX_VALUE);
+        tree.put("key", node);
+
+        deserializer.getInstantFromSeconds(tree, "key");
+    }
+
+    @Test
+    public void shouldThrowWhenInstantEpochSecondTooNegative() {
+        exception.expect(JWTDecodeException.class);
+        exception.expectMessage("is outside the valid Instant epoch-second range");
+
+        Map<String, JsonNode> tree = new HashMap<>();
+        LongNode node = new LongNode(Long.MIN_VALUE);
+        tree.put("key", node);
+
+        deserializer.getInstantFromSeconds(tree, "key");
+    }
+
     @Test
     public void shouldGetNullStringWhenParsingNullNode() {
         Map<String, JsonNode> tree = new HashMap<>();
