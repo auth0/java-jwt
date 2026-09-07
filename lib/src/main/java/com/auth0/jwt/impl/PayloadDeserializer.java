@@ -88,12 +88,13 @@ class PayloadDeserializer extends StdDeserializer<Payload> {
                     "The claim '%s' value (%s) is out of the range representable as a NumericDate.",
                     claimName, node.asText()));
         }
+        long epochSecond = node.asLong();
         try {
-            return Instant.ofEpochSecond(node.asLong());
+            return Instant.ofEpochSecond(epochSecond);
         } catch (DateTimeException e) {
             throw new JWTDecodeException(String.format(
                     "The claim '%s' value (%s) is outside the valid Instant epoch-second range.",
-                    claimName, node.asLong()), e);
+                    claimName, epochSecond), e);
         }
     }
 
