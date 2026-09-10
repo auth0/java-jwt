@@ -24,6 +24,8 @@ jobs:
 
   check:
     name: Check for Vulnerabilities
+    # Repository secrets are unavailable to workflows from external forks.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.fork == false
     runs-on: ubuntu-latest
 
     steps:
