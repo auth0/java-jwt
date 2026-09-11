@@ -87,7 +87,13 @@ class PayloadDeserializer extends StdDeserializer<Payload> {
                     "The claim '%s' value (%s) is out of the range representable as a NumericDate.",
                     claimName, node.asText()));
         }
-        return Instant.ofEpochSecond(node.asLong());
+        long seconds = node.asLong();
+        if (seconds < Instant.MIN.getEpochSecond() || seconds > Instant.MAX.getEpochSecond()) {
+            throw new JWTDecodeException(String.format(
+                    "The claim '%s' value (%s) is out of the range representable as a NumericDate.",
+                    claimName, node.asText()));
+        }
+        return Instant.ofEpochSecond(seconds);
     }
 
     String getString(Map<String, JsonNode> tree, String claimName) {
