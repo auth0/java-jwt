@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import java.io.IOException;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -15,6 +16,7 @@ import org.junit.rules.ExpectedException;
 import static com.auth0.jwt.impl.JWTParser.getDefaultObjectMapper;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -112,5 +114,16 @@ public class JWTParserTest {
         exception.expect(JWTDecodeException.class);
         exception.expectMessage("The string '}{' doesn't have a valid JSON format.");
         parser.parsePayload("}{");
+    }
+
+    @Test
+    public void shouldPreserveCauseWhenParsingInvalidJson() {
+        try {
+            parser.parsePayload("}{");
+            fail("Expected JWTDecodeException to be thrown");
+        } catch (JWTDecodeException e) {
+            assertThat(e.getCause(), is(notNullValue()));
+            assertThat(e.getCause(), is(instanceOf(IOException.class)));
+        }
     }
 }

@@ -44,7 +44,7 @@ public class JWTParser implements JWTPartsParser {
         try {
             return payloadReader.readValue(json);
         } catch (IOException e) {
-            throw decodeException(json);
+            throw decodeException(json, e);
         }
     }
 
@@ -57,7 +57,7 @@ public class JWTParser implements JWTPartsParser {
         try {
             return headerReader.readValue(json);
         } catch (IOException e) {
-            throw decodeException(json);
+            throw decodeException(json, e);
         }
     }
 
@@ -88,5 +88,10 @@ public class JWTParser implements JWTPartsParser {
 
     private static JWTDecodeException decodeException(String json) {
         return new JWTDecodeException(String.format("The string '%s' doesn't have a valid JSON format.", json));
+    }
+
+    private static JWTDecodeException decodeException(String json, Throwable cause) {
+        return new JWTDecodeException(
+                String.format("The string '%s' doesn't have a valid JSON format.", json), cause);
     }
 }
