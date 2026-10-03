@@ -314,6 +314,36 @@ public class JWTCreatorTest {
     }
 
     @Test
+    public void shouldAddExpiresAtBeforeEpochConsistentlyWithInstant() {
+        // Dates before the Unix epoch must floor to the previous second,
+        // matching the Instant serialization (GH-806).
+        Date date = new Date(-500);
+        Instant instant = date.toInstant();
+
+        String signedDate = JWTCreator.init()
+                .withExpiresAt(date)
+                .sign(Algorithm.HMAC256("secret"));
+        String signedInstant = JWTCreator.init()
+                .withExpiresAt(instant)
+                .sign(Algorithm.HMAC256("secret"));
+
+        assertThat(signedDate, is(notNullValue()));
+        assertThat(signedInstant, is(notNullValue()));
+        assertThat(TokenUtils.splitToken(signedDate)[1], is("eyJleHAiOi0xfQ"));
+        assertThat(TokenUtils.splitToken(signedDate)[1], is(TokenUtils.splitToken(signedInstant)[1]));
+    }
+
+    @Test
+    public void shouldAddNotBeforeBeforeEpoch() {
+        String signed = JWTCreator.init()
+                .withNotBefore(new Date(-500))
+                .sign(Algorithm.HMAC256("secret"));
+
+        assertThat(signed, is(notNullValue()));
+        assertThat(TokenUtils.splitToken(signed)[1], is("eyJuYmYiOi0xfQ"));
+    }
+
+    @Test
     public void shouldAddNotBefore() {
         String signed = JWTCreator.init()
                 .withNotBefore(new Date(1477592000))
