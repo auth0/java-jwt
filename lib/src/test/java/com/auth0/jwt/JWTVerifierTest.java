@@ -326,6 +326,21 @@ public class JWTVerifierTest {
     }
 
     @Test
+    public void shouldThrowWhenExpectedNullAudienceButTokenHasAudience() {
+        IncorrectClaimException e = assertThrows(null, IncorrectClaimException.class, () -> {
+            // Token 'aud': 'wide audience'
+            String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJ3aWRlIGF1ZGllbmNlIn0.c9anq03XepcuEKWEVsPk9cck0sIIfrT6hHbBsCar49o";
+            JWTVerifier.init(Algorithm.HMAC256("secret"))
+                    .withAudience((String[]) null)
+                    .build()
+                    .verify(token);
+        });
+        assertThat(e.getMessage(), is("The Claim 'aud' value doesn't contain the required audience."));
+        assertThat(e.getClaimName(), is(RegisteredClaims.AUDIENCE));
+        assertThat(e.getClaimValue().asString(), is("wide audience"));
+    }
+
+    @Test
     public void shouldNotReplaceWhenMultipleChecksAreAdded() {
         JWTVerifier verifier = JWTVerifier.init(Algorithm.HMAC256("secret"))
                 .withAudience((String[]) null)
@@ -343,6 +358,26 @@ public class JWTVerifierTest {
         exception.expectMessage("The Custom Claim's name can't be null.");
         JWTVerifier.init(Algorithm.HMAC256("secret"))
                 .withClaim(null, "value");
+    }
+
+    @Test
+    public void shouldThrowOnNullCustomClaimNameForEveryValueType() {
+        Verification verification = JWTVerifier.init(Algorithm.HMAC256("secret"));
+
+        assertNullCustomClaimNameThrows(() -> verification.withClaim(null, true));
+        assertNullCustomClaimNameThrows(() -> verification.withClaim(null, 123));
+        assertNullCustomClaimNameThrows(() -> verification.withClaim(null, 123L));
+        assertNullCustomClaimNameThrows(() -> verification.withClaim(null, 1.5));
+        assertNullCustomClaimNameThrows(() -> verification.withClaim(null, Instant.now()));
+        assertNullCustomClaimNameThrows(() -> verification.withClaim(null, (claim, decodedJWT) -> true));
+        assertNullCustomClaimNameThrows(() -> verification.withArrayClaim(null, "value"));
+        assertNullCustomClaimNameThrows(() -> verification.withArrayClaim(null, 1, 2));
+        assertNullCustomClaimNameThrows(() -> verification.withArrayClaim(null, 1L, 2L));
+    }
+
+    private static void assertNullCustomClaimNameThrows(org.junit.function.ThrowingRunnable runnable) {
+        IllegalArgumentException e = assertThrows(null, IllegalArgumentException.class, runnable);
+        assertThat(e.getMessage(), is("The Custom Claim's name can't be null."));
     }
 
     @Test
@@ -669,6 +704,20 @@ public class JWTVerifierTest {
         Algorithm algorithm = mock(Algorithm.class);
         JWTVerifier.init(algorithm)
                 .acceptLeeway(-1);
+    }
+
+    @Test
+    public void shouldAcceptZeroLeeway() {
+        Algorithm algorithm = mock(Algorithm.class);
+        JWTVerifier.BaseVerification verification = (JWTVerifier.BaseVerification) JWTVerifier.init(algorithm)
+                .acceptLeeway(0)
+                .acceptExpiresAt(0)
+                .acceptNotBefore(0)
+                .acceptIssuedAt(0);
+
+        assertThat(verification.getLeewayFor(RegisteredClaims.EXPIRES_AT), is(0L));
+        assertThat(verification.getLeewayFor(RegisteredClaims.NOT_BEFORE), is(0L));
+        assertThat(verification.getLeewayFor(RegisteredClaims.ISSUED_AT), is(0L));
     }
 
     // Expires At
