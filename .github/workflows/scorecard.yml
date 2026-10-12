@@ -1,0 +1,80 @@
+name: Scorecard analysis
+
+# Runs OpenSSF Scorecard supply-chain analysis directly via ossf/scorecard-action
+# (no composite wrapper, no cross-org dependency). All action refs are SHA-pinned.
+#
+# Scorecard requirements
+# ──────────────────────
+# • Supported triggers (per OSSF) are push and schedule on the default branch.
+#   pull_request is added below ONLY as a smoke test on a real runner from the PR.
+#   workflow_dispatch provides manual smoke tests after this workflow exists on the default branch.
+#   OSSF officially documents both triggers as EXPERIMENTAL ("The pull_request and
+#   workflow_dispatch triggers are experimental" — scorecard-action README); the docs do not
+#   detail how results differ on them. Because they are experimental, treat a PR run as a
+#   smoke signal only — this workflow is fully validated only after merge to the default branch.
+# • The checkout step MUST set persist-credentials: false (required by Scorecard's
+#   security model to avoid leaking the GITHUB_TOKEN into the analysis environment).
+# • publish_results: true publishes to the public Scorecard API and enables the
+#   Scorecard badge. It requires id-token: write on the job AND a push/schedule
+#   event — it must stay false on pull_request/workflow_dispatch. Set to 'false' to
+#   keep results private (id-token can then be omitted from the job permissions).
+
+on:
+  push:
+    branches: ['master']
+  pull_request:
+    branches: ['master']   # EXPERIMENTAL per OSSF: smoke test only, not an authoritative result
+  workflow_dispatch: {}              # EXPERIMENTAL per OSSF: manual re-run, available only after merge (default-branch copy)
+  schedule:
+    - cron: '30 1 * * 6'   # weekly, Saturday 01:30 UTC
+
+permissions: read-all   # default: restrict everything; the job overrides what it needs
+
+jobs:
+  analysis:
+    name: Scorecard analysis
+    runs-on: ubuntu-latest
+    # No event guard: pull_request and workflow_dispatch are allowed to run as an
+    # experimental smoke test (see the header). Keep publish_results: false on those
+    # events — publishing requires a push/schedule event and id-token: write.
+    permissions:
+      security-events: write   # upload SARIF to the Security tab / Code Scanning dashboard
+      # id-token: write           # OIDC token for Scorecard's public API publishing (publish_results: true)
+                                # Uncomment this line only when you set publish_results: true
+      contents: read            # checkout the repository
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false   # required by Scorecard — do not remove
+
+      - name: Run analysis
+        uses: ossf/scorecard-action@4eaacf0543bb3f2c246792bd56e8cdeffafb205a # v2.4.3
+        with:
+          results_file: results.sarif
+          results_format: sarif
+          # publish_results: true publishes to the Scorecard public dataset and enables the badge.
+          # Requires id-token: write above and a push/schedule event.
+          # Set to 'true' (and enable id-token: write) to publish results to the Scorecard public dataset.
+          publish_results: false
+
+      # Upload SARIF as a workflow artifact (optional — comment out to disable).
+      # https://docs.github.com/en/actions/advanced-guides/storing-workflow-data-as-artifacts
+      - name: Upload artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: SARIF file
+          path: results.sarif
+          retention-days: 5 # adjust as needed
+
+      # Upload SARIF to GitHub Code Scanning dashboard (optional — comment out to disable).
+      # Skipped only for fork PRs: there the GITHUB_TOKEN is read-only (no security-events: write)
+      # and the upload fails. The guard still runs on push/schedule and on same-repo PRs, where the
+      # token can write. (github.event.pull_request is null on push/schedule, so !…fork is true.)
+      - name: Upload to code-scanning
+        if: ${{ !github.event.pull_request.head.repo.fork }}
+        uses: github/codeql-action/upload-sarif@99df26d4f13ea111d4ec1a7dddef6063f76b97e9 # v4.37.0
+        with:
+          sarif_file: results.sarif
+          category: scorecard
