@@ -1,5 +1,13 @@
 # Change Log
 
+## [4.6.1](https://github.com/auth0/java-jwt/tree/4.6.1) (2026-09-08)
+[Full Changelog](https://github.com/auth0/java-jwt/compare/4.6.0...4.6.1)
+
+**Added**
+- chore: update bouncycastle [\#801](https://github.com/auth0/java-jwt/pull/801) ([tanya732](https://github.com/tanya732))
+- Bump com.fasterxml.jackson.core:jackson-core from 2.22.1 to 2.22.2 in /lib [\#797](https://github.com/auth0/java-jwt/pull/797) ([dependabot[bot]](https://github.com/apps/dependabot))
+- chore: remove unused imports [\#794](https://github.com/auth0/java-jwt/pull/794) ([Zichen1028](https://github.com/Zichen1028))
+
 ## [4.6.0](https://github.com/auth0/java-jwt/tree/4.6.0) (2026-07-13)
 [Full Changelog](https://github.com/auth0/java-jwt/compare/4.5.2...4.6.0)
 
