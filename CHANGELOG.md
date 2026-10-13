@@ -1,5 +1,13 @@
 # Change Log
 
+## [4.6.2](https://github.com/auth0/java-jwt/tree/4.6.2) (2026-10-13)
+[Full Changelog](https://github.com/auth0/java-jwt/compare/4.6.1...4.6.2)
+
+**Added**
+- Bump com.fasterxml.jackson.core:jackson-databind from 2.22.2 to 2.22.3 in /lib [\#811](https://github.com/auth0/java-jwt/pull/811) ([dependabot[bot]](https://github.com/apps/dependabot))
+**Fixed**
+- Security Fix: Uncaught DateTimeException in java-jwt PayloadDeserializer.getInstantFromSeconds() [commit](https://github.com/auth0/java-jwt/commit/33a2110a649dcd68a2feb07582b4f3763a43ec18) ([tanya732](https://github.com/tanya732))
+
 ## [4.6.1](https://github.com/auth0/java-jwt/tree/4.6.1) (2026-09-08)
 [Full Changelog](https://github.com/auth0/java-jwt/compare/4.6.0...4.6.1)
 
