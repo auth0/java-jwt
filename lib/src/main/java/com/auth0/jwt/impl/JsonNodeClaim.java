@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import java.io.IOException;
 import java.lang.reflect.Array;
+import java.time.DateTimeException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
@@ -69,7 +70,12 @@ class JsonNodeClaim implements Claim {
             return null;
         }
         long seconds = data.asLong();
-        return Instant.ofEpochSecond(seconds);
+        try {
+            return Instant.ofEpochSecond(seconds);
+        } catch (DateTimeException e) {
+            throw new JWTDecodeException(String.format(
+                    "The claim value (%s) is outside the valid Instant epoch-second range.", seconds), e);
+        }
     }
 
     @Override

@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 
 import java.io.IOException;
+import java.time.DateTimeException;
 import java.time.Instant;
 import java.util.*;
 
@@ -87,7 +88,14 @@ class PayloadDeserializer extends StdDeserializer<Payload> {
                     "The claim '%s' value (%s) is out of the range representable as a NumericDate.",
                     claimName, node.asText()));
         }
-        return Instant.ofEpochSecond(node.asLong());
+        long epochSecond = node.asLong();
+        try {
+            return Instant.ofEpochSecond(epochSecond);
+        } catch (DateTimeException e) {
+            throw new JWTDecodeException(String.format(
+                    "The claim '%s' value (%s) is outside the valid Instant epoch-second range.",
+                    claimName, epochSecond), e);
+        }
     }
 
     String getString(Map<String, JsonNode> tree, String claimName) {

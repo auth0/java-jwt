@@ -146,6 +146,31 @@ public class JsonNodeClaimTest {
         assertThat(claimFromNode(stringValue).asInstant(), is(nullValue()));
     }
 
+    // Long.MAX_VALUE is a valid long but outside Instant's valid epoch-second range.
+    // asInstant() must reject it as JWTDecodeException rather than letting the
+    // underlying DateTimeException (a RuntimeException) escape uncaught.
+    @Test
+    public void shouldThrowWhenAsInstantEpochSecondOutOfRange() {
+        exception.expect(JWTDecodeException.class);
+        exception.expectMessage("is outside the valid Instant epoch-second range");
+
+        JsonNode value = mapper.valueToTree(Long.MAX_VALUE);
+        Claim claim = claimFromNode(value);
+
+        claim.asInstant();
+    }
+
+    @Test
+    public void shouldThrowWhenAsInstantEpochSecondTooNegative() {
+        exception.expect(JWTDecodeException.class);
+        exception.expectMessage("is outside the valid Instant epoch-second range");
+
+        JsonNode value = mapper.valueToTree(Long.MIN_VALUE);
+        Claim claim = claimFromNode(value);
+
+        claim.asInstant();
+    }
+
     @Test
     public void shouldGetStringValue() {
         JsonNode value = mapper.valueToTree("string");
