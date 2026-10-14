@@ -81,6 +81,8 @@ public class ClaimsSerializer<T extends ClaimsHolder> extends StdSerializer<T> {
     }
 
     private static long dateToSeconds(Date date) {
-        return date.getTime() / 1000;
+        // Floor (not truncate) so dates before the Unix epoch round toward
+        // negative infinity, matching Instant#getEpochSecond. (GH-806)
+        return Math.floorDiv(date.getTime(), 1000L);
     }
 }
