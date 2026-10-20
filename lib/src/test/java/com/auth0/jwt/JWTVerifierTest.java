@@ -490,6 +490,30 @@ public class JWTVerifierTest {
     }
 
     @Test
+    public void shouldThrowOnInvalidCustomClaimValueOfTypeIntegerOutOfRange() {
+        // {"name": 4294967419} is 2^32 + 123 and must not be narrowed to 123
+        String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjo0Mjk0OTY3NDE5fQ.GhKOUxKAss6pfnzjz8RNA_RXl2TuMDbYA9EL6WD5Nxo";
+        IncorrectClaimException e = assertThrows(null, IncorrectClaimException.class, () ->
+                JWTVerifier.init(Algorithm.HMAC256("secret"))
+                        .withClaim("name", 123)
+                        .build()
+                        .verify(token));
+        assertThat(e.getClaimName(), is("name"));
+    }
+
+    @Test
+    public void shouldThrowOnInvalidCustomClaimValueOfTypeLongOutOfRange() {
+        // {"name": 18446744073709551739} is 2^64 + 123 and must not be narrowed to 123L
+        String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoxODQ0Njc0NDA3MzcwOTU1MTczOX0.JlkpbTCD4Po-jQAEJcdYwJLjqNw8uQz8XcEj5OBLgZY";
+        IncorrectClaimException e = assertThrows(null, IncorrectClaimException.class, () ->
+                JWTVerifier.init(Algorithm.HMAC256("secret"))
+                        .withClaim("name", 123L)
+                        .build()
+                        .verify(token));
+        assertThat(e.getClaimName(), is("name"));
+    }
+
+    @Test
     public void shouldValidateCustomClaimOfTypeDouble() {
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoyMy40NX0.7pyX2OmEGaU9q15T8bGFqRm-d3RVTYnqmZNZtxMKSlA";
         DecodedJWT jwt = JWTVerifier.init(Algorithm.HMAC256("secret"))
