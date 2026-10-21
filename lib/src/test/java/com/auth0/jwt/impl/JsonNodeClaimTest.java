@@ -19,6 +19,7 @@ import org.junit.rules.ExpectedException;
 import org.mockito.ArgumentMatchers;
 
 import java.io.IOException;
+import java.math.BigInteger;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -93,12 +94,28 @@ public class JsonNodeClaimTest {
     }
 
     @Test
+    public void shouldGetNullIntIfValueOutOfIntRange() {
+        JsonNode longValue = mapper.valueToTree(Integer.MAX_VALUE + 124L);
+        assertThat(claimFromNode(longValue).asInt(), is(nullValue()));
+        JsonNode bigValue = mapper.valueToTree(BigInteger.ONE.shiftLeft(64).add(BigInteger.valueOf(123)));
+        assertThat(claimFromNode(bigValue).asInt(), is(nullValue()));
+    }
+
+    @Test
     public void shouldGetLongValue() {
         JsonNode value = mapper.valueToTree(Long.MAX_VALUE);
         Claim claim = claimFromNode(value);
 
         assertThat(claim.asLong(), is(notNullValue()));
         assertThat(claim.asLong(), is(Long.MAX_VALUE));
+    }
+
+    @Test
+    public void shouldGetNullLongIfValueOutOfLongRange() {
+        JsonNode bigValue = mapper.valueToTree(BigInteger.ONE.shiftLeft(64).add(BigInteger.valueOf(123)));
+        assertThat(claimFromNode(bigValue).asLong(), is(nullValue()));
+        JsonNode doubleValue = mapper.valueToTree(1e300);
+        assertThat(claimFromNode(doubleValue).asLong(), is(nullValue()));
     }
 
     @Test

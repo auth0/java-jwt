@@ -37,12 +37,12 @@ class JsonNodeClaim implements Claim {
 
     @Override
     public Integer asInt() {
-        return isMissing() || isNull() || !data.isNumber() ? null : data.asInt();
+        return isMissing() || isNull() || !data.canConvertToInt() ? null : data.asInt();
     }
 
     @Override
     public Long asLong() {
-        return isMissing() || isNull() || !data.isNumber() ? null : data.asLong();
+        return isMissing() || isNull() || !data.canConvertToLong() ? null : data.asLong();
     }
 
     @Override
