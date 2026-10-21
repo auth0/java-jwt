@@ -128,8 +128,8 @@ javadoc {
 }
 
 dependencies {
-    implementation 'com.fasterxml.jackson.core:jackson-core:2.22.3'
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.22.3'
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.22.4'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.22.4'
 
     testImplementation 'org.bouncycastle:bcprov-jdk18on:1.85.2'
     testImplementation 'junit:junit:4.13.2'
