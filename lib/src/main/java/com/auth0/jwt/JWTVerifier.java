@@ -30,7 +30,9 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
 
     JWTVerifier(Algorithm algorithm, List<ExpectedCheckHolder> expectedChecks) {
         this.algorithm = algorithm;
-        this.expectedChecks = Collections.unmodifiableList(expectedChecks);
+        // Defensive copy: never wrap the builder's live list, otherwise a reused builder would
+        // retroactively mutate an already-built (supposedly immutable, thread-safe) verifier.
+        this.expectedChecks = Collections.unmodifiableList(new ArrayList<>(expectedChecks));
         this.parser = new JWTParser();
     }
 
@@ -90,7 +92,7 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
         @Override
         public Verification withSubject(String subject) {
             addCheck(RegisteredClaims.SUBJECT, (claim, decodedJWT) ->
-                    verifyNull(claim, subject) || subject.equals(claim.asString()));
+                    verifyNull(claim, subject) || Objects.equals(subject, claim.asString()));
             return this;
         }
 
@@ -163,7 +165,7 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
         @Override
         public Verification withJWTId(String jwtId) {
             addCheck(RegisteredClaims.JWT_ID, ((claim, decodedJWT) ->
-                    verifyNull(claim, jwtId) || jwtId.equals(claim.asString())));
+                    verifyNull(claim, jwtId) || Objects.equals(jwtId, claim.asString())));
             return this;
         }
 
@@ -186,7 +188,7 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
         public Verification withClaim(String name, Boolean value) throws IllegalArgumentException {
             assertNonNull(name);
             addCheck(name, ((claim, decodedJWT) -> verifyNull(claim, value)
-                    || value.equals(claim.asBoolean())));
+                    || Objects.equals(value, claim.asBoolean())));
             return this;
         }
 
@@ -194,7 +196,7 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
         public Verification withClaim(String name, Integer value) throws IllegalArgumentException {
             assertNonNull(name);
             addCheck(name, ((claim, decodedJWT) -> verifyNull(claim, value)
-                    || value.equals(claim.asInt())));
+                    || Objects.equals(value, claim.asInt())));
             return this;
         }
 
@@ -202,7 +204,7 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
         public Verification withClaim(String name, Long value) throws IllegalArgumentException {
             assertNonNull(name);
             addCheck(name, ((claim, decodedJWT) -> verifyNull(claim, value)
-                    || value.equals(claim.asLong())));
+                    || Objects.equals(value, claim.asLong())));
             return this;
         }
 
@@ -210,7 +212,7 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
         public Verification withClaim(String name, Double value) throws IllegalArgumentException {
             assertNonNull(name);
             addCheck(name, ((claim, decodedJWT) -> verifyNull(claim, value)
-                    || value.equals(claim.asDouble())));
+                    || Objects.equals(value, claim.asDouble())));
             return this;
         }
 
@@ -218,7 +220,7 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
         public Verification withClaim(String name, String value) throws IllegalArgumentException {
             assertNonNull(name);
             addCheck(name, ((claim, decodedJWT) -> verifyNull(claim, value)
-                    || value.equals(claim.asString())));
+                    || Objects.equals(value, claim.asString())));
             return this;
         }
 
@@ -234,7 +236,7 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
             // we need to compare them with only seconds-granularity
             addCheck(name,
                     ((claim, decodedJWT) -> verifyNull(claim, value)
-                            || value.truncatedTo(ChronoUnit.SECONDS).equals(claim.asInstant())));
+                            || (value != null && value.truncatedTo(ChronoUnit.SECONDS).equals(claim.asInstant()))));
             return this;
         }
 
@@ -285,8 +287,11 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
          */
         public JWTVerifier build(Clock clock) {
             this.clock = clock;
-            addMandatoryClaimChecks();
-            return new JWTVerifier(algorithm, expectedChecks);
+            // Build the mandatory checks into a fresh list rather than mutating this builder's own
+            // field, so build() is idempotent and can be called repeatedly without duplicating them.
+            List<ExpectedCheckHolder> checks = new ArrayList<>(expectedChecks);
+            addMandatoryClaimChecks(checks);
+            return new JWTVerifier(algorithm, checks);
         }
 
         /**
@@ -299,17 +304,17 @@ public final class JWTVerifier implements com.auth0.jwt.interfaces.JWTVerifier {
             return customLeeways.getOrDefault(name, defaultLeeway);
         }
 
-        private void addMandatoryClaimChecks() {
+        private void addMandatoryClaimChecks(List<ExpectedCheckHolder> checks) {
             long expiresAtLeeway = getLeewayFor(RegisteredClaims.EXPIRES_AT);
             long notBeforeLeeway = getLeewayFor(RegisteredClaims.NOT_BEFORE);
             long issuedAtLeeway = getLeewayFor(RegisteredClaims.ISSUED_AT);
 
-            expectedChecks.add(constructExpectedCheck(RegisteredClaims.EXPIRES_AT, (claim, decodedJWT) ->
+            checks.add(constructExpectedCheck(RegisteredClaims.EXPIRES_AT, (claim, decodedJWT) ->
                     assertValidInstantClaim(RegisteredClaims.EXPIRES_AT, claim, expiresAtLeeway, true)));
-            expectedChecks.add(constructExpectedCheck(RegisteredClaims.NOT_BEFORE, (claim, decodedJWT) ->
+            checks.add(constructExpectedCheck(RegisteredClaims.NOT_BEFORE, (claim, decodedJWT) ->
                     assertValidInstantClaim(RegisteredClaims.NOT_BEFORE, claim, notBeforeLeeway, false)));
             if (!ignoreIssuedAt) {
-                expectedChecks.add(constructExpectedCheck(RegisteredClaims.ISSUED_AT, (claim, decodedJWT) ->
+                checks.add(constructExpectedCheck(RegisteredClaims.ISSUED_AT, (claim, decodedJWT) ->
                         assertValidInstantClaim(RegisteredClaims.ISSUED_AT, claim, issuedAtLeeway, false)));
             }
         }
