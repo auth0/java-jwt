@@ -11,7 +11,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
-import java.util.Base64;
 
 /**
  * Subclass representing an Elliptic Curve signing algorithm
@@ -44,7 +43,7 @@ class ECDSAAlgorithm extends Algorithm {
     @Override
     public void verify(DecodedJWT jwt) throws SignatureVerificationException {
         try {
-            byte[] signatureBytes = Base64.getUrlDecoder().decode(jwt.getSignature());
+            byte[] signatureBytes = CryptoHelper.decodeSignature(jwt.getSignature());
             ECPublicKey publicKey = keyProvider.getPublicKeyById(jwt.getKeyId());
             if (publicKey == null) {
                 throw new IllegalStateException("The given Public Key is null.");

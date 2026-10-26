@@ -5,6 +5,7 @@ import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.security.spec.AlgorithmParameterSpec;
+import java.util.Base64;
 
 /**
  * Class used to perform the signature hash calculations.
@@ -14,6 +15,23 @@ import java.security.spec.AlgorithmParameterSpec;
 class CryptoHelper {
 
     private static final byte JWT_PART_SEPARATOR = (byte) 46;
+
+    /**
+     * Decode the JWT signature part, accepting only its canonical unpadded base64url form.
+     * The JDK decoder also accepts '=' padding and ignores non-zero trailing bits, which would
+     * let several different token strings carry the same valid signature.
+     *
+     * @param signature the base64url encoded JWT signature.
+     * @return the decoded signature bytes.
+     * @throws IllegalArgumentException if the signature is not canonical base64url without padding.
+     */
+    static byte[] decodeSignature(String signature) throws IllegalArgumentException {
+        byte[] signatureBytes = Base64.getUrlDecoder().decode(signature);
+        if (!Base64.getUrlEncoder().withoutPadding().encodeToString(signatureBytes).equals(signature)) {
+            throw new IllegalArgumentException("The signature is not a canonical base64url encoded value.");
+        }
+        return signatureBytes;
+    }
 
     /**
      * Verify signature for JWT header and payload.

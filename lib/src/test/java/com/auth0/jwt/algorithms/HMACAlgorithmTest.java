@@ -80,6 +80,25 @@ public class HMACAlgorithmTest {
     }
 
     @Test
+    public void shouldFailHMAC256VerificationWithNonCanonicalSignatureTrailingBits() {
+        exception.expect(SignatureVerificationException.class);
+        exception.expectMessage("The Token's Signature resulted invalid when verified using the Algorithm: HmacSHA256");
+        // Same signature bytes as the valid token above, but the unused low bits of the last character are set
+        String jwt = "eyJhbGciOiJIUzI1NiIsImN0eSI6IkpXVCJ9.eyJpc3MiOiJhdXRoMCJ9.mZ0m_N1J4PgeqWmi903JuUoDRZDBPB7HwkS4nVyWH1N";
+        Algorithm algorithm = Algorithm.HMAC256("secret");
+        algorithm.verify(JWT.decode(jwt));
+    }
+
+    @Test
+    public void shouldFailHMAC256VerificationWithPaddedSignature() {
+        exception.expect(SignatureVerificationException.class);
+        exception.expectMessage("The Token's Signature resulted invalid when verified using the Algorithm: HmacSHA256");
+        String jwt = "eyJhbGciOiJIUzI1NiIsImN0eSI6IkpXVCJ9.eyJpc3MiOiJhdXRoMCJ9.mZ0m_N1J4PgeqWmi903JuUoDRZDBPB7HwkS4nVyWH1M=";
+        Algorithm algorithm = Algorithm.HMAC256("secret");
+        algorithm.verify(JWT.decode(jwt));
+    }
+
+    @Test
     public void shouldPassHMAC384Verification() {
         String jwt = "eyJhbGciOiJIUzM4NCIsImN0eSI6IkpXVCJ9.eyJpc3MiOiJhdXRoMCJ9.uztpK_wUMYJhrRv8SV-1LU4aPnwl-EM1q-wJnqgyb5DHoDteP6lN_gE1xnZJH5vw";
         Algorithm algorithmString = Algorithm.HMAC384("secret");

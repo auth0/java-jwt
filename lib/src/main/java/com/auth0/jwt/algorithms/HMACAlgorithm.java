@@ -8,7 +8,6 @@ import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
-import java.util.Base64;
 
 /**
  * Subclass representing an Hash-based MAC signing algorithm
@@ -50,7 +49,7 @@ class HMACAlgorithm extends Algorithm {
     @Override
     public void verify(DecodedJWT jwt) throws SignatureVerificationException {
         try {
-            byte[] signatureBytes = Base64.getUrlDecoder().decode(jwt.getSignature());
+            byte[] signatureBytes = CryptoHelper.decodeSignature(jwt.getSignature());
             boolean valid = crypto.verifySignatureFor(
                     getDescription(), secret, jwt.getHeader(), jwt.getPayload(), signatureBytes);
             if (!valid) {
