@@ -69,6 +69,17 @@ public class ECDSAAlgorithmTest {
     }
 
     @Test
+    public void shouldFailECDSA256VerificationWithNonCanonicalSignature() throws Exception {
+        exception.expect(SignatureVerificationException.class);
+        exception.expectMessage("The Token's Signature resulted invalid when verified using the Algorithm: SHA256withECDSA");
+        // Same signature bytes as the valid token above, but the unused low bits of the last character are set
+        String jwt = "eyJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJhdXRoMCJ9.4iVk3-Y0v4RT4_9IaQlp-8dZ_4fsTzIylgrPTDLrEvTHBTyVS3tgPbr2_IZfLETtiKRqCg0aQ5sh9eIsTTwB1h";
+        ECKey key = (ECKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC");
+        Algorithm algorithm = Algorithm.ECDSA256(key);
+        algorithm.verify(JWT.decode(jwt));
+    }
+
+    @Test
     public void shouldThrowOnECDSA256VerificationWithDERSignature() throws Exception {
         exception.expect(SignatureVerificationException.class);
         exception.expectMessage("The Token's Signature resulted invalid when verified using the Algorithm: SHA256withECDSA");

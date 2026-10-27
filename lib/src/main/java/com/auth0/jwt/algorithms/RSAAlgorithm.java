@@ -11,7 +11,6 @@ import java.security.SignatureException;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.AlgorithmParameterSpec;
-import java.util.Base64;
 
 /**
  * Subclass representing an RSA signing algorithm
@@ -54,7 +53,7 @@ class RSAAlgorithm extends Algorithm {
     @Override
     public void verify(DecodedJWT jwt) throws SignatureVerificationException {
         try {
-            byte[] signatureBytes = Base64.getUrlDecoder().decode(jwt.getSignature());
+            byte[] signatureBytes = CryptoHelper.decodeSignature(jwt.getSignature());
             RSAPublicKey publicKey = keyProvider.getPublicKeyById(jwt.getKeyId());
             if (publicKey == null) {
                 throw new IllegalStateException("The given Public Key is null.");
