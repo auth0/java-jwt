@@ -8,7 +8,7 @@ on:
 
 jobs:
   snyk-cli:
-    uses: auth0/devsecops-tooling/.github/workflows/sca-scan.yml@main
+    uses: auth0/devsecops-tooling/.github/workflows/sca-scan.yml@e29f26478db18ff0bcbe4bc447a8fbd54fbeec9e # main on 2026-11-27, TODO: use a release instead
     with:
       additional-arguments: "--exclude=README.md"
       java-version: "11"
